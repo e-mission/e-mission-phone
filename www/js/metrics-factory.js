@@ -3,10 +3,10 @@
 import angular from 'angular';
 import { getBaseModeByValue } from './diary/diaryHelper'
 import { labelOptions } from './survey/multilabel/confirmHelper';
+import { storageGet, storageRemove, storageSet } from './plugin/storage';
 
 angular.module('emission.main.metrics.factory',
-        ['emission.main.metrics.mappings',
-        'emission.plugin.kvstore'])
+        ['emission.main.metrics.mappings'])
 
 .factory('FootprintHelper', function(CarbonDatasetHelper, CustomDatasetHelper) {
   var fh = {};
@@ -144,7 +144,7 @@ angular.module('emission.main.metrics.factory',
   return fh;
 })
 
-.factory('CalorieCal', function(KVStore, METDatasetHelper, CustomDatasetHelper) {
+.factory('CalorieCal', function(METDatasetHelper, CustomDatasetHelper) {
 
   var cc = {};
   var highestMET = 0;
@@ -164,13 +164,13 @@ angular.module('emission.main.metrics.factory',
   }
 
   cc.set = function(info) {
-    return KVStore.set(USER_DATA_KEY, info);
+    return storageSet(USER_DATA_KEY, info);
   };
   cc.get = function() {
-    return KVStore.get(USER_DATA_KEY);
+    return storageGet(USER_DATA_KEY);
   };
   cc.delete = function() {
-    return KVStore.remove(USER_DATA_KEY);
+    return storageRemove(USER_DATA_KEY);
   };
   Number.prototype.between = function (min, max) {
     return this >= min && this <= max;

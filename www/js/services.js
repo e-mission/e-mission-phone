@@ -1,269 +1,9 @@
 'use strict';
 
 import angular from 'angular';
+import { getRawEntries } from './commHelper';
 
-angular.module('emission.services', ['emission.plugin.logger',
-                                     'emission.plugin.kvstore'])
-
-.service('CommHelper', function($rootScope) {
-    var getConnectURL = function(successCallback, errorCallback) {
-        window.cordova.plugins.BEMConnectionSettings.getSettings(
-            function(settings) {
-                successCallback(settings.connectUrl);
-            }, errorCallback);
-    };
-
-    var processErrorMessages = function(errorMsg) {
-      if (errorMsg.includes("403")) {
-        errorMsg = "Error: OPcode does not exist on the server. " + errorMsg;
-        console.error("Error 403 found. " + errorMsg);
-      }
-      return errorMsg;
-    }
-
-    this.registerUser = function(successCallback, errorCallback) {
-            window.cordova.plugins.BEMServerComm.getUserPersonalData("/profile/create", successCallback, errorCallback);
-    };
-
-    this.updateUser = function(updateDoc) {
-        return new Promise(function(resolve, reject) {
-            window.cordova.plugins.BEMServerComm.postUserPersonalData("/profile/update", "update_doc", updateDoc, resolve, reject);
-        })
-        .catch(error => {
-            error = "While updating user, " + error;
-            error = processErrorMessages(error);
-            throw(error);
-        });
-    };
-
-    this.getUser = function() {
-        return new Promise(function(resolve, reject) {
-            window.cordova.plugins.BEMServerComm.getUserPersonalData("/profile/get", resolve, reject);
-        })
-        .catch(error => {
-            error = "While getting user, " + error;
-            error = processErrorMessages(error);
-            throw(error);
-        });
-    };
-
-    this.putOne = function(key, data) {
-        var now = moment().unix();
-        var md = {
-            "write_ts": now,
-            "read_ts": now,
-            "time_zone": moment.tz.guess(),
-            "type": "message",
-            "key": key,
-            "platform": ionic.Platform.platform()
-        };
-        var entryToPut = {
-            "metadata": md,
-            "data": data
-        }
-        return new Promise(function(resolve, reject) {
-            window.cordova.plugins.BEMServerComm.postUserPersonalData("/usercache/putone", "the_entry", entryToPut, resolve, reject);
-        })
-        .catch(error => {
-            error = "While putting one entry, " + error;
-            error = processErrorMessages(error);
-            throw(error);
-        });
-    };
-
-    this.getTimelineForDay = function(date) {
-        return new Promise(function(resolve, reject) {
-          var dateString = date.startOf('day').format('YYYY-MM-DD');
-          window.cordova.plugins.BEMServerComm.getUserPersonalData("/timeline/getTrips/"+dateString, resolve, reject);
-        })
-        .catch(error => {
-          error = "While getting timeline for day, " + error;
-          error = processErrorMessages(error);
-          throw(error);
-        });
-    };
-
-    /*
-     * var regConfig = {'username': ....}
-     * Other fields can be added easily and the server can be modified at the same time.
-     */
-    this.habiticaRegister = function(regConfig) {
-        return new Promise(function(resolve, reject){
-          window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaRegister", "regConfig", regConfig, resolve, reject);
-      });
-    };
-
-    /*
-     * Example usage:
-     * Get profile:
-     * callOpts = {'method': 'GET', 'method_url': "/api/v3/user",
-                    'method_args': null}
-     * Go to sleep:
-     * callOpts = {'method': 'POST', 'method_url': "/api/v3/user/sleep",
-                   'method_args': {'data': True}}
-     * Stop sleeping:
-     * callOpts = {'method': 'POST', 'method_url': "/api/v3/user/sleep",
-                   'method_args': {'data': False}}
-     * Get challenges for a user:
-     * callOpts = {'method': 'GET', 'method_url': "/api/v3/challenges/user",
-                    'method_args': null}
-     * ....
-     */
-
-    this.habiticaProxy = function(callOpts){
-      return new Promise(function(resolve, reject){
-        window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, resolve, reject);
-      })
-      .catch(error => {
-        error = "While habitica proxy, " + error;
-        error = processErrorMessages(error);
-        throw(error);
-      });
-    };
-
-    this.getMetrics = function(timeType, metrics_query) {
-      return new Promise(function(resolve, reject) {
-        var msgFiller = function(message) {
-            for (var key in metrics_query) {
-                message[key] = metrics_query[key]
-            };
-        };
-        window.cordova.plugins.BEMServerComm.pushGetJSON("/result/metrics/"+timeType, msgFiller, resolve, reject);
-      })
-      .catch(error => {
-        error = "While getting metrics, " + error;
-        error = processErrorMessages(error);
-        throw(error);
-      });
-    };
-
-    /*
-     * key_list = list of keys to retrieve or None for all keys
-     * start_time = beginning timestamp for range
-     * end_time = ending timestamp for rangeA
-     */
-    this.moment2Localdate = function(momentObj) {
-       return {
-         year: momentObj.year(),
-         month: momentObj.month() + 1,
-         day: momentObj.date(),
-       };
-    };
-
-    this.moment2Timestamp = function(momentObj) {
-      return momentObj.unix();
-    }
-
-    // time_key is typically metadata.write_ts or data.ts
-    this.getRawEntriesForLocalDate = function(key_list, start_ts, end_ts,
-        time_key = "metadata.write_ts", max_entries = undefined, trunc_method = "sample") {
-      return new Promise(function(resolve, reject) {
-          var msgFiller = function(message) {
-            message.key_list = key_list;
-            message.from_local_date = moment2Localdate(moment.unix(start_ts));
-            message.to_local_date = moment2Localdate(moment.unix(end_ts));
-            message.key_local_date = time_key;
-            if (max_entries !== undefined) {
-                message.max_entries = max_entries;
-                message.trunc_method = trunc_method;
-            }
-            console.log("About to return message "+JSON.stringify(message));
-          };
-          console.log("getRawEntries: about to get pushGetJSON for the timestamp");
-          window.cordova.plugins.BEMServerComm.pushGetJSON("/datastreams/find_entries/local_date", msgFiller, resolve, reject);
-      })
-      .catch(error => {
-          error = "While getting raw entries for local date, " + error;
-          error = processErrorMessages(error);
-          throw(error);
-      });
-    };
-
-    this.getRawEntries = function(key_list, start_ts, end_ts,
-        time_key = "metadata.write_ts", max_entries = undefined, trunc_method = "sample") {
-      return new Promise(function(resolve, reject) {
-          var msgFiller = function(message) {
-            message.key_list = key_list;
-            message.start_time = start_ts;
-            message.end_time = end_ts;
-            message.key_time = time_key;
-            if (max_entries !== undefined) {
-                message.max_entries = max_entries;
-                message.trunc_method = trunc_method;
-            }
-            console.log("About to return message "+JSON.stringify(message));
-          };
-          console.log("getRawEntries: about to get pushGetJSON for the timestamp");
-          window.cordova.plugins.BEMServerComm.pushGetJSON("/datastreams/find_entries/timestamp", msgFiller, resolve, reject);
-      })
-      .catch(error => {
-          error = "While getting raw entries, " + error;
-          error = processErrorMessages(error);
-          throw(error);
-      });
-    };
-
-    this.getPipelineCompleteTs = function() {
-      return new Promise(function(resolve, reject) {
-          console.log("getting pipeline complete timestamp");
-          window.cordova.plugins.BEMServerComm.getUserPersonalData("/pipeline/get_complete_ts", resolve, reject);
-      })
-      .catch(error => {
-          error = "While getting pipeline complete timestamp, " + error;
-          error = processErrorMessages(error);
-          throw(error);
-      });
-    };
-
-    this.getPipelineRangeTs = function() {
-      return new Promise(function(resolve, reject) {
-          console.log("getting pipeline range timestamps");
-          window.cordova.plugins.BEMServerComm.getUserPersonalData("/pipeline/get_range_ts", resolve, reject);
-      })
-      .catch(error => {
-          error = "While getting pipeline range timestamps, " + error;
-          error = processErrorMessages(error);
-          throw(error);
-      });
-    };
-
-
-    // host is automatically read from $rootScope.connectUrl, which is set in app.js
-    this.getAggregateData = function(path, data) {
-        return new Promise(function(resolve, reject) {
-          const full_url = $rootScope.connectUrl+"/"+path;
-          data["aggregate"] = true
-
-          if ($rootScope.aggregateAuth === "no_auth") {
-              console.log("getting aggregate data without user authentication from "
-                + full_url +" with arguments "+JSON.stringify(data));
-              const options = {
-                  method: 'post',
-                  data: data,
-                  responseType: 'json'
-              }
-              cordova.plugin.http.sendRequest(full_url, options,
-              function(response) {
-                resolve(response.data);
-              }, function(error) {
-                reject(error);
-              });
-          } else {
-              console.log("getting aggregate data with user authentication from "
-                + full_url +" with arguments "+JSON.stringify(data));
-              var msgFiller = function(message) {
-                return Object.assign(message, data);
-              };
-              window.cordova.plugins.BEMServerComm.pushGetJSON("/"+path, msgFiller, resolve, reject);
-          }
-        })
-        .catch(error => {
-          error = "While getting aggregate data, " + error;
-          error = processErrorMessages(error);
-          throw(error);
-        });
-    };
-})
+angular.module('emission.services', ['emission.plugin.logger'])
 
 .service('ReferHelper', function($http) {
 
@@ -282,7 +22,7 @@ angular.module('emission.services', ['emission.plugin.logger',
     //}*/
     }
 })
-.service('UnifiedDataLoader', function($window, CommHelper, Logger) {
+.service('UnifiedDataLoader', function($window, Logger) {
     var combineWithDedup = function(list1, list2) {
       var combinedList = list1.concat(list2);
       return combinedList.filter(function(value, i, array) {
@@ -346,7 +86,7 @@ angular.module('emission.services', ['emission.plugin.logger',
     // Probably in www/json...
     this.getUnifiedSensorDataForInterval = function(key, tq) {
         var localPromise = $window.cordova.plugins.BEMUserCache.getSensorDataForInterval(key, tq, true);
-        var remotePromise = CommHelper.getRawEntries([key], tq.startTs, tq.endTs)
+        var remotePromise = getRawEntries([key], tq.startTs, tq.endTs)
           .then(function(serverResponse) {
             return serverResponse.phone_data;
           });
@@ -355,7 +95,7 @@ angular.module('emission.services', ['emission.plugin.logger',
 
     this.getUnifiedMessagesForInterval = function(key, tq, withMetadata) {
       var localPromise = $window.cordova.plugins.BEMUserCache.getMessagesForInterval(key, tq, true);
-      var remotePromise = CommHelper.getRawEntries([key], tq.startTs, tq.endTs)
+      var remotePromise = getRawEntries([key], tq.startTs, tq.endTs)
           .then(function(serverResponse) {
             return serverResponse.phone_data;
           });
@@ -364,7 +104,6 @@ angular.module('emission.services', ['emission.plugin.logger',
 })
 .service('ControlHelper', function($window,
                                    $ionicPopup,
-                                   CommHelper,
                                    Logger) {
 
     this.writeFile = function(fileEntry, resultList) {
@@ -457,7 +196,7 @@ angular.module('emission.services', ['emission.plugin.logger',
             });
           };
 
-        CommHelper.getRawEntries(null, startMoment.unix(), endMoment.unix())
+        getRawEntries(null, startMoment.unix(), endMoment.unix())
           .then(writeDumpFile)
           .then(emailData)
           .then(function() {

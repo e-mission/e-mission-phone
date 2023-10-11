@@ -17,3 +17,127 @@ export async function fetchUrlCached(url) {
   logDebug(`fetchUrlCached: fetched data for url ${url}, returning`);
   return text;
 }
+
+function processErrorMessages(errorMsg) {
+  if (errorMsg.includes("403")) {
+    errorMsg = "Error: OPcode does not exist on the server. " + errorMsg;
+    console.error("Error 403 found. " + errorMsg);
+  }
+  return errorMsg;
+}
+
+export function getRawEntries(key_list, start_ts, end_ts, time_key = "metadata.write_ts",
+                              max_entries = undefined, trunc_method = "sample") {
+  return new Promise((rs, rj) => {
+    const msgFiller = (message) => {
+      message.key_list = key_list;
+      message.start_time = start_ts;
+      message.end_time = end_ts;
+      message.key_time = time_key;
+      if (max_entries !== undefined) {
+        message.max_entries = max_entries;
+        message.trunc_method = trunc_method;
+      }
+      logDebug(`About to return message ${JSON.stringify(message)}`);
+    }
+    logDebug("getRawEntries: about to get pushGetJSON for the timestamp");
+    window['cordova'].plugins.BEMServerComm.pushGetJSON("/datastreams/find_entries/timestamp", msgFiller, rs, rj);
+  }).catch(error => {
+    error = `While getting raw entries, ${error}`;
+    error = processErrorMessages(error);
+    throw(error);
+  });
+}
+
+export function getPipelineRangeTs() {
+  return new Promise((rs, rj) => {
+    logDebug("getting pipeline range timestamps");
+    window['cordova'].plugins.BEMServerComm.getUserPersonalData("/pipeline/get_range_ts", rs, rj);
+  }).catch(error => {
+    error = `While getting pipeline range timestamps, ${error}`;
+    error = processErrorMessages(error);
+    throw(error);
+  });
+}
+
+export function getPipelineCompleteTs() {
+  return new Promise((rs, rj) => {
+    logDebug("getting pipeline complete timestamp");
+    window['cordova'].plugins.BEMServerComm.getUserPersonalData("/pipeline/get_complete_ts", rs, rj);
+  }).catch(error => {
+    error = `While getting pipeline complete timestamp, ${error}`;
+    error = processErrorMessages(error);
+    throw(error);
+  });
+}
+
+export function getMetrics(timeType: 'timestamp'|'local_date', metricsQuery) {
+  return new Promise((rs, rj) => {
+    const msgFiller = (message) => {
+      for (let key in metricsQuery) {
+        message[key] = metricsQuery[key];
+      }
+    }
+    window['cordova'].plugins.BEMServerComm.pushGetJSON(`/result/metrics/${timeType}`, msgFiller, rs, rj);
+  }).catch(error => {
+    error = `While getting metrics, ${error}`;
+    error = processErrorMessages(error);
+    throw(error);
+  });
+}
+
+export function getAggregateData(path: string, data: any) {
+  return new Promise((rs, rj) => {
+    const fullUrl = `${window['$rootScope'].connectUrl}/${path}`;
+    data["aggregate"] = true;
+
+    if (window['$rootScope'].aggregateAuth === "no_auth") {
+      logDebug(`getting aggregate data without user authentication from ${fullUrl} with arguments ${JSON.stringify(data)}`);
+      const options = {
+        method: 'post',
+        data: data,
+        responseType: 'json'
+      }
+      window['cordova'].plugin.http.sendRequest(fullUrl, options,
+        (response) => {
+          rs(response.data);
+        }, (error) => {
+          rj(error);
+        });
+    } else {
+      logDebug(`getting aggregate data with user authentication from ${fullUrl} with arguments ${JSON.stringify(data)}`);
+      const msgFiller = (message) => {
+        return Object.assign(message, data);
+      }
+      window['cordova'].plugins.BEMServerComm.pushGetJSON(`/${path}`, msgFiller, rs, rj);
+    }
+  }).catch(error => {
+    error = `While getting aggregate data, ${error}`;
+    error = processErrorMessages(error);
+    throw(error);
+  });
+}
+
+export function registerUser(successCallback, errorCallback) {
+  window['cordova'].plugins.BEMServerComm.getUserPersonalData("/profile/create", successCallback, errorCallback);
+}
+
+export function updateUser(updateDoc) {
+  return new Promise((rs, rj) => {
+    window['cordova'].plugins.BEMServerComm.postUserPersonalData("/profile/update", "update_doc", updateDoc, rs, rj);
+  }).catch(error => {
+    error = `While updating user, ${error}`;
+    error = processErrorMessages(error);
+    throw(error);
+  });
+}
+
+export function getUser() {
+  return new Promise((rs, rj) => {
+    window['cordova'].plugins.BEMServerComm.getUserPersonalData("/profile/get", rs, rj);
+  }).catch(error => {
+    error = `While getting user, ${error}`;
+    error = processErrorMessages(error);
+    throw(error);
+  });
+}
