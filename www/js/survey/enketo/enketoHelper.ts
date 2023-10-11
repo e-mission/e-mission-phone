@@ -116,12 +116,11 @@ function _lazyLoadConfig() {
  * @return {Promise<EnketoAnswer[]>} filtered survey answers
  */
   export function filterByNameAndVersion(name: string, answers: EnketoAnswer[]) {
-  return _lazyLoadConfig().then(config => {
-    console.log("filtering by name and version,", name, config, answers);
+  return _lazyLoadConfig().then(config => 
     answers.filter(answer =>
       answer.data.name === name &&
       answer.data.version >= config[name].compatibleWith
-    )}
+    )
   );
 }
 
@@ -231,7 +230,6 @@ export function getInstanceStr(xmlModel: string, opts: SurveyOptions): string|nu
  * @returns Promise of the saved result, or an Error if there was a problem
  */
 export function saveResponse(surveyName: string, enketoForm: Form, appConfig, opts: SurveyOptions) {
-  // const EnketoSurveyAnswer = getAngularService('EnketoSurveyAnswer');
   const xmlParser = new window.DOMParser();
   const xmlResponse = enketoForm.getDataStr();
   const xmlDoc = xmlParser.parseFromString(xmlResponse, 'text/xml');

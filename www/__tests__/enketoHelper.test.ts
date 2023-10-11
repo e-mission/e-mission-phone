@@ -57,10 +57,6 @@ it('loads the previous response to a given survey', () => {
  * filterByNameAndVersion filter the survey answers by survey name and their version.
  * The version for filtering is specified in enketo survey `compatibleWith` config.
  * The stored survey answer version must be greater than or equal to `compatibleWith` to be included.
- * @param {string} name survey name (defined in enketo survey config)
- * @param {EnketoAnswer[]} answers survey answers
- *  (usually retrieved by calling UnifiedDataLoader.getUnifiedMessagesForInterval('manual/survey_response', tq)) method.
- * @return {Promise<EnketoAnswer[]>} filtered survey answers
  */
 it('filters the survey answers by their name and version', () => {
     //no answers -> no filtered answers
