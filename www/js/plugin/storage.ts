@@ -5,7 +5,6 @@ import { logDebug, logWarn } from "./logger";
 const mungeValue = (key, value) => {
   let store_val = value;
   if (typeof value != "object") {
-    // Should this be {"value": value} or {key: value}?
     store_val = {};
     store_val[key] = value;
   }
