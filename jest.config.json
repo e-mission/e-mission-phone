@@ -13,6 +13,9 @@
   "transformIgnorePatterns": [
     "/node_modules/(?!(@react-native|react-native|react-native-vector-icons))"
   ],
+  "modulePathIgnorePatterns": [
+    "/platforms/"
+  ],
   "moduleNameMapper": {
     "^react-native$": "react-native-web"
   }
