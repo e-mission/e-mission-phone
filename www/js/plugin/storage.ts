@@ -1,6 +1,6 @@
 import { getAngularService } from "../angular-react-helper";
 import { addStatReading, statKeys } from "./clientStats";
-import { displayErrorMsg, logDebug } from "./logger";
+import { logDebug, logWarn } from "./logger";
 
 const mungeValue = (key, value) => {
   let store_val = value;
@@ -58,7 +58,7 @@ function getUnifiedValue(key) {
       if (ls_stored_val == null) {
         // local value is missing, fill it in from native
         console.assert(uc_stored_val != null, "uc_stored_val should be non-null");
-        logDebug(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
+        logWarn(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
                                       ls_stored_val = ${JSON.stringify(ls_stored_val)}.
                                       copying native ${key} to local...`);
         localStorageSet(key, uc_stored_val);
@@ -66,8 +66,7 @@ function getUnifiedValue(key) {
       } else if (uc_stored_val == null) {
         // native value is missing, fill it in from local
         console.assert(ls_stored_val != null);
-        displayErrorMsg(`Local ${key} found, native ${key} missing, writing ${key} to native`);
-        logDebug(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
+        logWarn(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
                                       ls_stored_val = ${JSON.stringify(ls_stored_val)}.
                                       copying local ${key} to native...`);
         return window['cordova'].plugins.BEMUserCache.putLocalStorage(key, ls_stored_val).then(() => {
@@ -79,9 +78,7 @@ function getUnifiedValue(key) {
       console.assert(ls_stored_val != null && uc_stored_val != null,
         "ls_stored_val =" + JSON.stringify(ls_stored_val) +
         "uc_stored_val =" + JSON.stringify(uc_stored_val));
-      displayErrorMsg(`Local ${key} found, native ${key} found, but different,
-                           writing ${key} to local`);
-      logDebug(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
+      logWarn(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
                     ls_stored_val = ${JSON.stringify(ls_stored_val)}.
                     copying native ${key} to local...`);
       localStorageSet(key, uc_stored_val);
