@@ -63,8 +63,54 @@ it('loads the previous response to a given survey', () => {
  * @return {Promise<EnketoAnswer[]>} filtered survey answers
  */
 it('filters the survey answers by their name and version', () => {
-    const surveyName = "TimeUseSurvey";
-    const answers = [];
-    expect(filterByNameAndVersion(surveyName, answers)).resolves.toBe([]);
+    //no answers -> no filtered answers
+    expect(filterByNameAndVersion("TimeUseSurvey", [])).resolves.toBe([]);
 
+    const answer = [
+        {
+            data: {
+                label: "Activity", //display label (this value is use for displaying on the button)
+                ts: "100000000", //the timestamp at which the survey was filled out (in seconds)
+                fmt_time: "12:36", //the formatted timestamp at which the survey was filled out
+                name: "TimeUseSurvey", //survey name
+                version: "1", //survey version
+                xmlResponse: "<this is my xml>", //survey answer XML string
+                jsonDocResponse: "this is my json object" //survey answer JSON object
+            },
+            labels: {labelField: "goodbye"} //TODO learn more about answer type
+        }
+    ];
+
+    //one answer -> that answer
+    expect(filterByNameAndVersion("TimeUseSurvey", answer)).resolves.toBe(answer);
+
+    const answers = [
+        {
+            data: {
+                label: "Activity", //display label (this value is use for displaying on the button)
+                ts: "100000000", //the timestamp at which the survey was filled out (in seconds)
+                fmt_time: "12:36", //the formatted timestamp at which the survey was filled out
+                name: "TimeUseSurvey", //survey name
+                version: "1", //survey version
+                xmlResponse: "<this is my xml>", //survey answer XML string
+                jsonDocResponse: "this is my json object" //survey answer JSON object
+            },
+            labels: {labelField: "goodbye"}
+        },
+        {
+            data: {
+                label: "Activity", //display label (this value is use for displaying on the button)
+                ts: "100000000", //the timestamp at which the survey was filled out (in seconds)
+                fmt_time: "12:36", //the formatted timestamp at which the survey was filled out
+                name: "OtherSurvey", //survey name
+                version: "1", //survey version
+                xmlResponse: "<this is my xml>", //survey answer XML string
+                jsonDocResponse: "this is my json object" //survey answer JSON object
+            },
+            labels: {labelField: "goodbye"}
+        }
+    ];
+
+    //several answers -> only the one that has a name match
+    expect(filterByNameAndVersion("TimeUseSurvey", answers)).resolves.toBe(answer);
 });
