@@ -56,7 +56,6 @@ export const getMyData = function(startTs: Date) {
             })
 
           });
-          console.log(`Done!`);
         });
       });
     }
@@ -81,13 +80,17 @@ export const getMyData = function(startTs: Date) {
                 if (window['device'].platform === "ios")
                   alert(i18next.t("email-service.email-account-mail-app"));
                 const email = {
-                  attachments: [
-                    attachFile
-                  ],
-                  subject: i18next.t("email-service.email-data.subject-data-dump-from-to", {start: startTimeString ,end: endTimeString}),
-                  body: i18next.t("email-service.email-data.body-data-consists-of-list-of-entries")
-                };
-                window['cordova'].plugins.email.open(email).then(resolve());
+                  'files': [attachFile],
+                  'message': i18next.t("email-service.email-data.body-data-consists-of-list-of-entries"),
+                  'subject': i18next.t("email-service.email-data.subject-data-dump-from-to", {start: startTimeString ,end: endTimeString}),
+                }
+                window['plugins'].socialsharing.shareWithOptions(email, function (result) {
+                  console.log(`Share Completed? ${result.completed}`); // On Android, most likely returns false
+                  console.log(`Shared to app:  ${result.app}`);
+                  resolve();
+                }, function (msg) {
+                  console.log(`Sharing failed with message ${msg}`);
+                });
             }
             reader.readAsText(file);
           }, function(error) {
