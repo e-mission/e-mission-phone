@@ -1,9 +1,15 @@
-import { getInstanceStr, filterByNameAndVersion, resolveTimestamps, resolveLabel, _lazyLoadConfig} from '../js/survey/enketo/enketoHelper';
+import { getInstanceStr, filterByNameAndVersion, resolveTimestamps, resolveLabel, _lazyLoadConfig, loadPreviousResponseForSurvey} from '../js/survey/enketo/enketoHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 
+import i18next from "i18next";
+
 mockBEMUserCache();
 mockLogger();
+// jest.mock('../__mocks__/messageFormatMocks');
+// jest.mock("i18next");
+
+// global.i18next = { resolvedLanguage : "en" }
 
 it('gets the survey config', async () => {
     //this is aimed at testing my mock of the config
@@ -18,7 +24,6 @@ it('gets the survey config', async () => {
                       erea: {key: "Employment_related_a_Education_activities", type:"length"}}, 
           version: 9}
       }
-    //   console.log(config);
     expect(config).toMatchObject(mockSurveys);
 })
 
@@ -61,6 +66,30 @@ it('resolves the timestamps', () => {
     expect(resolveTimestamps(xmlDoc, timelineEntry)).toMatchObject({start_ts: 1469492672928, end_ts: 1469493031000});
 });
 
+//resolve label
+// it('resolves the label', async () => {
+//     i18next.init({
+//         fallbackLng: 'en',
+//         debug: true
+//       }, (err, t) => {
+//         if (err) return console.log('something went wrong loading', err);
+//         t('key'); // -> same as i18next.t
+//       });
+
+//     console.log("language in tests", i18next.resolvedLanguage);
+//     const xmlParser = new window.DOMParser();
+//     //have a custom survey label function TODO: we currently don't have custome label functions, but should test when we do
+    
+//     //no custom function, fallback to UseLabelTemplate
+//     const xmlString = '<tag> <Domestic_activities>option_1/Domestic_activities> <Employment_related_a_Education_activities>option_2</Employment_related_a_Education_activities> </tag>';
+//     const xmlDoc = xmlParser.parseFromString(xmlString, 'text/html');
+
+//     //if no template, returns "Answered"
+//     expect(await resolveLabel("TimeUseSurvey", xmlDoc)).toBe("");
+//     //if no labelVars, returns template
+//     //else interpolates
+// });
+
 /**
  * @param surveyName the name of the survey (e.g. "TimeUseSurvey")
  * @param enketoForm the Form object from enketo-core that contains this survey
@@ -82,7 +111,8 @@ it('gets the saved result or throws an error', () => {
 */
 //   export function loadPreviousResponseForSurvey(dataKey: string) {
 it('loads the previous response to a given survey', () => {
-
+    //not really sure if I can test this yet given that it relies on an angular service...
+    loadPreviousResponseForSurvey("manual/demographic_survey");
 });
 
 /**
