@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { logDebug } from "./plugin/logger";
 
 /**
@@ -48,6 +49,29 @@ export function getRawEntries(key_list, start_ts, end_ts, time_key = "metadata.w
     throw(error);
   });
 }
+
+// time_key is typically metadata.write_ts or data.ts
+export function getRawEntriesForLocalDate(key_list, start_ts, end_ts, time_key = "metadata.write_ts",
+                                          max_entries = undefined, trunc_method = "sample") {
+  return new Promise((rs, rj) => {
+    const msgFiller = (message) => {
+      message.key_list = key_list;
+      message.from_local_date = DateTime.fromSeconds(start_ts).toObject();
+      message.to_local_date = DateTime.fromSeconds(end_ts).toObject();
+      message.key_local_date = time_key;
+      if (max_entries !== undefined) {
+        message.max_entries = max_entries;
+        message.trunc_method = trunc_method;
+      }
+      logDebug("About to return message " + JSON.stringify(message));
+    };
+    logDebug("getRawEntries: about to get pushGetJSON for the timestamp");
+    window['cordova'].plugins.BEMServerComm.pushGetJSON("/datastreams/find_entries/local_date", msgFiller, rs, rj);
+  }).catch(error => {
+    error = "While getting raw entries for local date, " + error;
+    throw (error);
+  });
+};
 
 export function getPipelineRangeTs() {
   return new Promise((rs, rj) => {
@@ -141,3 +165,22 @@ export function getUser() {
     throw(error);
   });
 }
+
+export function putOne(key, data) {
+  const nowTs = DateTime.now().toUnixInteger();
+  const metadata = {
+    write_ts: nowTs,
+    read_ts: nowTs,
+    time_zone: DateTime.local().zoneName,
+    type: "message",
+    key: key,
+    platform: window['device'].platform,
+  };
+  const entryToPut = { metadata, data };
+  return new Promise((rs, rj) => {
+    window['cordova'].plugins.BEMServerComm.postUserPersonalData("/usercache/putone", "the_entry", entryToPut, rs, rj);
+  }).catch(error => {
+    error = "While putting one entry, " + error;
+    throw(error);
+  });
+};
