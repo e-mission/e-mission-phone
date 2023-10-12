@@ -19,14 +19,6 @@ export async function fetchUrlCached(url) {
   return text;
 }
 
-function processErrorMessages(errorMsg) {
-  if (errorMsg.includes("403")) {
-    errorMsg = "Error: OPcode does not exist on the server. " + errorMsg;
-    console.error("Error 403 found. " + errorMsg);
-  }
-  return errorMsg;
-}
-
 export function getRawEntries(key_list, start_ts, end_ts, time_key = "metadata.write_ts",
                               max_entries = undefined, trunc_method = "sample") {
   return new Promise((rs, rj) => {
@@ -45,7 +37,6 @@ export function getRawEntries(key_list, start_ts, end_ts, time_key = "metadata.w
     window['cordova'].plugins.BEMServerComm.pushGetJSON("/datastreams/find_entries/timestamp", msgFiller, rs, rj);
   }).catch(error => {
     error = `While getting raw entries, ${error}`;
-    error = processErrorMessages(error);
     throw(error);
   });
 }
@@ -79,7 +70,6 @@ export function getPipelineRangeTs() {
     window['cordova'].plugins.BEMServerComm.getUserPersonalData("/pipeline/get_range_ts", rs, rj);
   }).catch(error => {
     error = `While getting pipeline range timestamps, ${error}`;
-    error = processErrorMessages(error);
     throw(error);
   });
 }
@@ -90,7 +80,6 @@ export function getPipelineCompleteTs() {
     window['cordova'].plugins.BEMServerComm.getUserPersonalData("/pipeline/get_complete_ts", rs, rj);
   }).catch(error => {
     error = `While getting pipeline complete timestamp, ${error}`;
-    error = processErrorMessages(error);
     throw(error);
   });
 }
@@ -105,7 +94,6 @@ export function getMetrics(timeType: 'timestamp'|'local_date', metricsQuery) {
     window['cordova'].plugins.BEMServerComm.pushGetJSON(`/result/metrics/${timeType}`, msgFiller, rs, rj);
   }).catch(error => {
     error = `While getting metrics, ${error}`;
-    error = processErrorMessages(error);
     throw(error);
   });
 }
@@ -137,7 +125,6 @@ export function getAggregateData(path: string, data: any) {
     }
   }).catch(error => {
     error = `While getting aggregate data, ${error}`;
-    error = processErrorMessages(error);
     throw(error);
   });
 }
@@ -151,7 +138,6 @@ export function updateUser(updateDoc) {
     window['cordova'].plugins.BEMServerComm.postUserPersonalData("/profile/update", "update_doc", updateDoc, rs, rj);
   }).catch(error => {
     error = `While updating user, ${error}`;
-    error = processErrorMessages(error);
     throw(error);
   });
 }
@@ -161,7 +147,6 @@ export function getUser() {
     window['cordova'].plugins.BEMServerComm.getUserPersonalData("/profile/get", rs, rj);
   }).catch(error => {
     error = `While getting user, ${error}`;
-    error = processErrorMessages(error);
     throw(error);
   });
 }
