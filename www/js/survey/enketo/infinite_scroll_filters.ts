@@ -10,7 +10,14 @@ import i18next from "i18next";
 import { getAngularService } from "../../angular-react-helper";
 
 const unlabeledCheck = (t) => {
-    return typeof t.userInput[getAngularService('EnketoTripButtonService').SINGLE_KEY] === 'undefined';
+    try {
+        const EnketoTripButtonService = getAngularService("EnketoTripButtonService");
+        const etbsSingleKey = EnketoTripButtonService.SINGLE_KEY;
+        return typeof t.userInput[etbsSingleKey] === 'undefined';
+    }
+    catch (e) {
+        console.log("Error in retrieving EnketoTripButtonService: ", e);
+    }
 }
 
 const UNLABELED = {
