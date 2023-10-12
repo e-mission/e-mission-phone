@@ -1,14 +1,27 @@
-import { getInstanceStr, filterByNameAndVersion, resolveTimestamps } from '../js/survey/enketo/enketoHelper';
+import { getInstanceStr, filterByNameAndVersion, resolveTimestamps, resolveLabel, _lazyLoadConfig} from '../js/survey/enketo/enketoHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
+import { mockLogger } from '../__mocks__/globalMocks';
 
 mockBEMUserCache();
+mockLogger();
 
+it('gets the survey config', async () => {
+    //this is aimed at testing my mock of the config
+    //mocked getDocument for the case of getting the config
+    let config = await _lazyLoadConfig();
+    let mockSurveys = {
+        TimeUseSurvey: { compatibleWith: 1, 
+          formPath: "https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json", 
+          labelTemplate: {en: " erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic activities, }",
+                          es: " erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }"}, 
+          labelVars: {da: {key: "Domestic_activities", type: "length"},
+                      erea: {key: "Employment_related_a_Education_activities", type:"length"}}, 
+          version: 9}
+      }
+    //   console.log(config);
+    expect(config).toMatchObject(mockSurveys);
+})
 
-/**
- * @param xmlModel the blank XML model response for the survey
- * @param opts object with options like 'prefilledSurveyResponse' or 'prefillFields'
- * @returns XML string of an existing or prefilled model response, or null if no response is available
- */
 it('gets the model response, if avaliable, or returns null', ()=> {
     const xmlModel = '<model><instance>\n <data xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:odk=\"http://www.opendatakit.org/xforms\" xmlns:orx=\"http://openrosa.org/xforms\" id=\"snapshot_xml\">\n  <travel_mode/>\n <meta>\n <instanceID/>\n  </meta>\n </data>\n  </instance></model>;';
     const filled = '<model><instance>\n <data xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:odk=\"http://www.opendatakit.org/xforms\" xmlns:orx=\"http://openrosa.org/xforms\" id=\"snapshot_xml\">\n  <travel_mode/>car\n <meta>\n <instanceID/>\n  </meta>\n </data>\n  </instance></model>;';
@@ -79,7 +92,7 @@ it('loads the previous response to a given survey', () => {
  */
 it('filters the survey answers by their name and version', () => {
     //no answers -> no filtered answers
-    expect(filterByNameAndVersion("TimeUseSurvey", [])).resolves.toBe([]);
+    expect(filterByNameAndVersion("TimeUseSurvey", [])).resolves.toStrictEqual([]);
 
     const answer = [
         {
@@ -97,7 +110,7 @@ it('filters the survey answers by their name and version', () => {
     ];
 
     //one answer -> that answer
-    expect(filterByNameAndVersion("TimeUseSurvey", answer)).resolves.toBe(answer);
+    expect(filterByNameAndVersion("TimeUseSurvey", answer)).resolves.toStrictEqual(answer);
 
     const answers = [
         {
@@ -127,5 +140,5 @@ it('filters the survey answers by their name and version', () => {
     ];
 
     //several answers -> only the one that has a name match
-    expect(filterByNameAndVersion("TimeUseSurvey", answers)).resolves.toBe(answer);
+    expect(filterByNameAndVersion("TimeUseSurvey", answers)).resolves.toStrictEqual(answer);
 });

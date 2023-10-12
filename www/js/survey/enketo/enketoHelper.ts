@@ -95,7 +95,7 @@ const LABEL_FUNCTIONS = {
  * _lazyLoadConfig load enketo survey config. If already loaded, return the cached config
  * @returns {Promise<EnketoSurveyConfig>} enketo survey config
  */
-function _lazyLoadConfig() {
+export function _lazyLoadConfig() {
   if (_config !== undefined) {
     return Promise.resolve(_config);
   }
@@ -179,7 +179,7 @@ export function getInstanceStr(xmlModel: string, opts: SurveyOptions): string|nu
  *    - null if no timestamps are resolved
  *    - undefined if the timestamps are invalid
  */
-  export function resolveTimestamps(xmlDoc, timelineEntry) {
+export function resolveTimestamps(xmlDoc, timelineEntry) {
   // check for Date and Time fields
   const startDate = xmlDoc.getElementsByTagName('Start_date')?.[0]?.innerHTML;
   let startTime = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
