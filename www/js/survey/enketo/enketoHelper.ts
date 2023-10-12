@@ -179,7 +179,7 @@ export function getInstanceStr(xmlModel: string, opts: SurveyOptions): string|nu
  *    - null if no timestamps are resolved
  *    - undefined if the timestamps are invalid
  */
-  function resolveTimestamps(xmlDoc, timelineEntry) {
+  export function resolveTimestamps(xmlDoc, timelineEntry) {
   // check for Date and Time fields
   const startDate = xmlDoc.getElementsByTagName('Start_date')?.[0]?.innerHTML;
   let startTime = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;

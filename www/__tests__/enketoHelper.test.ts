@@ -1,4 +1,4 @@
-import { getInstanceStr, filterByNameAndVersion } from '../js/survey/enketo/enketoHelper';
+import { getInstanceStr, filterByNameAndVersion, resolveTimestamps } from '../js/survey/enketo/enketoHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 
 mockBEMUserCache();
@@ -27,6 +27,25 @@ it('gets the model response, if avaliable, or returns null', ()=> {
 
     //if none of those things, also return null
     expect(getInstanceStr(xmlModel, {})).toBe(null);
+});
+
+//resolve timestamps
+it('resolves the timestamps', () => {
+    const xmlParser = new window.DOMParser();
+    const timelineEntry = { end_local_dt: {timezone: "America/Los_Angeles"}, start_ts: 1469492672.928242, end_ts: 1469493031};
+
+    //missing data returns null
+    const missingData = '<tag> <Start_date>2016-08-28</Start_date> <End_date>2016-07-25</End_date> <End_time>17:30:31.000-06:00</End_time> </tag>';
+    const missDataDoc = xmlParser.parseFromString(missingData, 'text/html');
+    expect(resolveTimestamps(missDataDoc, timelineEntry)).toBeNull();
+    //bad time returns undefined
+    const badTimes = '<tag> <Start_date>2016-08-28</Start_date> <End_date>2016-07-25</End_date> <Start_time>17:32:32.928-06:00</Start_time> <End_time>17:30:31.000-06:00</End_time> </tag>';
+    const badTimeDoc = xmlParser.parseFromString(badTimes, 'text/xml');
+    expect(resolveTimestamps(badTimeDoc, timelineEntry)).toBeUndefined();
+    //good info returns unix start and end timestamps -- TODO : address precise vs less precise?
+    const timeSurvey = '<tag> <Start_date>2016-07-25</Start_date> <End_date>2016-07-25</End_date> <Start_time>17:24:32.928-06:00</Start_time> <End_time>17:30:31.000-06:00</End_time> </tag>';
+    const xmlDoc = xmlParser.parseFromString(timeSurvey, 'text/xml');
+    expect(resolveTimestamps(xmlDoc, timelineEntry)).toMatchObject({start_ts: 1469492672928, end_ts: 1469493031000});
 });
 
 /**
