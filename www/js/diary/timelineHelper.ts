@@ -2,6 +2,7 @@ import moment from "moment";
 import { getAngularService } from "../angular-react-helper";
 import { displayError, logDebug } from "../plugin/logger";
 import { getBaseModeByKey, getBaseModeOfLabeledTrip } from "./diaryHelper";
+import { getUnifiedMessagesForInterval } from "../unifiedDataLoader";
 import i18next from "i18next";
 
 const cachedGeojsons = new Map();
@@ -147,13 +148,12 @@ export function getLocalUnprocessedInputs(pipelineRange, labelsFactory, notesFac
  * @returns Promise an array with 1) results for labels and 2) results for notes
  */
 export function getAllUnprocessedInputs(pipelineRange, labelsFactory, notesFactory) {
-  const UnifiedDataLoader = getAngularService('UnifiedDataLoader');
   const tq = getUnprocessedInputQuery(pipelineRange);
   const labelsPromises = labelsFactory.MANUAL_KEYS.map((key) =>
-    UnifiedDataLoader.getUnifiedMessagesForInterval(key, tq, true).then(labelsFactory.extractResult)
+    getUnifiedMessagesForInterval(key, tq).then(labelsFactory.extractResult)
   );
   const notesPromises = notesFactory.MANUAL_KEYS.map((key) =>
-    UnifiedDataLoader.getUnifiedMessagesForInterval(key, tq, true).then(notesFactory.extractResult)
+    getUnifiedMessagesForInterval(key, tq).then(notesFactory.extractResult)
   );
   return getUnprocessedResults(labelsFactory, notesFactory, labelsPromises, notesPromises);
 }

@@ -3,6 +3,7 @@ import { Form } from 'enketo-core';
 import { XMLParser } from 'fast-xml-parser';
 import i18next from 'i18next';
 import { logDebug } from "../../plugin/logger";
+import { getUnifiedMessagesForInterval } from "../../unifiedDataLoader";
 
 export type PrefillFields = {[key: string]: string};
 
@@ -107,9 +108,8 @@ const _getMostRecent = (answers) => {
   * with incremental updates, we may want to revisit this.
 */
 export function loadPreviousResponseForSurvey(dataKey: string) {
-  const UnifiedDataLoader = getAngularService('UnifiedDataLoader');
   const tq = window['cordova'].plugins.BEMUserCache.getAllTimeQuery();
   logDebug("loadPreviousResponseForSurvey: dataKey = " + dataKey + "; tq = " + tq);
-  return UnifiedDataLoader.getUnifiedMessagesForInterval(dataKey, tq)
+  return getUnifiedMessagesForInterval(dataKey, tq)
       .then(answers => _getMostRecent(answers))
 }
