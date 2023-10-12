@@ -37,10 +37,10 @@ const SaveQrPage = ({  }) => {
     const EXPECTED_METHOD = "prompted-auth";
     const dbStorageObject = {"token": token};
     return storageSet(EXPECTED_METHOD, dbStorageObject).then((r) => {
-      registerUser((successResult) => {
+      registerUser().then((r) => {
         refreshOnboardingState();
-      }, function(errorResult) {
-        displayError(errorResult, "User registration error");
+      }).catch((e) => {
+        displayError(e, "User registration error");
       });
     }).catch((e) => {
       displayError(e, "Sign in error");
