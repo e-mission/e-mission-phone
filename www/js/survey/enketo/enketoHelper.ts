@@ -2,7 +2,7 @@ import { getAngularService } from "../../angular-react-helper";
 import { Form } from 'enketo-core';
 import { XMLParser } from 'fast-xml-parser';
 import i18next from 'i18next';
-import MessageFormat from 'messageformat';
+import MessageFormat from '@messageformat/core';
 import { logDebug, logInfo } from "../../plugin/logger";
 import { getConfig } from '../../config/dynamicConfig';
 import { DateTime } from "luxon";
