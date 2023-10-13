@@ -1,4 +1,5 @@
 {
+  "testEnvironment": "jsdom",
   "testPathIgnorePatterns": [
     "/node_modules/",
     "/platforms/",
@@ -9,6 +10,9 @@
   "transform": {
     "^.+\\.(ts|tsx|js|jsx)$": "ts-jest"
   },
+  "transformIgnorePatterns": [
+    "/node_modules/(?!(@react-native|react-native|react-native-vector-icons))"
+  ],
   "moduleNameMapper": {
     "^react-native$": "react-native-web"
   }

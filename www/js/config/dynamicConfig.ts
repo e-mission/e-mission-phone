@@ -2,6 +2,7 @@ import i18next from "i18next";
 import { displayError, logDebug, logWarn } from "../plugin/logger";
 import { getAngularService } from "../angular-react-helper";
 import { fetchUrlCached } from "../commHelper";
+import { storageClear, storageGet, storageSet } from "../plugin/storage";
 
 export const CONFIG_PHONE_UI="config/app_ui_config";
 export const CONFIG_PHONE_UI_KVSTORE ="CONFIG_PHONE_UI";
@@ -174,7 +175,6 @@ function extractSubgroup(token, config) {
 * @returns {boolean} boolean representing whether the config was updated or not
 */
 function loadNewConfig(newToken, existingVersion = null) {
-  const KVStore = getAngularService('KVStore');
   const newStudyLabel = extractStudyName(newToken);
   return readConfigFromServer(newStudyLabel).then((downloadedConfig) => {
     if (downloadedConfig.version == existingVersion) {
@@ -190,7 +190,7 @@ function loadNewConfig(newToken, existingVersion = null) {
     }
     const storeConfigPromise = window['cordova'].plugins.BEMUserCache.putRWDocument(
       CONFIG_PHONE_UI, toSaveConfig);
-    const storeInKVStorePromise = KVStore.set(CONFIG_PHONE_UI_KVSTORE, toSaveConfig);
+    const storeInKVStorePromise = storageSet(CONFIG_PHONE_UI_KVSTORE, toSaveConfig);
     // loaded new config, so it is both ready and changed
     return Promise.all([storeConfigPromise, storeInKVStorePromise]).then(
       ([result, kvStoreResult]) => {
@@ -220,17 +220,13 @@ export function initByUser(urlComponents) {
 }
 
 export function resetDataAndRefresh() {
-  const KVStore = getAngularService('KVStore');
-  const resetNativePromise = window['cordova'].plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {});
-  const resetKVStorePromise = KVStore.clearAll();
-  return Promise.all([resetNativePromise, resetKVStorePromise])
-    .then(() => window.location.reload());
+  // const resetNativePromise = window['cordova'].plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {});
+  storageClear({ local: true, native: true }).then(() => window.location.reload());
 }
 
 export function getConfig() {
   if (storedConfig) return Promise.resolve(storedConfig);
-  const KVStore = getAngularService('KVStore');
-  return KVStore.get(CONFIG_PHONE_UI_KVSTORE).then((config) => {
+  return storageGet(CONFIG_PHONE_UI_KVSTORE).then((config) => {
     if (config) {
       storedConfig = config;
       return config;
