@@ -29,7 +29,7 @@ type EnketoAnswerData = {
 
 type EnketoAnswer = {
   data: EnketoAnswerData; //answer data
-  labels: [{[labelField:string]: string}]; //virtual labels (populated by populateLabels method)
+  metadata: any;
 }
 
 type EnketoSurveyConfig = {
