@@ -1,14 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Modal,  useWindowDimensions } from "react-native";
 import { Dialog, useTheme } from 'react-native-paper';
 import PermissionsControls from "../appstatus/PermissionsControls";
-import usePermissionStatus from "../usePermissionStatus";
 import { settingStyles } from "./ProfileSettings";
+import { AppContext } from "../App";
 //TODO -- import settings styles for dialog
 
 const AppStatusModal = ({ permitVis, setPermitVis }) => {
     const { height: windowHeight } = useWindowDimensions();
-    const { overallStatus, checkList } = usePermissionStatus();
+    const { permissionStatus } = useContext(AppContext);
+    const { overallStatus, checkList } = permissionStatus;
     const { colors } = useTheme();
 
     /* Listen for permissions status changes to determine if we should show the modal. */

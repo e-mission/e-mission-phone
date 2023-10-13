@@ -1,12 +1,12 @@
 import angular from 'angular';
 import { baseLabelInputDetails, getBaseLabelInputs, getFakeEntry, getLabelInputDetails, getLabelInputs, getLabelOptions } from './confirmHelper';
 import { getConfig } from '../../config/dynamicConfig';
+import { getUserInputForTrip } from '../input-matcher';
 
 angular.module('emission.survey.multilabel.buttons',
-    ['emission.stats.clientstats',
-        'emission.survey.inputmatcher'])
+    ['emission.stats.clientstats'])
 
-.factory("MultiLabelService", function($rootScope, InputMatcher, $timeout, $ionicPlatform, Logger) {
+.factory("MultiLabelService", function($rootScope, $timeout, $ionicPlatform, Logger) {
   var mls = {};
   console.log("Creating MultiLabelService");
   mls.init = function(config) {
@@ -66,8 +66,7 @@ angular.module('emission.survey.multilabel.buttons',
    */
   mls.populateManualInputs = function (trip, nextTrip, inputType, inputList) {
       // Check unprocessed labels first since they are more recent
-      const unprocessedLabelEntry = InputMatcher.getUserInputForTrip(trip, nextTrip,
-          inputList);
+      const unprocessedLabelEntry = getUserInputForTrip(trip, nextTrip, inputList);
       var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
       if (!angular.isDefined(userInputLabel)) {
           userInputLabel = trip.user_input?.[mls.inputType2retKey(inputType)];

@@ -1,7 +1,7 @@
 import { logDebug, displayErrorMsg } from "../plugin/logger"
-import moment from "moment";
+import { DateTime } from "luxon";
 
-type LocalDt = {
+export type LocalDt = {
     minute: number,
     hour: number,
     second: number,
@@ -12,13 +12,15 @@ type LocalDt = {
     timezone: string
 }
 
-type UserInputForTrip = {
+export type UserInputForTrip = {
     data: {
         end_ts: number,
         start_ts: number
         label: string,
         start_local_dt?: LocalDt
         end_local_dt?: LocalDt
+        status?: string,
+        match_id?: string
     },
     metadata: {
         time_zone: string,
@@ -31,12 +33,12 @@ type UserInputForTrip = {
     key?: string,
 }
 
-type Trip = {
+export type Trip = {
     end_ts: number,
     start_ts: number
 }
 
-type TlEntry = {
+export type TlEntry = {
     key: string,
     origin_key: string,
     start_ts: number,
@@ -47,14 +49,15 @@ type TlEntry = {
     getNextEntry: any
 }
 
+
 const EPOCH_MAXIMUM = 2**31 - 1;
 
-const fmtTs = (ts_in_secs: number, tz: string): string => moment(ts_in_secs * 1000).tz(tz).format();
+export const fmtTs = (ts_in_secs: number, tz: string): string | null => DateTime.fromSeconds(ts_in_secs, {zone : tz}).toISO();
 
-const printUserInput = (ui: UserInputForTrip): string => `${fmtTs(ui.data.start_ts, ui.metadata.time_zone)} (${ui.data.start_ts}) -> 
+export const printUserInput = (ui: UserInputForTrip): string => `${fmtTs(ui.data.start_ts, ui.metadata.time_zone)} (${ui.data.start_ts}) -> 
 ${fmtTs(ui.data.end_ts, ui.metadata.time_zone)} (${ui.data.end_ts}) ${ui.data.label} logged at ${ui.metadata.write_ts}`;
 
-const validUserInputForDraftTrip = (trip: Trip, userInput: UserInputForTrip, logsEnabled: boolean): boolean => {
+export const validUserInputForDraftTrip = (trip: Trip, userInput: UserInputForTrip, logsEnabled: boolean): boolean => {
     if(logsEnabled) {
         logDebug(`Draft trip:
             comparing user = ${fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)}
@@ -72,10 +75,10 @@ const validUserInputForDraftTrip = (trip: Trip, userInput: UserInputForTrip, log
     || -(userInput.data.start_ts - trip.start_ts) <= 15 * 60) && userInput.data.end_ts <= trip.end_ts;
 }
 
-const validUserInputForTimelineEntry = (tlEntry: TlEntry, userInput: UserInputForTrip, logsEnabled: boolean): boolean => {
+export const validUserInputForTimelineEntry = (tlEntry: TlEntry, userInput: UserInputForTrip, logsEnabled: boolean): boolean => {
     if (!tlEntry.origin_key) return false;
     if (tlEntry.origin_key.includes('UNPROCESSED')) return validUserInputForDraftTrip(tlEntry, userInput, logsEnabled);
-        
+
     /* Place-level inputs always have a key starting with 'manual/place', and
         trip-level inputs never have a key starting with 'manual/place'
        So if these don't match, we can immediately return false */
@@ -90,7 +93,7 @@ const validUserInputForTimelineEntry = (tlEntry: TlEntry, userInput: UserInputFo
     if (!entryStart && entryEnd) {
       /* if a place has no enter time, this is the first start_place of the first composite trip object
       so we will set the start time to the start of the day of the end time for the purpose of comparison */
-      entryStart = moment.unix(entryEnd).startOf('day').unix();
+      entryStart = DateTime.fromSeconds(entryEnd).startOf('day').toUnixInteger();
     }
 
     if (!entryEnd) {
@@ -115,7 +118,6 @@ const validUserInputForTimelineEntry = (tlEntry: TlEntry, userInput: UserInputFo
     /* For this input to match, it must begin after the start of the timelineEntry (inclusive)
         but before the end of the timelineEntry (exclusive) */
     const startChecks = userInput.data.start_ts >= entryStart && userInput.data.start_ts < entryEnd;
-    
     /* A matching user input must also finish before the end of the timelineEntry,
         or within 15 minutes. */
     let endChecks = (userInput.data.end_ts <= entryEnd || (userInput.data.end_ts - entryEnd) <= 15 * 60);
@@ -143,12 +145,11 @@ const validUserInputForTimelineEntry = (tlEntry: TlEntry, userInput: UserInputFo
             endChecks = (overlapDuration/tlEntry.duration) > 0.5;
         }
     }
-
     return startChecks && endChecks;
 }
 
 // parallels get_not_deleted_candidates() in trip_queries.py
-const getNotDeletedCandidates = (candidates:any ):any  => {
+export const getNotDeletedCandidates = (candidates: UserInputForTrip[]): UserInputForTrip[] => {
     console.log('getNotDeletedCandidates called with ' + candidates.length + ' candidates');
     
     // We want to retain all ACTIVE entries that have not been DELETED
@@ -162,9 +163,8 @@ const getNotDeletedCandidates = (candidates:any ):any  => {
     return notDeletedActive;
 }
 
-export const getUserInputForTrip =  (trip: TlEntry, nextTrip, userInputList: UserInputForTrip[]): undefined | UserInputForTrip => {
-    const logsEnabled = userInputList.length < 20;
-
+export const getUserInputForTrip =  (trip: TlEntry, nextTrip: any, userInputList: UserInputForTrip[]): undefined | UserInputForTrip => {
+    const logsEnabled = userInputList?.length < 20;
     if (userInputList === undefined) {
         logDebug("In getUserInputForTrip, no user input, returning undefined");
         return undefined;
@@ -195,8 +195,8 @@ export const getUserInputForTrip =  (trip: TlEntry, nextTrip, userInputList: Use
 }
 
 // return array of matching additions for a trip or place
-export const getAdditionsForTimelineEntry = (entry, additionsList) => {
-    const logsEnabled = additionsList.length < 20;
+export const getAdditionsForTimelineEntry = (entry: TlEntry, additionsList: UserInputForTrip[]): UserInputForTrip[] => {
+    const logsEnabled = additionsList?.length < 20;
 
     if (additionsList === undefined) {
       logDebug("In getAdditionsForTimelineEntry, no addition input, returning []");
@@ -218,7 +218,7 @@ export const getUniqueEntries = (combinedList) => {
     const allDeleted = combinedList.filter(c => c.data.status && c.data.status == 'DELETED');
     
     if (allDeleted.length > 0) {
-        displayErrorMsg("Found "+allDeletedEntries.length +" non-ACTIVE addition entries while trying to dedup entries", allDeletedEntries);
+        displayErrorMsg("Found "+allDeleted.length +" non-ACTIVE addition entries while trying to dedup entries", JSON.stringify(allDeleted));
     }
     
     const uniqueMap = new Map();
