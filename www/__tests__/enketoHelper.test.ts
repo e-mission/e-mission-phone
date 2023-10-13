@@ -2,7 +2,8 @@ import { getInstanceStr, filterByNameAndVersion, resolveTimestamps, resolveLabel
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 
-import i18next from "i18next";
+// import initializedI18next from '../js/i18nextInit';
+// window['i18next'] = initializedI18next;
 
 mockBEMUserCache();
 mockLogger();
