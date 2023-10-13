@@ -1,11 +1,22 @@
 import { logInfo } from './plugin/logger'
 import { getRawEntries } from './commHelper';
 
-// Helper Functions for the getUnified methods.
-const combineWithDedup = function(list1, list2) {
+interface dataObj {
+  data: any;
+  metadata: {
+    plugin: string;
+    write_ts: number;
+    platform: string;
+    read_ts: number;
+    key: string;
+    type: string;
+  }
+}
+const combineWithDedup = function(list1: Array<dataObj>, list2: Array<dataObj>) {
     const combinedList = list1.concat(list2);
     return combinedList.filter(function(value, i, array) {
-      const firstIndexOfValue = array.findIndex(function(element, index, array) {
+      const firstIndexOfValue = array.findIndex(function(element) {
+        console.log(`==> Element: ${JSON.stringify(element, null, 4)} `);
         return element.metadata.write_ts == value.metadata.write_ts;
       });
       return firstIndexOfValue == i;
@@ -13,7 +24,8 @@ const combineWithDedup = function(list1, list2) {
 };
 
 // TODO: generalize to iterable of promises
-const combinedPromise = function(localPromise, remotePromise, combiner) {
+const combinedPromise = function(localPromise: Promise<any>, remotePromise: Promise<any>, 
+  combiner: (list1: Array<any>, list2: Array<any>) => Array<any>) {
     return new Promise(function(resolve, reject) {
       var localResult = [];
       var localError = null;
@@ -59,6 +71,8 @@ const combinedPromise = function(localPromise, remotePromise, combiner) {
     })
 }
 
+// This is an generalized get function for data; example uses could be with
+// the getSensorDataForInterval or getMessagesForInterval functions.
 interface serverData { 
   phone_data: Array<any>; 
 }
@@ -67,24 +81,13 @@ interface tQ {
   startTs: number;
   endTs: number;
 }
-// TODO: Generalize this to work for both sensor data and messages
-// Do we even need to separate the two kinds of data?
-export const getUnifiedSensorDataForInterval = function(key: string, tq: tQ) {
-        const localPromise = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval(key, tq, true);
-        const remotePromise = getRawEntries([key], tq.startTs, tq.endTs)
-          .then(function(serverResponse: serverData) {
-            console.log(`\n\n\n TQ : ${JSON.stringify(tq)}`)
-            return serverResponse.phone_data;
-          });
-        return combinedPromise(localPromise, remotePromise, combineWithDedup);
+export const getUnifiedDataForInterval = function(key: string, tq: tQ, 
+  getMethod: (key: string, tq: tQ, flag: boolean) => Promise<any>) {
+    const test = true;
+    const localPromise = getMethod(key, tq, test);
+    const remotePromise = getRawEntries([key], tq.startTs, tq.endTs)
+        .then(function(serverResponse: serverData) {
+          return serverResponse.phone_data;
+        });
+    return combinedPromise(localPromise, remotePromise, combineWithDedup);
 };
-
-export const getUnifiedMessagesForInterval = function(key: string, tq: tQ) {
-      const localPromise = window['cordova'].plugins.BEMUserCache.getMessagesForInterval(key, tq, true);
-      const remotePromise = getRawEntries([key], tq.startTs, tq.endTs)
-          .then(function(serverResponse: serverData) {
-            console.log('==>', JSON.stringify(tq.endTs), ':',typeof tq.endTs);
-            return serverResponse.phone_data;
-          });
-      return combinedPromise(localPromise, remotePromise, combineWithDedup);
-    }

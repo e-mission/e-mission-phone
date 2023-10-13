@@ -4,7 +4,7 @@ import angular from 'angular';
 import { SurveyOptions } from '../survey/survey';
 import { getConfig } from '../config/dynamicConfig';
 import { getRawEntries } from '../commHelper';
-import { getUnifiedSensorDataForInterval, getUnifiedMessagesForInterval } from '../unifiedDataLoader'
+import { getUnifiedDataForInterval } from '../unifiedDataLoader'
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])
@@ -232,7 +232,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       Logger.log("About to pull location data for range "
         + moment.unix(tripStartTransition.data.ts).toString() + " -> " 
         + moment.unix(tripEndTransition.data.ts).toString());
-      return getUnifiedSensorDataForInterval("background/filtered_location", tq).then(function(locationList) {
+      const getSensorData = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
+      return getUnifiedDataForInterval("background/filtered_location", tq, getSensorData)
+        .then(function(locationList) {
           if (locationList.length == 0) {
             return undefined;
           }
@@ -304,7 +306,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
        }
        Logger.log("about to query for unprocessed trips from "
          +moment.unix(tq.startTs).toString()+" -> "+moment.unix(tq.endTs).toString());
-       return getUnifiedMessagesForInterval("statemachine/transition", tq)
+      
+      const getMessageMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
+      return getUnifiedDataForInterval("statemachine/transition", tq, getMessageMethod)
         .then(function(transitionList) {
           if (transitionList.length == 0) {
             Logger.log("No unprocessed trips. yay!");
@@ -356,7 +360,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 return trip_gj_list;
             });
           }
-        });
+      });
     }
 
     var localCacheReadFn = timeline.updateFromDatabase;

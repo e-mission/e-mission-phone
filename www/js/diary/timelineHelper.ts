@@ -1,8 +1,7 @@
 import moment from "moment";
-import { getAngularService } from "../angular-react-helper";
 import { displayError, logDebug } from "../plugin/logger";
 import { getBaseModeByKey, getBaseModeOfLabeledTrip } from "./diaryHelper";
-import { getUnifiedMessagesForInterval } from "../unifiedDataLoader";
+import { getUnifiedDataForInterval} from "../unifiedDataLoader";
 import i18next from "i18next";
 
 const cachedGeojsons = new Map();
@@ -149,11 +148,13 @@ export function getLocalUnprocessedInputs(pipelineRange, labelsFactory, notesFac
  */
 export function getAllUnprocessedInputs(pipelineRange, labelsFactory, notesFactory) {
   const tq = getUnprocessedInputQuery(pipelineRange);
-  const labelsPromises = labelsFactory.MANUAL_KEYS.map((key) =>
-    getUnifiedMessagesForInterval(key, tq).then(labelsFactory.extractResult)
+  const getMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
+  
+  const labelsPromises = labelsFactory.MANUAL_KEYS.map((key) => 
+    getUnifiedDataForInterval(key, tq, getMethod).then(labelsFactory.extractResult)
   );
-  const notesPromises = notesFactory.MANUAL_KEYS.map((key) =>
-    getUnifiedMessagesForInterval(key, tq).then(notesFactory.extractResult)
+  const notesPromises = notesFactory.MANUAL_KEYS.map((key) => 
+    getUnifiedDataForInterval(key, tq, getMethod).then(notesFactory.extractResult)
   );
   return getUnprocessedResults(labelsFactory, notesFactory, labelsPromises, notesPromises);
 }
