@@ -12,67 +12,85 @@ interface dataObj {
     type: string;
   }
 }
+/**
+ * combineWithDedup is a helper function for combinedPromises 
+ * @param list1 values evaluated from a BEMUserCache promise
+ * @param list2 same as list1 
+ * @returns a dedup array generated from the input lists
+ */
 const combineWithDedup = function(list1: Array<dataObj>, list2: Array<dataObj>) {
     const combinedList = list1.concat(list2);
     return combinedList.filter(function(value, i, array) {
       const firstIndexOfValue = array.findIndex(function(element) {
-        console.log(`==> Element: ${JSON.stringify(element, null, 4)} `);
         return element.metadata.write_ts == value.metadata.write_ts;
       });
       return firstIndexOfValue == i;
     });
 };
 
-// TODO: generalize to iterable of promises
-const combinedPromise = function(localPromise: Promise<any>, remotePromise: Promise<any>, 
-  combiner: (list1: Array<any>, list2: Array<any>) => Array<any>) {
+/**
+ * combinedPromises is a recursive function that joins multiple promises 
+ * @param promiseList 1 or more promises 
+ * @param combiner a function that takes two arrays and joins them
+ * @returns A promise which evaluates to a combined list of values or errors
+ */
+const combinedPromises = function(promiseList: Array<Promise<any>>, 
+  combiner: (list1: Array<any>, list2: Array<any>) => Array<any> ) {
     return new Promise(function(resolve, reject) {
-      var localResult = [];
-      var localError = null;
+      var firstResult = [];
+      var firstError = null;
 
-      var remoteResult = [];
-      var remoteError = null;
+      var nextResult = [];
+      var nextError = null;
 
-      var localPromiseDone = false;
-      var remotePromiseDone = false;
+      var firstPromiseDone = false;
+      var nextPromiseDone = false;
 
       const checkAndResolve = function() {
-        if (localPromiseDone && remotePromiseDone) {
-          // time to return from this promise
-          if (localError && remoteError) {
-            reject([localError, remoteError]);
+        if (firstPromiseDone && nextPromiseDone) {
+          if (firstError && nextError) {
+            reject([firstError, nextError]);
           } else {
-            logInfo("About to dedup localResult = "+localResult.length
-                +"remoteResult = "+remoteResult.length);
-            const dedupedList = combiner(localResult, remoteResult);
+            logInfo("About to dedup localResult = "+firstResult.length
+                +"remoteResult = "+nextResult.length);
+
+            const dedupedList = combiner(firstResult, nextResult);
             logInfo("Deduped list = "+dedupedList.length);
             resolve(dedupedList);
           }
         }
       };
+      
+      if (promiseList.length === 1) {
+        return promiseList[0].then(function(result: Array<any>) {
+          resolve(result);
+        }, function (err) {
+          reject([err]);
+        });
+      }
 
-      localPromise.then(function(currentLocalResult) {
-        localResult = currentLocalResult;
-        localPromiseDone = true;
+      const firstPromise = promiseList[0];
+      const nextPromise = combinedPromises(promiseList.slice(1), combiner);
+     
+      firstPromise.then(function(currentFirstResult: Array<any>) {
+        firstResult = currentFirstResult;
+        firstPromiseDone = true;
       }, function(error) {
-        localResult = [];
-        localError = error;
-        localPromiseDone = true;
+        firstResult = [];
+        firstError = error;
+        nextPromiseDone = true;
       }).then(checkAndResolve);
 
-      remotePromise.then(function(currentRemoteResult) {
-        remoteResult = currentRemoteResult;
-        remotePromiseDone = true;
+      nextPromise.then(function(currentNextResult: Array<any>) {
+        nextResult = currentNextResult;
+        nextPromiseDone = true;
       }, function(error) {
-        remoteResult = [];
-        remoteError = error;
-        remotePromiseDone = true;
+        nextResult = [];
+        nextError = error;
       }).then(checkAndResolve);
-    })
-}
+    });
+};
 
-// This is an generalized get function for data; example uses could be with
-// the getSensorDataForInterval or getMessagesForInterval functions.
 interface serverData { 
   phone_data: Array<any>; 
 }
@@ -81,6 +99,13 @@ interface tQ {
   startTs: number;
   endTs: number;
 }
+/**
+ * getUnifiedDataForInterval is a generalized method to fetch data by its timestamps 
+ * @param key string corresponding to a data entry
+ * @param tq an object that contains interval start and end times
+ * @param getMethod a BEMUserCache method that fetches certain data via a promise
+ * @returns A promise that evaluates to the all values found within the queried data
+ */
 export const getUnifiedDataForInterval = function(key: string, tq: tQ, 
   getMethod: (key: string, tq: tQ, flag: boolean) => Promise<any>) {
     const test = true;
@@ -89,5 +114,6 @@ export const getUnifiedDataForInterval = function(key: string, tq: tQ,
         .then(function(serverResponse: serverData) {
           return serverResponse.phone_data;
         });
-    return combinedPromise(localPromise, remotePromise, combineWithDedup);
+    var promiseList = [localPromise, remotePromise]
+    return combinedPromises(promiseList, combineWithDedup);
 };
