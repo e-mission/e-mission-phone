@@ -73,7 +73,6 @@ const LABEL_FUNCTIONS = {
 
     // use MessageFormat interpolate the label template with the label vars
     const mf = new MessageFormat(lang);
-    console.log(labelTemplate);
     const label = mf.compile(labelTemplate)(labelVars);
     return label.replace(/^[ ,]+|[ ,]+$/g, ''); // trim leading and trailing spaces and commas
   }
