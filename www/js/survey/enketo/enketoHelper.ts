@@ -35,7 +35,8 @@ type EnketoAnswer = {
 type EnketoSurveyConfig = {
   [surveyName:string]: {
     formPath: string
-    labelFields: string[];
+    labelTemplate: {[lang: string] : string};
+    labelVars: {[activity: string]: {[key: string]: string, type:string}},
     version: number;
     compatibleWith: number;
   }
