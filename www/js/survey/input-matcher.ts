@@ -19,6 +19,8 @@ export type UserInputForTrip = {
         label: string,
         start_local_dt?: LocalDt
         end_local_dt?: LocalDt
+        status?: string,
+        match_id?: string
     },
     metadata: {
         time_zone: string,
@@ -147,7 +149,7 @@ export const validUserInputForTimelineEntry = (tlEntry: TlEntry, userInput: User
 }
 
 // parallels get_not_deleted_candidates() in trip_queries.py
-export const getNotDeletedCandidates = (candidates) => {
+export const getNotDeletedCandidates = (candidates: UserInputForTrip[]): UserInputForTrip[] => {
     console.log('getNotDeletedCandidates called with ' + candidates.length + ' candidates');
     
     // We want to retain all ACTIVE entries that have not been DELETED
@@ -162,7 +164,7 @@ export const getNotDeletedCandidates = (candidates) => {
 }
 
 export const getUserInputForTrip =  (trip: TlEntry, nextTrip: any, userInputList: UserInputForTrip[]): undefined | UserInputForTrip => {
-    const logsEnabled = userInputList.length < 20;
+    const logsEnabled = userInputList?.length < 20;
     if (userInputList === undefined) {
         logDebug("In getUserInputForTrip, no user input, returning undefined");
         return undefined;
@@ -193,8 +195,8 @@ export const getUserInputForTrip =  (trip: TlEntry, nextTrip: any, userInputList
 }
 
 // return array of matching additions for a trip or place
-export const getAdditionsForTimelineEntry = (entry, additionsList) => {
-    const logsEnabled = additionsList.length < 20;
+export const getAdditionsForTimelineEntry = (entry: TlEntry, additionsList: UserInputForTrip[]): UserInputForTrip[] => {
+    const logsEnabled = additionsList?.length < 20;
 
     if (additionsList === undefined) {
       logDebug("In getAdditionsForTimelineEntry, no addition input, returning []");
