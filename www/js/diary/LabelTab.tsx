@@ -7,7 +7,7 @@
 */
 
 import React, { useEffect, useState, useRef } from "react";
-import { angularize, getAngularService } from "../angular-react-helper";
+import { getAngularService } from "../angular-react-helper";
 import useAppConfig from "../useAppConfig";
 import { useTranslation } from "react-i18next";
 import { invalidateMaps } from "../components/LeafletView";
@@ -21,7 +21,6 @@ import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHe
 import { SurveyOptions } from "../survey/survey";
 import { getLabelOptions } from "../survey/multilabel/confirmHelper";
 import { displayError } from "../plugin/logger";
-import AppStatusModal from "../control/AppStatusModal";
 import { useTheme } from "react-native-paper";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
@@ -30,7 +29,7 @@ const ONE_WEEK = ONE_DAY * 7; // seconds
 export const LabelTabContext = React.createContext<any>(null);
 
 const LabelTab = () => {
-  const { appConfig, loading } = useAppConfig();
+  const appConfig = useAppConfig();
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -52,22 +51,18 @@ const LabelTab = () => {
   const CommHelper = getAngularService('CommHelper');
   const enbs = getAngularService('EnketoNotesButtonService');
 
-  const [permissionVis, setPermissionVis] = useState(false);
-
   // initialization, once the appConfig is loaded
   useEffect(() => {
-    if (loading) return;
+    if (!appConfig) return;
     const surveyOptKey = appConfig.survey_info['trip-labels'];
     const surveyOpt = SurveyOptions[surveyOptKey];
     setSurveyOpt(surveyOpt);
     showPlaces = appConfig.survey_info?.buttons?.['place-notes'];
-    getLabelOptions().then((labelOptions) => setLabelOptions(labelOptions));
+    getLabelOptions(appConfig).then((labelOptions) => setLabelOptions(labelOptions));
     labelPopulateFactory = getAngularService(surveyOpt.service);
     const tripSurveyName = appConfig.survey_info?.buttons?.['trip-notes']?.surveyName;
     const placeSurveyName = appConfig.survey_info?.buttons?.['place-notes']?.surveyName;
     enbs.initConfig(tripSurveyName, placeSurveyName);
-
-    checkPermissionsStatus();
 
     // we will show filters if 'additions' are not configured
     // https://github.com/e-mission/e-mission-docs/issues/894
@@ -228,15 +223,6 @@ const LabelTab = () => {
     setIsLoading(false);
   }, [displayedEntries]);
 
-  // TODO move this out of LabelTab; should be a global check & popup that can show in any tab
-  function checkPermissionsStatus() {
-    $rootScope.$broadcast("recomputeAppStatus", (status) => {
-      if (!status) {
-        setPermissionVis(true); //if the status is false, popup modal
-      }
-    });
-  }
-
   const timelineMapRef = useRef(timelineMap);
   async function repopulateTimelineEntry(oid: string) {
     if (!timelineMap.has(oid)) return console.error("Item with oid: " + oid + " not found in timeline");
@@ -290,14 +276,9 @@ const LabelTab = () => {
                         This is what `detachPreviousScreen:false` does. */
                       options={{detachPreviousScreen: false}} />
         </Tab.Navigator>
-        <AppStatusModal permitVis={permissionVis} 
-                        setPermitVis={setPermissionVis} 
-                        dialogStyle={{ backgroundColor: colors.elevation.level3, margin: 5, marginLeft: 25, marginRight: 25}} 
-                        settingsScope={$rootScope} />
       </NavigationContainer>
     </LabelTabContext.Provider>
   );
 }
 
-angularize(LabelTab, 'LabelTab', 'emission.main.diary.labeltab');
 export default LabelTab;

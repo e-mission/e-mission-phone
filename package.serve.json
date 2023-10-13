@@ -8,7 +8,7 @@
     "url": "git+https://github.com/e-mission/e-mission-phone.git"
   },
   "scripts": {
-    "setup-serve": "./bin/download_settings_controls.js && ./bin/setup_autodeploy.js",
+    "setup-serve": "./bin/setup_autodeploy.js",
     "serve": "webpack --config webpack.dev.js && concurrently -k \"phonegap --verbose serve\" \"webpack --config webpack.dev.js --watch\"",
     "serve-prod": "webpack --config webpack.prod.js && concurrently -k \"phonegap --verbose serve\" \"webpack --config webpack.prod.js --watch\"",
     "serve-only": "phonegap --verbose serve",
@@ -55,7 +55,6 @@
     "angular": "1.6.7",
     "angular-animate": "1.6.7",
     "angular-local-storage": "^0.7.1",
-    "angular-nvd3": "^1.0.7",
     "angular-sanitize": "1.6.7",
     "angular-simple-logger": "^0.1.7",
     "angular-translate": "^2.18.1",
@@ -83,7 +82,6 @@
     "moment-timezone": "^0.5.43",
     "ng-i18next": "^1.0.7",
     "npm": "^9.6.3",
-    "nvd3": "^1.8.6",
     "prop-types": "^15.8.1",
     "react": "^18.2.*",
     "react-chartjs-2": "^5.2.0",

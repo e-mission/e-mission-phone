@@ -8,7 +8,7 @@ const AppTheme = {
   colors: {
     ...DefaultTheme.colors,
     primary: '#0080b9', // lch(50% 50 250)
-    primaryContainer: '#90ceff', // lch(80% 40 250)
+    primaryContainer: '#c0e2ff', // lch(88% 30 250)
     onPrimaryContainer: '#001e30', // lch(10% 50 250)
     secondary: '#c08331', // lch(60% 55 70)
     secondaryContainer: '#fcefda', // lch(95% 12 80)
@@ -26,7 +26,8 @@ const AppTheme = {
       level4: '#e0f0ff', // lch(94% 50 250)
       level5: '#d6ebff', // lch(92% 50 250)
     },
-    success: '#38872e', // lch(50% 55 135)
+    success: '#00a665', // lch(60% 55 155)
+    warn: '#f8cf53', //lch(85% 65 85)
     danger: '#f23934' // lch(55% 85 35)
   },
   roundness: 5,

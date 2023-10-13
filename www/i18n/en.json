@@ -12,7 +12,7 @@
     },
 
     "control":{
-        "profile": "Profile",
+        "profile-tab": "Profile",
         "edit-demographics": "Edit Demographics",
         "tracking": "Tracking",
         "app-status": "App Status",
@@ -36,7 +36,9 @@
         "nuke-all": "Nuke all buffers and cache",
         "test-notification": "Test local notification",
         "check-log": "Check log",
+        "log-title" : "Log",
         "check-sensed-data": "Check sensed data",
+        "sensed-title": "Sensed Data: Transitions",
         "collection": "Collection",
         "sync": "Sync",
         "button-accept": "I accept",
@@ -71,6 +73,7 @@
     },
 
     "metrics":{
+        "dashboard-tab": "Dashboard",
         "cancel": "Cancel",
         "confirm": "Confirm",
         "get": "Get",
@@ -101,13 +104,16 @@
         "less-than": " less than ",
         "less": " less ",
         "week-before": "vs. week before",
+        "this-week": "this week",
         "pick-a-date": "Pick a date",
         "trips": "trips",
         "hours": "hours",
+        "minutes": "minutes",
         "custom": "Custom"
     },
     
     "diary": {
+        "label-tab": "Label",
         "distance-in-time": "{{distance}} {{distsuffix}} in {{time}}",
         "distance": "Distance",
         "time": "Time",
@@ -140,46 +146,42 @@
         "no-travel-hint": "To see more, change the filters above or go record some travel!"
     },
 
-    "user-gender": "Gender",
-    "gender-male": "Male",
-    "gender-female": "Female",
-    "user-height": "Height",
-    "user-weight": "Weight",
-    "user-age": "Age",
-
     "main-metrics":{
-        "dashboard": "Dashboard",
         "summary": "My Summary",
         "chart": "Chart",
         "change-data": "Change dates:",
-        "distance": "My Distance",
-        "trips": "My Trips",
-        "duration": "My Duration",
+        "distance": "Distance",
+        "trips": "Trips",
+        "duration": "Duration",
         "fav-mode": "My Favorite Mode",
         "speed": "My Speed",
         "footprint": "My Footprint",
+        "estimated-emissions": "Estimated CO₂ emissions",
         "how-it-compares": "Ballpark comparisons",
-        "optimal": "Optimal (perfect mode choice for all my trips):",
-        "average": "Average for group:",
-        "avoided": "CO₂ avoided (vs. all 'taxi'):",
+        "optimal": "Optimal (perfect mode choice for all my trips)",
+        "average": "Group Avg.",
+        "worst-case": "Worse Case",
         "label-to-squish": "Label trips to collapse the range into a single number",
+        "range-uncertain-footnote": "²Due to the uncertainty of unlabeled trips, estimates may fall anywhere within the shown range. Label more trips for richer estimates.",
         "lastweek": "My last week value:",
-        "us-2030-goal": "US 2030 Goal Estimate:",
-        "us-2050-goal": "US 2050 Goal Estimate:",
-        "calories": "My Calories",
-        "calibrate": "Calibrate",
+        "us-2030-goal": "2030 Guideline¹",
+        "us-2050-goal": "2050 Guideline¹",
+        "us-goals-footnote": "¹Guidelines based on US decarbonization goals, scaled to per-capita travel-related emissions.",
+        "past-week" : "Past Week",
+        "prev-week" : "Prev. Week",
         "no-summary-data": "No summary data",
         "mean-speed": "My Average Speed",
-        "equals-cookies_one": "Equals at least {{count}} homemade chocolate chip cookie",
-        "equals-cookies_other": "Equals at least {{count}} homemade chocolate chip cookies",
-        "equals-icecream_one": "Equals at least {{count}} half cup vanilla ice cream",
-        "equals-icecream_other": "Equals at least {{count}} half cups vanilla ice cream",
-        "equals-bananas_one": "Equals at least {{count}} banana",
-        "equals-bananas_other": "Equals at least {{count}} bananas"
-    },
-
-    "main-inf-scroll" : {
-        "tab": "Label"
+        "user-totals": "My Totals",
+        "group-totals": "Group Totals",
+        "active-minutes": "Active Minutes",
+        "weekly-active-minutes": "Weekly minutes of active travel",
+        "daily-active-minutes": "Daily minutes of active travel",
+        "active-minutes-table": "Table of active minutes metrics",
+        "weekly-goal": "Weekly Goal³",
+        "weekly-goal-footnote": "³Weekly goal based on CDC recommendation of 150 minutes of moderate activity per week.",
+        "labeled": "Labeled",
+        "unlabeled": "Unlabeled²",
+        "footprint-label": "Footprint (kg CO₂)"
     },
 
     "details":{
@@ -222,6 +224,7 @@
     },
 
     "intro": {
+        "proceed": "Proceed",
         "appstatus": {
             "fix": "Fix",
             "refresh":"Refresh",
@@ -327,22 +330,23 @@
         "enketo-timestamps-invalid": "The times you entered are invalid. Please ensure that the start time is before the end time."
     },
     "join": {
-        "welcome-to-nrel-openpath": "Welcome to NREL OpenPATH",
-        "proceed-further": "To proceed further, you need to enter a valid OPcode (token)",
-        "what-is-opcode": "The OPcode is a long string starting with 'nrelop' that has been provided by your program admin through a website, email, text or printout.",
-        "or": "or",
-        "scan-button": "Scan the QR code ",
-        "scan-details": "The OPcode will be written at the top of the image",
-        "paste-button": "Paste the OPcode",
-        "paste-details": "We suggest copy-pasting instead of typing since the OPcode is long and jumbled",
+        "welcome-to-app": "Welcome to <b>{{appName}}!</b>",
+        "app-name": "NREL OpenPATH",
+        "to-proceed-further": "To proceed further, please scan or paste an access code that has been provided by your program administrator through a website, email, text message, or printout.",
+        "code-hint": "The code begins with ‘nrelop’ and may be in barcode or text format.",
+        "scan-code": "Scan code",
+        "paste-code": "Paste code",
+        "scan-hint": "Scan the barcode with your phone camera",
+        "paste-hint": "Or, paste the code as text",
+        "about-app-title": "About {{appName}}",
         "about-app-para-1": "The National Renewable Energy Laboratory’s Open Platform for Agile Trip Heuristics (NREL OpenPATH) enables people to track their travel modes—car, bus, bike, walking, etc.—and measure their associated energy use and carbon footprint.",
         "about-app-para-2": "The app empowers communities to understand their travel mode choices and patterns, experiment with options to make them more sustainable, and evaluate the results. Such results can inform effective transportation policy and planning and be used to build more sustainable and accessible cities.",
         "about-app-para-3": "It does so by building an automatic diary of all your trips, across all transportation modes. It reads multiple sensors, including location, in the background, and turns GPS tracking on and off automatically for minimal power consumption. The choice of the travel pattern information and the carbon footprint display style are study-specific.",
+        "tips-title": "Tip(s) for correct operation:",
         "all-green-status": "Make sure that all status checks are green",
         "dont-force-kill": "Do not force kill the app",
         "background-restrictions": "On Samsung and Huwaei phones, make sure that background restrictions are turned off",
-        "close": "Close",
-        "tips-title": "Tip(s) for correct operation:"
+        "close": "Close"
     },
     "config": {
         "unable-read-saved-config": "Unable to read saved config",
@@ -360,7 +364,9 @@
     "errors": {
       "while-populating-composite": "Error while populating composite trips",
       "while-loading-another-week": "Error while loading travel of {{when}} week",
-      "while-loading-specific-week": "Error while loading travel for the week of {{day}}"
+      "while-loading-specific-week": "Error while loading travel for the week of {{day}}",
+      "while-log-messages": "While getting messages from the log ",
+      "while-max-index" : "While getting max index "
     },
     "consent-text": {
         "title":"NREL OPENPATH PRIVACY POLICY/TERMS OF USE",

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Modal, StyleSheet, ScrollView } from "react-native";
 import { Dialog, Button, useTheme, Text, Appbar, IconButton } from "react-native-paper";
-import { angularize, getAngularService } from "../angular-react-helper";
+import { getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
 import SettingRow from "./SettingRow";
@@ -14,66 +14,55 @@ import AlertBar from "./AlertBar";
 import DataDatePicker from "./DataDatePicker";
 import AppStatusModal from "./AppStatusModal";
 import PrivacyPolicyModal from "./PrivacyPolicyModal";
-
-let controlUpdateCompleteListenerRegistered = false;
+import ActionMenu from "../components/ActionMenu";
+import SensedPage from "./SensedPage"
+import LogPage from "./LogPage";
+import ControlSyncHelper, {ForceSyncRow, getHelperSyncSettings} from "./ControlSyncHelper";
+import ControlCollectionHelper, {getHelperCollectionSettings, getState, isMediumAccuracy, helperToggleLowAccuracy, forceTransition} from "./ControlCollectionHelper";
+import { resetDataAndRefresh } from "../config/dynamicConfig";
+import { AppContext } from "../App";
+import { shareQR } from "../components/QrCode";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
     // anything that mutates must go in --- depend on props or state... 
     const { t } = useTranslation();
-    const { appConfig, loading } = useAppConfig();
+    const appConfig = useAppConfig();
     const { colors } = useTheme();
-
-    // get the scope of the general-settings.js file
-    const mainControlEl = document.getElementById('main-control');
-    const settingsScope = angular.element(mainControlEl.querySelector('profile-settings')).scope();
-    console.log("settings scope", settingsScope);
-    
-    // grab any variables or functions we need from it like this:
-    const { showLog, showSensed } = settingsScope;
+    const { setPermissionsPopupVis } = useContext(AppContext);
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
     const UploadHelper = getAngularService('UploadHelper');
     const EmailHelper = getAngularService('EmailHelper');
-    const ControlCollectionHelper = getAngularService('ControlCollectionHelper');
-    const ControlSyncHelper = getAngularService('ControlSyncHelper');
     const KVStore = getAngularService('KVStore');
     const NotificationScheduler = getAngularService('NotificationScheduler');
     const ControlHelper = getAngularService('ControlHelper');
     const ClientStats = getAngularService('ClientStats');
     const StartPrefs = getAngularService('StartPrefs');
-    const DynamicConfig = getAngularService('DynamicConfig');
-
-    if (!controlUpdateCompleteListenerRegistered) {
-        settingsScope.$on('control.update.complete', function() {
-            console.debug("Received control.update.complete event, refreshing screen");
-            refreshScreen();
-            refreshCollectSettings();
-        });
-        controlUpdateCompleteListenerRegistered = true;
-    }
 
     //functions that come directly from an Angular service
-    const editCollectionConfig = ControlCollectionHelper.editConfig;
-    const editSyncConfig = ControlSyncHelper.editConfig;
+    const editCollectionConfig = () => setEditCollection(true);
+    const editSyncConfig = () => setEditSync(true);
 
     //states and variables used to control/create the settings
     const [opCodeVis, setOpCodeVis] = useState(false);
     const [nukeSetVis, setNukeVis] = useState(false);
     const [carbonDataVis, setCarbonDataVis] = useState(false);
     const [forceStateVis, setForceStateVis] = useState(false);
-    const [permitVis, setPermitVis] = useState(false);
     const [logoutVis, setLogoutVis] = useState(false);
-    const [dataPendingVis, setDataPendingVis] = useState(false);
-    const [dataPushedVis, setDataPushedVis] = useState(false);
     const [invalidateSuccessVis, setInvalidateSuccessVis] = useState(false);
     const [noConsentVis, setNoConsentVis] = useState(false);
     const [noConsentMessageVis, setNoConsentMessageVis] = useState(false);
     const [consentVis, setConsentVis] = useState(false);
     const [dateDumpVis, setDateDumpVis] = useState(false);
     const [privacyVis, setPrivacyVis] = useState(false);
+    const [showingSensed, setShowingSensed] = useState(false);
+    const [showingLog, setShowingLog] = useState(false);
+    const [editSync, setEditSync] = useState(false);
+    const [editCollection, setEditCollection] = useState(false);
 
+    // const [collectConfig, setCollectConfig] = useState({});
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
     const [authSettings, setAuthSettings] = useState({});
@@ -84,7 +73,6 @@ const ProfileSettings = () => {
     const [uiConfig, setUiConfig] = useState({});
     const [consentDoc, setConsentDoc] = useState({});
     const [dumpDate, setDumpDate] = useState(new Date());
-    const [toggleTime, setToggleTime] = useState(new Date());
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -149,22 +137,27 @@ const ProfileSettings = () => {
         console.debug('about to refreshCollectSettings, collectSettings = ', collectSettings);
         const newCollectSettings = {};
 
-        // refresh collect plugin configuration
-        const collectionPluginConfig = await ControlCollectionHelper.getCollectionSettings();
+        // // refresh collect plugin configuration
+        const collectionPluginConfig = await getHelperCollectionSettings();
         newCollectSettings.config = collectionPluginConfig;
         
-        const collectionPluginState = await ControlCollectionHelper.getState();
+        const collectionPluginState = await getState();
         newCollectSettings.state = collectionPluginState;
         newCollectSettings.trackingOn = collectionPluginState != "local.state.tracking_stopped"
                                         && collectionPluginState != "STATE_TRACKING_STOPPED";
 
-        const isLowAccuracy = await ControlCollectionHelper.isMediumAccuracy();
+        const isLowAccuracy = await isMediumAccuracy();
         if (typeof isLowAccuracy != 'undefined') {
             newCollectSettings.lowAccuracy = isLowAccuracy;
         }
 
         setCollectSettings(newCollectSettings);
     }
+
+    //ensure ui table updated when editor closes
+    useEffect(() => {
+        refreshCollectSettings();
+    }, [editCollection])
 
     async function refreshNotificationSettings() {
         console.debug('about to refreshNotificationSettings, notificationSettings = ', notificationSettings);
@@ -188,12 +181,17 @@ const ProfileSettings = () => {
     async function getSyncSettings() {
         console.log("getting sync settings");
         var newSyncSettings = {};
-        ControlSyncHelper.getSyncSettings().then(function(showConfig) {
+        getHelperSyncSettings().then(function(showConfig) {
             newSyncSettings.show_config = showConfig;
             setSyncSettings(newSyncSettings);
             console.log("sync settings are ", syncSettings);
         });
     };
+
+    //update sync settings in the table when close editor
+    useEffect(() => {
+        getSyncSettings();
+    }, [editSync]);
 
     async function getConnectURL() {
         ControlHelper.getSettings().then(function(response) {
@@ -254,60 +252,13 @@ const ProfileSettings = () => {
 
     async function userStartStopTracking() {
         const transitionToForce = collectSettings.trackingOn ? 'STOP_TRACKING' : 'START_TRACKING';
-        ControlCollectionHelper.forceTransition(transitionToForce);
-        /* the ControlCollectionHelper.forceTransition call above will trigger a
-            'control.update.complete' event when it's done, which will trigger refreshCollectSettings.
-          So we don't need to call refreshCollectSettings here. */
-    }
-
-
-    const safeToggle = function() {
-        if(toggleTime){
-            const prevTime = toggleTime.getTime();
-            const currTime = new Date().getTime();
-            if(prevTime + 2000 < currTime ){
-                toggleLowAccuracy();
-                setToggleTime(new Date());
-            }
-        }
-        else {
-            toggleLowAccuracy();
-            setToggleTime(new Date());
-        }
-    }
-
-    async function toggleLowAccuracy() {
-        ControlCollectionHelper.toggleLowAccuracy();
+        forceTransition(transitionToForce);
         refreshCollectSettings();
     }
 
-    const shareQR = function() {
-       /*code adapted from demo of react-qr-code*/
-        const svg = document.querySelector(".qr-code");
-        const svgData = new XMLSerializer().serializeToString(svg);
-        const img = new Image();
-
-        img.onload = () => {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0);
-            const pngFile = canvas.toDataURL("image/png");
-                
-            var prepopulateQRMessage = {}; 
-            prepopulateQRMessage.files = [pngFile];
-            prepopulateQRMessage.url = authSettings.opcode;
-            prepopulateQRMessage.message = authSettings.opcode; //text saved to files with image!
-                
-            window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
-                console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-                console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-            }, function(msg) {
-                console.log("Sharing failed with message: " + msg);
-            });
-        }
-        img.src =  `data:image/svg+xml;base64,${btoa(svgData)}`;
+    async function toggleLowAccuracy() {
+        let toggle = await helperToggleLowAccuracy();
+        refreshCollectSettings();
     }
 
     const viewQRCode = function(e) {
@@ -320,46 +271,6 @@ const ProfileSettings = () => {
 
     //Platform.OS returns "web" now, but could be used once it's fully a Native app
     //for now, use window.cordova.platformId
-
-    // helper functions for endForceSync
-    const getStartTransitionKey = function() {
-        if(window.cordova.platformId == 'android') {
-            return "local.transition.exited_geofence";
-        }
-        else if(window.cordova.platformId == 'ios') {
-            return "T_EXITED_GEOFENCE";
-        }
-    }
-
-    const getEndTransitionKey = function() {
-        if(window.cordova.platformId == 'android') {
-            return "local.transition.stopped_moving";
-        }
-        else if(window.cordova.platformId == 'ios') {
-            return "T_TRIP_ENDED";
-        }
-    }
-
-    const getOngoingTransitionState = function() {
-        if(window.cordova.platformId == 'android') {
-            return "local.state.ongoing_trip";
-        }
-        else if(window.cordova.platformId == 'ios') {
-            return "STATE_ONGOING_TRIP";
-        }
-    }
-
-    async function getTransition(transKey) {
-        var entry_data = {};
-        const curr_state = await ControlCollectionHelper.getState();
-        entry_data.curr_state = curr_state;
-        if (transKey == getEndTransitionKey()) {
-            entry_data.curr_state = getOngoingTransitionState();
-        }
-        entry_data.transition = transKey;
-        entry_data.ts = moment().unix();
-        return entry_data;
-    }
 
     const parseState = function(state) {
         console.log("state in parse state is", state);
@@ -375,64 +286,6 @@ const ProfileSettings = () => {
             }
         }
     }
-
-    async function endForceSync() {
-        /* First, quickly start and end the trip. Let's listen to the promise
-         * result for start so that we ensure ordering */
-        var sensorKey = "statemachine/transition";
-        return getTransition(getStartTransitionKey()).then(function(entry_data) {
-            return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
-        }).then(function() {
-                return getTransition(getEndTransitionKey()).then(function(entry_data) {
-                    return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
-                })
-        }).then(forceSync);
-    }
-
-    //showing up in an odd space on the screen!!
-    async function forceSync() {
-        ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
-            function() {
-                console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
-            });
-        ControlSyncHelper.forceSync().then(function() {
-            /*
-             * Change to sensorKey to "background/location" after fixing issues
-             * with getLastSensorData and getLastMessages in the usercache
-             * See https://github.com/e-mission/e-mission-phone/issues/279 for details
-             */
-            var sensorKey = "statemachine/transition";
-            return window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
-        }).then(function(sensorDataList) {
-            Logger.log("sensorDataList = "+JSON.stringify(sensorDataList));
-            // If everything has been pushed, we should
-            // only have one entry for the battery, which is the one that was
-            // inserted on the last successful push.
-            var isTripEnd = function(entry) {
-                if (entry.metadata.key == getEndTransitionKey()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            };
-            var syncLaunchedCalls = sensorDataList.filter(isTripEnd);
-            var syncPending = (syncLaunchedCalls.length > 0);
-            Logger.log("sensorDataList.length = "+sensorDataList.length+
-                       ", syncLaunchedCalls.length = "+syncLaunchedCalls.length+
-                       ", syncPending? = "+syncPending);
-            return syncPending;
-        }).then(function(syncPending) {
-            Logger.log("sync launched = "+syncPending);
-            if (syncPending) {
-                Logger.log("data is pending, showing confirm dialog");
-                setDataPendingVis(true); //consent handling in modal
-            } else {
-                setDataPushedVis(true);
-            }
-        }).catch(function(error) {
-            Logger.displayError("Error while forcing sync", error);
-        });
-    };
 
     async function invalidateCache() {
         window.cordova.plugins.BEMUserCache.invalidateAllCache().then(function(result) {
@@ -458,6 +311,17 @@ const ProfileSettings = () => {
         });
     }
 
+    const onSelectState = function(stateObject) {
+        forceTransition(stateObject.transition); 
+    }
+
+    const onSelectCarbon = function(carbonObject) {
+        console.log("changeCarbonDataset(): chose locale " + carbonObject.value);
+        CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(carbonObject.value); //there's some sort of error here
+        //Unhandled Promise Rejection: While logging, error -[NSNull UTF8String]: unrecognized selector sent to instance 0x7fff8a625fb0
+        carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+    }
+
     //conditional creation of setting sections
 
     let logUploadSection;
@@ -477,37 +341,36 @@ const ProfileSettings = () => {
 
     return (
         <>
-        <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
-            <Appbar.Content title={t("control.profile")} />
+        <Appbar.Header statusBarHeight={0} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+            <Appbar.Content title={t("control.profile-tab")} />
             <Text>{t('control.log-out')}</Text>
             <IconButton icon="logout" onPress={() => setLogoutVis(true)}></IconButton>
         </Appbar.Header>
         
         <ScrollView>
-            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode} desc={authSettings.opcode} descStyle={styles.monoDesc}></SettingRow>
+            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode} desc={authSettings.opcode} descStyle={settingStyles.monoDesc}></SettingRow>
             <DemographicsSettingRow></DemographicsSettingRow>
             <SettingRow textKey='control.view-privacy' iconName='eye' action={() => setPrivacyVis(true)}></SettingRow>
             {timePicker}
             <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
-            <SettingRow textKey="control.app-status" iconName="check" action={() => setPermitVis(true)}></SettingRow>
-            <SettingRow textKey="control.medium-accuracy" action={safeToggle} switchValue={collectSettings.lowAccuracy}></SettingRow>
+            <SettingRow textKey="control.app-status" iconName="check" action={() => setPermissionsPopupVis(true)}></SettingRow>
+            <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
             <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
-            <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
             <SettingRow textKey="control.download-json-dump" iconName="calendar" action={()=>setDateDumpVis(true)}></SettingRow>
             {logUploadSection}
             <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
            
             <ExpansionSection sectionTitle="control.dev-zone">
                 <SettingRow textKey="control.refresh" iconName="refresh" action={refreshScreen}></SettingRow>
-                <SettingRow textKey="control.end-trip-sync" iconName="sync-alert" action={endForceSync}></SettingRow>
                 <SettingRow textKey="control.check-consent" iconName="check" action={checkConsent}></SettingRow>
+                <ForceSyncRow getState={getState}></ForceSyncRow>
                 <SettingRow textKey="control.dummy-notification" iconName="bell" action={dummyNotification}></SettingRow>
                 {notifSchedule}
                 <SettingRow textKey="control.invalidate-cached-docs" iconName="delete" action={invalidateCache}></SettingRow>
                 <SettingRow textKey="control.nuke-all" iconName="delete-forever" action={() => setNukeVis(true)}></SettingRow>
                 <SettingRow textKey={parseState(collectSettings.state)} iconName="pencil" action={() => setForceStateVis(true)}></SettingRow>
-                <SettingRow textKey="control.check-log" iconName="arrow-expand-right" action={showLog}></SettingRow>
-                <SettingRow textKey="control.check-sensed-data" iconName="arrow-expand-right" action={showSensed}></SettingRow>
+                <SettingRow textKey="control.check-log" iconName="arrow-expand-right" action={() => setShowingLog(true)}></SettingRow>
+                <SettingRow textKey="control.check-sensed-data" iconName="arrow-expand-right" action={() => setShowingSensed(true)}></SettingRow>
                 <SettingRow textKey="control.collection" iconName="pencil" action={editCollectionConfig}></SettingRow>
                 <ControlDataTable controlData={collectSettings.config}></ControlDataTable>
                 <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
@@ -521,7 +384,7 @@ const ProfileSettings = () => {
             transparent={true}>
                 <Dialog visible={nukeSetVis}
                 onDismiss={() => setNukeVis(false)}
-                style={styles.dialog(colors.elevation.level3)}>
+                style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
                     <Dialog.Content>
                         <Button onPress={() => {KVStore.clearOnlyLocal;
@@ -544,74 +407,22 @@ const ProfileSettings = () => {
             </Modal>
 
             {/* menu for "set carbon dataset - only somewhat working" */}
-            <Modal visible={carbonDataVis} onDismiss={() => setCarbonDataVis(false)}
-            transparent={true}>
-                <Dialog visible={carbonDataVis}
-                    onDismiss={() => setCarbonDataVis(false)}
-                    style={styles.dialog(colors.elevation.level3)}>
-                    <Dialog.Title>{t('general-settings.choose-dataset')}</Dialog.Title>
-                    <Dialog.Content>
-                        {carbonOptions.map((e) =>
-                            <Button key={e.text}
-                            onPress={() =>  {
-                                console.log("changeCarbonDataset(): chose locale " + e.value);
-                                CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(e.value); //there's some sort of error here
-                                //Unhandled Promise Rejection: While logging, error -[NSNull UTF8String]: unrecognized selector sent to instance 0x7fff8a625fb0
-                                carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
-                                setCarbonDataVis(false);
-                                }}
-                            >
-                                {e.text}
-                            </Button>
-                        )}
-                    </Dialog.Content>
-                    <Dialog.Actions>
-                        <Button onPress={() => {setCarbonDataVis(false);
-                                                clearNotifications(); }}>{t('general-settings.cancel')}</Button>
-                    </Dialog.Actions>
-                </Dialog>
-            </Modal>
+            <ActionMenu vis={carbonDataVis} setVis={setCarbonDataVis} title={t('general-settings.choose-dataset')} actionSet={carbonOptions} onAction={onSelectCarbon} onExit={() => clearNotifications()}></ActionMenu>
 
             {/* force state sheet */}
-            <Modal visible={forceStateVis} onDismiss={() => setForceStateVis(false)}
-            transparent={true}>
-                <Dialog visible={forceStateVis}
-                    onDismiss={() => setForceStateVis(false)}
-                    style={styles.dialog(colors.elevation.level3)}>
-                    <Dialog.Title>{"Force State"}</Dialog.Title>
-                    <Dialog.Content>
-                        {stateActions.map((e) =>
-                            <Button key={e.text}
-                            onPress={() =>  {
-                                console.log("changeCarbonDataset(): chose locale " + e.text);
-                                ControlCollectionHelper.forceTransition(e.transition); 
-                                setForceStateVis(false);
-                                }}
-                            >
-                                {e.text}
-                            </Button>
-                        )}
-                    </Dialog.Content>
-                    <Dialog.Actions>
-                        <Button onPress={() => setForceStateVis(false)}>{t('general-settings.cancel')}</Button>
-                    </Dialog.Actions>
-                </Dialog>
-            </Modal>
+            <ActionMenu vis={forceStateVis} setVis={setForceStateVis} title={"Force State"} actionSet={stateActions} onAction={onSelectState} onExit={() => {}}></ActionMenu>
 
             {/* opcode viewing popup */}
-            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR} dialogStyle={styles.dialog(colors.elevation.level3)}></PopOpCode>
-
-            {/* {view permissions} */}
-            <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} settingsScope={settingsScope} dialogStyle={styles.dialog(colors.elevation.level3)}></AppStatusModal>
+            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={() => shareQR(authSettings.opcode)}></PopOpCode>
 
             {/* {view privacy} */}
-            <PrivacyPolicyModal privacyVis={privacyVis} setPrivacyVis={setPrivacyVis} dialogStyle={styles.dialog(colors.elevation.level3)}></PrivacyPolicyModal>
-
+            <PrivacyPolicyModal privacyVis={privacyVis} setPrivacyVis={setPrivacyVis}></PrivacyPolicyModal>
+            
             {/* logout menu */}
             <Modal visible={logoutVis} onDismiss={() => setLogoutVis(false)} transparent={true}>
                 <Dialog visible={logoutVis} 
                         onDismiss={() => setLogoutVis(false)} 
-                        style={styles.dialog(colors.elevation.level3)}>
+                        style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.are-you-sure')}</Dialog.Title>
                     <Dialog.Content>
                         <Text variant="">{t('general-settings.log-out-warning')}</Text>
@@ -621,30 +432,9 @@ const ProfileSettings = () => {
                             {t('general-settings.cancel')}
                         </Button>
                         <Button onPress={() => {
-                           DynamicConfig.resetConfigAndRefresh();
+                           resetDataAndRefresh();
                         }}>
                             {t('general-settings.confirm')}
-                        </Button>
-                    </Dialog.Actions>
-                </Dialog>
-            </Modal>
-
-            {/* dataPending */}
-            <Modal visible={dataPendingVis} onDismiss={()=>setDataPendingVis(false)} transparent={true}>
-                <Dialog visible={dataPendingVis} 
-                        onDismiss={()=>setDataPendingVis(false)} 
-                        style={styles.dialog(colors.elevation.level3)}>
-                    <Dialog.Title>{t('data pending for push')}</Dialog.Title>
-                    <Dialog.Actions>
-                        <Button onPress={()=>{
-                            setDataPendingVis(false);
-                            Logger.log("user refused to re-sync")}}>
-                                {t('general-settings.cancel')}
-                        </Button>
-                        <Button onPress={()=>{
-                            setDataPendingVis(false);
-                            forceSync();}}>
-                                {t('general-settings.confirm')}
                         </Button>
                     </Dialog.Actions>
                 </Dialog>
@@ -654,7 +444,7 @@ const ProfileSettings = () => {
             <Modal visible={noConsentVis} onDismiss={()=>setNoConsentVis(false)} transparent={true}>
                 <Dialog visible={noConsentVis} 
                         onDismiss={()=>setNoConsentVis(false)} 
-                        style={styles.dialog(colors.elevation.level3)}>
+                        style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.consent-not-found')}</Dialog.Title>
                     <Dialog.Actions>
                         <Button onPress={()=>{
@@ -676,7 +466,7 @@ const ProfileSettings = () => {
             <Modal visible={consentVis} onDismiss={()=>setConsentVis(false)} transparent={true}>
                 <Dialog visible={consentVis} 
                         onDismiss={()=>setConsentVis(false)} 
-                        style={styles.dialog(colors.elevation.level3)}>
+                        style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.consented-to', {protocol_id: consentDoc.protocol_id, approval_date: consentDoc.approval_date})}</Dialog.Title>
                     <Dialog.Actions>
                         <Button onPress={()=>{
@@ -692,14 +482,19 @@ const ProfileSettings = () => {
                 minDate={new Date(appConfig?.intro?.start_year, appConfig?.intro?.start_month - 1, 1)}>
             </DataDatePicker>
 
-            <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey='all data pushed!'></AlertBar>
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
             <AlertBar visible={noConsentMessageVis} setVisible={setNoConsentMessageVis} messageKey='general-settings.no-consent-message'></AlertBar> 
+
+            <SensedPage pageVis={showingSensed} setPageVis={setShowingSensed}></SensedPage>
+            <LogPage pageVis={showingLog} setPageVis={setShowingLog}></LogPage>
+
+            <ControlSyncHelper editVis={editSync} setEditVis={setEditSync}></ControlSyncHelper>
+            <ControlCollectionHelper editVis={editCollection} setEditVis={setEditCollection}></ControlCollectionHelper>
         
         </>
     );
 };
-const styles = StyleSheet.create({
+export const settingStyles = StyleSheet.create({
     dialog: (surfaceColor) => ({
         backgroundColor: surfaceColor,
         margin: 5,
@@ -712,5 +507,4 @@ const styles = StyleSheet.create({
     }
   });
    
-  angularize(ProfileSettings, 'ProfileSettings', 'emission.main.control.profileSettings'); 
   export default ProfileSettings;

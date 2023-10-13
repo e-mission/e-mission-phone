@@ -8,7 +8,6 @@
     "url": "git+https://github.com/e-mission/e-mission-phone.git"
   },
   "scripts": {
-    "setup-native": "./bin/download_settings_controls.js",
     "build": "npx webpack --config webpack.prod.js && npx cordova build",
     "build-dev": "npx webpack --config webpack.dev.js && npx cordova build",
     "build-dev-android": "npx webpack --config webpack.dev.js && npx cordova build android",
@@ -109,7 +108,6 @@
     "angular": "1.6.7",
     "angular-animate": "1.6.7",
     "angular-local-storage": "^0.7.1",
-    "angular-nvd3": "^1.0.7",
     "angular-sanitize": "1.6.7",
     "angular-simple-logger": "^0.1.7",
     "angular-translate": "^2.18.1",
@@ -127,7 +125,7 @@
     "cordova-plugin-app-version": "0.1.14",
     "cordova-plugin-customurlscheme": "5.0.2",
     "cordova-plugin-device": "2.1.0",
-    "cordova-plugin-em-datacollection": "git+https://github.com/e-mission/e-mission-data-collection.git#v1.7.9",
+    "cordova-plugin-em-datacollection": "git+https://github.com/e-mission/e-mission-data-collection.git#v1.8.0",
     "cordova-plugin-em-opcodeauth": "git+https://github.com/e-mission/cordova-jwt-auth.git#v1.7.2",
     "cordova-plugin-em-server-communication": "git+https://github.com/e-mission/cordova-server-communication.git#v1.2.6",
     "cordova-plugin-em-serversync": "git+https://github.com/e-mission/cordova-server-sync.git#v1.3.2",
@@ -158,7 +156,6 @@
     "moment-timezone": "^0.5.43",
     "ng-i18next": "^1.0.7",
     "npm": "^9.6.3",
-    "nvd3": "^1.8.6",
     "phonegap-plugin-barcodescanner": "git+https://github.com/phonegap/phonegap-plugin-barcodescanner#v8.1.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.*",

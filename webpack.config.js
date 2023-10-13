@@ -50,6 +50,7 @@ module.exports = {
       {
         test: /\.(jpg|png|woff|woff2|eot|ttf|svg)$/,
         include: [path.resolve(__dirname, 'www'),
+                  path.resolve(__dirname, 'resources'),
                   path.resolve(__dirname, 'node_modules/react-native-vector-icons')],
         type: 'asset/resource',
       },

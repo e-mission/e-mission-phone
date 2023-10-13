@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { List, Switch, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 
-const SettingRow = ({textKey, iconName, action, desc, switchValue, descStyle=undefined}) => {
+const SettingRow = ({textKey, iconName=undefined, action, desc=undefined, switchValue=undefined, descStyle=undefined}) => {
     const { t } = useTranslation(); //this accesses the translations
     const { colors } = useTheme(); // use this to get the theme colors instead of hardcoded #hex colors
 

@@ -18,9 +18,6 @@
     max-height: 50px;
 }
 
-/* nvd3 styles */
-@import 'nvd3/build/nv.d3.css';
-
 .fill-container {
   display: block;
   position: relative;
@@ -45,11 +42,6 @@ label-tab > div {
   --accent: hsl(200, 100%, 40%);
   --accent-light: hsl(200, 100%, 75%);
   --accent-dark: hsl(200 100% 30%);
-}
-
-body.platform-ios {
-  padding-top: calc(env(safe-area-inset-top) / 2);
-  margin: 0 10px 0 0;
 }
 
 .view-container.tab-content {
@@ -746,15 +738,6 @@ timestamp-badge[light-bg] {
   padding: 5% 10%;
 }
 
-svg {
-    display: block;
-}
-#chart, #chart svg {
-  margin-right: 10px;
-}
-.nvd3, nv-noData {
-  font-weight: 300 !important;
-}
 .metric-datepicker {
   /*height: 33px;*/
   display: flex;           /* establish flex container */

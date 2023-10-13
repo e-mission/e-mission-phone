@@ -1,47 +1,56 @@
 import React, { useEffect, useState } from "react";
 import useAppConfig from "../useAppConfig";
+import i18next from "i18next";
 
 const KM_TO_MILES = 0.621371;
-/* formatting distances for display:
-  - if distance >= 100, round to the nearest integer
-   e.g. "105 mi", "167 km"
-  - if 1 <= distance < 100, round to 3 significant digits
-    e.g. "7.02 mi", "11.3 km"
-  - if distance < 1, round to 2 significant digits
-    e.g. "0.47 mi", "0.75 km" */
-const formatDistance = (dist: number) => {
-  if (dist < 1)
-    return dist.toPrecision(2);
-  if (dist < 100)
-    return dist.toPrecision(3);
-  return Math.round(dist).toString();
+const MPS_TO_KMPH = 3.6;
+
+// it might make sense to move this to a more general location in the codebase
+/* formatting units for display:
+  - if value >= 100, round to the nearest integer
+   e.g. "105 mi", "119 kmph"
+  - if 1 <= value < 100, round to 3 significant digits
+    e.g. "7.02 km", "11.3 mph"
+  - if value < 1, round to 2 decimal places
+    e.g. "0.07 mi", "0.75 km" */
+export const formatForDisplay = (value: number): string => {
+  let opts: Intl.NumberFormatOptions = {};
+  if (value >= 100)
+    opts.maximumFractionDigits = 0;
+  else if (value >= 1)
+    opts.maximumSignificantDigits = 3;
+  else
+    opts.maximumFractionDigits = 2;
+  return Intl.NumberFormat(i18next.language, opts).format(value);
 }
 
-const getFormattedDistanceInKm = (distInMeters: string) =>
-  formatDistance(Number.parseFloat(distInMeters) / 1000);
+const convertDistance = (distMeters: number, imperial: boolean): number => {
+  if (imperial)
+    return (distMeters / 1000) * KM_TO_MILES;
+  return distMeters / 1000;
+}
 
-const getFormattedDistanceInMiles = (distInMeters: string) =>
-  formatDistance((Number.parseFloat(distInMeters) / 1000) * KM_TO_MILES);
-
-const getKmph = (metersPerSec) =>
-  (metersPerSec * 3.6).toFixed(2);
-
-const getMph = (metersPerSecond) =>
-  (KM_TO_MILES * Number.parseFloat(getKmph(metersPerSecond))).toFixed(2);
+const convertSpeed = (speedMetersPerSec: number, imperial: boolean): number => {
+  if (imperial)
+    return speedMetersPerSec * MPS_TO_KMPH * KM_TO_MILES;
+  return speedMetersPerSec * MPS_TO_KMPH;
+}
 
 export function useImperialConfig() {
-  const { appConfig, loading } = useAppConfig();
+  const appConfig = useAppConfig();
   const [useImperial, setUseImperial] = useState(false);
 
   useEffect(() => {
-    if (loading) return;
+    if (!appConfig) return;
     setUseImperial(appConfig.display_config.use_imperial);
-  }, [appConfig, loading]);
+  }, [appConfig]);
 
   return {
     distanceSuffix: useImperial ? "mi" : "km",
     speedSuffix: useImperial ? "mph" : "kmph",
-    getFormattedDistance: useImperial ? getFormattedDistanceInMiles : getFormattedDistanceInKm,
-    getFormattedSpeed: useImperial ? getMph : getKmph,
+    getFormattedDistance: useImperial ? (d) => formatForDisplay(convertDistance(d, true))
+                                      : (d) => formatForDisplay(convertDistance(d, false)),
+    getFormattedSpeed: useImperial ? (s) => formatForDisplay(convertSpeed(s, true))
+                                   : (s) => formatForDisplay(convertSpeed(s, false)),
   }
 }
