@@ -1,13 +1,13 @@
 'use strict';
 
 import angular from 'angular';
+import { addStatError, addStatReading, statKeys } from './plugin/clientStats';
 
 angular.module('emission.controllers', ['emission.splash.startprefs',
                                         'emission.splash.pushnotify',
                                         'emission.splash.storedevicesettings',
                                         'emission.splash.localnotify',
-                                        'emission.splash.remotenotify',
-                                        'emission.stats.clientstats'])
+                                        'emission.splash.remotenotify'])
 
 .controller('RootCtrl', function($scope) {})
 
@@ -15,7 +15,7 @@ angular.module('emission.controllers', ['emission.splash.startprefs',
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
     StartPrefs, PushNotify, StoreDeviceSettings,
-    LocalNotify, RemoteNotify, ClientStats)  {
+    LocalNotify, RemoteNotify)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
   // PushNotify.startupInit();
@@ -23,22 +23,19 @@ angular.module('emission.controllers', ['emission.splash.startprefs',
   $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     console.log("Finished changing state from "+JSON.stringify(fromState)
         + " to "+JSON.stringify(toState));
-    ClientStats.addReading(ClientStats.getStatKeys().STATE_CHANGED,
-      fromState.name + '-2-' + toState.name).then(function() {}, function() {});
+    addStatReading(statKeys.STATE_CHANGED, fromState.name + '-2-' + toState.name);
   });
   $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error){
     console.log("Error "+error+" while changing state from "+JSON.stringify(fromState)
       +" to "+JSON.stringify(toState));
-    ClientStats.addError(ClientStats.getStatKeys().STATE_CHANGED,
-      fromState.name + '-2-' + toState.name+ "_" + error).then(function() {}, function() {});
+    addStatError(statKeys.STATE_CHANGED, fromState.name + '-2-' + toState.name+ "_" + error);
   });
   $rootScope.$on('$stateNotFound',
     function(event, unfoundState, fromState, fromParams){
         console.log("unfoundState.to = "+unfoundState.to); // "lazy.state"
         console.log("unfoundState.toParams = " + unfoundState.toParams); // {a:1, b:2}
         console.log("unfoundState.options = " + unfoundState.options); // {inherit:false} + default options
-    ClientStats.addError(ClientStats.getStatKeys().STATE_CHANGED,
-      fromState.name + '-2-' + unfoundState.name).then(function() {}, function() {});
+    addStatError(statKeys.STATE_CHANGED, fromState.name + '-2-' + unfoundState.name);
   });
 
   var isInList = function(element, list) {

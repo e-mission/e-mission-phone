@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { getAngularService } from "../angular-react-helper";
 import { getConfig } from "../config/dynamicConfig";
+import { storageGet, storageSet } from "../plugin/storage";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
@@ -50,12 +51,10 @@ async function readConsented() {
 }
 
 async function readIntroDone() {
-  const KVStore = getAngularService('KVStore');
-  return KVStore.get(INTRO_DONE_KEY).then((read_val) => !!read_val) as Promise<boolean>;
+  return storageGet(INTRO_DONE_KEY).then((read_val) => !!read_val) as Promise<boolean>;
 }
 
 export async function markIntroDone() {
   const currDateTime = DateTime.now().toISO();
-  const KVStore = getAngularService('KVStore');
-  return KVStore.set(INTRO_DONE_KEY, currDateTime);
+  return storageSet(INTRO_DONE_KEY, currDateTime);
 }

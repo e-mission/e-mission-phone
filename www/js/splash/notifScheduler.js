@@ -2,14 +2,14 @@
 
 import angular from 'angular';
 import { getConfig } from '../config/dynamicConfig';
+import { addStatReading, statKeys } from '../plugin/clientStats';
+import { getUser, updateUser } from '../commHelper';
 
 angular.module('emission.splash.notifscheduler',
                     ['emission.services',
-                    'emission.plugin.logger',
-                    'emission.stats.clientstats'])
+                    'emission.plugin.logger'])
 
-.factory('NotificationScheduler', function($http, $window, $ionicPlatform,
-                                            ClientStats, CommHelper, Logger) {
+.factory('NotificationScheduler', function($http, $window, $ionicPlatform, Logger) {
 
     const scheduler = {};
     let _config;
@@ -219,7 +219,7 @@ angular.module('emission.splash.notifscheduler',
     */
 
     scheduler.getReminderPrefs = async () => {
-        const user = await CommHelper.getUser();
+        const user = await getUser();
         if (user?.reminder_assignment &&
             user?.reminder_join_date &&
             user?.reminder_time_of_day) {
@@ -232,7 +232,7 @@ angular.module('emission.splash.notifscheduler',
     }
 
     scheduler.setReminderPrefs = async (newPrefs) => {
-        await CommHelper.updateUser(newPrefs)
+        await updateUser(newPrefs)
         const updatePromise = new Promise((resolve, reject) => {
             //enforcing update before moving on
             update().then(() => {
@@ -247,7 +247,7 @@ angular.module('emission.splash.notifscheduler',
             const { reminder_assignment,
                 reminder_join_date,
                 reminder_time_of_day} = prefs;
-            ClientStats.addReading(ClientStats.getStatKeys().REMINDER_PREFS, {
+            addStatReading(statKeys.REMINDER_PREFS, {
                 reminder_assignment,
                 reminder_join_date,
                 reminder_time_of_day
