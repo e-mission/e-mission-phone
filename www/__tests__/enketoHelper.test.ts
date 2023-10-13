@@ -68,28 +68,20 @@ it('resolves the timestamps', () => {
 });
 
 //resolve label
-// it('resolves the label', async () => {
-//     i18next.init({
-//         fallbackLng: 'en',
-//         debug: true
-//       }, (err, t) => {
-//         if (err) return console.log('something went wrong loading', err);
-//         t('key'); // -> same as i18next.t
-//       });
+it('resolves the label', async () => {
+    const xmlParser = new window.DOMParser();
 
-//     console.log("language in tests", i18next.resolvedLanguage);
-//     const xmlParser = new window.DOMParser();
-//     //have a custom survey label function TODO: we currently don't have custome label functions, but should test when we do
+    //have a custom survey label function TODO: we currently don't have custome label functions, but should test when we do
     
-//     //no custom function, fallback to UseLabelTemplate
-//     const xmlString = '<tag> <Domestic_activities>option_1/Domestic_activities> <Employment_related_a_Education_activities>option_2</Employment_related_a_Education_activities> </tag>';
-//     const xmlDoc = xmlParser.parseFromString(xmlString, 'text/html');
+    //no custom function, fallback to UseLabelTemplate
+    const xmlString = '<tag> <Domestic_activities>option_1/Domestic_activities> <Employment_related_a_Education_activities>option_2</Employment_related_a_Education_activities> </tag>';
+    const xmlDoc = xmlParser.parseFromString(xmlString, 'text/html');
 
-//     //if no template, returns "Answered"
-//     expect(await resolveLabel("TimeUseSurvey", xmlDoc)).toBe("");
-//     //if no labelVars, returns template
-//     //else interpolates
-// });
+    //if no template, returns "Answered"
+    expect(await resolveLabel("TimeUseSurvey", xmlDoc)).toBe("");
+    //if no labelVars, returns template
+    //else interpolates
+});
 
 /**
  * @param surveyName the name of the survey (e.g. "TimeUseSurvey")
@@ -136,7 +128,7 @@ it('filters the survey answers by their name and version', () => {
                 xmlResponse: "<this is my xml>", //survey answer XML string
                 jsonDocResponse: "this is my json object" //survey answer JSON object
             },
-            labels: {labelField: "goodbye"} //TODO learn more about answer type
+            labels: [{labelField: "goodbye"}] //TODO learn more about answer type
         }
     ];
 
@@ -154,7 +146,7 @@ it('filters the survey answers by their name and version', () => {
                 xmlResponse: "<this is my xml>", //survey answer XML string
                 jsonDocResponse: "this is my json object" //survey answer JSON object
             },
-            labels: {labelField: "goodbye"}
+            labels: [{labelField: "goodbye"}]
         },
         {
             data: {
@@ -166,7 +158,7 @@ it('filters the survey answers by their name and version', () => {
                 xmlResponse: "<this is my xml>", //survey answer XML string
                 jsonDocResponse: "this is my json object" //survey answer JSON object
             },
-            labels: {labelField: "goodbye"}
+            labels: [{labelField: "goodbye"}]
         }
     ];
 
