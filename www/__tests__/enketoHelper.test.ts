@@ -25,21 +25,17 @@ it('gets the survey config', async () => {
 })
 
 it('gets the model response, if avaliable, or returns null', ()=> {
-    const xmlModel = '<model><instance>\n <data xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:odk=\"http://www.opendatakit.org/xforms\" xmlns:orx=\"http://openrosa.org/xforms\" id=\"snapshot_xml\">\n  <travel_mode/>\n <meta>\n <instanceID/>\n  </meta>\n </data>\n  </instance></model>;';
-    const filled = '<model><instance>\n <data xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:odk=\"http://www.opendatakit.org/xforms\" xmlns:orx=\"http://openrosa.org/xforms\" id=\"snapshot_xml\">\n  <travel_mode/>car\n <meta>\n <instanceID/>\n  </meta>\n </data>\n  </instance></model>;';
+    const xmlModel = '<model xmlns:odk="http://www.opendatakit.org/xforms" odk:xforms-version="1.0.0"><instance><aDxjD5f5KAghquhAvsormy xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" id="time_use_survey_form_v9_1"><start/><end/><group_hg4zz25><Start_date/><Start_time/><End_date/><End_time/><Activity_Type/><Personal_Care_activities/><Employment_related_a_Education_activities/><Domestic_activities/><Recreation_and_leisure/><Voluntary_work_and_care_activities/><Other/></group_hg4zz25><meta><instanceID/></meta></aDxjD5f5KAghquhAvsormy></instance></model>';
+    const filled = '<aDxjD5f5KAghquhAvsormy xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" id="time_use_survey_form_v9_1"><start/><end/><group_hg4zz25><Start_date>2016-07-25</Start_date><Start_time>17:24:32.928-06:00</Start_time><End_date>2016-07-25</End_date><End_time>17:30:31.000-06:00</End_time><Activity_Type/><Personal_Care_activities/><Employment_related_a_Education_activities/><Domestic_activities/><Recreation_and_leisure/><Voluntary_work_and_care_activities/><Other/></group_hg4zz25><meta><instanceID/></meta></aDxjD5f5KAghquhAvsormy>';
     const opts = {"prefilledSurveyResponse": filled};
-    const opts2 = {"prefillFields": {"travel_mode" : "car"}};
+    const opts2 = {"prefillFields": {"Start_date":"2016-07-25", "Start_time": "17:24:32.928-06:00", "End_date": "2016-07-25", "End_time": "17:30:31.000-06:00"}};
     
     //if no xmlModel, returns null
     expect(getInstanceStr(null, opts)).toBe(null);
-
     //if there is a prefilled survey, return it
     expect(getInstanceStr(xmlModel, opts)).toBe(filled);
-
     //if there is a model and fields, return prefilled
-    // expect(getInstanceStr(xmlModel, opts2)).toBe(filled);
-    //TODO - figure out how to use the helper function with JEST -- getElementsByTagName is empty? should it be?
-
+    expect(getInstanceStr(xmlModel, opts2)).toBe(filled);
     //if none of those things, also return null
     expect(getInstanceStr(xmlModel, {})).toBe(null);
 });
