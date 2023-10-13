@@ -4,10 +4,9 @@ import { getConfig } from '../../config/dynamicConfig';
 import { getUserInputForTrip } from '../input-matcher';
 
 angular.module('emission.survey.multilabel.buttons',
-    ['emission.stats.clientstats',
-        'emission.survey.inputmatcher'])
+    ['emission.stats.clientstats'])
 
-.factory("MultiLabelService", function($rootScope, InputMatcher, $timeout, $ionicPlatform, Logger) {
+.factory("MultiLabelService", function($rootScope, $timeout, $ionicPlatform, Logger) {
   var mls = {};
   console.log("Creating MultiLabelService");
   mls.init = function(config) {
