@@ -50,31 +50,32 @@ const LABEL_FUNCTIONS = {
     let configSurveys = await _lazyLoadConfig();
 
     const config = configSurveys[name]; // config for this survey
-        const lang = i18next.resolvedLanguage;
-        const labelTemplate = config.labelTemplate?.[lang];
+    const lang = i18next.resolvedLanguage;
+    const labelTemplate = config.labelTemplate?.[lang];
 
-        if (!labelTemplate) return "Answered"; // no template given in config
-        if (!config.labelVars) return labelTemplate; // if no vars given, nothing to interpolate,
-        // so we return the unaltered template
+    if (!labelTemplate) return "Answered"; // no template given in config
+    if (!config.labelVars) return labelTemplate; // if no vars given, nothing to interpolate,
+    // so we return the unaltered template
 
-        // gather vars that will be interpolated into the template according to the survey config
-        const labelVars = {}
-        for (let lblVar in config.labelVars) {
-          const fieldName = config.labelVars[lblVar].key;
-          let fieldStr = _getAnswerByTagName(xmlDoc, fieldName);
-          if (fieldStr == '<null>') fieldStr = null;
-          if (config.labelVars[lblVar].type == 'length') {
-            const fieldMatches = fieldStr?.split(' ');
-            labelVars[lblVar] = fieldMatches?.length || 0;
-          } else {
-            throw new Error(`labelVar type ${config.labelVars[lblVar].type } is not supported!`)
-          }
-        }
+    // gather vars that will be interpolated into the template according to the survey config
+    const labelVars = {}
+    for (let lblVar in config.labelVars) {
+      const fieldName = config.labelVars[lblVar].key;
+      let fieldStr = _getAnswerByTagName(xmlDoc, fieldName);
+      if (fieldStr == '<null>') fieldStr = null;
+      if (config.labelVars[lblVar].type == 'length') {
+        const fieldMatches = fieldStr?.split(' ');
+        labelVars[lblVar] = fieldMatches?.length || 0;
+      } else {
+        throw new Error(`labelVar type ${config.labelVars[lblVar].type } is not supported!`)
+      }
+    }
 
-        // use MessageFormat interpolate the label template with the label vars
-        const mf = new MessageFormat(lang);
-        const label = mf.compile(labelTemplate)(labelVars);
-        return label.replace(/^[ ,]+|[ ,]+$/g, ''); // trim leading and trailing spaces and commas
+    // use MessageFormat interpolate the label template with the label vars
+    const mf = new MessageFormat(lang);
+    console.log(labelTemplate);
+    const label = mf.compile(labelTemplate)(labelVars);
+    return label.replace(/^[ ,]+|[ ,]+$/g, ''); // trim leading and trailing spaces and commas
   }
 }
 

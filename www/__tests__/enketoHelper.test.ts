@@ -2,8 +2,8 @@ import { getInstanceStr, filterByNameAndVersion, resolveTimestamps, resolveLabel
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 
-// import initializedI18next from '../js/i18nextInit';
-// window['i18next'] = initializedI18next;
+import initializedI18next from '../js/i18nextInit';
+window['i18next'] = initializedI18next;
 
 mockBEMUserCache();
 mockLogger();
@@ -13,14 +13,14 @@ it('gets the survey config', async () => {
     //mocked getDocument for the case of getting the config
     let config = await _lazyLoadConfig();
     let mockSurveys = {
-        TimeUseSurvey: { compatibleWith: 1, 
-          formPath: "https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json", 
-          labelTemplate: {en: " erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic activities, }",
-                          es: " erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }"}, 
-          labelVars: {da: {key: "Domestic_activities", type: "length"},
-                      erea: {key: "Employment_related_a_Education_activities", type:"length"}}, 
-          version: 9}
-      }
+            TimeUseSurvey: { compatibleWith: 1, 
+              formPath: "https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json", 
+              labelTemplate: {en: "{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }",
+                              es: "{ erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }}"}, 
+              labelVars: {da: {key: "Domestic_activities", type: "length"},
+                          erea: {key: "Employment_related_a_Education_activities", type:"length"}}, 
+              version: 9}
+          }
     expect(config).toMatchObject(mockSurveys);
 })
 
@@ -66,17 +66,17 @@ it('resolves the timestamps', () => {
 //resolve label
 it('resolves the label', async () => {
     const xmlParser = new window.DOMParser();
-
-    //have a custom survey label function TODO: we currently don't have custome label functions, but should test when we do
-    
-    //no custom function, fallback to UseLabelTemplate
-    const xmlString = '<tag> <Domestic_activities>option_1/Domestic_activities> <Employment_related_a_Education_activities>option_2</Employment_related_a_Education_activities> </tag>';
+    const xmlString = '<tag> <Domestic_activities> option_1 </Domestic_activities> </tag>';
     const xmlDoc = xmlParser.parseFromString(xmlString, 'text/html');
+    const xmlString2 = '<tag> <Domestic_activities> option_1 </Domestic_activities> <Employment_related_a_Education_activities> option_3 </Employment_related_a_Education_activities> </tag>';
+    const xmlDoc2 = xmlParser.parseFromString(xmlString2, 'text/xml');
 
-    //if no template, returns "Answered"
-    // expect(await resolveLabel("TimeUseSurvey", xmlDoc)).toBe("");
-    //if no labelVars, returns template
-    //else interpolates
+    //if no template, returns "Answered" TODO: find a way to engineer this case
+    //if no labelVars, returns template TODO: find a way to engineer this case
+    //have a custom survey label function TODO: we currently don't have custome label functions, but should test when we do
+    //no custom function, fallback to UseLabelTemplate (standard case)
+    expect(await resolveLabel("TimeUseSurvey", xmlDoc)).toBe("3 Domestic");
+    expect(await resolveLabel("TimeUseSurvey", xmlDoc2)).toBe("3 Employment/Education, 3 Domestic");
 });
 
 /**

@@ -93,8 +93,8 @@ export const mockBEMUserCache = () => {
           surveys: {
             TimeUseSurvey: { compatibleWith: 1, 
               formPath: "https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json", 
-              labelTemplate: {en: " erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic activities, }",
-                              es: " erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }"}, 
+              labelTemplate: {en: "{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }",
+                              es: "{ erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }}"}, 
               labelVars: {da: {key: "Domestic_activities", type: "length"},
                           erea: {key: "Employment_related_a_Education_activities", type:"length"}}, 
               version: 9}
