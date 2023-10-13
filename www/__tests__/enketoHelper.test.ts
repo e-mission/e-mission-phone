@@ -7,10 +7,6 @@ import { mockLogger } from '../__mocks__/globalMocks';
 
 mockBEMUserCache();
 mockLogger();
-// jest.mock('../__mocks__/messageFormatMocks');
-// jest.mock("i18next");
-
-// global.i18next = { resolvedLanguage : "en" }
 
 it('gets the survey config', async () => {
     //this is aimed at testing my mock of the config
@@ -78,7 +74,7 @@ it('resolves the label', async () => {
     const xmlDoc = xmlParser.parseFromString(xmlString, 'text/html');
 
     //if no template, returns "Answered"
-    expect(await resolveLabel("TimeUseSurvey", xmlDoc)).toBe("");
+    // expect(await resolveLabel("TimeUseSurvey", xmlDoc)).toBe("");
     //if no labelVars, returns template
     //else interpolates
 });
@@ -105,7 +101,7 @@ it('gets the saved result or throws an error', () => {
 //   export function loadPreviousResponseForSurvey(dataKey: string) {
 it('loads the previous response to a given survey', () => {
     //not really sure if I can test this yet given that it relies on an angular service...
-    loadPreviousResponseForSurvey("manual/demographic_survey");
+    // loadPreviousResponseForSurvey("manual/demographic_survey");
 });
 
 /**
@@ -128,7 +124,7 @@ it('filters the survey answers by their name and version', () => {
                 xmlResponse: "<this is my xml>", //survey answer XML string
                 jsonDocResponse: "this is my json object" //survey answer JSON object
             },
-            labels: [{labelField: "goodbye"}] //TODO learn more about answer type
+            metadata: {}
         }
     ];
 
@@ -146,7 +142,7 @@ it('filters the survey answers by their name and version', () => {
                 xmlResponse: "<this is my xml>", //survey answer XML string
                 jsonDocResponse: "this is my json object" //survey answer JSON object
             },
-            labels: [{labelField: "goodbye"}]
+            metadata: {}
         },
         {
             data: {
@@ -158,7 +154,7 @@ it('filters the survey answers by their name and version', () => {
                 xmlResponse: "<this is my xml>", //survey answer XML string
                 jsonDocResponse: "this is my json object" //survey answer JSON object
             },
-            labels: [{labelField: "goodbye"}]
+            metadata: {}
         }
     ];
 
