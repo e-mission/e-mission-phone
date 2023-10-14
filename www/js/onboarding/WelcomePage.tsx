@@ -58,6 +58,7 @@ const WelcomePage = () => {
       <Surface elevation={1} style={s.appIconWrapper(colors)}>
         <Image style={s.appIcon(colors)} source={require('../../../resources/icon.png')} />
       </Surface>
+      <ScrollView>
       <Text variant='headlineSmall' style={s.welcomeTitle}>
         <Trans i18nKey='join.welcome-to-app' values={{appName: t('join.app-name')}}
         components={{b: <Text style={{fontWeight: 'bold'}}> </Text>}} />
@@ -81,6 +82,7 @@ const WelcomePage = () => {
           <Text style={{ textAlign: 'center', margin: 'auto' }}>{t('join.paste-hint')}</Text>
         </View>
       </View>
+      </ScrollView>
     </Surface>
     <Modal visible={pasteModalVis} transparent={true} onDismiss={() => setPasteModalVis(false)}>
       <Dialog visible={pasteModalVis} onDismiss={() => setPasteModalVis(false)}>
