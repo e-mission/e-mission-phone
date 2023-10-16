@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 
 import { getRawEntries } from "./commHelper";
-import { logInfo, displayError } from "./plugin/logger";
+import { logInfo, displayError, logDebug } from "./plugin/logger";
 import i18next from "./i18nextInit" ;
 
 interface fsWindow extends Window {
@@ -36,16 +36,16 @@ export const getMyData = function(startTs: Date) {
       const resultList = result.phone_data;
       return new Promise<void>(function(resolve, reject) {
         window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
-          console.log(`file system open: ${fs.name}`);
+          logDebug(`file system open: ${fs.name}`);
           fs.root.getFile(dumpFile, { create: true, exclusive: false }, function (fileEntry) {
-            console.log(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`)
+            logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`)
             fileEntry.createWriter(function (fileWriter) {
               fileWriter.onwriteend = function() {
-                console.log("Successful file write...");
+                logDebug("Successful file write...");
                 resolve();
               }
               fileWriter.onerror = function(e) {
-                console.log(`Failed file write: ${e.toString()}`);
+                logDebug(`Failed file write: ${e.toString()}`);
                 reject();
               }
 
@@ -60,21 +60,21 @@ export const getMyData = function(startTs: Date) {
       });
     }
 
-    const emailData = function() {
+    const shareData = function() {
       return new Promise<void>(function(resolve, reject) {
       window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
-        console.log("During email, file system open: " + fs.name);
+        logDebug("During email, file system open: " + fs.name);
         fs.root.getFile(dumpFile, null, function(fileEntry) {
-          console.log(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
+          logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
           fileEntry.file(function(file) {
             const reader = new FileReader();
 
             reader.onloadend = function() {
               const readResult = this.result as string;
-              console.log(`Successfull file read with ${readResult.length} characters`);
+              logDebug(`Successfull file read with ${readResult.length} characters`);
               const dataArray = JSON.parse(readResult);
-              console.log(`Successfully read resultList of size ${dataArray.length}`);
-              var attachFile = fileEntry.nativeURL;
+              logDebug(`Successfully read resultList of size ${dataArray.length}`);
+              let attachFile = fileEntry.nativeURL;
                 if (window['device'].platform === "android")
                   attachFile = "app://cache/" + dumpFile;
                 if (window['device'].platform === "ios")
@@ -85,11 +85,11 @@ export const getMyData = function(startTs: Date) {
                   'subject': i18next.t("email-service.email-data.subject-data-dump-from-to", {start: startTimeString ,end: endTimeString}),
                 }
                 window['plugins'].socialsharing.shareWithOptions(email, function (result) {
-                  console.log(`Share Completed? ${result.completed}`); // On Android, most likely returns false
-                  console.log(`Shared to app:  ${result.app}`);
+                  logDebug(`Share Completed? ${result.completed}`); // On Android, most likely returns false
+                  logDebug(`Shared to app:  ${result.app}`);
                   resolve();
                 }, function (msg) {
-                  console.log(`Sharing failed with message ${msg}`);
+                  logDebug(`Sharing failed with message ${msg}`);
                 });
             }
             reader.readAsText(file);
@@ -110,7 +110,7 @@ export const getMyData = function(startTs: Date) {
 
     getRawEntries(null, getUnixNum(startTime), startTime.toUnixInteger())
       .then(writeDumpFile)
-      .then(emailData)
+      .then(shareData)
       .then(function() {
           logInfo("Email queued successfully");
       })
