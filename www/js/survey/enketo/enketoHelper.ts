@@ -198,8 +198,8 @@ export function resolveTimestamps(xmlDoc, timelineEntry) {
   startTime = startTime.split(/\-|\+/)[0];
   endTime = endTime.split(/\-|\+/)[0];
 
-  let additionStartTs = DateTime.fromISO(startDate + "T" + startTime, {zone: timezone}).valueOf();
-  let additionEndTs = DateTime.fromISO(endDate + "T" + endTime, {zone: timezone}).valueOf();
+  let additionStartTs = DateTime.fromISO(startDate + "T" + startTime, {zone: timezone}).toSeconds();
+  let additionEndTs = DateTime.fromISO(endDate + "T" + endTime, {zone: timezone}).toSeconds();
 
   if (additionStartTs > additionEndTs) {
     return undefined; // if the start time is after the end time, this is an invalid response
