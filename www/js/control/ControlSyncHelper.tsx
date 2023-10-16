@@ -15,7 +15,7 @@ import { updateUser } from "../commHelper";
 * BEGIN: Simple read/write wrappers
 */
 export function forcePluginSync() {
-    return window.cordova.plugins.BEMServerSync.forceSync();
+    return window['cordova'].plugins.BEMServerSync.forceSync();
 };  
 
 const formatConfigForDisplay = (configToFormat) => {
@@ -27,11 +27,11 @@ const formatConfigForDisplay = (configToFormat) => {
 }
 
 const setConfig = function(config) {
-    return window.cordova.plugins.BEMServerSync.setConfig(config);
+    return window['cordova'].plugins.BEMServerSync.setConfig(config);
     };
 
 const getConfig = function() {
-    return window.cordova.plugins.BEMServerSync.getConfig();
+    return window['cordova'].plugins.BEMServerSync.getConfig();
 };
 
 export async function getHelperSyncSettings() {
@@ -40,10 +40,10 @@ export async function getHelperSyncSettings() {
 }
 
 const getEndTransitionKey = function() {
-    if(window.cordova.platformId == 'android') {
+    if(window['cordova'].platformId == 'android') {
         return "local.transition.stopped_moving";
     }
-    else if(window.cordova.platformId == 'ios') {
+    else if(window['cordova'].platformId == 'ios') {
         return "T_TRIP_ENDED";
     }
 }
@@ -62,7 +62,7 @@ export const ForceSyncRow = ({getState}) => {
 
     async function forceSync() {
         try {
-            let addedEvent = addStatEvent(statKeys.BUTTON_FORCE_SYNC);
+            let addedEvent = await addStatEvent(statKeys.BUTTON_FORCE_SYNC);
             console.log("Added "+statKeys.BUTTON_FORCE_SYNC+" event");
 
             let sync = await forcePluginSync();
@@ -72,7 +72,7 @@ export const ForceSyncRow = ({getState}) => {
             * See https://github.com/e-mission/e-mission-phone/issues/279 for details
             */
             var sensorKey = "statemachine/transition";
-            let sensorDataList = await window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
+            let sensorDataList = await window['cordova'].plugins.BEMUserCache.getAllMessages(sensorKey, true);
             
             // If everything has been pushed, we should
             // have no more trip end transitions left
@@ -98,28 +98,28 @@ export const ForceSyncRow = ({getState}) => {
     };
 
     const getStartTransitionKey = function() {
-        if(window.cordova.platformId == 'android') {
+        if(window['cordova'].platformId == 'android') {
             return "local.transition.exited_geofence";
         }
-        else if(window.cordova.platformId == 'ios') {
+        else if(window['cordova'].platformId == 'ios') {
             return "T_EXITED_GEOFENCE";
         }
     }
 
     const getEndTransitionKey = function() {
-        if(window.cordova.platformId == 'android') {
+        if(window['cordova'].platformId == 'android') {
             return "local.transition.stopped_moving";
         }
-        else if(window.cordova.platformId == 'ios') {
+        else if(window['cordova'].platformId == 'ios') {
             return "T_TRIP_ENDED";
         }
     }
 
     const getOngoingTransitionState = function() {
-        if(window.cordova.platformId == 'android') {
+        if(window['cordova'].platformId == 'android') {
             return "local.state.ongoing_trip";
         }
-        else if(window.cordova.platformId == 'ios') {
+        else if(window['cordova'].platformId == 'ios') {
             return "STATE_ONGOING_TRIP";
         }
     }
@@ -127,12 +127,12 @@ export const ForceSyncRow = ({getState}) => {
     async function getTransition(transKey) {
         var entry_data = {};
         const curr_state = await getState();
-        entry_data.curr_state = curr_state;
+        entry_data['curr_state'] = curr_state;
         if (transKey == getEndTransitionKey()) {
-            entry_data.curr_state = getOngoingTransitionState();
+            entry_data['curr_state'] = getOngoingTransitionState();
         }
-        entry_data.transition = transKey;
-        entry_data.ts = moment().unix();
+        entry_data['transition'] = transKey;
+        entry_data['ts'] = moment().unix();
         return entry_data;
     }
 
@@ -141,9 +141,9 @@ export const ForceSyncRow = ({getState}) => {
          * result for start so that we ensure ordering */
         var sensorKey = "statemachine/transition";
         let entry_data = await getTransition(getStartTransitionKey());
-        let messagePut = await window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+        let messagePut = await window['cordova'].plugins.BEMUserCache.putMessage(sensorKey, entry_data);
         entry_data = await getTransition(getEndTransitionKey());
-        messagePut = await window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+        messagePut = await window['cordova'].plugins.BEMUserCache.putMessage(sensorKey, entry_data);
         forceSync();
     };
 
@@ -246,7 +246,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
     * configure the UI
     */
    let toggle;
-   if(window.cordova.platformId == 'ios'){
+   if(window['cordova'].platformId == 'ios'){
        toggle = <View style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text variant="labelMedium">Use Remote Push</Text>
                     <Switch value={localConfig?.ios_use_remote_push} onValueChange={onTogglePush}></Switch>
