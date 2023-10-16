@@ -1,4 +1,4 @@
-import { logDebug, logInfo, logError, displayError, displayErrorMsg } from "../plugin/logger";
+import { logDebug, logInfo, displayError } from "../plugin/logger";
 import i18next from "i18next";
 
 /**
@@ -23,7 +23,7 @@ async function getUploadConfig() {
                 url.push(uploadConfig["url"]);
                 resolve(url);
             } catch (err) {
-                logError("Error while reading default upload config" + err);
+                displayError(err, "Error while reading default upload config");
                 reject(err);
             }
         } 
