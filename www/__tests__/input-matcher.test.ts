@@ -16,7 +16,12 @@ describe('input-matcher', () => {
     let trip: TlEntry;
 
     beforeEach(() => {
-        // create valid userTrip and trip object before each test case.
+        /* 
+        Create a valid userTrip and trip object before each test case.
+        The trip data is from the 'real_examples' data (shankari_2015-07-22) on the server.
+        For some test cases, I need to generate fake data, such as labels, keys, and origin_keys. 
+        In such cases, I referred to 'TestUserInputFakeData.py' on the server.
+        */
         userTrip  = { 
             data: {
                 end_ts: 1437604764,
