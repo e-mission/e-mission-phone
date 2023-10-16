@@ -19,25 +19,18 @@ interface fsWindow extends Window {
 
 declare let window: fsWindow;
 
-export const getMyData = function(startTs: Date) {
-    // We are only retrieving data for a single day to avoid
-    // running out of memory on the phone
-    const startTime = DateTime.fromJSDate(startTs);
-    const endTime = startTime.endOf("day");
-    const startTimeString = startTime.toFormat("yyyy'-'MM'-'dd");
-    const endTimeString = endTime.toFormat("yyyy'-'MM'-'dd");
-
-    const dumpFile = startTimeString + "."
-      + endTimeString
-      + ".timeline";
-      alert(`Going to retrieve data to ${dumpFile}`);
-
-    const writeDumpFile = function(result) {
-      const resultList = result.phone_data;
+/**
+ * createWriteFile is a factory method for the JSON dump file creation
+ * @param fileName is the name of the file to be created
+ * @returns a function that returns a promise, which writes the file upon evaluation.
+ */
+const createWriteFile = function (fileName: string) {
+  return function(result) {
+    const resultList = result.phone_data;
       return new Promise<void>(function(resolve, reject) {
         window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
           logDebug(`file system open: ${fs.name}`);
-          fs.root.getFile(dumpFile, { create: true, exclusive: false }, function (fileEntry) {
+          fs.root.getFile(fileName, { create: true, exclusive: false }, function (fileEntry) {
             logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`)
             fileEntry.createWriter(function (fileWriter) {
               fileWriter.onwriteend = function() {
@@ -54,53 +47,77 @@ export const getMyData = function(startTs: Date) {
                 { type: "application/json" });
               fileWriter.write(dataObj);
             })
-
           });
         });
-      });
-    }
+    });
+}};
 
-    const shareData = function() {
-      return new Promise<void>(function(resolve, reject) {
-      window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
-        logDebug("During email, file system open: " + fs.name);
-        fs.root.getFile(dumpFile, null, function(fileEntry) {
-          logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
-          fileEntry.file(function(file) {
-            const reader = new FileReader();
+/**
+ * createShareData returns a shareData method, with the input parameters captured.
+ * @param fileName is the existing file to be sent
+ * @param startTimeString timestamp used to identify the file
+ * @param endTimeString " "
+ * @returns a function which returns a promise, which shares an existing file upon evaluation.
+ */
+const createShareData = function(fileName: string, startTimeString: string, endTimeString: string) {
+  return function() {
+    return new Promise<void>(function(resolve, reject) {
+    window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
+      logDebug("During email, file system open: " + fs.name);
+      fs.root.getFile(fileName, null, function(fileEntry) {
+        logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
+        fileEntry.file(function(file) {
+          const reader = new FileReader();
 
-            reader.onloadend = function() {
-              const readResult = this.result as string;
-              logDebug(`Successfull file read with ${readResult.length} characters`);
-              const dataArray = JSON.parse(readResult);
-              logDebug(`Successfully read resultList of size ${dataArray.length}`);
-              let attachFile = fileEntry.nativeURL;
-                if (window['device'].platform === "android")
-                  attachFile = "app://cache/" + dumpFile;
-                if (window['device'].platform === "ios")
-                  alert(i18next.t("email-service.email-account-mail-app"));
-                const email = {
-                  'files': [attachFile],
-                  'message': i18next.t("email-service.email-data.body-data-consists-of-list-of-entries"),
-                  'subject': i18next.t("email-service.email-data.subject-data-dump-from-to", {start: startTimeString ,end: endTimeString}),
-                }
-                window['plugins'].socialsharing.shareWithOptions(email, function (result) {
-                  logDebug(`Share Completed? ${result.completed}`); // On Android, most likely returns false
-                  logDebug(`Shared to app:  ${result.app}`);
-                  resolve();
-                }, function (msg) {
-                  logDebug(`Sharing failed with message ${msg}`);
-                });
-            }
-            reader.readAsText(file);
-          }, function(error) {
-            displayError(error, "Error while downloading JSON dump");
-            reject(error);
-          })                        
-        });
+          reader.onloadend = function() {
+            const readResult = this.result as string;
+            logDebug(`Successfull file read with ${readResult.length} characters`);
+            const dataArray = JSON.parse(readResult);
+            logDebug(`Successfully read resultList of size ${dataArray.length}`);
+            let attachFile = fileEntry.nativeURL;
+              if (window['device'].platform === "android")
+                attachFile = "app://cache/" + fileName;
+              if (window['device'].platform === "ios")
+                alert(i18next.t("email-service.email-account-mail-app"));
+              const email = {
+                'files': [attachFile],
+                'message': i18next.t("email-service.email-data.body-data-consists-of-list-of-entries"),
+                'subject': i18next.t("email-service.email-data.subject-data-dump-from-to", {start: startTimeString ,end: endTimeString}),
+              }
+              window['plugins'].socialsharing.shareWithOptions(email, function (result) {
+                logDebug(`Share Completed? ${result.completed}`); // On Android, most likely returns false
+                logDebug(`Shared to app:  ${result.app}`);
+                resolve();
+              }, function (msg) {
+                logDebug(`Sharing failed with message ${msg}`);
+              });
+          }
+          reader.readAsText(file);
+        }, function(error) {
+          displayError(error, "Error while downloading JSON dump");
+          reject(error);
+        })                        
       });
-      });
-    };
+    });
+    });
+}};
+
+/**
+ * getMyData fetches timeline data for a given day, and then gives the user a prompt to share the data
+ * @param startTs initial timestamp of the timeline to be fetched.
+ */
+export const getMyData = function(startTs: Date) {
+    // We are only retrieving data for a single day to avoid
+    // running out of memory on the phone
+    const startTime = DateTime.fromJSDate(startTs);
+    const endTime = startTime.endOf("day");
+    const startTimeString = startTime.toFormat("yyyy'-'MM'-'dd");
+    const endTimeString = endTime.toFormat("yyyy'-'MM'-'dd");
+
+    const dumpFile = startTimeString + "."
+      + endTimeString
+      + ".timeline";
+      alert(`Going to retrieve data to ${dumpFile}`);
 
     // Simulate old conversion to get correct UnixInteger for endMoment data
     const getUnixNum = (dateData: DateTime) => {
@@ -108,7 +125,11 @@ export const getMyData = function(startTs: Date) {
       return DateTime.fromFormat(tempDate, "dd MMM yyyy").toUnixInteger();
     };
 
+    const writeDumpFile = createWriteFile(dumpFile);
+    const shareData = createShareData(dumpFile, startTimeString, endTimeString);
+
     getRawEntries(null, getUnixNum(startTime), startTime.toUnixInteger())
+      .then(result => Promise.resolve(dumpFile).then(() => result))
       .then(writeDumpFile)
       .then(shareData)
       .then(function() {
