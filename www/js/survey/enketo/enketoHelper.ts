@@ -131,13 +131,13 @@ export function _lazyLoadConfig() {
  * @param {XMLDocument} xmlDoc survey answer object
  * @returns {Promise<string>} label string Promise
  */
-export function resolveLabel(name: string, xmlDoc: XMLDocument) {
+export async function resolveLabel(name: string, xmlDoc: XMLDocument) {
   // Some studies may want a custom label function for their survey.
   // Those can be added in LABEL_FUNCTIONS with the survey name as the key.
   // Otherwise, UseLabelTemplate will create a label using the template in the config
   if (LABEL_FUNCTIONS[name])
-    return LABEL_FUNCTIONS[name](xmlDoc);
-  return LABEL_FUNCTIONS.UseLabelTemplate(xmlDoc, name);
+    return await LABEL_FUNCTIONS[name](xmlDoc);
+  return await LABEL_FUNCTIONS.UseLabelTemplate(xmlDoc, name);
 }
 
 /**
