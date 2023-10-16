@@ -222,7 +222,7 @@ const ProfileSettings = () => {
     //methods that control the settings
     const uploadLog = function () {
         if(uploadReason != "") {
-            let reason = uploadReason.split('').join('');
+            let reason = uploadReason;
             uploadFile("loggerDB", reason);
             setUploadVis(false);
         }
