@@ -1,9 +1,9 @@
 export const mockFileSystem = () => {
   window['resolveLocalFileSystemURL'] = function (parentDir, handleFS) {
-    const fs = {"filesystem": 
-      {"root":
-        {"getFile": (path, options, onSuccess) => {
-          let fileEntry = {"file": (handleFile) => {
+    const fs = {filesystem: 
+      {root:
+        {getFile: (path, options, onSuccess) => {
+          let fileEntry = {file: (handleFile) => {
             let file = new File(["this is a mock"], "loggerDB");
               handleFile(file);
           }}
