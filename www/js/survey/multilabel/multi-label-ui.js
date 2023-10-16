@@ -3,8 +3,7 @@ import { baseLabelInputDetails, getBaseLabelInputs, getFakeEntry, getLabelInputD
 import { getConfig } from '../../config/dynamicConfig';
 import { getUserInputForTrip } from '../input-matcher';
 
-angular.module('emission.survey.multilabel.buttons',
-    ['emission.stats.clientstats'])
+angular.module('emission.survey.multilabel.buttons', [])
 
 .factory("MultiLabelService", function($rootScope, $timeout, $ionicPlatform, Logger) {
   var mls = {};
