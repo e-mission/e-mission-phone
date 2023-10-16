@@ -1,11 +1,9 @@
 import angular from 'angular';
 import MessageFormat from 'messageformat';
+import { getConfig } from '../../config/dynamicConfig';
 
-angular.module('emission.survey.enketo.answer', [
-  'ionic',
-  'emission.config.dynamic',
-])
-.factory('EnketoSurveyAnswer', function($http, DynamicConfig,) {
+angular.module('emission.survey.enketo.answer', ['ionic'])
+.factory('EnketoSurveyAnswer', function($http) {
   /**
    * @typedef EnketoAnswerData
    * @type {object}
@@ -96,7 +94,7 @@ angular.module('emission.survey.enketo.answer', [
     if (_config !== undefined) {
       return Promise.resolve(_config);
     }
-    return DynamicConfig.configReady().then((newConfig) => {
+    return getConfig().then((newConfig) => {
       Logger.log("Resolved UI_CONFIG_READY promise in answer.js, filling in templates");
       _config = newConfig.survey_info.surveys;
       return _config;

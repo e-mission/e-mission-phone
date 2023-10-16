@@ -108,7 +108,7 @@ const LogPage = ({pageVis, setPageVis}) => {
     return (
         <Modal visible={pageVis} onDismiss={() => setPageVis(false)}>
             <SafeAreaView style={{flex: 1}}>
-                <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+                <Appbar.Header statusBarHeight={0} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
                     <Appbar.BackAction onPress={() => {setPageVis(false)}}/>
                     <Appbar.Content title={t('control.log-title')} />
                 </Appbar.Header>   
