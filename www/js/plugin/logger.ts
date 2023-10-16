@@ -46,5 +46,5 @@ export function displayErrorMsg(errorMsg: string, title?: string) {
   const displayMsg = `━━━━\n${title}\n━━━━\n` + errorMsg;
   window.alert(displayMsg);
   console.error(displayMsg);
-  window['Logger'].log(window['Logger'].LEVEL_ERROR, displayMsg);
+  window['Logger']?.log(window['Logger'].LEVEL_ERROR, displayMsg);
 }
