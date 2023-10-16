@@ -1,7 +1,9 @@
+import packageJsonBuild from '../../package.cordovabuild.json';
+
 export const mockCordova = () => {
   window['cordova'] ||= {};
   window['cordova'].platformId ||= 'ios';
-  window['cordova'].platformVersion ||= '6.2.0';
+  window['cordova'].platformVersion ||= packageJsonBuild.dependencies['cordova-ios'];
   window['cordova'].plugins ||= {};
 }
 

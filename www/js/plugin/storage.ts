@@ -1,11 +1,10 @@
 import { getAngularService } from "../angular-react-helper";
 import { addStatReading, statKeys } from "./clientStats";
-import { displayErrorMsg, logDebug } from "./logger";
+import { logDebug, logWarn } from "./logger";
 
 const mungeValue = (key, value) => {
   let store_val = value;
   if (typeof value != "object") {
-    // Should this be {"value": value} or {key: value}?
     store_val = {};
     store_val[key] = value;
   }
@@ -43,7 +42,7 @@ const localStorageGet = (key: string) => {
   If a value is present in both, but they are different, it copies the native value to
     local storage and returns it. */
 function getUnifiedValue(key) {
-  let ls_stored_val = localStorageGet(key);
+  const ls_stored_val = localStorageGet(key);
   return window['cordova'].plugins.BEMUserCache.getLocalStorage(key, false).then((uc_stored_val) => {
     logDebug(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
                                   ls_stored_val = ${JSON.stringify(ls_stored_val)}.`);
@@ -56,23 +55,17 @@ function getUnifiedValue(key) {
     } else {
       // the values are different
       if (ls_stored_val == null) {
+        // local value is missing, fill it in from native
         console.assert(uc_stored_val != null, "uc_stored_val should be non-null");
-        logDebug(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
+        logWarn(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
                                       ls_stored_val = ${JSON.stringify(ls_stored_val)}.
                                       copying native ${key} to local...`);
         localStorageSet(key, uc_stored_val);
         return uc_stored_val;
       } else if (uc_stored_val == null) {
+        // native value is missing, fill it in from local
         console.assert(ls_stored_val != null);
-        /*
-         * Backwards compatibility ONLY. Right after the first
-         * update to this version, we may have a local value that
-         * is not a JSON object. In that case, we want to munge it
-         * before storage. Remove this after a few releases.
-         */
-        ls_stored_val = mungeValue(key, ls_stored_val);
-        displayErrorMsg(`Local ${key} found, native ${key} missing, writing ${key} to native`);
-        logDebug(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
+        logWarn(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
                                       ls_stored_val = ${JSON.stringify(ls_stored_val)}.
                                       copying local ${key} to native...`);
         return window['cordova'].plugins.BEMUserCache.putLocalStorage(key, ls_stored_val).then(() => {
@@ -80,12 +73,11 @@ function getUnifiedValue(key) {
           return ls_stored_val;
         });
       }
+      // both values are present, but they are different
       console.assert(ls_stored_val != null && uc_stored_val != null,
         "ls_stored_val =" + JSON.stringify(ls_stored_val) +
         "uc_stored_val =" + JSON.stringify(uc_stored_val));
-      displayErrorMsg(`Local ${key} found, native ${key} found, but different,
-                           writing ${key} to local`);
-      logDebug(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
+      logWarn(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
                     ls_stored_val = ${JSON.stringify(ls_stored_val)}.
                     copying native ${key} to local...`);
       localStorageSet(key, uc_stored_val);
