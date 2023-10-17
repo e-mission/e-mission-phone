@@ -12,7 +12,7 @@
  */
 
 import angular from 'angular';
-import { getUserInputForTrip } from '../input-matcher';
+import { getUserInputForTrip } from '../inputMatcher';
 
 angular.module('emission.survey.enketo.trip.button',
     ['emission.stats.clientstats',

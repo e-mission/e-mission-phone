@@ -1,7 +1,7 @@
 import angular from 'angular';
 import { baseLabelInputDetails, getBaseLabelInputs, getFakeEntry, getLabelInputDetails, getLabelInputs, getLabelOptions } from './confirmHelper';
 import { getConfig } from '../../config/dynamicConfig';
-import { getUserInputForTrip } from '../input-matcher';
+import { getUserInputForTrip } from '../inputMatcher';
 
 angular.module('emission.survey.multilabel.buttons',
     ['emission.stats.clientstats'])

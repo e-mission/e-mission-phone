@@ -3,7 +3,7 @@
  */
 
 import angular from 'angular';
-import { getAdditionsForTimelineEntry, getUniqueEntries } from '../input-matcher';
+import { getAdditionsForTimelineEntry, getUniqueEntries } from '../inputMatcher';
 
 angular.module('emission.survey.enketo.add-note-button',
     ['emission.stats.clientstats',

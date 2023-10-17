@@ -9,7 +9,7 @@ import {
     getUserInputForTrip,
     getAdditionsForTimelineEntry,
     getUniqueEntries
-} from '../js/survey/input-matcher';
+} from '../js/survey/inputMatcher';
 
 describe('input-matcher', () => {
     let userTrip: UserInputForTrip;
