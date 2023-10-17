@@ -5,7 +5,7 @@ This is the phone component of the e-mission system.
 
 :sparkles: This has been upgraded to the latest **Android**, **iOS**, **cordova-lib**, **node** and **npm** versions. __This is ready to build out of the box.__
 
-For the latest versions, refer [`package.cordovabuild.json`](package.cordovabuild.json)
+The currently supported versions are in [`package.cordovabuild.json`](package.cordovabuild.json)
 
 Additional Documentation
 ---
