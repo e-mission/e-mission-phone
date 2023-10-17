@@ -31,8 +31,6 @@ const App = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  const StartPrefs = getAngularService('StartPrefs');
-
   const routes = useMemo(() => {
     const showMetrics = appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL';
     return showMetrics ? defaultRoutes(t) : defaultRoutes(t).filter(r => r.key != 'metrics');

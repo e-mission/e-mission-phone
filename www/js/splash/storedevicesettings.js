@@ -1,11 +1,11 @@
 import angular from 'angular';
 import { updateUser } from '../commHelper';
+import { isConsented, readConsentState, startPrefs, isIntroDone } from "./startprefs";
 
 angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
-                                             'emission.services',
-                                             'emission.splash.startprefs'])
+                                             'emission.services'])
 .factory('StoreDeviceSettings', function($window, $state, $rootScope, $ionicPlatform,
-    $ionicPopup, Logger, StartPrefs) {
+    $ionicPopup, Logger ) {
 
     var storedevicesettings = {};
 
@@ -32,8 +32,8 @@ angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
 
     $ionicPlatform.ready().then(function() {
       storedevicesettings.datacollect = $window.cordova.plugins.BEMDataCollection;
-      StartPrefs.readConsentState()
-        .then(StartPrefs.isConsented)
+      readConsentState()
+        .then(isConsented)
         .then(function(consentState) {
           if (consentState == true) {
               storedevicesettings.storeDeviceSettings();
@@ -44,16 +44,16 @@ angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
       Logger.log("storedevicesettings startup done");
     });
 
-    $rootScope.$on(StartPrefs.CONSENTED_EVENT, function(event, data) {
+    $rootScope.$on(startPrefs.CONSENTED_EVENT, function(event, data) {
       console.log("got consented event "+JSON.stringify(event.name)
                       +" with data "+ JSON.stringify(data));
-      if (StartPrefs.isIntroDone()) {
+      if (isIntroDone()) {
           console.log("intro is done -> reconsent situation, we already have a token -> register");
           storedevicesettings.storeDeviceSettings();
       }
     });
 
-    $rootScope.$on(StartPrefs.INTRO_DONE_EVENT, function(event, data) {
+    $rootScope.$on(startPrefs.INTRO_DONE_EVENT, function(event, data) {
           console.log("intro is done -> original consent situation, we should have a token by now -> register");
        storedevicesettings.storeDeviceSettings();
     });

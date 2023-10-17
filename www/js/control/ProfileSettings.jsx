@@ -24,6 +24,7 @@ import { AppContext } from "../App";
 import { shareQR } from "../components/QrCode";
 import { storageClear } from "../plugin/storage";
 import { getAppVersion } from "../plugin/clientStats";
+import { getConsentDocument } from "../splash/startprefs";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -39,7 +40,6 @@ const ProfileSettings = () => {
     const EmailHelper = getAngularService('EmailHelper');
     const NotificationScheduler = getAngularService('NotificationScheduler');
     const ControlHelper = getAngularService('ControlHelper');
-    const StartPrefs = getAngularService('StartPrefs');
 
     //functions that come directly from an Angular service
     const editCollectionConfig = () => setEditCollection(true);
@@ -301,7 +301,7 @@ const ProfileSettings = () => {
 
     //in ProfileSettings in DevZone (above two functions are helpers)
     async function checkConsent() {
-        StartPrefs.getConsentDocument().then(function(resultDoc){
+        getConsentDocument().then(function(resultDoc){
             setConsentDoc(resultDoc);
             if (resultDoc == null) {
                 setNoConsentVis(true);

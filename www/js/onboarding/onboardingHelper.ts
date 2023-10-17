@@ -1,8 +1,8 @@
 import { DateTime } from "luxon";
-import { getAngularService } from "../angular-react-helper";
 import { getConfig, resetDataAndRefresh } from "../config/dynamicConfig";
 import { storageGet, storageSet } from "../plugin/storage";
 import { logDebug } from "../plugin/logger";
+import { readConsentState, isConsented, isIntroDone } from "../splash/startprefs";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
@@ -58,8 +58,7 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
 };
 
 async function readConsented() {
-  const StartPrefs = getAngularService('StartPrefs');
-  return StartPrefs.readConsentState().then(StartPrefs.isConsented) as Promise<boolean>;
+  return readConsentState().then(isConsented) as Promise<boolean>;
 }
 
 async function readIntroDone() {
