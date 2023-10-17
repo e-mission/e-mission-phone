@@ -212,7 +212,7 @@ AND/OR
 ```
 npm run <android>
 ```
-for builds, refer [`package.cordovabuild.json`](package.cordovabuild.json)
+For other options of build scripts, refer to [`package.cordovabuild.json`](package.cordovabuild.json)
 
 <details><summary>Expected output</summary>
 
