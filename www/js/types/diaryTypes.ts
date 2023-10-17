@@ -21,7 +21,7 @@ export type CompositeTrip = {
   end_confirmed_place: ConfirmedPlace,
   end_fmt_time: string,
   end_loc: {type: string, coordinates: number[]},
-  end_local_dt: any, // TODO
+  end_local_dt: LocalDt, 
   end_place: {$oid: string},
   end_ts: number,
   expectation: any, // TODO "{to_label: boolean}"
@@ -38,10 +38,10 @@ export type CompositeTrip = {
   start_confirmed_place: ConfirmedPlace,
   start_fmt_time: string,
   start_loc: {type: string, coordinates: number[]},
-  start_local_dt: any, // TODO
+  start_local_dt: LocalDt, 
   start_place: {$oid: string},
   start_ts: number,
-  user_input: any, // TODO
+  user_input: UserInput, 
 }
 
 /* These properties aren't received from the server, but are derived from the above properties.
@@ -67,6 +67,54 @@ export type PopulatedTrip = CompositeTrip & {
   finalInference?: any, // TODO
   geojson?: any, // TODO
   getNextEntry?: () => PopulatedTrip | ConfirmedPlace,
-  userInput?: any, // TODO
+  userInput?: UserInput, 
   verifiability?: string,
+}
+
+export type UserInput = {
+  data: {
+      end_ts: number,
+      start_ts: number
+      label: string,
+      start_local_dt?: LocalDt
+      end_local_dt?: LocalDt
+      status?: string,
+      match_id?: string,
+  },
+  metadata: {
+      time_zone: string,
+      plugin: string,
+      write_ts: number,
+      platform: string,
+      read_ts: number,
+      key: string,
+  },
+  key?: string
+}
+
+export type LocalDt = {
+  minute: number,
+  hour: number,
+  second: number,
+  day: number,
+  weekday: number,
+  month: number,
+  year: number,
+  timezone: string,
+}
+
+export type Trip = {
+  end_ts: number,
+  start_ts: number,
+}
+
+export type TlEntry = {
+  key: string,
+  origin_key: string,
+  start_ts: number,
+  end_ts: number,
+  enter_ts: number,
+  exit_ts: number,
+  duration: number,
+  getNextEntry?: () => PopulatedTrip | ConfirmedPlace,
 }

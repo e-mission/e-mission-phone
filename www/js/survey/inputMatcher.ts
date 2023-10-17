@@ -1,63 +1,15 @@
 import { logDebug, displayErrorMsg } from "../plugin/logger"
 import { DateTime } from "luxon";
-
-export type LocalDt = {
-    minute: number,
-    hour: number,
-    second: number,
-    day: number,
-    weekday: number,
-    month: number,
-    year: number,
-    timezone: string
-}
-
-export type UserInputForTrip = {
-    data: {
-        end_ts: number,
-        start_ts: number
-        label: string,
-        start_local_dt?: LocalDt
-        end_local_dt?: LocalDt
-        status?: string,
-        match_id?: string
-    },
-    metadata: {
-        time_zone: string,
-        plugin: string,
-        write_ts: number,
-        platform: string,
-        read_ts: number,
-        key: string
-    },
-    key?: string,
-}
-
-export type Trip = {
-    end_ts: number,
-    start_ts: number
-}
-
-export type TlEntry = {
-    key: string,
-    origin_key: string,
-    start_ts: number,
-    end_ts: number,
-    enter_ts: number,
-    exit_ts: number,
-    duration: number,
-    getNextEntry: any
-}
-
+import { UserInput, Trip, TlEntry } from "../types/diaryTypes";
 
 const EPOCH_MAXIMUM = 2**31 - 1;
 
 export const fmtTs = (ts_in_secs: number, tz: string): string | null => DateTime.fromSeconds(ts_in_secs, {zone : tz}).toISO();
 
-export const printUserInput = (ui: UserInputForTrip): string => `${fmtTs(ui.data.start_ts, ui.metadata.time_zone)} (${ui.data.start_ts}) -> 
+export const printUserInput = (ui: UserInput): string => `${fmtTs(ui.data.start_ts, ui.metadata.time_zone)} (${ui.data.start_ts}) -> 
 ${fmtTs(ui.data.end_ts, ui.metadata.time_zone)} (${ui.data.end_ts}) ${ui.data.label} logged at ${ui.metadata.write_ts}`;
 
-export const validUserInputForDraftTrip = (trip: Trip, userInput: UserInputForTrip, logsEnabled: boolean): boolean => {
+export const validUserInputForDraftTrip = (trip: Trip, userInput: UserInput, logsEnabled: boolean): boolean => {
     if(logsEnabled) {
         logDebug(`Draft trip:
             comparing user = ${fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)}
@@ -75,7 +27,7 @@ export const validUserInputForDraftTrip = (trip: Trip, userInput: UserInputForTr
     || -(userInput.data.start_ts - trip.start_ts) <= 15 * 60) && userInput.data.end_ts <= trip.end_ts;
 }
 
-export const validUserInputForTimelineEntry = (tlEntry: TlEntry, userInput: UserInputForTrip, logsEnabled: boolean): boolean => {
+export const validUserInputForTimelineEntry = (tlEntry: TlEntry, userInput: UserInput, logsEnabled: boolean): boolean => {
     if (!tlEntry.origin_key) return false;
     if (tlEntry.origin_key.includes('UNPROCESSED')) return validUserInputForDraftTrip(tlEntry, userInput, logsEnabled);
 
@@ -149,7 +101,7 @@ export const validUserInputForTimelineEntry = (tlEntry: TlEntry, userInput: User
 }
 
 // parallels get_not_deleted_candidates() in trip_queries.py
-export const getNotDeletedCandidates = (candidates: UserInputForTrip[]): UserInputForTrip[] => {
+export const getNotDeletedCandidates = (candidates: UserInput[]): UserInput[] => {
     console.log('getNotDeletedCandidates called with ' + candidates.length + ' candidates');
     
     // We want to retain all ACTIVE entries that have not been DELETED
@@ -163,7 +115,7 @@ export const getNotDeletedCandidates = (candidates: UserInputForTrip[]): UserInp
     return notDeletedActive;
 }
 
-export const getUserInputForTrip =  (trip: TlEntry, nextTrip: any, userInputList: UserInputForTrip[]): undefined | UserInputForTrip => {
+export const getUserInputForTrip =  (trip: TlEntry, nextTrip: any, userInputList: UserInput[]): undefined | UserInput => {
     const logsEnabled = userInputList?.length < 20;
     if (userInputList === undefined) {
         logDebug("In getUserInputForTrip, no user input, returning undefined");
@@ -195,7 +147,7 @@ export const getUserInputForTrip =  (trip: TlEntry, nextTrip: any, userInputList
 }
 
 // return array of matching additions for a trip or place
-export const getAdditionsForTimelineEntry = (entry: TlEntry, additionsList: UserInputForTrip[]): UserInputForTrip[] => {
+export const getAdditionsForTimelineEntry = (entry: TlEntry, additionsList: UserInput[]): UserInput[] => {
     const logsEnabled = additionsList?.length < 20;
 
     if (additionsList === undefined) {

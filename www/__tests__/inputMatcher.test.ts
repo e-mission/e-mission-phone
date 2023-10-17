@@ -1,6 +1,4 @@
 import { 
-    TlEntry, 
-    UserInputForTrip, 
     fmtTs, 
     printUserInput, 
     validUserInputForDraftTrip, 
@@ -10,9 +8,10 @@ import {
     getAdditionsForTimelineEntry,
     getUniqueEntries
 } from '../js/survey/inputMatcher';
+import { TlEntry, UserInput } from '../js/types/diaryTypes';
 
 describe('input-matcher', () => {
-    let userTrip: UserInputForTrip;
+    let userTrip: UserInput;
     let trip: TlEntry;
 
     beforeEach(() => {
