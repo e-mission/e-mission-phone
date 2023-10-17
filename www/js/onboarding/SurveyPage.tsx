@@ -5,14 +5,20 @@ import EnketoModal from "../survey/enketo/EnketoModal";
 import { DEMOGRAPHIC_SURVEY_DATAKEY, DEMOGRAPHIC_SURVEY_NAME } from "../control/DemographicsSettingRow";
 import { loadPreviousResponseForSurvey } from "../survey/enketo/enketoHelper";
 import { AppContext } from "../App";
-import { markIntroDone } from "./onboardingHelper";
+import { markIntroDone, registerUserDone } from "./onboardingHelper";
 import { useTranslation } from "react-i18next";
 import { DateTime } from "luxon";
 import { onboardingStyles } from "./OnboardingStack";
+import { displayErrorMsg } from "../plugin/logger";
+import i18next from "i18next";
 
 let preloadedResponsePromise: Promise<any> = null;
 export const preloadDemoSurveyResponse = () => {
   if (!preloadedResponsePromise) {
+    if (!registerUserDone) {
+      displayErrorMsg(i18next.t('errors.not-registered-cant-contact'));
+      return Promise.resolve(null);
+    }
     preloadedResponsePromise = loadPreviousResponseForSurvey(DEMOGRAPHIC_SURVEY_DATAKEY);
   }
   return preloadedResponsePromise;

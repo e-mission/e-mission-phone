@@ -8,6 +8,8 @@ import ActionMenu from "../components/ActionMenu";
 import SettingRow from "./SettingRow";
 import AlertBar from "./AlertBar";
 import moment from "moment";
+import { addStatEvent, statKeys } from "../plugin/clientStats";
+import { updateUser } from "../commHelper";
 
 /*
 * BEGIN: Simple read/write wrappers
@@ -53,7 +55,6 @@ type syncConfig = { sync_interval: number,
 export const ForceSyncRow = ({getState}) => {
     const { t } = useTranslation(); 
     const { colors } = useTheme();
-    const ClientStats = getAngularService('ClientStats');
     const Logger = getAngularService('Logger');
 
     const [dataPendingVis, setDataPendingVis] = useState(false);
@@ -61,8 +62,8 @@ export const ForceSyncRow = ({getState}) => {
 
     async function forceSync() {
         try {
-            let addedEvent = ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC);
-            console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
+            let addedEvent = addStatEvent(statKeys.BUTTON_FORCE_SYNC);
+            console.log("Added "+statKeys.BUTTON_FORCE_SYNC+" event");
 
             let sync = await forcePluginSync();
             /*
@@ -181,7 +182,6 @@ export const ForceSyncRow = ({getState}) => {
 const ControlSyncHelper = ({ editVis, setEditVis }) => {
     const { t } = useTranslation(); 
     const { colors } = useTheme();
-    const CommHelper = getAngularService("CommHelper");
     const Logger = getAngularService("Logger");
 
     const [ localConfig, setLocalConfig ] = useState<syncConfig>();
@@ -214,7 +214,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
         try{
             let set = setConfig(localConfig);
             //NOTE -- we need to make sure we update these settings in ProfileSettings :) -- getting rid of broadcast handling for migration!!
-            CommHelper.updateUser({
+            updateUser({
                 // TODO: worth thinking about where best to set this
                 // Currently happens in native code. Now that we are switching
                 // away from parse, we can store this from javascript here. 

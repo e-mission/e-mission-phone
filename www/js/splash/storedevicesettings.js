@@ -1,10 +1,11 @@
 import angular from 'angular';
+import { updateUser } from '../commHelper';
 
 angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
                                              'emission.services',
                                              'emission.splash.startprefs'])
 .factory('StoreDeviceSettings', function($window, $state, $rootScope, $ionicPlatform,
-    $ionicPopup, Logger, CommHelper, StartPrefs) {
+    $ionicPopup, Logger, StartPrefs) {
 
     var storedevicesettings = {};
 
@@ -21,7 +22,7 @@ angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
           client_app_version: appver
         };
         Logger.log("About to update profile with settings = "+JSON.stringify(updateJSON));
-        return CommHelper.updateUser(updateJSON);
+        return updateUser(updateJSON);
       }).then(function(updateJSON) {
          // alert("Finished saving token = "+JSON.stringify(t.token));
       }).catch(function(error) {
