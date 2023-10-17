@@ -42,10 +42,6 @@ type EnketoSurveyConfig = {
   }
 }
 
-/** @type {EnketoSurveyConfig} _config */
-//TODO find a more appropriate way to store this
-let _config: EnketoSurveyConfig;
-
 const LABEL_FUNCTIONS = {
   UseLabelTemplate : async (xmlDoc: XMLDocument, name: string) => {
     let configSurveys = await _lazyLoadConfig();
@@ -91,6 +87,9 @@ const LABEL_FUNCTIONS = {
   if (!val) return '<null>';
   return val;
 }
+
+/** @type {EnketoSurveyConfig} _config */
+let _config: EnketoSurveyConfig;
 
 /**
  * _lazyLoadConfig load enketo survey config. If already loaded, return the cached config
