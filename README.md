@@ -213,6 +213,12 @@ AND/OR
 npm run <android>
 ```
 For other options of build scripts, refer to [`package.cordovabuild.json`](package.cordovabuild.json)
+Common ones listed below (both, Android, iOS)
+```
+npm run build
+npm run build-prod-android
+npm run build-prod-ios
+```
 
 <details><summary>Expected output</summary>
 
