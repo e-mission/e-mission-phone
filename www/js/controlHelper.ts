@@ -24,7 +24,7 @@ declare let window: fsWindow;
  * @param fileName is the name of the file to be created
  * @returns a function that returns a promise, which writes the file upon evaluation.
  */
-const createWriteFile = function (fileName: string) {
+export const createWriteFile = function (fileName: string) {
   return function(result) {
     const resultList = result.phone_data;
       return new Promise<void>(function(resolve, reject) {
@@ -59,7 +59,7 @@ const createWriteFile = function (fileName: string) {
  * @param endTimeString " "
  * @returns a function which returns a promise, which shares an existing file upon evaluation.
  */
-const createShareData = function(fileName: string, startTimeString: string, endTimeString: string) {
+export const createShareData = function(fileName: string, startTimeString: string, endTimeString: string) {
   return function() {
     return new Promise<void>(function(resolve, reject) {
     window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
@@ -129,7 +129,6 @@ export const getMyData = function(startTs: Date) {
     const shareData = createShareData(dumpFile, startTimeString, endTimeString);
 
     getRawEntries(null, getUnixNum(startTime), startTime.toUnixInteger())
-      .then(result => Promise.resolve(dumpFile).then(() => result))
       .then(writeDumpFile)
       .then(shareData)
       .then(function() {
