@@ -1,17 +1,19 @@
 //component to view and manage permission settings
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { StyleSheet, ScrollView, View } from "react-native";
 import { Button, Text } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 import PermissionItem from "./PermissionItem";
-import usePermissionStatus, { refreshAllChecks } from "../usePermissionStatus";
+import { refreshAllChecks } from "../usePermissionStatus";
 import ExplainPermissions from "./ExplainPermissions";
 import AlertBar from "../control/AlertBar";
+import { AppContext } from "../App";
 
 const PermissionsControls = ({ onAccept }) => {
     const { t } = useTranslation();
     const [explainVis, setExplainVis] = useState<boolean>(false);
-    const { checkList, overallStatus, error, errorVis, setErrorVis, explanationList } = usePermissionStatus();
+    const { permissionStatus } = useContext(AppContext);
+    const { checkList, overallStatus, error, errorVis, setErrorVis, explanationList } = permissionStatus;
 
     return (
         <>

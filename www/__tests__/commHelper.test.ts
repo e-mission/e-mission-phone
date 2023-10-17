@@ -26,10 +26,11 @@ it('fetches text from a URL and caches it so the next call is faster', async () 
 
 /* The following functions from commHelper.ts are not tested because they are just wrappers
     around the native functions in BEMServerComm.
-  If we wanted to test them, we would need to mock the native functions in BEMServerComm, but
-    this would be of limited value. It would be better to test the native functions directly.
+  If we wanted to test them, we would need to mock the native functions in BEMServerComm.
+    It would be better to do integration tests that actually call the native functions.
 
   * - getRawEntries
+  * - getRawEntriesForLocalDate
   * - getPipelineRangeTs
   * - getPipelineCompleteTs
   * - getMetrics
@@ -37,5 +38,5 @@ it('fetches text from a URL and caches it so the next call is faster', async () 
   * - registerUser
   * - updateUser
   * - getUser
-
+  * - putOne
 */

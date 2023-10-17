@@ -6,30 +6,27 @@ import ConsentPage from "./ConsentPage";
 import SurveyPage from "./SurveyPage";
 import SaveQrPage from "./SaveQrPage";
 import SummaryPage from "./SummaryPage";
+import { OnboardingRoute } from "./onboardingHelper";
+import { displayErrorMsg } from "../plugin/logger";
 
-// true if loading/undetermined
-// 'welcome' if no config present
-// 'consent' if config present, but not consented
-// 'survey' if consented but intro not done
-// null if intro done
 const OnboardingStack = () => {
 
-  const { pendingOnboardingState } = useContext(AppContext);
+  const { onboardingState } = useContext(AppContext);
 
-  console.debug('pendingOnboardingState in OnboardingStack', pendingOnboardingState);
+  console.debug('onboardingState in OnboardingStack', onboardingState);
 
-  if (pendingOnboardingState.route == 'welcome') {
+  if (onboardingState.route == OnboardingRoute.WELCOME) {
     return <WelcomePage />;
-  } else if (pendingOnboardingState.route == 'summary') {
+  } else if (onboardingState.route == OnboardingRoute.SUMMARY) {
     return <SummaryPage />;
-  } else if (pendingOnboardingState.route == 'consent') {
+  } else if (onboardingState.route == OnboardingRoute.CONSENT) {
     return <ConsentPage />;
-  } else if (pendingOnboardingState.route == 'save-qr') {
+  } else if (onboardingState.route == OnboardingRoute.SAVE_QR) {
     return <SaveQrPage />;
-  } else if (pendingOnboardingState.route == 'survey') {
+  } else if (onboardingState.route == OnboardingRoute.SURVEY) {
     return <SurveyPage />;
   } else {
-    return 'TODO'
+    displayErrorMsg('OnboardingStack: unknown route', onboardingState.route);
   }
 }
 
