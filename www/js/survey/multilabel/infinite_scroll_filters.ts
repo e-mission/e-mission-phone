@@ -10,21 +10,21 @@ import i18next from "i18next";
 
 const unlabeledCheck = (t) => {
     return t.INPUTS
-         .map((inputType, index) => typeof t.userInput[inputType] === 'undefined')
+         .map((inputType, index) => !t.userInput[inputType])
          .reduce((acc, val) => acc || val, false);
 }
 
 const invalidCheck = (t) => {
     const retVal =
-        (typeof t.userInput['MODE'] !== 'undefined' && t.userInput['MODE'].value === 'pilot_ebike') &&
-        (typeof t.userInput['REPLACED_MODE'] === 'undefined' ||
+        (t.userInput['MODE'] && t.userInput['MODE'].value === 'pilot_ebike') &&
+        (!t.userInput['REPLACED_MODE'] ||
             t.userInput['REPLACED_MODE'].value === 'pilot_ebike' ||
             t.userInput['REPLACED_MODE'].value === 'same_mode');
     return retVal;
 }
 
 const toLabelCheck = (trip) => {
-    if (typeof trip.expectation !== 'undefined') {
+    if (trip.expectation) {
         console.log(trip.expectation.to_label)
         return trip.expectation.to_label && unlabeledCheck(trip);
     } else {
