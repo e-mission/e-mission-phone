@@ -2,11 +2,10 @@ import angular from 'angular';
 import { getConfig } from '../config/dynamicConfig';
 import { storageGet, storageSet } from '../plugin/storage';
 
-angular.module('emission.splash.startprefs', ['emission.plugin.logger',
-                                              'emission.splash.referral'])
+angular.module('emission.splash.startprefs', ['emission.plugin.logger'])
 
-.factory('StartPrefs', function($window, $state, $interval, $rootScope, $ionicPlatform,
-      $ionicPopup, $http, Logger, ReferralHandler) {
+.factory('StartPrefs', function($window, $state, $rootScope,
+      $ionicPopup, $http, Logger) {
     var logger = Logger;
     var startprefs = {};
      // Boolean: represents that the "intro" - the one page summary
