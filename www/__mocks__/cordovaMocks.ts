@@ -1,4 +1,5 @@
 import packageJsonBuild from '../../package.cordovabuild.json';
+import fakeConfig from "./fakeConfig.json";
 
 export const mockCordova = () => {
   window['cordova'] ||= {};
@@ -90,19 +91,7 @@ export const mockBEMUserCache = () => {
     },
     getDocument: (key: string, withMetadata?: boolean) => {
       // this was mocked specifically for enketoHelper's use, could be expanded if needed
-      const fakeSurveyConfig = {
-        survey_info: {
-          surveys: {
-            TimeUseSurvey: { compatibleWith: 1, 
-              formPath: "https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json", 
-              labelTemplate: {en: "{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }",
-                              es: "{ erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }}"}, 
-              labelVars: {da: {key: "Domestic_activities", type: "length"},
-                          erea: {key: "Employment_related_a_Education_activities", type:"length"}}, 
-              version: 9}
-          }
-        }
-      }
+      const fakeSurveyConfig = fakeConfig;
 
       if(key == "config/app_ui_config"){
         return new Promise<any>((rs, rj) =>

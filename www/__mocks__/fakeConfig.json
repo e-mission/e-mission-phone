@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "ts": 1655143472,
+  "server": {
+    "connectUrl": "https://openpath-test.nrel.gov/api/",
+    "aggregate_call_auth": "user_only"
+  },
+  "intro": {
+    "program_or_study": "study",
+    "start_month": "10",
+    "start_year": "2023",
+    "program_admin_contact": "K. Shankari",
+    "deployment_partner_name": "NREL",
+    "translated_text": {
+      "en": {
+        "deployment_partner_name": "NREL",
+        "deployment_name": "Testing environment for Jest testing",
+        "summary_line_1": "",
+        "summary_line_2": "",
+        "summary_line_3": "",
+        "short_textual_description": "",
+        "why_we_collect": "",
+        "research_questions": [
+          "",
+          ""
+        ]
+      },
+      "es": {
+        "deployment_partner_name": "NREL",
+        "deployment_name": "Ambiente prueba para las pruebas de Jest",
+        "summary_line_1": "",
+        "summary_line_2": "",
+        "summary_line_3": "",
+        "short_textual_description": "",
+        "why_we_collect": "",
+        "research_questions": [
+          "",
+          ""
+        ]
+      }
+    }
+  },
+  "survey_info": {
+    "surveys": {
+      "TimeUseSurvey": {
+        "compatibleWith": 1,
+        "formPath": "https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json",
+        "labelTemplate": {
+          "en": "{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }",
+          "es": "{ erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }}"
+        },
+        "labelVars": {
+          "da": {
+            "key": "Domestic_activities",
+            "type": "length"
+          },
+          "erea": {
+            "key": "Employment_related_a_Education_activities",
+            "type": "length"
+          }
+        },
+        "version": 9
+      }
+    },
+    "trip-labels": "ENKETO"
+  },
+  "display_config": {
+    "use_imperial": false
+  },
+  "profile_controls": {
+    "support_upload": true,
+    "trip_end_notification": false
+  },
+  "admin_dashboard": {
+    "overview_users": true,
+    "overview_active_users": true,
+    "overview_trips": true,
+    "overview_signup_trends": true,
+    "overview_trips_trend": true,
+    "data_uuids": true,
+    "data_trips": true,
+    "data_trips_columns_exclude": [],
+    "additional_trip_columns": [],
+    "data_uuids_columns_exclude": [],
+    "token_generate": true,
+    "token_prefix": "nrelop",
+    "map_heatmap": true,
+    "map_bubble": true,
+    "map_trip_lines": true,
+    "push_send": true,
+    "options_uuids": true,
+    "options_emails": true
+  }
+}
