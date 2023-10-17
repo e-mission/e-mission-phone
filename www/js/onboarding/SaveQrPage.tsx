@@ -9,6 +9,8 @@ import { useTranslation } from "react-i18next";
 import QrCode, { shareQR } from "../components/QrCode";
 import { onboardingStyles } from "./OnboardingStack";
 import { preloadDemoSurveyResponse } from "./SurveyPage";
+import { storageSet } from "../plugin/storage";
+import { registerUser } from "../commHelper";
 import { resetDataAndRefresh } from "../config/dynamicConfig";
 import i18next from "i18next";
 
@@ -33,19 +35,15 @@ const SaveQrPage = ({  }) => {
   }, [overallStatus]);
 
   function login(token) {
-    const CommHelper = getAngularService('CommHelper');
-    const KVStore = getAngularService('KVStore');
     const EXPECTED_METHOD = "prompted-auth";
     const dbStorageObject = {"token": token};
     logDebug("about to login with token");
-    return KVStore.set(EXPECTED_METHOD, dbStorageObject).then((r) => {
-      CommHelper.registerUser((successResult) => {
-        logDebug("registered user in CommHelper result " + successResult);
+    return storageSet(EXPECTED_METHOD, dbStorageObject).then((r) => {
+      registerUser().then((r) => {
+        logDebug("registered user in CommHelper result " + r);
         refreshOnboardingState();
-      }, function(errorResult) {
-        /* if registration fails, we should take the user back to the welcome page
-          so they can try again with a valid token */
-        displayError(errorResult, i18next.t('errors.registration-check-token'));
+      }).catch((e) => {
+        displayError(e, "User registration error");
         resetDataAndRefresh();
       });
     }).catch((e) => {

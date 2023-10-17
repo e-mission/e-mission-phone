@@ -15,8 +15,7 @@ import angular from 'angular';
 import { getUserInputForTrip } from '../inputMatcher';
 
 angular.module('emission.survey.enketo.trip.button',
-    ['emission.stats.clientstats',
-        'emission.survey.enketo.answer'])
+    ['emission.survey.enketo.answer'])
 .factory("EnketoTripButtonService", function(EnketoSurveyAnswer, Logger, $timeout) {
   var etbs = {};
   console.log("Creating EnketoTripButtonService");

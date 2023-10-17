@@ -6,8 +6,7 @@ import angular from 'angular';
 import { getAdditionsForTimelineEntry, getUniqueEntries } from '../inputMatcher';
 
 angular.module('emission.survey.enketo.add-note-button',
-    ['emission.stats.clientstats',
-        'emission.services',
+    ['emission.services',
         'emission.survey.enketo.answer'])
 .factory("EnketoNotesButtonService", function(EnketoSurveyAnswer, Logger, $timeout) {
   var enbs = {};

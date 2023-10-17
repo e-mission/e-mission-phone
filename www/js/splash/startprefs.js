@@ -1,12 +1,12 @@
 import angular from 'angular';
 import { getConfig } from '../config/dynamicConfig';
+import { storageGet, storageSet } from '../plugin/storage';
 
 angular.module('emission.splash.startprefs', ['emission.plugin.logger',
-                                              'emission.splash.referral',
-                                              'emission.plugin.kvstore'])
+                                              'emission.splash.referral'])
 
 .factory('StartPrefs', function($window, $state, $interval, $rootScope, $ionicPlatform,
-      $ionicPopup, KVStore, $http, Logger, ReferralHandler) {
+      $ionicPopup, $http, Logger, ReferralHandler) {
     var logger = Logger;
     var startprefs = {};
      // Boolean: represents that the "intro" - the one page summary
@@ -31,7 +31,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       // mark in native storage
       return startprefs.readConsentState().then(writeConsentToNative).then(function(response) {
           // mark in local storage
-          KVStore.set(DATA_COLLECTION_CONSENTED_PROTOCOL,
+          storageSet(DATA_COLLECTION_CONSENTED_PROTOCOL,
             $rootScope.req_consent);
           // mark in local variable as well
           $rootScope.curr_consented = angular.copy($rootScope.req_consent);
@@ -41,13 +41,13 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
 
     startprefs.markIntroDone = function() {
       var currTime = moment().format();
-      KVStore.set(INTRO_DONE_KEY, currTime);
+      storageSet(INTRO_DONE_KEY, currTime);
       $rootScope.$emit(startprefs.INTRO_DONE_EVENT, currTime);
     }
 
     // returns boolean
     startprefs.readIntroDone = function() {
-      return KVStore.get(INTRO_DONE_KEY).then(function(read_val) {
+      return storageGet(INTRO_DONE_KEY).then(function(read_val) {
           logger.log("in readIntroDone, read_val = "+JSON.stringify(read_val));
           $rootScope.intro_done = read_val;
       });
@@ -84,7 +84,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
           .then(function(startupConfigResult) {
               $rootScope.req_consent = startupConfigResult.data.emSensorDataCollectionProtocol;
               logger.log("required consent version = " + JSON.stringify($rootScope.req_consent));
-              return KVStore.get(DATA_COLLECTION_CONSENTED_PROTOCOL);
+              return storageGet(DATA_COLLECTION_CONSENTED_PROTOCOL);
           }).then(function(kv_store_consent) {
               $rootScope.curr_consented = kv_store_consent;
               console.assert(angular.isDefined($rootScope.req_consent), "in readConsentState $rootScope.req_consent", JSON.stringify($rootScope.req_consent));

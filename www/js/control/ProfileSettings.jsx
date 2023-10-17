@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Modal, StyleSheet, ScrollView } from "react-native";
 import { Dialog, Button, useTheme, Text, Appbar, IconButton } from "react-native-paper";
 import { getAngularService } from "../angular-react-helper";
@@ -22,6 +22,8 @@ import ControlCollectionHelper, {getHelperCollectionSettings, getState, isMedium
 import { resetDataAndRefresh } from "../config/dynamicConfig";
 import { AppContext } from "../App";
 import { shareQR } from "../components/QrCode";
+import { storageClear } from "../plugin/storage";
+import { getAppVersion } from "../plugin/clientStats";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -35,10 +37,8 @@ const ProfileSettings = () => {
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
     const UploadHelper = getAngularService('UploadHelper');
     const EmailHelper = getAngularService('EmailHelper');
-    const KVStore = getAngularService('KVStore');
     const NotificationScheduler = getAngularService('NotificationScheduler');
     const ControlHelper = getAngularService('ControlHelper');
-    const ClientStats = getAngularService('ClientStats');
     const StartPrefs = getAngularService('StartPrefs');
 
     //functions that come directly from an Angular service
@@ -69,10 +69,10 @@ const ProfileSettings = () => {
     const [syncSettings, setSyncSettings] = useState({});
     const [cacheResult, setCacheResult] = useState("");
     const [connectSettings, setConnectSettings] = useState({});
-    const [appVersion, setAppVersion] = useState("");
     const [uiConfig, setUiConfig] = useState({});
     const [consentDoc, setConsentDoc] = useState({});
     const [dumpDate, setDumpDate] = useState(new Date());
+    const appVersion = useRef();
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -96,7 +96,9 @@ const ProfileSettings = () => {
         getOPCode();
         getSyncSettings();
         getConnectURL();
-        setAppVersion(ClientStats.getAppVersion());
+        getAppVersion().then((version) => {
+            appVersion.current = version;
+        });
     }
 
     //previously not loaded on regular refresh, this ensures it stays caught up
@@ -376,7 +378,7 @@ const ProfileSettings = () => {
                 <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
                 <ControlDataTable controlData={syncSettings.show_config}></ControlDataTable>
             </ExpansionSection>
-            <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion}></SettingRow>
+            <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion.current}></SettingRow>
         </ScrollView>
 
             {/* menu for "nuke data" */}
@@ -387,15 +389,15 @@ const ProfileSettings = () => {
                 style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
                     <Dialog.Content>
-                        <Button onPress={() => {KVStore.clearOnlyLocal;
+                        <Button onPress={() => {storageClear({local: true})
                                                 setNukeVis(false);}}>
                             {t('general-settings.nuke-ui-state-only')}
                         </Button>
-                        <Button onPress={() => {KVStore.clearOnlyNative;
+                        <Button onPress={() => {storageClear({native: true});
                                                 setNukeVis(false);}}>
                             {t('general-settings.nuke-native-cache-only')}
                         </Button>
-                        <Button onPress={() => {KVStore.clearAll;
+                        <Button onPress={() => {storageClear({local: true, native: true});
                                                 setNukeVis(false);}}>
                             {t('general-settings.nuke-everything')}
                         </Button>
