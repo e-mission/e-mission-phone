@@ -82,7 +82,6 @@ export function readConsentState() {
   return fetch("json/startupConfig.json")
     .then(response => response.json())
     .then(function (startupConfigResult) {
-      // let startupConfigJson = await startupConfigResult.json();
       console.log(startupConfigResult);
       _req_consent = startupConfigResult.emSensorDataCollectionProtocol;
       logInfo("required consent version = " + JSON.stringify(_req_consent));
