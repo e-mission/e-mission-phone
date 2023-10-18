@@ -26,7 +26,7 @@ function writeConsentToNative() {
   //note that this calls to the notification API, 
   //so should not be called until we have notification permissions
   //see https://github.com/e-mission/e-mission-docs/issues/1006
-  return window['cordiva'].plugins.BEMDataCollection.markConsented(_req_consent);
+  return window['cordova'].plugins.BEMDataCollection.markConsented(_req_consent);
 };
 
 //used in ConsentPage
