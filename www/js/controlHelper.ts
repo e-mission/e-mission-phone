@@ -2,20 +2,8 @@ import { DateTime } from "luxon";
 
 import { getRawEntries } from "./commHelper";
 import { logInfo, displayError, logDebug } from "./plugin/logger";
+import { fsWindow } from "./types/fileIOTypes"
 import i18next from "./i18nextInit" ;
-
-interface fsWindow extends Window {
-  requestFileSystem: (
-    type: number,
-    size: number,
-    successCallback: (fs: any) => void,
-    errorCallback?: (error: any) => void
-  ) => void;
-  LocalFileSystem: {
-    TEMPORARY: number;
-    PERSISTENT: number;
-  };
-};
 
 declare let window: fsWindow;
 
@@ -65,6 +53,7 @@ export const createShareData = function(fileName: string, startTimeString: strin
     window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
       logDebug("During email, file system open: " + fs.name);
       fs.root.getFile(fileName, null, function(fileEntry) {
+        logDebug(`fileEntry is type ${typeof fileEntry.isFile}`)
         logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
         fileEntry.file(function(file) {
           const reader = new FileReader();
