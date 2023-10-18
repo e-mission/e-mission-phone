@@ -203,7 +203,7 @@ If connecting to a development server over http, make sure to turn on http suppo
     </edit-config>
 ```
 
-### Run in the emulator
+### Building the app
 
 ```
 npm run <ios>
