@@ -57,7 +57,9 @@ source setup/activate_serve.sh
     ....
     ```
   
-1. Change the devapp connection URL to one of these (e.g. 192.168.162.1:3000) and press "Connect"
+1. Change the devapp connection URL and press "Connect"
+    - If you are running the devapp in an emulator on the same machine as the devapp server, you may simply use localhost, which would be `127.0.0.1:3000` on iOS and `10.0.2.2:3000` on Android.
+    - If you are running the devapp on a different device, you must type the address manually (e.g. `192.168.162.1:3000`). Note that this is a local IP address; the devices must be on the same network
 1. The app will now display the version of e-mission app that is in your local directory
   1. The console logs will be displayed back in the server window (prefaced by `[console]`)
   1. Breakpoints can be added by connecting through the browser
@@ -66,7 +68,7 @@ source setup/activate_serve.sh
     
 **Ta-da!** :gift: If you change any of the files in the `www` directory, the app will automatically be re-loaded without manually restarting either the server or the app :tada:
 
-**Note1**: You may need to scroll up, past all the warnings about `Content Security Policy has been added` to find the port that the server is listening to.
+**Note**: You may need to scroll up, past all the warnings about `Content Security Policy has been added` to find the port that the server is listening to.
 
 End to end testing
 ---
