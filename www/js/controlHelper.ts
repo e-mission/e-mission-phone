@@ -2,10 +2,10 @@ import { DateTime } from "luxon";
 
 import { getRawEntries } from "./commHelper";
 import { logInfo, displayError, logDebug } from "./plugin/logger";
-import { fsWindow } from "./types/fileIOTypes"
+import { FsWindow, RawDataCluster } from "./types/fileShareTypes"
 import i18next from "./i18nextInit" ;
 
-declare let window: fsWindow;
+declare let window: FsWindow;
 
 /**
  * createWriteFile is a factory method for the JSON dump file creation
@@ -13,7 +13,7 @@ declare let window: fsWindow;
  * @returns a function that returns a promise, which writes the file upon evaluation.
  */
 export const createWriteFile = function (fileName: string) {
-  return function(result) {
+  return function(result: RawDataCluster) {
     const resultList = result.phone_data;
       return new Promise<void>(function(resolve, reject) {
         window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
@@ -53,7 +53,6 @@ export const createShareData = function(fileName: string, startTimeString: strin
     window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
       logDebug("During email, file system open: " + fs.name);
       fs.root.getFile(fileName, null, function(fileEntry) {
-        logDebug(`fileEntry is type ${typeof fileEntry.isFile}`)
         logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
         fileEntry.file(function(file) {
           const reader = new FileReader();
