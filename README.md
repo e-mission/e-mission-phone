@@ -79,9 +79,9 @@ A lot of the visualizations that we display in the phone client come from the se
 
 are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
 
-In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode.  By default, the phone app connects to the local server (localhost on iOS, [10.0.2.2 on android](https://stackoverflow.com/questions/5806220/how-to-connect-to-my-http-localhost-web-server-from-android-emulator-in-eclips)) with the `prompted-auth` authentication method. To connect to a different server, or to use a different authentication method, you need to create a `www/json/connectionConfig.json` file. More details on configuring authentication [can be found in the docs](https://github.com/e-mission/e-mission-docs/blob/master/docs/install/configuring_authentication.md).
+The dynamic config (see https://github.com/e-mission/nrel-openpath-deploy-configs) controls the server endpoint that the phone app will connect to. If you are running the app in an emulator on the same machine as your local server (i.e. they share a `localhost`), you can use one of the `dev-emulator-*` configs (these configs have no `server` specified so `localhost` is assumed).
 
-One advantage of using `skip` authentication in development mode is that any user email can be entered without a password. Developers can use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
+If you wish to connect to a different server, create your own config file according to https://github.com/e-mission/nrel-openpath-deploy-configs and specify the `server` field accordingly.
 
 Updating the e-mission-\* plugins or adding new plugins
 ---
