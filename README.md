@@ -36,15 +36,6 @@ Run the setup script
 bash setup/setup_serve.sh
 ```
 
-**(optional)** Configure by changing the files in `www/json`.
-Defaults are in `www/json/*.sample`
-
-```
-ls www/json/*.sample
-cp www/json/startupConfig.json.sample www/json/startupConfig.json
-cp ..... www/json/connectionConfig.json
-```
-
 ### Activation (after install, and in every new shell)
 
 ```
