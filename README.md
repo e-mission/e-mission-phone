@@ -205,22 +205,17 @@ If connecting to a development server over http, make sure to turn on http suppo
 
 ### Building the app
 
-```
-npm run <ios>
-```
-AND/OR
-```
-npm run <android>
-```
-For other options of build scripts, refer to [`package.cordovabuild.json`](package.cordovabuild.json)
-Common ones listed below (both, Android, iOS)
-```
-npm run build
-npm run build-prod-android
-npm run build-prod-ios
-```
+We offer a set of build scripts you can pick from, each of which i) bundle the JS with Webpack and then ii) proceed with a Cordova build.
+You can bundle JS in 'production' or 'dev' mode, and you can build Android or iOS or both.
+The common use cases will be:
 
-<details><summary>Expected output</summary>
+- `npm run build` (to build for production on both Android and iOS platforms)
+- `npm run build-prod-android` (to build for production on Android platform only)
+- `npm run build-prod-ios` (to build for production on iOS platform only)
+
+Find the full list of these scripts in [`package.cordovabuild.json`](package.cordovabuild.json)
+
+<details><summary>Expected output (Android build)</summary>
 
 ```
 BUILD SUCCESSFUL in 2m 48s
