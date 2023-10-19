@@ -22,8 +22,8 @@ let message = "";
 global.fetch = (url: string, options: { method: string, headers: {}, body: string }) => new Promise((rs, rj) => {
   //if there's options, that means there is a post request
   if (options) {
+    message = "sent " + options.method + options.body + " for " + url;
     setTimeout(() => {
-      message = "sent " + options.method + options.body + " for " + url;
       rs('sent ' + options.method + options.body + ' to ' + url);
     }, 100);
   }
