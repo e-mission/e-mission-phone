@@ -39,8 +39,7 @@ export function markConsented() {
     storageSet(DATA_COLLECTION_CONSENTED_PROTOCOL,
       _req_consent);
     // mark in local variable as well
-    //TODO - make a copy here
-    _curr_consented = _req_consent;
+    _curr_consented = {..._req_consent};
     //TODO - find out how this is used and how to replace
     //emit(startPrefs.CONSENTED_EVENT, _req_consent);
   });
