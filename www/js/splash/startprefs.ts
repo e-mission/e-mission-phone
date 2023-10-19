@@ -38,12 +38,6 @@ export function markConsented() {
       _req_consent);
     // mark in local variable as well
     _curr_consented = {..._req_consent};
-    
-    //handle consent in other plugins - previously used $emit
-    const PushNotify = getAngularService("PushNotify");
-    PushNotify.afterConsent();
-    const StoreSeviceSettings = getAngularService("StoreDeviceSettings");
-    StoreSeviceSettings.afterConsent();
   });
 };
 
