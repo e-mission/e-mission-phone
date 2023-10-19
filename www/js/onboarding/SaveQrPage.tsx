@@ -20,12 +20,15 @@ const SaveQrPage = ({  }) => {
 
   useEffect(() => {
     if (overallStatus == true && !registerUserDone) {
-      logDebug('permissions done, going to log in');
-      login(onboardingState.opcode).then((response) => {
-        logDebug('login done, refreshing onboarding state');
-        setRegisterUserDone(true);
-        preloadDemoSurveyResponse();
-        refreshOnboardingState();
+      const StartPrefs = getAngularService('StartPrefs');
+      StartPrefs.markConsented().then((response) => {
+        logDebug('permissions done, going to log in');
+        login(onboardingState.opcode).then((response) => {
+          logDebug('login done, refreshing onboarding state');
+          setRegisterUserDone(true);
+          preloadDemoSurveyResponse();
+          refreshOnboardingState();
+        });
       });
     } else {
       logDebug('permissions not done, waiting');
