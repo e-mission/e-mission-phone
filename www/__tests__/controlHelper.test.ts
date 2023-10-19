@@ -57,7 +57,7 @@ const generateFakeValues = (arraySize: number) => {
 };
 
 // A variation of createShareData; confirms the file has been written,
-// without sharing the data. 
+// without calling the sharing components
 const confirmFileExists = (fileName: string, dataCluster: RawDataCluster) => {
   return function() {
     return new Promise(function() {
@@ -90,6 +90,9 @@ it('correctly writes the files', async () => {
   let dataCluster = null; 
   testPromise.then((result) => {dataCluster = result});
   const fileExists = confirmFileExists(fileName, dataCluster);
+  const temp = createWriteFile('badFile.test')
+
+  expect(testPromise.then(temp).then(fileExists)).resolves.toEqual(false);
   expect(testPromise.then(writeFile).then(fileExists)).resolves.not.toThrow();
   expect(testPromise.then(writeFile).then(fileExists)).resolves.toEqual(true);
 });
