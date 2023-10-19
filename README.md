@@ -177,7 +177,7 @@ Copied config.cordovabuild.xml -> config.xml and package.cordovabuild.json -> pa
 </details>
 
 
-### Activation (after install, and in every new shell)
+### Enable HTTP support on android by editing `config.xml`
 
 If connecting to a development server over http, make sure to turn on http support on android
 
