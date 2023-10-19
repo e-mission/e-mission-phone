@@ -1,9 +1,9 @@
-import { getAngularService } from "../../angular-react-helper";
+import { getAngularService } from '../../angular-react-helper';
 import { Form } from 'enketo-core';
 import { XMLParser } from 'fast-xml-parser';
 import i18next from 'i18next';
 
-export type PrefillFields = {[key: string]: string};
+export type PrefillFields = { [key: string]: string };
 
 export type SurveyOptions = {
   timelineEntry?: any;
@@ -35,12 +35,10 @@ function getXmlWithPrefills(xmlModel: string, prefillFields: PrefillFields) {
  * @param opts object with options like 'prefilledSurveyResponse' or 'prefillFields'
  * @returns XML string of an existing or prefilled model response, or null if no response is available
  */
-export function getInstanceStr(xmlModel: string, opts: SurveyOptions): string|null {
+export function getInstanceStr(xmlModel: string, opts: SurveyOptions): string | null {
   if (!xmlModel) return null;
-  if (opts.prefilledSurveyResponse)
-    return opts.prefilledSurveyResponse;
-  if (opts.prefillFields) 
-    return getXmlWithPrefills(xmlModel, opts.prefillFields);
+  if (opts.prefilledSurveyResponse) return opts.prefilledSurveyResponse;
+  if (opts.prefillFields) return getXmlWithPrefills(xmlModel, opts.prefillFields);
   return null;
 }
 
@@ -56,37 +54,37 @@ export function saveResponse(surveyName: string, enketoForm: Form, appConfig, op
   const xmlParser = new window.DOMParser();
   const xmlResponse = enketoForm.getDataStr();
   const xmlDoc = xmlParser.parseFromString(xmlResponse, 'text/xml');
-  const xml2js = new XMLParser({ignoreAttributes: false, attributeNamePrefix: 'attr'});
+  const xml2js = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: 'attr' });
   const jsonDocResponse = xml2js.parse(xmlResponse);
-  return EnketoSurveyAnswer.resolveLabel(surveyName, xmlDoc).then(rsLabel => {
-    const data: any = {
-      label: rsLabel,
-      name: surveyName,
-      version: appConfig.survey_info.surveys[surveyName].version,
-      xmlResponse,
-      jsonDocResponse,
-    };
-    if (opts.timelineEntry) {
-      let timestamps = EnketoSurveyAnswer.resolveTimestamps(xmlDoc, opts.timelineEntry);
-      if (timestamps === undefined) {
-        // timestamps were resolved, but they are invalid
-        return new Error(i18next.t('survey.enketo-timestamps-invalid')); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
+  return EnketoSurveyAnswer.resolveLabel(surveyName, xmlDoc)
+    .then((rsLabel) => {
+      const data: any = {
+        label: rsLabel,
+        name: surveyName,
+        version: appConfig.survey_info.surveys[surveyName].version,
+        xmlResponse,
+        jsonDocResponse,
+      };
+      if (opts.timelineEntry) {
+        let timestamps = EnketoSurveyAnswer.resolveTimestamps(xmlDoc, opts.timelineEntry);
+        if (timestamps === undefined) {
+          // timestamps were resolved, but they are invalid
+          return new Error(i18next.t('survey.enketo-timestamps-invalid')); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
+        }
+        // if timestamps were not resolved from the survey, we will use the trip or place timestamps
+        timestamps ||= opts.timelineEntry;
+        data.start_ts = timestamps.start_ts || timestamps.enter_ts;
+        data.end_ts = timestamps.end_ts || timestamps.exit_ts;
+        // UUID generated using this method https://stackoverflow.com/a/66332305
+        data.match_id = URL.createObjectURL(new Blob([])).slice(-36);
+      } else {
+        const now = Date.now();
+        data.ts = now / 1000; // convert to seconds to be consistent with the server
+        data.fmt_time = new Date(now);
       }
-      // if timestamps were not resolved from the survey, we will use the trip or place timestamps
-      timestamps ||= opts.timelineEntry;
-      data.start_ts = timestamps.start_ts || timestamps.enter_ts;
-      data.end_ts = timestamps.end_ts || timestamps.exit_ts;
-      // UUID generated using this method https://stackoverflow.com/a/66332305
-      data.match_id = URL.createObjectURL(new Blob([])).slice(-36);
-    } else {
-      const now = Date.now();
-      data.ts = now/1000; // convert to seconds to be consistent with the server
-      data.fmt_time = new Date(now);
-    }
-    // use dataKey passed into opts if available, otherwise get it from the config
-    const dataKey = opts.dataKey || appConfig.survey_info.surveys[surveyName].dataKey;
-    return window['cordova'].plugins.BEMUserCache
-      .putMessage(dataKey, data)
-      .then(() => data);
-  }).then(data => data);
+      // use dataKey passed into opts if available, otherwise get it from the config
+      const dataKey = opts.dataKey || appConfig.survey_info.surveys[surveyName].dataKey;
+      return window['cordova'].plugins.BEMUserCache.putMessage(dataKey, data).then(() => data);
+    })
+    .then((data) => data);
 }
