@@ -1,7 +1,5 @@
 import { storageGet, storageSet } from '../plugin/storage';
 import { logInfo, logDebug, displayErrorMsg } from '../plugin/logger';
-import { INTRO_DONE_KEY } from '../onboarding/onboardingHelper';
-import { getAngularService } from "../angular-react-helper";
 
 type StartPrefs = {
   CONSENTED_EVENT: string,
@@ -20,6 +18,10 @@ const DATA_COLLECTION_CONSENTED_PROTOCOL = 'data_collection_consented_protocol';
 let _req_consent;
 let _curr_consented;
 
+/**
+ * @function writes the consent document to native storage
+ * @returns Promise to execute the write to storage
+*/
 function writeConsentToNative() {
   //note that this calls to the notification API, 
   //so should not be called until we have notification permissions
@@ -27,7 +29,10 @@ function writeConsentToNative() {
   return window['cordova'].plugins.BEMDataCollection.markConsented(_req_consent);
 };
 
-//used in ConsentPage
+/**
+ * @function marks consent in native storage, local storage, and local var
+ * @returns Promise for marking the consent in native and local storage
+ */
 export function markConsented() {
   logInfo("changing consent from " +
     _curr_consented + " -> " + JSON.stringify(_req_consent));
@@ -42,7 +47,11 @@ export function markConsented() {
 };
 
 let _is_consented;
-//used in onboardingHelper
+
+/**
+ * @function checking for consent locally
+ * @returns {boolean} if the consent is marked in the local var
+ */
 export function isConsented() {
   if (_curr_consented == null || _curr_consented == "" ||
     _curr_consented.approval_date != _req_consent.approval_date) {
@@ -56,9 +65,11 @@ export function isConsented() {
   }
 }
 
-//used in onboardingHelper
+/**
+ * @function reads the consent state from the file and populates it
+ * @returns Promise for the stored consent file
+ */
 export function readConsentState() {
-  // read consent state from the file and populate it
   return fetch("json/startupConfig.json")
     .then(response => response.json())
     .then(function (startupConfigResult) {
@@ -74,6 +85,10 @@ export function readConsentState() {
     });
 }
 
+/**
+ * @function gets the consent document from storage
+ * @returns Promise for the consent document or null if the doc is empty
+ */
 //used in ProfileSettings
 export function getConsentDocument() {
   return window['cordova'].plugins.BEMUserCache.getDocument("config/consent", false)
@@ -86,6 +101,10 @@ export function getConsentDocument() {
     });
 };
 
+/**
+ * @function checks the consent doc in native storage
+ * @returns if doc not stored in native, a promise to write it there
+ */
 function checkNativeConsent() {
   getConsentDocument().then(function (resultDoc) {
     if (resultDoc == null) {
