@@ -18,16 +18,22 @@ mockFileSystem(); //comnplex mock, allows the readDBFile to work in testing
 //use this message to verify that the post went through
 let message = "";
 
-global.fetch = (url: string, options: {method: string, headers: {}, body: string}) => new Promise((rs, rj) => {
-  if(options) {
-    message = "sent " + options.method + options.body + " for " + url;;
-    rs('sent ' + options.method + options.body + ' to ' + url);
-  } else {
-  setTimeout(() => rs({
-    json: () => new Promise((rs, rj) => {
-      setTimeout(() => rs('mock data for ' + url), 100);
-    })
-  }));
+//each have a slight delay to mimic a real fetch request
+global.fetch = (url: string, options: { method: string, headers: {}, body: string }) => new Promise((rs, rj) => {
+  //if there's options, that means there is a post request
+  if (options) {
+    setTimeout(() => {
+      message = "sent " + options.method + options.body + " for " + url;
+      rs('sent ' + options.method + options.body + ' to ' + url);
+    }, 100);
+  }
+  //else it is a fetch request
+  else {
+    setTimeout(() => rs({
+      json: () => new Promise((rs, rj) => {
+        setTimeout(() => rs('mock data for ' + url), 100);
+      })
+    }));
   }
 }) as any;
 
