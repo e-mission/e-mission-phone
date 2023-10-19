@@ -73,9 +73,7 @@ function readDBFile(parentDir, database, callbackFn) {
 }
 
 const sendToServer = function upload(url, binArray, params) {
-    //this was the best way I could find to contact the database, 
-    //had to modify the way it gets handled on the other side
-    //the original way it could not find "reason"
+    //use url encoding to pass additional params in the post
     const urlParams = "?reason=" + params.reason + "&tz=" + params.tz;
     return fetch(url+urlParams, {
         method: 'POST',
