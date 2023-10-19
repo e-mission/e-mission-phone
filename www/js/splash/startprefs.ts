@@ -1,5 +1,6 @@
 import { storageGet, storageSet } from '../plugin/storage';
 import { logInfo, logDebug, displayErrorMsg } from '../plugin/logger';
+import { INTRO_DONE_KEY } from '../onboarding/onboardingHelper';
 
 type StartPrefs = {
   CONSENTED_EVENT: string,
@@ -10,14 +11,10 @@ export const startPrefs: StartPrefs = {
   CONSENTED_EVENT: "data_collection_consented",
   INTRO_DONE_EVENT: "intro_done",
 };
-// Boolean: represents that the "intro" - the one page summary
-// and the login are done
-const INTRO_DONE_KEY = 'intro_done';
+
 // data collection consented protocol: string, represents the date on
 // which the consented protocol was approved by the IRB
 const DATA_COLLECTION_CONSENTED_PROTOCOL = 'data_collection_consented_protocol';
-
-const CONSENTED_KEY = "config/consent";
 
 let _req_consent;
 let _curr_consented;
