@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import { getConfig, resetDataAndRefresh } from "../config/dynamicConfig";
 import { storageGet, storageSet } from "../plugin/storage";
 import { logDebug } from "../plugin/logger";
-import { readConsentState, isConsented, isIntroDone } from "../splash/startprefs";
+import { readConsentState, isConsented } from "../splash/startprefs";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
@@ -61,7 +61,7 @@ async function readConsented() {
   return readConsentState().then(isConsented) as Promise<boolean>;
 }
 
-async function readIntroDone() {
+export async function readIntroDone() {
   return storageGet(INTRO_DONE_KEY).then((read_val) => !!read_val) as Promise<boolean>;
 }
 

@@ -15,7 +15,8 @@
 
 import angular from 'angular';
 import { updateUser } from '../commHelper';
-import { readConsentState, isIntroDone, isConsented, startPrefs } from './startprefs';
+import { readConsentState, isConsented, startPrefs } from './startprefs';
+import { readIntroDone } from '../onboarding/onboardingHelper';
 
 angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
                                               'emission.services'])
@@ -172,14 +173,16 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
       Logger.log("pushnotify startup done");
     });
 
-    $rootScope.$on(startPrefs.CONSENTED_EVENT, function(event, data) {
-      console.log("got consented event "+JSON.stringify(event.name)
-                      +" with data "+ JSON.stringify(data));
-      if (isIntroDone()) {
+    //new way of handling this, called in startprefs by markConsent
+    pushnotify.afterConsent = function () {
+      console.log("in pushnotify, executing after consent is received");
+      readIntroDone().then((intro_done) => {
+        if (intro_done) {
           console.log("intro is done -> reconsent situation, we already have a token -> register");
           pushnotify.registerPush();
-      }
-    });
+        }
+      })
+    }
 
     $rootScope.$on(startPrefs.INTRO_DONE_EVENT, function(event, data) {
           console.log("intro is done -> original consent situation, we should have a token by now -> register");

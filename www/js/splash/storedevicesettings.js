@@ -1,6 +1,7 @@
 import angular from 'angular';
 import { updateUser } from '../commHelper';
-import { isConsented, readConsentState, startPrefs, isIntroDone } from "./startprefs";
+import { isConsented, readConsentState, startPrefs } from "./startprefs";
+import { readIntroDone } from '../onboarding/onboardingHelper';
 
 angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
                                              'emission.services'])
@@ -44,14 +45,15 @@ angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
       Logger.log("storedevicesettings startup done");
     });
 
-    $rootScope.$on(startPrefs.CONSENTED_EVENT, function(event, data) {
-      console.log("got consented event "+JSON.stringify(event.name)
-                      +" with data "+ JSON.stringify(data));
-      if (isIntroDone()) {
+    storedevicesettings.afterConsent = function() {
+      console.log("in storedevicesettings, executing after consent is received");
+      readIntroDone().then((intro_done) => {
+        if (intro_done) {
           console.log("intro is done -> reconsent situation, we already have a token -> register");
           storedevicesettings.storeDeviceSettings();
       }
-    });
+      })
+    }
 
     $rootScope.$on(startPrefs.INTRO_DONE_EVENT, function(event, data) {
           console.log("intro is done -> original consent situation, we should have a token by now -> register");

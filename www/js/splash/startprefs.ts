@@ -1,6 +1,7 @@
 import { storageGet, storageSet } from '../plugin/storage';
 import { logInfo, logDebug, displayErrorMsg } from '../plugin/logger';
 import { INTRO_DONE_KEY } from '../onboarding/onboardingHelper';
+import { getAngularService } from "../angular-react-helper";
 
 type StartPrefs = {
   CONSENTED_EVENT: string,
@@ -37,25 +38,14 @@ export function markConsented() {
       _req_consent);
     // mark in local variable as well
     _curr_consented = {..._req_consent};
-    //TODO - find out how this is used and how to replace
-    //emit(startPrefs.CONSENTED_EVENT, _req_consent);
+    
+    //handle consent in other plugins - previously used $emit
+    const PushNotify = getAngularService("PushNotify");
+    PushNotify.afterConsent();
+    const StoreSeviceSettings = getAngularService("StoreDeviceSettings");
+    StoreSeviceSettings.afterConsent();
   });
 };
-
-//used in several places - storedevice, pushnotify -- onboardingHelper has other style...
-let _intro_done = null;
-let _is_intro_done;
-export function isIntroDone() {
-  if (_intro_done == null || _intro_done == "") {
-    logDebug("in isIntroDone, returning false");
-    _is_intro_done = false;
-    return false;
-  } else {
-    logDebug("in isIntroDone, returning true");
-    _is_intro_done = true;
-    return true;
-  }
-}
 
 let _is_consented;
 //used in onboardingHelper
