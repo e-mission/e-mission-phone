@@ -1,24 +1,14 @@
 import { logInfo } from './plugin/logger'
 import { getRawEntries } from './commHelper';
+import { ServerDataPoint, ServerData, TimeQuery } from './types/diaryTypes'
 
-interface dataObj {
-  data: any;
-  metadata: {
-    plugin: string;
-    write_ts: number;
-    platform: string;
-    read_ts: number;
-    key: string;
-    type: string;
-  }
-}
 /**
  * combineWithDedup is a helper function for combinedPromises 
  * @param list1 values evaluated from a BEMUserCache promise
  * @param list2 same as list1 
  * @returns a dedup array generated from the input lists
  */
-const combineWithDedup = function(list1: Array<dataObj>, list2: Array<dataObj>) {
+const combineWithDedup = function(list1: Array<ServerDataPoint>, list2: Array<ServerDataPoint>) {
     const combinedList = list1.concat(list2);
     return combinedList.filter(function(value, i, array) {
       const firstIndexOfValue = array.findIndex(function(element) {
@@ -91,14 +81,6 @@ const combinedPromises = function(promiseList: Array<Promise<any>>,
     });
 };
 
-interface serverData { 
-  phone_data: Array<any>; 
-}
-interface tQ {
-  key: string;
-  startTs: number;
-  endTs: number;
-}
 /**
  * getUnifiedDataForInterval is a generalized method to fetch data by its timestamps 
  * @param key string corresponding to a data entry
@@ -106,12 +88,12 @@ interface tQ {
  * @param getMethod a BEMUserCache method that fetches certain data via a promise
  * @returns A promise that evaluates to the all values found within the queried data
  */
-export const getUnifiedDataForInterval = function(key: string, tq: tQ, 
-  getMethod: (key: string, tq: tQ, flag: boolean) => Promise<any>) {
+export const getUnifiedDataForInterval = function(key: string, tq: TimeQuery, 
+  getMethod: (key: string, tq: TimeQuery, flag: boolean) => Promise<any>) {
     const test = true;
     const localPromise = getMethod(key, tq, test);
     const remotePromise = getRawEntries([key], tq.startTs, tq.endTs)
-        .then(function(serverResponse: serverData) {
+        .then(function(serverResponse: ServerData) {
           return serverResponse.phone_data;
         });
     var promiseList = [localPromise, remotePromise]
