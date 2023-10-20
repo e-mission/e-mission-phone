@@ -50,8 +50,8 @@ export async function getLabelOptions(appConfigParam?) {
   for (const opt in labelOptions) {
     labelOptions[opt]?.forEach?.((o, i) => {
       const translationKey = o.value;
-      // If translation exists in labelOptions, use that. Otherwise, use the one in the i18next.
-      const translation = labelOptions.translations[lang][translationKey] || i18next.t(`multilabel.${translationKey}`);
+      // If translation exists in labelOptions, use that. Otherwise, use the one in the i18next. If there is not "translations" field in labelOptions, defaultly use the one in the i18next.
+      const translation = labelOptions.translations ? labelOptions.translations[lang][translationKey] || i18next.t(`multilabel.${translationKey}`) : i18next.t(`multilabel.${translationKey}`);
       labelOptions[opt][i].text = translation;
     });
   }
