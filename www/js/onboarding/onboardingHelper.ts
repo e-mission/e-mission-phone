@@ -7,12 +7,12 @@ import { readConsentState, isConsented } from "../splash/startprefs";
 export const INTRO_DONE_KEY = 'intro_done';
 
 // route = WELCOME if no config present
-// route = SUMMARY if config present, but not consented and summary not done
-// route = CONSENT if config present, but not consented and summary done
-// route = SAVE_QR if config present, consented, but save qr not done
+// route = SUMMARY if config present, but protocol not done and summary not done
+// route = PROTOCOL if config present, but protocol not done and summary done
+// route = SAVE_QR if config present, protocol done, but save qr not done
 // route = SURVEY if config present, consented and save qr done
 // route = DONE if onboarding is finished (intro_done marked)
-export enum OnboardingRoute { WELCOME, SUMMARY, CONSENT, SAVE_QR, SURVEY, DONE };
+export enum OnboardingRoute { WELCOME, SUMMARY, PROTOCOL, SAVE_QR, SURVEY, DONE };
 export type OnboardingState = {
   opcode: string,
   route: OnboardingRoute,
@@ -20,6 +20,9 @@ export type OnboardingState = {
 
 export let summaryDone = false;
 export const setSummaryDone = (b) => summaryDone = b;
+
+export let protocolDone = false;
+export const setProtocolDone = (b) => protocolDone = b;
 
 export let saveQrDone = false;
 export const setSaveQrDone = (b) => saveQrDone = b;
@@ -41,10 +44,10 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
       route = OnboardingRoute.DONE;
     } else if (!config) {
       route = OnboardingRoute.WELCOME;
-    } else if (!isConsented && !summaryDone) {
+    } else if (!protocolDone && !summaryDone) {
       route = OnboardingRoute.SUMMARY;
-    } else if (!isConsented) {
-      route = OnboardingRoute.CONSENT;
+    } else if (!protocolDone) {
+      route = OnboardingRoute.PROTOCOL;
     } else if (!saveQrDone) {
       route = OnboardingRoute.SAVE_QR;
     } else {
