@@ -27,7 +27,7 @@ global.fetch = (url: string, options: { method: string, headers: {}, body: strin
       rs('sent ' + options.method + options.body + ' to ' + url);
     }, 100);
   }
-  //else it is a fetch request
+  //else it is a get request
   else {
     setTimeout(() => rs({
       json: () => new Promise((rs, rj) => {
