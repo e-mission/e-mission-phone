@@ -24,13 +24,13 @@ export const formatForDisplay = (value: number): string => {
   return Intl.NumberFormat(i18next.language, opts).format(value);
 }
 
-const convertDistance = (distMeters: number, imperial: boolean): number => {
+export const convertDistance = (distMeters: number, imperial: boolean): number => {
   if (imperial)
     return (distMeters / 1000) * KM_TO_MILES;
   return distMeters / 1000;
 }
 
-const convertSpeed = (speedMetersPerSec: number, imperial: boolean): number => {
+export const convertSpeed = (speedMetersPerSec: number, imperial: boolean): number => {
   if (imperial)
     return speedMetersPerSec * MPS_TO_KMPH * KM_TO_MILES;
   return speedMetersPerSec * MPS_TO_KMPH;
