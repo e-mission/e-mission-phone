@@ -53,6 +53,7 @@ let _is_consented;
  * @returns {boolean} if the consent is marked in the local var
  */
 export function isConsented() {
+  console.log("curr consented is", _curr_consented);
   if (_curr_consented == null || _curr_consented == "" ||
     _curr_consented.approval_date != _req_consent.approval_date) {
     console.log("Not consented in local storage, need to show consent");
@@ -67,7 +68,7 @@ export function isConsented() {
 
 /**
  * @function reads the consent state from the file and populates it
- * @returns Promise for the stored consent file
+ * @returns nothing, just reads into local variables
  */
 export function readConsentState() {
   return fetch("json/startupConfig.json")
