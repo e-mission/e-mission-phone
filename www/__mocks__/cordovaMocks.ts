@@ -87,6 +87,26 @@ export const mockBEMUserCache = () => {
           rs(messages.filter(m => m.key == key).map(m => m.value));
         }, 100)
       );
+    },
+    getDocument: (key: string, withMetadata?: boolean) => {
+      return new Promise<any[]>((rs, rj) =>
+        setTimeout(() => {
+          rs(_cache[key]);
+        }, 100)
+      );
+    },
+    markConsented: (consentDoc) => {
+      _cache['config/consent'] = consentDoc;
+    },
+    isEmptyDoc: (doc) => {
+      console.log(doc);
+      if (doc == undefined) { return true }
+      let string = doc.toString();
+      if (string.length == 0) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
   window['cordova'] ||= {};
