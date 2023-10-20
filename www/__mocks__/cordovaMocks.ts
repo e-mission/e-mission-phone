@@ -116,7 +116,9 @@ export const mockBEMUserCache = () => {
 export const mockBEMDataCollection = () => {
   const mockBEMDataCollection = {
     markConsented: (consentDoc) => {
-      _storage['config/consent'] = consentDoc;
+      setTimeout(() => {
+        _storage['config/consent'] = consentDoc;
+      }, 100)
     }
   }
   window['cordova'] ||= {};
