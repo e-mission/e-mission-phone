@@ -24,6 +24,9 @@ export const mockGetAppVersion = () => {
   window['cordova'].getAppVersion = mockGetAppVersion;
 }
 
+//for consent document
+const _storage = {};
+
 export const mockBEMUserCache = () => {
   const _cache = {};
   const messages = [];
@@ -91,15 +94,11 @@ export const mockBEMUserCache = () => {
     getDocument: (key: string, withMetadata?: boolean) => {
       return new Promise<any[]>((rs, rj) =>
         setTimeout(() => {
-          rs(_cache[key]);
+          rs(_storage[key]);
         }, 100)
       );
     },
-    markConsented: (consentDoc) => {
-      _cache['config/consent'] = consentDoc;
-    },
     isEmptyDoc: (doc) => {
-      console.log(doc);
       if (doc == undefined) { return true }
       let string = doc.toString();
       if (string.length == 0) {
@@ -112,4 +111,14 @@ export const mockBEMUserCache = () => {
   window['cordova'] ||= {};
   window['cordova'].plugins ||= {};
   window['cordova'].plugins.BEMUserCache = mockBEMUserCache;
+}
+
+export const mockBEMDataCollection = () => {
+  const mockBEMDataCollection = {
+    markConsented: (consentDoc) => {
+      _storage['config/consent'] = consentDoc;
+    }
+  }
+  window['cordova'] ||= {};
+  window['cordova'].plugins.BEMDataCollection = mockBEMDataCollection;
 }

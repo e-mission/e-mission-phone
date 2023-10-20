@@ -1,9 +1,10 @@
 import { markConsented, isConsented, readConsentState, getConsentDocument } from '../js/splash/startprefs';
 
-import { mockBEMUserCache } from "../__mocks__/cordovaMocks";
+import { mockBEMUserCache, mockBEMDataCollection } from "../__mocks__/cordovaMocks";
 import { mockLogger } from "../__mocks__/globalMocks";
 
 mockBEMUserCache();
+mockBEMDataCollection();
 mockLogger();
 
 global.fetch = (url: string) => new Promise((rs, rj) => {
@@ -16,11 +17,12 @@ global.fetch = (url: string) => new Promise((rs, rj) => {
 }) as any;
 
 it('marks consent in local and native storage', async () => {
-
+  let marked = markConsented();
+  console.log("marked is", marked);
 });
 
 it('checks local vars for consent, returns boolean', async () => {
-
+  expect(isConsented()).toBeFalsy();
 });
 
 it('reads the required and current consent', async () => {
@@ -29,11 +31,11 @@ it('reads the required and current consent', async () => {
   //then storageGets the data_collection_consented_protocol
   //then uses that to store in local curr_consent var
   //and launches checkNativeConsent
-  //let consentFile = await readConsentState();
-  //expect(consentFile).toBeUndefined();
+  // let consentFile = await readConsentState();
+  expect(await readConsentState()).toBeUndefined();
 });
 
 it('gets the consent document from storage', async () => {
- let consentDoc = await getConsentDocument();
- expect(consentDoc).toBeNull();
+//  let consentDoc = await getConsentDocument();
+ expect(await getConsentDocument()).toBeNull();
 });
