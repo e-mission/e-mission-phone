@@ -9,13 +9,13 @@ on:
     branches:
         - master
         - maint_upgrade_**
-	- ui_feature_**
+        - ui_feature_**
   pull_request:
     branches:
         - master
         - maint_upgrade_**
-	- ui_feature_**
-	- service_rewrite_2023
+        - ui_feature_**
+        - service_rewrite_2023
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '5 4 * * 0'
