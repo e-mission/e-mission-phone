@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Modal, StyleSheet, ScrollView } from "react-native";
-import { Dialog, Button, useTheme, Text, Appbar, IconButton } from "react-native-paper";
+import { Dialog, Button, useTheme, Text, Appbar, IconButton, TextInput } from "react-native-paper";
 import { getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
@@ -12,8 +12,9 @@ import ReminderTime from "./ReminderTime"
 import useAppConfig from "../useAppConfig";
 import AlertBar from "./AlertBar";
 import DataDatePicker from "./DataDatePicker";
-import AppStatusModal from "./AppStatusModal";
 import PrivacyPolicyModal from "./PrivacyPolicyModal";
+
+import {uploadFile} from "./uploadService";
 import ActionMenu from "../components/ActionMenu";
 import SensedPage from "./SensedPage"
 import LogPage from "./LogPage";
@@ -22,6 +23,8 @@ import ControlCollectionHelper, {getHelperCollectionSettings, getState, isMedium
 import { resetDataAndRefresh } from "../config/dynamicConfig";
 import { AppContext } from "../App";
 import { shareQR } from "../components/QrCode";
+import { storageClear } from "../plugin/storage";
+import { getAppVersion } from "../plugin/clientStats";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -33,12 +36,9 @@ const ProfileSettings = () => {
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
-    const UploadHelper = getAngularService('UploadHelper');
     const EmailHelper = getAngularService('EmailHelper');
-    const KVStore = getAngularService('KVStore');
     const NotificationScheduler = getAngularService('NotificationScheduler');
     const ControlHelper = getAngularService('ControlHelper');
-    const ClientStats = getAngularService('ClientStats');
     const StartPrefs = getAngularService('StartPrefs');
 
     //functions that come directly from an Angular service
@@ -57,6 +57,7 @@ const ProfileSettings = () => {
     const [consentVis, setConsentVis] = useState(false);
     const [dateDumpVis, setDateDumpVis] = useState(false);
     const [privacyVis, setPrivacyVis] = useState(false);
+    const [uploadVis, setUploadVis] = useState(false);
     const [showingSensed, setShowingSensed] = useState(false);
     const [showingLog, setShowingLog] = useState(false);
     const [editSync, setEditSync] = useState(false);
@@ -69,10 +70,11 @@ const ProfileSettings = () => {
     const [syncSettings, setSyncSettings] = useState({});
     const [cacheResult, setCacheResult] = useState("");
     const [connectSettings, setConnectSettings] = useState({});
-    const [appVersion, setAppVersion] = useState("");
     const [uiConfig, setUiConfig] = useState({});
     const [consentDoc, setConsentDoc] = useState({});
     const [dumpDate, setDumpDate] = useState(new Date());
+    const [uploadReason, setUploadReason] = useState("");
+    const appVersion = useRef();
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -96,7 +98,9 @@ const ProfileSettings = () => {
         getOPCode();
         getSyncSettings();
         getConnectURL();
-        setAppVersion(ClientStats.getAppVersion());
+        getAppVersion().then((version) => {
+            appVersion.current = version;
+        });
     }
 
     //previously not loaded on regular refresh, this ensures it stays caught up
@@ -217,8 +221,12 @@ const ProfileSettings = () => {
     
     //methods that control the settings
     const uploadLog = function () {
-        UploadHelper.uploadFile("loggerDB")
-    };
+        if(uploadReason != "") {
+            let reason = uploadReason;
+            uploadFile("loggerDB", reason);
+            setUploadVis(false);
+        }
+    }
 
     const emailLog = function () {
         // Passing true, we want to send logs
@@ -327,7 +335,7 @@ const ProfileSettings = () => {
     let logUploadSection;
     console.debug("appConfg: support_upload:", appConfig?.profile_controls?.support_upload);
     if (appConfig?.profile_controls?.support_upload) {
-        logUploadSection = <SettingRow textKey="control.upload-log" iconName="cloud" action={uploadLog}></SettingRow>;
+        logUploadSection = <SettingRow textKey="control.upload-log" iconName="cloud" action={() => setUploadVis(true)}></SettingRow>;
     }
 
     let timePicker;
@@ -376,7 +384,7 @@ const ProfileSettings = () => {
                 <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
                 <ControlDataTable controlData={syncSettings.show_config}></ControlDataTable>
             </ExpansionSection>
-            <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion}></SettingRow>
+            <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion.current}></SettingRow>
         </ScrollView>
 
             {/* menu for "nuke data" */}
@@ -387,15 +395,15 @@ const ProfileSettings = () => {
                 style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
                     <Dialog.Content>
-                        <Button onPress={() => {KVStore.clearOnlyLocal;
+                        <Button onPress={() => {storageClear({local: true})
                                                 setNukeVis(false);}}>
                             {t('general-settings.nuke-ui-state-only')}
                         </Button>
-                        <Button onPress={() => {KVStore.clearOnlyNative;
+                        <Button onPress={() => {storageClear({native: true});
                                                 setNukeVis(false);}}>
                             {t('general-settings.nuke-native-cache-only')}
                         </Button>
-                        <Button onPress={() => {KVStore.clearAll;
+                        <Button onPress={() => {storageClear({local: true, native: true});
                                                 setNukeVis(false);}}>
                             {t('general-settings.nuke-everything')}
                         </Button>
@@ -411,6 +419,27 @@ const ProfileSettings = () => {
 
             {/* force state sheet */}
             <ActionMenu vis={forceStateVis} setVis={setForceStateVis} title={"Force State"} actionSet={stateActions} onAction={onSelectState} onExit={() => {}}></ActionMenu>
+
+            {/* upload reason input */}
+            <Modal visible={uploadVis} onDismiss={() => setUploadVis(false)}
+            transparent={true}>
+                <Dialog visible={uploadVis}
+                onDismiss={() => setUploadVis(false)}
+                style={settingStyles.dialog(colors.elevation.level3)}>
+                    <Dialog.Title>{t('upload-service.upload-database', {db: "loggerDB"})}</Dialog.Title>
+                    <Dialog.Content>
+                        <TextInput label="Reason"
+                                value={uploadReason}
+                                onChangeText={uploadReason => setUploadReason(uploadReason)}
+                                placeholder={t('upload-service.please-fill-in-what-is-wrong')}>
+                            </TextInput>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setUploadVis(false)}>{t('general-settings.cancel')}</Button>
+                        <Button onPress={() => uploadLog()}>Upload</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Modal>
 
             {/* opcode viewing popup */}
             <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={() => shareQR(authSettings.opcode)}></PopOpCode>

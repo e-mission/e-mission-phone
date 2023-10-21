@@ -4,10 +4,11 @@ import angular from 'angular';
 import { getBaseModeByKey, getBaseModeOfLabeledTrip } from './diaryHelper';
 import { SurveyOptions } from '../survey/survey';
 import { getConfig } from '../config/dynamicConfig';
+import { getRawEntries } from '../commHelper';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])
-.factory('Timeline', function(CommHelper, $http, $ionicLoading, $ionicPlatform, $window,
+.factory('Timeline', function($http, $ionicLoading, $ionicPlatform, $window,
     $rootScope, UnifiedDataLoader, Logger, $injector) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
@@ -41,7 +42,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         template: i18next.t('service.reading-server')
       });
       const readPromises = [
-        CommHelper.getRawEntries(["analysis/composite_trip"],
+        getRawEntries(["analysis/composite_trip"],
             startTs, endTs, "data.end_ts"),
       ];
       return Promise.all(readPromises)

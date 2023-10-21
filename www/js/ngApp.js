@@ -31,36 +31,18 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import App from './App';
 import { getTheme } from './appTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { initByUser } from './config/dynamicConfig';
 
 angular.module('emission', ['ionic', 'jm.i18next',
     'emission.controllers','emission.services', 'emission.plugin.logger',
-    'emission.splash.customURLScheme', 'emission.splash.referral',
-    'emission.services.email',
+    'emission.splash.referral', 'emission.services.email',
     'emission.main', 'pascalprecht.translate', 'LocalStorageModule'])
 
-.run(function($ionicPlatform, $rootScope, $http, Logger,
-    CustomURLScheme, ReferralHandler, localStorageService) {
+.run(function($ionicPlatform, $rootScope, $http, Logger, localStorageService) {
   console.log("Starting run");
   // ensure that plugin events are delivered after the ionicPlatform is ready
   // https://github.com/katzer/cordova-plugin-local-notifications#launch-details
   window.skipLocalNotificationReady = true;
   // alert("Starting run");
-  // BEGIN: Global listeners, no need to wait for the platform
-  // TODO: Although the onLaunch call doesn't need to wait for the platform the
-  // handlers do. Can we rely on the fact that the event is generated from
-  // native code, so will only be launched after the platform is ready?
-  CustomURLScheme.onLaunch(function(event, url, urlComponents){
-    console.log("GOT URL:"+url);
-    // alert("GOT URL:"+url);
-
-    if (urlComponents.route == 'join') {
-      ReferralHandler.setupGroupReferral(urlComponents);
-    } else if (urlComponents.route == 'login_token') {
-      initByUser(urlComponents);
-    }
-  });
-  // END: Global listeners
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
