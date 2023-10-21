@@ -261,9 +261,11 @@ const ProfileSettings = () => {
         refreshCollectSettings();
     }
 
-    async function toggleLowAccuracy() {
+    async function toggleLowAccuracy() {  
         let toggle = await helperToggleLowAccuracy();
-        refreshCollectSettings();
+        setTimeout(function() {
+            refreshCollectSettings();
+          }, 1500);
     }
 
     const viewQRCode = function(e) {
