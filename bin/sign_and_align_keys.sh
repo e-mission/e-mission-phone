@@ -4,7 +4,7 @@ PROJECT=$1
 VERSION=$2
 
 if [[ $# -eq 0 ]]; then
-    echo "No arguments supplied"
+    echo "sign_and_align_keys <PROJECT> <VERSION>"
     exit 1
 fi
 
