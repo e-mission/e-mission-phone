@@ -7,6 +7,8 @@
     {"value":"scootershare", "baseMode":"E_SCOOTER", "met_equivalent":"IN_VEHICLE", "kgCo2PerKm": 0.00894},
     {"value":"drove_alone", "baseMode":"CAR", "met_equivalent":"IN_VEHICLE", "kgCo2PerKm": 0.22031},
     {"value":"shared_ride", "baseMode":"CAR", "met_equivalent":"IN_VEHICLE", "kgCo2PerKm": 0.11015},
+    {"value":"hybrid_drove_alone", "baseMode":"CAR", "met_equivalent":"IN_VEHICLE", "kgCo2PerKm": 0.138},
+    {"value":"hybrid_shared_ride", "baseMode":"CAR", "met_equivalent":"IN_VEHICLE", "kgCo2PerKm": 0.069},
     {"value":"e_car_drove_alone", "baseMode":"E_CAR", "met_equivalent":"IN_VEHICLE", "kgCo2PerKm": 0.08216},
     {"value":"e_car_shared_ride", "baseMode":"E_CAR", "met_equivalent":"IN_VEHICLE", "kgCo2PerKm": 0.04108},
     {"value":"moped", "baseMode":"MOPED", "met_equivalent":"IN_VEHICLE", "kgCo2PerKm": 0.05555},

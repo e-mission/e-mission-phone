@@ -154,6 +154,8 @@
         "scootershare": "Scooter share",
         "drove_alone": "Gas Car Drove Alone",
         "shared_ride": "Gas Car Shared Ride",
+        "hybrid_drove_alone": "Hybrid Drove Alone",
+        "hybrid_shared_ride": "Hybrid Shared Ride",
         "e_car_drove_alone": "E-Car Drove Alone",
         "e_car_shared_ride": "E-Car Shared Ride",
         "moped": "Moped",
