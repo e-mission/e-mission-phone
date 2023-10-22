@@ -60,7 +60,7 @@ const ProfileSettings = () => {
     const [showingSensed, setShowingSensed] = useState(false);
     const [showingLog, setShowingLog] = useState(false);
     const [editSync, setEditSync] = useState(false);
-    const [editCollection, setEditCollection] = useState(false);
+    const [editCollectionVis, setEditCollectionVis] = useState(false);
 
     // const [collectConfig, setCollectConfig] = useState({});
     const [collectSettings, setCollectSettings] = useState({});
@@ -156,13 +156,13 @@ const ProfileSettings = () => {
 
     //ensure ui table updated when editor closes
     useEffect(() => {
-        if(editCollection == false) {
+        if(editCollectionVis == false) {
             setTimeout(function() {
                 console.log("closed editor, time to refresh collect");
                 refreshCollectSettings();
               }, 1000);
         }
-    }, [editCollection])
+    }, [editCollectionVis])
 
     async function refreshNotificationSettings() {
         console.debug('about to refreshNotificationSettings, notificationSettings = ', notificationSettings);
@@ -496,7 +496,7 @@ const ProfileSettings = () => {
             <LogPage pageVis={showingLog} setPageVis={setShowingLog}></LogPage>
 
             <ControlSyncHelper editVis={editSync} setEditVis={setEditSync}></ControlSyncHelper>
-            <ControlCollectionHelper editVis={editCollection} setEditVis={setEditCollection}></ControlCollectionHelper>
+            <ControlCollectionHelper editVis={editCollectionVis} setEditVis={setEditCollectionVis}></ControlCollectionHelper>
         
         </>
     );
