@@ -5,7 +5,6 @@ import { addStatError, addStatReading, statKeys } from './plugin/clientStats';
 
 angular.module('emission.controllers', ['emission.splash.startprefs',
                                         'emission.splash.pushnotify',
-                                        'emission.splash.storedevicesettings',
                                         'emission.splash.localnotify',
                                         'emission.splash.remotenotify'])
 
@@ -14,7 +13,7 @@ angular.module('emission.controllers', ['emission.splash.startprefs',
 .controller('DashCtrl', function($scope) {})
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
-    StartPrefs, PushNotify, StoreDeviceSettings,
+    StartPrefs, PushNotify,
     LocalNotify, RemoteNotify)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");

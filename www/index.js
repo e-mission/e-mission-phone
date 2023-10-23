@@ -7,7 +7,6 @@ import './js/ngApp.js';
 import './js/splash/referral.js';
 import './js/splash/startprefs.js';
 import './js/splash/pushnotify.js';
-import './js/splash/storedevicesettings.js';
 import './js/splash/localnotify.js';
 import './js/splash/remotenotify.js';
 import './js/splash/notifScheduler.js';

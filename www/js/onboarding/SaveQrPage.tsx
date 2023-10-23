@@ -12,6 +12,7 @@ import { preloadDemoSurveyResponse } from "./SurveyPage";
 import { storageSet } from "../plugin/storage";
 import { registerUser } from "../commHelper";
 import { resetDataAndRefresh } from "../config/dynamicConfig";
+import { afterConsentStore } from "../splash/storedevicesettings";
 import i18next from "i18next";
 
 const SaveQrPage = ({  }) => {
@@ -28,6 +29,8 @@ const SaveQrPage = ({  }) => {
         setRegisterUserDone(true);
         preloadDemoSurveyResponse();
         refreshOnboardingState();
+
+        afterConsentStore();
       });
     } else {
       logDebug('permissions not done, waiting');

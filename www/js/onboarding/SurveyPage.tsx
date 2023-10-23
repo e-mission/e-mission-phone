@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { DateTime } from "luxon";
 import { onboardingStyles } from "./OnboardingStack";
 import { displayErrorMsg } from "../plugin/logger";
+import { afterIntroStore } from "../splash/storedevicesettings";
 import i18next from "i18next";
 
 let preloadedResponsePromise: Promise<any> = null;
@@ -58,6 +59,8 @@ const SurveyPage = () => {
     setSurveyModalVisible(false);
     markIntroDone();
     refreshOnboardingState();
+
+    afterIntroStore();
   }
 
   return (<>

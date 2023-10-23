@@ -1,62 +1,60 @@
-import angular from 'angular';
+import { getAngularService } from '../angular-react-helper';
 import { updateUser } from '../commHelper';
+import { displayError, logDebug, logInfo } from '../plugin/logger';
+import i18next from 'i18next';
 
-angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
-                                             'emission.services',
-                                             'emission.splash.startprefs'])
-.factory('StoreDeviceSettings', function($window, $state, $rootScope, $ionicPlatform,
-    $ionicPopup, Logger, StartPrefs) {
+const StartPrefs = getAngularService('StartPrefs');
+const $ionicPlatform = getAngularService('$ionicPlatform');
 
-    var storedevicesettings = {};
+let _datacollect;
 
-    storedevicesettings.storeDeviceSettings = function() {
-      var lang = i18next.resolvedLanguage;
-      var manufacturer = $window.device.manufacturer;
-      var osver = $window.device.version;
-      return $window.cordova.getAppVersion.getVersionNumber().then(function(appver) {
-        var updateJSON = {
-          phone_lang: lang,
-          curr_platform: ionic.Platform.platform(),
-          manufacturer: manufacturer,
-          client_os_version: osver,
-          client_app_version: appver
-        };
-        Logger.log("About to update profile with settings = "+JSON.stringify(updateJSON));
-        return updateUser(updateJSON);
-      }).then(function(updateJSON) {
-         // alert("Finished saving token = "+JSON.stringify(t.token));
-      }).catch(function(error) {
-        Logger.displayError("Error in updating profile to store device settings", error);
-      });
-    }
+const storeDeviceSettings = function () {
+  var lang = i18next.resolvedLanguage;
+  var manufacturer = window['device'].manufacturer;
+  var osver = window['device'].version;
+  return window['cordova'].getAppVersion.getVersionNumber().then(function (appver) {
+    var updateJSON = {
+      phone_lang: lang,
+      curr_platform: window['cordova'].platformId,
+      manufacturer: manufacturer,
+      client_os_version: osver,
+      client_app_version: appver
+    };
+    logDebug("About to update profile with settings = " + JSON.stringify(updateJSON));
+    return updateUser(updateJSON);
+  }).then(function (updateJSON) {
+    // alert("Finished saving token = "+JSON.stringify(t.token));
+  }).catch(function (error) {
+    displayError(error, "Error in updating profile to store device settings");
+  });
+}
 
-    $ionicPlatform.ready().then(function() {
-      storedevicesettings.datacollect = $window.cordova.plugins.BEMDataCollection;
-      StartPrefs.readConsentState()
-        .then(StartPrefs.isConsented)
-        .then(function(consentState) {
-          if (consentState == true) {
-              storedevicesettings.storeDeviceSettings();
-          } else {
-            Logger.log("no consent yet, waiting to store device settings in profile");
-          }
-        });
-      Logger.log("storedevicesettings startup done");
-    });
-
-    $rootScope.$on(StartPrefs.CONSENTED_EVENT, function(event, data) {
-      console.log("got consented event "+JSON.stringify(event.name)
-                      +" with data "+ JSON.stringify(data));
-      if (StartPrefs.isIntroDone()) {
-          console.log("intro is done -> reconsent situation, we already have a token -> register");
-          storedevicesettings.storeDeviceSettings();
+const initDeviceSettings = function () {
+  _datacollect = window['cordova'].plugins.BEMDataCollection;
+  StartPrefs.readConsentState()
+    .then(StartPrefs.isConsented)
+    .then(function (consentState) {
+      if (consentState == true) {
+        storeDeviceSettings();
+      } else {
+        logInfo("no consent yet, waiting to store device settings in profile");
       }
     });
+  logInfo("storedevicesettings startup done");
+}
 
-    $rootScope.$on(StartPrefs.INTRO_DONE_EVENT, function(event, data) {
-          console.log("intro is done -> original consent situation, we should have a token by now -> register");
-       storedevicesettings.storeDeviceSettings();
-    });
+$ionicPlatform.ready().then(initDeviceSettings);
 
-    return storedevicesettings;
-});
+export const afterConsentStore = function () {
+  console.log("in storedevicesettings, executing after consent is received");
+  if (StartPrefs.isIntroDone()) {
+    console.log("intro is done -> reconsent situation, we already have a token -> register");
+    storeDeviceSettings();
+  }
+};
+
+export const afterIntroStore = function () {
+  console.log("intro is done -> original consent situation, we should have a token by now -> register");
+  storeDeviceSettings();
+};
+
