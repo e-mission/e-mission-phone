@@ -1,11 +1,8 @@
-import { getAngularService } from '../angular-react-helper';
 import { updateUser } from '../commHelper';
 import { displayError, logDebug, logInfo } from '../plugin/logger';
 import { readConsentState, isConsented } from './startprefs';
 import { readIntroDone } from '../onboarding/onboardingHelper';
 import i18next from 'i18next';
-
-const $ionicPlatform = getAngularService('$ionicPlatform');
 
 let _datacollect;
 
@@ -30,7 +27,7 @@ const storeDeviceSettings = function () {
   });
 }
 
-const initDeviceSettings = function () {
+export const initDeviceSettings = function () {
   _datacollect = window['cordova'].plugins.BEMDataCollection;
   readConsentState()
     .then(isConsented)
@@ -43,8 +40,6 @@ const initDeviceSettings = function () {
     });
   logInfo("storedevicesettings startup done");
 }
-
-$ionicPlatform.ready().then(initDeviceSettings);
 
 export const afterConsentStore = function () {
   console.log("in storedevicesettings, executing after consent is received");

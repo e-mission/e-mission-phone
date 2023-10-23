@@ -11,6 +11,7 @@ import { OnboardingRoute, OnboardingState, getPendingOnboardingState } from './o
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './control/AppStatusModal';
 import usePermissionStatus from './usePermissionStatus';
+import { initDeviceSettings } from './splash/storeDeviceSettings';
 
 const defaultRoutes = (t) => [
   { key: 'label', title: t('diary.label-tab'), focusedIcon: 'check-bold', unfocusedIcon: 'check-outline' },
@@ -48,6 +49,7 @@ const App = () => {
   useEffect(() => {
     if (!appConfig) return;
     setServerConnSettings(appConfig).then(() => {
+      initDeviceSettings();
       refreshOnboardingState();
     });
   }, [appConfig]);
