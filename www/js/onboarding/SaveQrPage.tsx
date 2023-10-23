@@ -12,7 +12,7 @@ import { preloadDemoSurveyResponse } from "./SurveyPage";
 import { storageSet } from "../plugin/storage";
 import { registerUser } from "../commHelper";
 import { resetDataAndRefresh } from "../config/dynamicConfig";
-import { afterConsentStore } from "../splash/storedevicesettings";
+import { afterConsentStore } from "../splash/storeDeviceSettings";
 import { markConsented } from "../splash/startprefs";
 import i18next from "i18next";
 

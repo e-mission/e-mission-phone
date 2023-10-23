@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { DateTime } from "luxon";
 import { onboardingStyles } from "./OnboardingStack";
 import { displayErrorMsg } from "../plugin/logger";
-import { afterIntroStore } from "../splash/storedevicesettings";
+import { afterIntroStore } from "../splash/storeDeviceSettings";
 import i18next from "i18next";
 
 let preloadedResponsePromise: Promise<any> = null;
