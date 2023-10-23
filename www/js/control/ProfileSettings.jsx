@@ -496,7 +496,7 @@ const ProfileSettings = () => {
                 <Dialog visible={consentVis} 
                         onDismiss={()=>setConsentVis(false)} 
                         style={settingStyles.dialog(colors.elevation.level3)}>
-                    <Dialog.Title>{t('general-settings.consented-to', {protocol_id: consentDoc.protocol_id, approval_date: consentDoc.approval_date})}</Dialog.Title>
+                    <Dialog.Title>{t('general-settings.consented-to', {approval_date: consentDoc.approval_date})}</Dialog.Title>
                     <Dialog.Actions>
                         <Button onPress={()=>{
                             setConsentDoc({});

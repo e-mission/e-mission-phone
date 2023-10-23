@@ -66,7 +66,7 @@
         "consent-not-found": "Consent for data collection not found, consent now?",
         "no-consent-message": "OK! Note that you won't get any personalized stats until you do!",
         "consent-found": "Consent found!",
-        "consented-to": "Consented to protocol {{protocol_id}}, {{approval_date}}",
+        "consented-to": "Consented on {{approval_date}}",
         "consented-ok": "OK",
         "qrcode": "My OPcode",
         "qrcode-share-title": "You can save your OPcode to login easily in the future!"
