@@ -2,9 +2,9 @@
 
 import angular from 'angular';
 import { addStatError, addStatReading, statKeys } from './plugin/clientStats';
+import { getPendingOnboardingState } from './onboarding/onboardingHelper';
 
-angular.module('emission.controllers', ['emission.splash.startprefs',
-                                        'emission.splash.pushnotify',
+angular.module('emission.controllers', ['emission.splash.pushnotify',
                                         'emission.splash.localnotify',
                                         'emission.splash.remotenotify'])
 
@@ -13,7 +13,7 @@ angular.module('emission.controllers', ['emission.splash.startprefs',
 .controller('DashCtrl', function($scope) {})
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
-    StartPrefs, PushNotify,
+    PushNotify,
     LocalNotify, RemoteNotify)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
@@ -48,7 +48,7 @@ angular.module('emission.controllers', ['emission.splash.startprefs',
                           'root.main.metrics']
       if (isInList(toState.name, personalTabs)) {
         // toState is in the personalTabs list
-        StartPrefs.getPendingOnboardingState().then(function(result) {
+        getPendingOnboardingState().then(function(result) {
           if (result != null) {
             event.preventDefault();
             $state.go(result);

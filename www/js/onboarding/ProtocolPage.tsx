@@ -4,11 +4,12 @@ import { View, ScrollView } from 'react-native';
 import { Button, Surface } from 'react-native-paper';
 import { resetDataAndRefresh } from '../config/dynamicConfig';
 import { AppContext } from '../App';
-import { getAngularService } from '../angular-react-helper';
 import PrivacyPolicy from './PrivacyPolicy';
 import { onboardingStyles } from './OnboardingStack';
+import { markConsented } from '../splash/startprefs';
+import { setProtocolDone } from './onboardingHelper';
 
-const ConsentPage = () => {
+const ProtocolPage = () => {
 
   const { t } = useTranslation();
   const context = useContext(AppContext);
@@ -20,10 +21,8 @@ const ConsentPage = () => {
   };
 
   function agree() {
-    const StartPrefs = getAngularService('StartPrefs');
-    StartPrefs.markConsented().then((response) => {
-      refreshOnboardingState();
-    });
+   setProtocolDone(true);
+   refreshOnboardingState();
   };
 
   // privacy policy and data collection info, followed by accept/reject buttons
@@ -40,4 +39,4 @@ const ConsentPage = () => {
   </>);
 }
 
-export default ConsentPage;
+export default ProtocolPage;

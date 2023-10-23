@@ -30,7 +30,7 @@ const localStorageSet = (key: string, value: {[k: string]: any}) => {
 
 const localStorageGet = (key: string) => {
   const value = localStorage.getItem(key);
-  if (value) {
+  if (value && value != "undefined") {
     return JSON.parse(value);
   } else {
     return null;

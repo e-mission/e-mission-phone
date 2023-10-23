@@ -31,8 +31,6 @@ const App = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  const StartPrefs = getAngularService('StartPrefs');
-
   const routes = useMemo(() => {
     const showMetrics = appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL';
     return showMetrics ? defaultRoutes(t) : defaultRoutes(t).filter(r => r.key != 'metrics');
@@ -91,9 +89,9 @@ const App = () => {
     <AppContext.Provider value={appContextValue}>
       {appContent}
 
-      { /* If we are past the consent page (route > CONSENT), the permissions popup can show if needed.
-          This also includes if onboarding is DONE altogether (because "DONE" is > "CONSENT") */ }
-      {(onboardingState && onboardingState.route > OnboardingRoute.CONSENT) &&
+      { /* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
+          This also includes if onboarding is DONE altogether (because "DONE" is > "PROTOCOL") */ }
+      {(onboardingState && onboardingState.route > OnboardingRoute.PROTOCOL) &&
         <AppStatusModal permitVis={permissionsPopupVis} setPermitVis={setPermissionsPopupVis} />
       }
     </AppContext.Provider>

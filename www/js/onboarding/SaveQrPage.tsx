@@ -13,6 +13,7 @@ import { storageSet } from "../plugin/storage";
 import { registerUser } from "../commHelper";
 import { resetDataAndRefresh } from "../config/dynamicConfig";
 import { afterConsentStore } from "../splash/storedevicesettings";
+import { markConsented } from "../splash/startprefs";
 import i18next from "i18next";
 
 const SaveQrPage = ({  }) => {
@@ -24,14 +25,21 @@ const SaveQrPage = ({  }) => {
   useEffect(() => {
     if (overallStatus == true && !registerUserDone) {
       logDebug('permissions done, going to log in');
-      login(onboardingState.opcode).then((response) => {
-        logDebug('login done, refreshing onboarding state');
-        setRegisterUserDone(true);
-        preloadDemoSurveyResponse();
-        refreshOnboardingState();
+      markConsented()
+        .then(login(onboardingState.opcode)
+          .then((response) => {
+            logDebug('login done, refreshing onboarding state');
+            setRegisterUserDone(true);
+            preloadDemoSurveyResponse();
+            refreshOnboardingState();
 
-        afterConsentStore();
-      });
+            //fully consented, so can handle other aspects
+            //other plugins - previously used $emit
+            const PushNotify = getAngularService("PushNotify");
+            PushNotify.afterConsent();
+            afterConsentStore();
+          })
+        );
     } else {
       logDebug('permissions not done, waiting');
     }
