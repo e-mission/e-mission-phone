@@ -309,6 +309,7 @@ const ProfileSettings = () => {
     async function checkConsent() {
         getConsentDocument().then(function(resultDoc){
             setConsentDoc(resultDoc);
+            console.debug("In profile settings, consent doc found", resultDoc);
             if (resultDoc == null) {
                 setNoConsentVis(true);
             } else {
@@ -475,17 +476,13 @@ const ProfileSettings = () => {
                         onDismiss={()=>setNoConsentVis(false)} 
                         style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.consent-not-found')}</Dialog.Title>
+                    <Dialog.Content>
+                        <Text variant="">{t('general-settings.no-consent-logout')}</Text>
+                    </Dialog.Content>
                     <Dialog.Actions>
                         <Button onPress={()=>{
-                            setNoConsentVis(false);
-                            setNoConsentMessageVis(true)}}>
-                                {t('general-settings.cancel')}
-                        </Button>
-                        <Button onPress={()=>{
-                            setNoConsentVis(false);
-                            // $state.go("root.reconsent"); //don't know how to do this yet
-                            }}>
-                                {t('general-settings.confirm')}
+                            setNoConsentVis(false); }}>
+                                {t('general-settings.consented-ok')}
                         </Button>
                     </Dialog.Actions>
                 </Dialog>
