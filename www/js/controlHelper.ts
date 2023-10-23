@@ -30,7 +30,7 @@ export const createWriteFile = function (fileName: string) {
                 reject();
               }
 
-              // if data object is not passed in, create a new blog instead.
+              // if data object is not passed in, create a new blob instead.
               const dataObj = new Blob([JSON.stringify(resultList, null, 2)],
                 { type: "application/json" });
               fileWriter.write(dataObj);
@@ -51,7 +51,7 @@ export const createShareData = function(fileName: string, startTimeString: strin
   return function() {
     return new Promise<void>(function(resolve, reject) {
     window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
-      logDebug("During email, file system open: " + fs.name);
+      logDebug(`During email, file system open: ${fs.name}`);
       fs.root.getFile(fileName, null, function(fileEntry) {
         logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
         fileEntry.file(function(file) {
@@ -63,22 +63,18 @@ export const createShareData = function(fileName: string, startTimeString: strin
             const dataArray = JSON.parse(readResult);
             logDebug(`Successfully read resultList of size ${dataArray.length}`);
             let attachFile = fileEntry.nativeURL;
-              if (window['device'].platform === "android")
-                attachFile = "app://cache/" + fileName;
-              if (window['device'].platform === "ios")
-                alert(i18next.t("email-service.email-account-mail-app"));
-              const email = {
-                'files': [attachFile],
-                'message': i18next.t("email-service.email-data.body-data-consists-of-list-of-entries"),
-                'subject': i18next.t("email-service.email-data.subject-data-dump-from-to", {start: startTimeString ,end: endTimeString}),
-              }
-              window['plugins'].socialsharing.shareWithOptions(email, function (result) {
-                logDebug(`Share Completed? ${result.completed}`); // On Android, most likely returns false
-                logDebug(`Shared to app:  ${result.app}`);
-                resolve();
-              }, function (msg) {
-                logDebug(`Sharing failed with message ${msg}`);
-              });
+            const email = {
+              'files': [attachFile],
+              'message': i18next.t("email-service.email-data.body-data-consists-of-list-of-entries"),
+              'subject': i18next.t("email-service.email-data.subject-data-dump-from-to", {start: startTimeString ,end: endTimeString}),
+            }
+            window['plugins'].socialsharing.shareWithOptions(email, function (result) {
+              logDebug(`Share Completed? ${result.completed}`); // On Android, most likely returns false
+              logDebug(`Shared to app:  ${result.app}`);
+              resolve();
+            }, function (msg) {
+              logDebug(`Sharing failed with message ${msg}`);
+            });
           }
           reader.readAsText(file);
         }, function(error) {
@@ -92,13 +88,13 @@ export const createShareData = function(fileName: string, startTimeString: strin
 
 /**
  * getMyData fetches timeline data for a given day, and then gives the user a prompt to share the data
- * @param startTs initial timestamp of the timeline to be fetched.
+ * @param timeStamp initial timestamp of the timeline to be fetched.
  */
-export const getMyData = function(startTs: Date) {
+export const getMyData = function(timeStamp: Date) {
     // We are only retrieving data for a single day to avoid
     // running out of memory on the phone
-    const startTime = DateTime.fromJSDate(startTs);
-    const endTime = startTime.endOf("day");
+    const endTime = DateTime.fromJSDate(timeStamp);
+    const startTime = endTime.startOf('day');
     const startTimeString = startTime.toFormat("yyyy'-'MM'-'dd");
     const endTimeString = endTime.toFormat("yyyy'-'MM'-'dd");
 
@@ -107,16 +103,10 @@ export const getMyData = function(startTs: Date) {
       + ".timeline";
       alert(`Going to retrieve data to ${dumpFile}`);
 
-    // Simulate old conversion to get correct UnixInteger for endMoment data
-    const getUnixNum = (dateData: DateTime) => {
-      const tempDate = dateData.toFormat("dd MMM yyyy");
-      return DateTime.fromFormat(tempDate, "dd MMM yyyy").toUnixInteger();
-    };
-
     const writeDumpFile = createWriteFile(dumpFile);
     const shareData = createShareData(dumpFile, startTimeString, endTimeString);
 
-    getRawEntries(null, getUnixNum(startTime), startTime.toUnixInteger())
+    getRawEntries(null, startTime.toUnixInteger(), endTime.toUnixInteger())
       .then(writeDumpFile)
       .then(shareData)
       .then(function() {
