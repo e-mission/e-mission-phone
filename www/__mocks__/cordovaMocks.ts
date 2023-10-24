@@ -63,6 +63,7 @@ export const mockBEMUserCache = () => {
       return new Promise<void>((rs, rj) =>
         setTimeout(() => {
           for (let p in _cache) delete _cache[p];
+          for (let doc in _storage) delete _storage[doc];
           rs();
         }, 100)
       );
@@ -128,4 +129,22 @@ export const mockBEMDataCollection = () => {
   }
   window['cordova'] ||= {};
   window['cordova'].plugins.BEMDataCollection = mockBEMDataCollection;
+}
+
+export const mockBEMServerCom = () => {
+  const mockBEMServerCom = {
+    postUserPersonalData: (actionString, typeString, updateDoc, rs, rj) => {
+      setTimeout(() => {
+        _storage["user_data"] = updateDoc;
+        rs();
+      }, 100)
+    },
+
+    getUserPersonalData: (actionString, rs, rj) => {
+      setTimeout(() => {
+        rs( _storage["user_data"] );
+      }, 100)
+    }
+  }
+  window['cordova'].plugins.BEMServerComm = mockBEMServerCom;
 }

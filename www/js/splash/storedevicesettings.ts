@@ -29,28 +29,31 @@ const storeDeviceSettings = function () {
 
 export const initDeviceSettings = function () {
   _datacollect = window['cordova'].plugins.BEMDataCollection;
-  readConsentState()
+  return readConsentState()
     .then(isConsented)
     .then(function (consentState) {
       if (consentState == true) {
-        storeDeviceSettings();
+        return storeDeviceSettings();
       } else {
         logInfo("no consent yet, waiting to store device settings in profile");
       }
+      logInfo("storedevicesettings startup done");
     });
-  logInfo("storedevicesettings startup done");
 }
 
 export const afterConsentStore = function () {
   console.log("in storedevicesettings, executing after consent is received");
-  if (readIntroDone()) {
-    console.log("intro is done -> reconsent situation, we already have a token -> register");
-    storeDeviceSettings();
-  }
+  readIntroDone().then((introDone) => {
+    console.log("intro is done?", introDone);
+    if (introDone) {
+      console.log("intro is done -> reconsent situation, we already have a token -> register");
+      return storeDeviceSettings();
+    }
+  });
 };
 
 export const afterIntroStore = function () {
   console.log("intro is done -> original consent situation, we should have a token by now -> register");
-  storeDeviceSettings();
+  return storeDeviceSettings();
 };
 
