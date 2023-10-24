@@ -1,25 +1,28 @@
-import React from 'react';
+import React from "react";
 import { StyleSheet } from 'react-native';
 import { Button, ButtonProps, useTheme } from 'react-native-paper';
 import color from 'color';
-import { Icon } from './Icon';
+import { Icon } from "./Icon";
 
-type Props = ButtonProps & { fillColor?: string; borderColor?: string };
-const DiaryButton = ({ children, fillColor, borderColor, icon, ...rest }: Props) => {
+type Props = ButtonProps & { fillColor?: string, borderColor?: string };
+const DiaryButton = ({ children, fillColor, borderColor, icon, ...rest } : Props) => {
+
   const { colors } = useTheme();
   const textColor = rest.textColor || (fillColor ? colors.onPrimary : colors.primary);
 
   return (
-    <Button
-      mode="elevated"
+    <Button mode="elevated"
       textColor={textColor}
       buttonColor={fillColor || colors.onPrimary}
       style={s.button(borderColor, fillColor, colors)}
-      labelStyle={[s.label, { color: textColor }]}
+      labelStyle={[s.label, {color: textColor}]}
       contentStyle={s.buttonContent}
       {...rest}>
       <>
-        {icon && <Icon icon={icon} iconColor={textColor} size={18} style={s.icon} />}
+        {icon &&
+          <Icon icon={icon} iconColor={textColor}
+            size={18} style={s.icon} />
+        }
         {children}
       </>
     </Button>
@@ -48,7 +51,7 @@ const s = StyleSheet.create({
   icon: {
     marginRight: 4,
     verticalAlign: 'middle',
-  },
+  }
 });
 
 export default DiaryButton;
