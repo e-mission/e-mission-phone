@@ -1,4 +1,4 @@
-import { logInfo } from './plugin/logger'
+import { logDebug } from './plugin/logger'
 import { getRawEntries } from './commHelper';
 import { ServerDataPoint, ServerData, TimeQuery } from './types/diaryTypes'
 
@@ -8,7 +8,7 @@ import { ServerDataPoint, ServerData, TimeQuery } from './types/diaryTypes'
  * @param list2 same as list1 
  * @returns a dedup array generated from the input lists
  */
-const combineWithDedup = function(list1: Array<ServerDataPoint>, list2: Array<ServerDataPoint>) {
+export const combineWithDedup = function(list1: Array<ServerDataPoint>, list2: Array<ServerDataPoint>) {
     const combinedList = list1.concat(list2);
     return combinedList.filter(function(value, i, array) {
       const firstIndexOfValue = array.findIndex(function(element) {
@@ -24,8 +24,11 @@ const combineWithDedup = function(list1: Array<ServerDataPoint>, list2: Array<Se
  * @param combiner a function that takes two arrays and joins them
  * @returns A promise which evaluates to a combined list of values or errors
  */
-const combinedPromises = function(promiseList: Array<Promise<any>>, 
+export const combinedPromises = function(promiseList: Array<Promise<any>>, 
   combiner: (list1: Array<any>, list2: Array<any>) => Array<any> ) {
+    if (promiseList.length === 0) {
+      throw new RangeError('combinedPromises needs input array.length >= 1');
+    }
     return new Promise(function(resolve, reject) {
       var firstResult = [];
       var firstError = null;
@@ -41,11 +44,11 @@ const combinedPromises = function(promiseList: Array<Promise<any>>,
           if (firstError && nextError) {
             reject([firstError, nextError]);
           } else {
-            logInfo("About to dedup localResult = "+firstResult.length
+            logDebug("About to dedup localResult = "+firstResult.length
                 +"remoteResult = "+nextResult.length);
 
             const dedupedList = combiner(firstResult, nextResult);
-            logInfo("Deduped list = "+dedupedList.length);
+            logDebug("Deduped list = "+dedupedList.length);
             resolve(dedupedList);
           }
         }
