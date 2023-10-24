@@ -15,7 +15,6 @@ import angular from 'angular';
 
 angular.module('emission.survey.enketo.trip.button',
     ['emission.stats.clientstats',
-        'emission.survey.enketo.launch',
         'emission.survey.enketo.answer',
         'emission.survey.inputmatcher'])
 .factory("EnketoTripButtonService", function(InputMatcher, EnketoSurveyAnswer, Logger, $timeout) {

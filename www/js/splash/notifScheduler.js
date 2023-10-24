@@ -1,15 +1,15 @@
 'use strict';
 
 import angular from 'angular';
+import { getConfig } from '../config/dynamicConfig';
 
 angular.module('emission.splash.notifscheduler',
                     ['emission.services',
                     'emission.plugin.logger',
-                    'emission.stats.clientstats',
-                    'emission.config.dynamic'])
+                    'emission.stats.clientstats'])
 
 .factory('NotificationScheduler', function($http, $window, $ionicPlatform,
-                                            ClientStats, DynamicConfig, CommHelper, Logger) {
+                                            ClientStats, CommHelper, Logger) {
 
     const scheduler = {};
     let _config;
@@ -258,7 +258,7 @@ angular.module('emission.splash.notifscheduler',
     }
 
     $ionicPlatform.ready().then(async () => {
-        _config = await DynamicConfig.configReady();
+        _config = await getConfig();
         if (!_config.reminderSchemes) {
             Logger.log("No reminder schemes found in config, not scheduling notifications");
             return;

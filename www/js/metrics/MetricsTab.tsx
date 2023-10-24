@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { angularize, getAngularService } from "../angular-react-helper";
+import { getAngularService } from "../angular-react-helper";
 import { View, ScrollView, useWindowDimensions } from "react-native";
 import { Appbar } from "react-native-paper";
 import NavBarButton from "../components/NavBarButton";
@@ -78,8 +78,8 @@ const MetricsTab = () => {
   const cardWidth = windowWidth * .88;
 
   return (<>
-    <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
-      <Appbar.Content title={t("main-metrics.dashboard")} />
+    <Appbar.Header statusBarHeight={0} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+      <Appbar.Content title={t("metrics.dashboard-tab")} />
       <MetricsDateSelect dateRange={dateRange} setDateRange={setDateRange} />
       <Appbar.Action icon="refresh" size={32} onPress={refresh} />
     </Appbar.Header>
@@ -149,5 +149,4 @@ export const cardStyles: any = {
   }
 }
 
-angularize(MetricsTab, 'MetricsTab', 'emission.main.metricstab');
 export default MetricsTab;

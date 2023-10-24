@@ -37,13 +37,13 @@ const convertSpeed = (speedMetersPerSec: number, imperial: boolean): number => {
 }
 
 export function useImperialConfig() {
-  const { appConfig, loading } = useAppConfig();
+  const appConfig = useAppConfig();
   const [useImperial, setUseImperial] = useState(false);
 
   useEffect(() => {
-    if (loading) return;
+    if (!appConfig) return;
     setUseImperial(appConfig.display_config.use_imperial);
-  }, [appConfig, loading]);
+  }, [appConfig]);
 
   return {
     distanceSuffix: useImperial ? "mi" : "km",
