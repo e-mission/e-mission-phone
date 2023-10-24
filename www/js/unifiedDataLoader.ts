@@ -44,11 +44,10 @@ export const combinedPromises = function(promiseList: Array<Promise<any>>,
           if (firstError && nextError) {
             reject([firstError, nextError]);
           } else {
-            logDebug("About to dedup localResult = "+firstResult.length
-                +"remoteResult = "+nextResult.length);
-
+            logDebug(`About to dedup firstResult = ${firstResult.length}` +
+              ` nextResult = ${nextResult.length}`);
             const dedupedList = combiner(firstResult, nextResult);
-            logDebug("Deduped list = "+dedupedList.length);
+            logDebug(`Deduped list = ${dedupedList.length}`);
             resolve(dedupedList);
           }
         }
@@ -94,11 +93,11 @@ export const combinedPromises = function(promiseList: Array<Promise<any>>,
 export const getUnifiedDataForInterval = function(key: string, tq: TimeQuery, 
   getMethod: (key: string, tq: TimeQuery, flag: boolean) => Promise<any>) {
     const test = true;
-    const localPromise = getMethod(key, tq, test);
+    const getPromise = getMethod(key, tq, test);
     const remotePromise = getRawEntries([key], tq.startTs, tq.endTs)
-        .then(function(serverResponse: ServerData) {
-          return serverResponse.phone_data;
-        });
-    var promiseList = [localPromise, remotePromise]
+      .then(function(serverResponse: ServerData) {
+        return serverResponse.phone_data;
+      });
+    var promiseList = [getPromise, remotePromise]
     return combinedPromises(promiseList, combineWithDedup);
 };
