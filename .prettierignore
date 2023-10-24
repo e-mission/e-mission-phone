@@ -2,3 +2,12 @@ node_modules
 # Ignore artifacts:
 build
 coverage
+# Ignore all HTML files:
+**/*.html
+# Ignore all CSS files:
+**/*.css
+**/*.scss
+
+bin/*
+setup/*
+survey-resources/*
