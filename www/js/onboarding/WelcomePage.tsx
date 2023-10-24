@@ -5,7 +5,7 @@ import { Button, Dialog, Divider, IconButton, Surface, Text, TextInput, Touchabl
 import color from 'color';
 import { initByUser } from '../config/dynamicConfig';
 import { AppContext } from '../App';
-import { displayError } from "../plugin/logger";
+import { displayError, logDebug } from "../plugin/logger";
 import { onboardingStyles } from './OnboardingStack';
 import { Icon } from '../components/Icon';
 
@@ -23,13 +23,10 @@ const WelcomePage = () => {
   const checkURL = function (result) {
     let notCancelled = result.cancelled == false;
     let isQR = result.format == "QR_CODE";
-    let hasPrefix = false;
-    if (__DEV__) {
-      hasPrefix = result.text.startsWith("emission");
-    } else {
-      hasPrefix = result.text.startsWith("nrelopenpath");
-    }
+    let hasPrefix = result.text.split(":")[0] == "nrelopenpath" || result.text.split(":")[0] == "emission";
     let hasToken = result.text.includes("login_token?token");
+
+    logDebug("QR code " + result.text + " checks: cancel, format, prefix, params " + notCancelled + isQR + hasPrefix + hasToken);
 
     return notCancelled && isQR && hasPrefix && hasToken;
   }  
