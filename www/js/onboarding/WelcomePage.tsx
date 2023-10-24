@@ -20,12 +20,25 @@ const WelcomePage = () => {
   const [infoPopupVis, setInfoPopupVis] = useState(false);
   const [existingToken, setExistingToken] = useState('');
 
+  const checkURL = function (result) {
+    let notCancelled = result.cancelled == false;
+    let isQR = result.format == "QR_CODE";
+    let hasPrefix = false;
+    if (__DEV__) {
+      hasPrefix = result.text.startsWith("emission");
+    } else {
+      hasPrefix = result.text.startsWith("nrelopenpath");
+    }
+    let hasToken = result.text.includes("login_token?token");
+
+    return notCancelled && isQR && hasPrefix && hasToken;
+  }  
+
   const scanCode = function() {
-    window.cordova.plugins.barcodeScanner.scan(
+    window['cordova'].plugins.barcodeScanner.scan(
       function (result) {
         console.debug("scanned code", result);
-          if (result.format == "QR_CODE" && 
-              result.cancelled == false) {
+          if (checkURL(result)) {
                 let text = result.text.split("=")[1];
                 console.log("found code", text);
               loginWithToken(text);
