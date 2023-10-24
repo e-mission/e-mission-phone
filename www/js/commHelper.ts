@@ -1,4 +1,4 @@
-import { logDebug } from "./plugin/logger";
+import { logDebug } from './plugin/logger';
 
 /**
  * @param url URL endpoint for the request

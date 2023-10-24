@@ -99,8 +99,6 @@
     "shelljs": "^0.8.5"
   },
   "cordova": {
-    "platforms": [
-      "browser"
-    ]
+    "platforms": ["browser"]
   }
 }

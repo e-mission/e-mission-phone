@@ -10,31 +10,29 @@
 
 import angular from 'angular';
 
-angular.module('emission.survey.enketo.trip.infscrollfilters',[
+angular
+  .module('emission.survey.enketo.trip.infscrollfilters', [
     'emission.survey.enketo.trip.button',
-    'emission.plugin.logger'
+    'emission.plugin.logger',
   ])
-.factory('EnketoTripInfScrollFilters', function(Logger, EnketoTripButtonService){
+  .factory('EnketoTripInfScrollFilters', function (Logger, EnketoTripButtonService) {
     var sf = {};
-    var unlabeledCheck = function(t) {
-       return !angular.isDefined(t.userInput[EnketoTripButtonService.SINGLE_KEY]);
-    }
+    var unlabeledCheck = function (t) {
+      return !angular.isDefined(t.userInput[EnketoTripButtonService.SINGLE_KEY]);
+    };
 
     sf.UNLABELED = {
-        key: "unlabeled",
-        text: i18next.t("diary.unlabeled"),
-        filter: unlabeledCheck
-    }
+      key: 'unlabeled',
+      text: i18next.t('diary.unlabeled'),
+      filter: unlabeledCheck,
+    };
 
     sf.TO_LABEL = {
-        key: "to_label",
-        text: i18next.t("diary.to-label"),
-        filter: unlabeledCheck
-    }
+      key: 'to_label',
+      text: i18next.t('diary.to-label'),
+      filter: unlabeledCheck,
+    };
 
-    sf.configuredFilters = [
-        sf.TO_LABEL,
-        sf.UNLABELED,
-    ];
+    sf.configuredFilters = [sf.TO_LABEL, sf.UNLABELED];
     return sf;
-});
+  });
