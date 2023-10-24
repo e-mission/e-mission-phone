@@ -21,7 +21,7 @@ type collectionConfig = {
 
 export async function forceTransition(transition) {
     try {
-        let result = forceTransitionWrapper(transition);
+        let result = await forceTransitionWrapper(transition);
         window.alert('success -> '+result);
     } catch (err) {
         window.alert('error -> '+err);
@@ -132,7 +132,7 @@ const formatConfigForDisplay = function(config, accuracyOptions) {
     return retVal;
 }
 
-const ControlSyncHelper = ({ editVis, setEditVis }) => {
+const ControlCollectionHelper = ({ editVis, setEditVis }) => {
     const {colors} = useTheme();
     const Logger = getAngularService("Logger");
 
@@ -172,7 +172,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
         console.log("new config = ", localConfig);
         try{
             let set = await setConfig(localConfig);
-            //TODO find way to not need control.update.complete event broadcast
+            setEditVis(false);
         } catch(err) {
             Logger.displayError("Error while setting collection config", err);
         }
@@ -268,8 +268,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
                         {geofenceComponent}
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={() => {saveAndReload();
-                                                setEditVis(false);}}>
+                        <Button onPress={() => {saveAndReload()}}>
                             Save
                         </Button>
                         <Button onPress={() => setEditVis(false)}>Cancel</Button>
@@ -282,4 +281,4 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
     );
   };
   
-export default ControlSyncHelper;
+export default ControlCollectionHelper;
