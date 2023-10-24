@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
-import { getAngularService } from "./angular-react-helper"
+import { useEffect, useState } from 'react';
+import { getAngularService } from './angular-react-helper';
 
 const useAppConfig = () => {
-
   const [appConfig, setAppConfig] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -18,7 +17,7 @@ const useAppConfig = () => {
     });
   }, []);
 
-  return {appConfig, loading};
-}
+  return { appConfig, loading };
+};
 
 export default useAppConfig;

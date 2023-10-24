@@ -10,13 +10,12 @@ import { displayError, displayErrorMsg } from '../../plugin/logger';
 // import { transform } from 'enketo-transformer/web';
 
 type Props = Omit<ModalProps, 'children'> & {
-  surveyName: string,
-  onResponseSaved: (response: any) => void,
-  opts?: SurveyOptions,
-}
+  surveyName: string;
+  onResponseSaved: (response: any) => void;
+  opts?: SurveyOptions;
+};
 
-const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => {
-
+const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
   const { t, i18n } = useTranslation();
   const headerEl = useRef(null);
   const surveyJson = useRef(null);
@@ -27,9 +26,11 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
     const responseText = await fetchUrlCached(url);
     try {
       return JSON.parse(responseText);
-    } catch ({name, message}) {
+    } catch ({ name, message }) {
       // not JSON, so it must be XML
-      return Promise.reject('downloaded survey was not JSON; enketo-transformer is not available yet');
+      return Promise.reject(
+        'downloaded survey was not JSON; enketo-transformer is not available yet',
+      );
       /* uncomment once enketo-transformer is available */
       // if `response` is not JSON, it is an XML string and needs transformation to JSON
       // const xmlText = await res.text();
@@ -41,18 +42,21 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
     const valid = await enketoForm.current.validate();
     if (!valid) return false;
     const result = await saveResponse(surveyName, enketoForm.current, appConfig, opts);
-    if (!result) { // validation failed
+    if (!result) {
+      // validation failed
       displayErrorMsg(t('survey.enketo-form-errors'));
-    } else if (result instanceof Error) { // error thrown in saveResponse
+    } else if (result instanceof Error) {
+      // error thrown in saveResponse
       displayError(result);
-    } else { // success
+    } else {
+      // success
       rest.onDismiss();
       onResponseSaved(result);
       return;
     }
   }
 
-  // init logic: retrieve form -> inject into DOM -> initialize Enketo -> show modal 
+  // init logic: retrieve form -> inject into DOM -> initialize Enketo -> show modal
   function initSurvey() {
     console.debug('Loading survey', surveyName);
     const formPath = appConfig.survey_info?.surveys?.[surveyName]?.formPath;
@@ -91,10 +95,14 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
         <header ref={headerEl} className="form-header clearfix">
           <button style={s.dismissBtn} onClick={() => rest.onDismiss()}>
             {/* arrow-left glyph from https://pictogrammers.com/library/mdi/icon/arrow-left/ */}
-            <span style={{fontFamily: 'MaterialCommunityIcons', fontSize: 24, marginRight: 5}}>󰁍</span>
+            <span style={{ fontFamily: 'MaterialCommunityIcons', fontSize: 24, marginRight: 5 }}>
+              󰁍
+            </span>
             <span>{t('survey.dismiss')}</span>
           </button>
-          <span className="form-language-selector hide"><span>Choose Language</span></span>
+          <span className="form-language-selector hide">
+            <span>Choose Language</span>
+          </span>
           <nav className="pages-toc hide" role="navigation">
             <label htmlFor="toc-toggle"></label>
             <input type="checkbox" id="toc-toggle" className="ignore" value="show" />
@@ -109,16 +117,44 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
         <section className="form-footer">
           {/* Used some quick-and-dirty inline CSS styles here because the form-footer should be styled in the
           mother application. The HTML markup can be changed as well. */}
-          <a href="#" className="previous-page disabled" style={{ position: 'absolute', left: 10, bottom: 40 }}>{t('survey.back')}</a>
-          <button id="validate-form" className="btn btn-primary" onClick={() => validateAndSave()}
-              style={{ width: 200, marginLeft: 'calc(50% - 100px)' }}>
+          <a
+            href="#"
+            className="previous-page disabled"
+            style={{ position: 'absolute', left: 10, bottom: 40 }}>
+            {t('survey.back')}
+          </a>
+          <button
+            id="validate-form"
+            className="btn btn-primary"
+            onClick={() => validateAndSave()}
+            style={{ width: 200, marginLeft: 'calc(50% - 100px)' }}>
             {t('survey.save')}
           </button>
-          <a href="#survey-paper" className="btn btn-primary next-page disabled" style={{ width: 200, marginLeft: 'calc(50% - 100px' }}>{t('survey.next')}</a>
-          <div className="enketo-power" style={{ marginBottom: 30 }}><span>{t('survey.powered-by')}</span> <a href="http://enketo.org" title="enketo.org website"><img src="templates/survey/enketo/enketo_bare_150x56.png" alt="enketo logo" /></a> </div>
+          <a
+            href="#survey-paper"
+            className="btn btn-primary next-page disabled"
+            style={{ width: 200, marginLeft: 'calc(50% - 100px' }}>
+            {t('survey.next')}
+          </a>
+          <div className="enketo-power" style={{ marginBottom: 30 }}>
+            <span>{t('survey.powered-by')}</span>{' '}
+            <a href="http://enketo.org" title="enketo.org website">
+              <img src="templates/survey/enketo/enketo_bare_150x56.png" alt="enketo logo" />
+            </a>{' '}
+          </div>
           <div className="form-footer__jump-nav" style={{ display: 'flex', flexDirection: 'row' }}>
-            <a href="#" className="btn btn-default disabled first-page" style={{ flex: 1, borderRadius: 0 }}>{t('survey.return-to-beginning')}</a>
-            <a href="#" className="btn btn-default disabled last-page" style={{ flex: 1, borderRadius: 0 }}>{t('survey.go-to-end')}</a>
+            <a
+              href="#"
+              className="btn btn-default disabled first-page"
+              style={{ flex: 1, borderRadius: 0 }}>
+              {t('survey.return-to-beginning')}
+            </a>
+            <a
+              href="#"
+              className="btn btn-default disabled last-page"
+              style={{ flex: 1, borderRadius: 0 }}>
+              {t('survey.go-to-end')}
+            </a>
           </div>
           {/* <ol className="page-toc"></ol> */}
         </section>
@@ -127,19 +163,17 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
   );
 
   return (
-    <Modal {...rest} animationType='slide'>
-      <SafeAreaView style={{flex: 1}}>
-        <ScrollView style={{flex: 1}} contentContainerStyle={{flex: 1}}>
-          <Pressable style={{flex: 1}}>
-            <div className="enketo-plugin">
-              {enketoContent}
-            </div>
+    <Modal {...rest} animationType="slide">
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flex: 1 }}>
+          <Pressable style={{ flex: 1 }}>
+            <div className="enketo-plugin">{enketoContent}</div>
           </Pressable>
         </ScrollView>
       </SafeAreaView>
     </Modal>
   );
-}
+};
 
 const s = StyleSheet.create({
   dismissBtn: {
@@ -150,7 +184,7 @@ const s = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     padding: 0,
-  }
+  },
 });
 
 export default EnketoModal;
