@@ -31,16 +31,16 @@ const StudySummary = () => {
 const styles = StyleSheet.create({
   title: {
     fontWeight: "bold",
-    fontSize: 22,
+    fontSize: 24,
     paddingBottom: 10,
     textAlign: "center"
   },
   text: {
-    fontSize: 14,
+    fontSize: 15,
   },
   studyName: {
     fontWeight: "bold",
-    fontSize: 16
+    fontSize: 17,
   },
 });
 

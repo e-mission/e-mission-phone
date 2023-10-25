@@ -12,11 +12,11 @@
  */
 
 import angular from 'angular';
+import { getUserInputForTrip } from '../inputMatcher';
 
 angular.module('emission.survey.enketo.trip.button',
-    ['emission.survey.enketo.answer',
-        'emission.survey.inputmatcher'])
-.factory("EnketoTripButtonService", function(InputMatcher, EnketoSurveyAnswer, Logger, $timeout) {
+    ['emission.survey.enketo.answer'])
+.factory("EnketoTripButtonService", function(EnketoSurveyAnswer, Logger, $timeout) {
   var etbs = {};
   console.log("Creating EnketoTripButtonService");
   etbs.key = "manual/trip_user_input";
@@ -61,8 +61,7 @@ angular.module('emission.survey.enketo.trip.button',
    */
   etbs.populateManualInputs = function (trip, nextTrip, inputType, inputList) {
       // Check unprocessed labels first since they are more recent
-      const unprocessedLabelEntry = InputMatcher.getUserInputForTrip(trip, nextTrip,
-          inputList);
+      const unprocessedLabelEntry = getUserInputForTrip(trip, nextTrip,inputList);
       var userInputEntry = unprocessedLabelEntry;
       if (!angular.isDefined(userInputEntry)) {
           userInputEntry = trip.user_input?.[etbs.inputType2retKey(inputType)];

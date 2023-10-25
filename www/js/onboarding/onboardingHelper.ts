@@ -1,11 +1,18 @@
 import { DateTime } from "luxon";
 import { getAngularService } from "../angular-react-helper";
-import { getConfig } from "../config/dynamicConfig";
+import { getConfig, resetDataAndRefresh } from "../config/dynamicConfig";
 import { storageGet, storageSet } from "../plugin/storage";
+import { logDebug } from "../plugin/logger";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
-type OnboardingRoute = 'welcome' | 'summary' | 'consent' | 'survey' | 'save-qr' | false;
+// route = WELCOME if no config present
+// route = SUMMARY if config present, but not consented and summary not done
+// route = CONSENT if config present, but not consented and summary done
+// route = SAVE_QR if config present, consented, but save qr not done
+// route = SURVEY if config present, consented and save qr done
+// route = DONE if onboarding is finished (intro_done marked)
+export enum OnboardingRoute { WELCOME, SUMMARY, CONSENT, SAVE_QR, SURVEY, DONE };
 export type OnboardingState = {
   opcode: string,
   route: OnboardingRoute,
@@ -22,19 +29,30 @@ export const setRegisterUserDone = (b) => registerUserDone = b;
 
 export function getPendingOnboardingState(): Promise<OnboardingState> {
   return Promise.all([getConfig(), readConsented(), readIntroDone()]).then(([config, isConsented, isIntroDone]) => {
-    if (isIntroDone) return null; // onboarding is done; no pending state
-    let route: OnboardingRoute = false;
-    if (!config) {
-      route = 'welcome';
-    } else if (!isConsented && !summaryDone) {
-      route = 'summary';
-    } else if (!isConsented) {
-      route = 'consent';
-    } else if (!saveQrDone) {
-      route = 'save-qr';
-    } else {
-      route = 'survey';
+    let route: OnboardingRoute;
+
+    // backwards compat - prev. versions might have config cleared but still have intro_done set
+    if (!config && (isIntroDone || isConsented)) {
+      resetDataAndRefresh(); // if there's no config, we need to reset everything
+      return null;
     }
+    
+    if (isIntroDone) {
+      route = OnboardingRoute.DONE;
+    } else if (!config) {
+      route = OnboardingRoute.WELCOME;
+    } else if (!isConsented && !summaryDone) {
+      route = OnboardingRoute.SUMMARY;
+    } else if (!isConsented) {
+      route = OnboardingRoute.CONSENT;
+    } else if (!saveQrDone) {
+      route = OnboardingRoute.SAVE_QR;
+    } else {
+      route = OnboardingRoute.SURVEY;
+    }
+
+    logDebug("pending onboarding state is " + route + " intro, config, consent, qr saved : " + isIntroDone + config + isConsented + saveQrDone);
+
     return { route, opcode: config?.joined?.opcode };
   });
 };

@@ -1,3 +1,5 @@
+import { displayErrorMsg } from "./logger";
+
 const CLIENT_TIME = "stats/client_time";
 const CLIENT_ERROR = "stats/client_error";
 const CLIENT_NAV_EVENT = "stats/client_nav_event";
@@ -39,16 +41,19 @@ export const addStatReading = async (name: string, reading: any) => {
   const db = window['cordova']?.plugins?.BEMUserCache;
   const event = await getStatsEvent(name, reading);
   if (db) return db.putMessage(CLIENT_TIME, event);
+  displayErrorMsg("addStatReading: db is not defined");
 }
 
 export const addStatEvent = async (name: string) => {
   const db = window['cordova']?.plugins?.BEMUserCache;
   const event = await getStatsEvent(name, null);
   if (db) return db.putMessage(CLIENT_NAV_EVENT, event);
+  displayErrorMsg("addStatEvent: db is not defined");
 }
 
 export const addStatError = async (name: string, errorStr: string) => {
   const db = window['cordova']?.plugins?.BEMUserCache;
   const event = await getStatsEvent(name, errorStr);
   if (db) return db.putMessage(CLIENT_ERROR, event);
+  displayErrorMsg("addStatError: db is not defined");
 }

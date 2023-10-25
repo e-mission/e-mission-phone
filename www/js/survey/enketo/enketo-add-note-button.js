@@ -3,12 +3,12 @@
  */
 
 import angular from 'angular';
+import { getAdditionsForTimelineEntry, getUniqueEntries } from '../inputMatcher';
 
 angular.module('emission.survey.enketo.add-note-button',
     ['emission.services',
-        'emission.survey.enketo.answer',
-        'emission.survey.inputmatcher'])
-.factory("EnketoNotesButtonService", function(InputMatcher, EnketoSurveyAnswer, Logger, $timeout) {
+        'emission.survey.enketo.answer'])
+.factory("EnketoNotesButtonService", function(EnketoSurveyAnswer, Logger, $timeout) {
   var enbs = {};
   console.log("Creating EnketoNotesButtonService");
   enbs.SINGLE_KEY="NOTES";
@@ -76,9 +76,9 @@ angular.module('emission.survey.enketo.add-note-button',
       // be re-matching entries that have already been matched on the server
       // but the number of matched entries is likely to be small, so we can live
       // with the performance for now
-      const unprocessedAdditions = InputMatcher.getAdditionsForTimelineEntry(timelineEntry, inputList);
+      const unprocessedAdditions = getAdditionsForTimelineEntry(timelineEntry, inputList);
       const combinedPotentialAdditionList = timelineEntry.additions.concat(unprocessedAdditions);
-      const dedupedList = InputMatcher.getUniqueEntries(combinedPotentialAdditionList);
+      const dedupedList = getUniqueEntries(combinedPotentialAdditionList);
       Logger.log("After combining unprocessed ("+unprocessedAdditions.length+
         ") with server ("+timelineEntry.additions.length+
         ") for a combined ("+combinedPotentialAdditionList.length+
