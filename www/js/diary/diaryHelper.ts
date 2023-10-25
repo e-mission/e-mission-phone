@@ -4,6 +4,7 @@
 import moment from "moment";
 import { DateTime } from "luxon";
 import { LabelOptions, readableLabelToKey } from "../survey/multilabel/confirmHelper";
+import { CompositeTrip } from '../types/diaryTypes';
 
 export const modeColors = {
   pink: '#c32e85',        // oklch(56% 0.2 350)     // e-car
@@ -24,7 +25,7 @@ type BaseMode = {
 }
 
 // parallels the server-side MotionTypes enum: https://github.com/e-mission/e-mission-server/blob/94e7478e627fa8c171323662f951c611c0993031/emission/core/wrapper/motionactivity.py#L12
-type MotionTypeKey = 'IN_VEHICLE' | 'BICYCLING' | 'ON_FOOT' | 'STILL' | 'UNKNOWN' | 'TILTING'
+export type MotionTypeKey = 'IN_VEHICLE' | 'BICYCLING' | 'ON_FOOT' | 'STILL' | 'UNKNOWN' | 'TILTING'
                   | 'WALKING' | 'RUNNING' | 'NONE' | 'STOPPED_WHILE_IN_VEHICLE' | 'AIR_OR_HSR';
 
 const BaseModes: {[k: string]: BaseMode} = {
@@ -54,7 +55,7 @@ const BaseModes: {[k: string]: BaseMode} = {
   OTHER: { name: "OTHER", icon: "pencil-circle", color: modeColors.taupe },
 };
 
-type BaseModeKey = keyof typeof BaseModes;
+export type BaseModeKey = keyof typeof BaseModes;
 /**
  * @param motionName A string like "WALKING" or "MotionTypes.WALKING"
  * @returns A BaseMode object containing the name, icon, and color of the motion type
@@ -138,37 +139,25 @@ export function getFormattedTimeRange(beginFmtTime: string, endFmtTime: string) 
   const beginMoment = moment.parseZone(beginFmtTime);
   const endMoment = moment.parseZone(endFmtTime);
   return endMoment.to(beginMoment, true);
-};
+}
 
-// Temporary function to avoid repear in getDetectedModes ret val.
-const filterRunning = (mode) =>
-  (mode == 'MotionTypes.RUNNING') ? 'MotionTypes.WALKING' : mode;
+/**
+ * @param trip A composite trip object
+ * @returns An array of objects containing the mode key, icon, color, and percentage for each mode
+ * detected in the trip
+ */
+export function getDetectedModes(trip: CompositeTrip) {
+  const sectionSummary = trip?.inferred_section_summary || trip?.cleaned_section_summary;
+  if (!sectionSummary?.distance) return [];
 
-export function getDetectedModes(trip) {
-  if (!trip.sections?.length) return [];
-
-  // sum up the distances for each mode, as well as the total distance
-  let totalDist = 0;
-  const dists: Record<string, number> = {};
-  trip.sections.forEach((section) => {
-    const filteredMode = filterRunning(section.sensed_mode_str);
-    dists[filteredMode] = (dists[filteredMode] || 0) + section.distance;
-    totalDist += section.distance;
-  });
-
-  // sort modes by the distance traveled (descending)
-  const sortedKeys = Object.entries(dists).sort((a, b) => b[1] - a[1]).map(e => e[0]);
-  let sectionPcts = sortedKeys.map(function (mode) {
-    const fract = dists[mode] / totalDist;
-    return {
-      mode: mode,
+  return Object.entries(sectionSummary.distance)
+    .sort(([modeA, distA], [modeB, distB]) => distB - distA) // sort by distance (highest first)
+    .map(([mode, dist]: [MotionTypeKey, number]) => ({
+      mode,
       icon: getBaseModeByKey(mode)?.icon,
       color: getBaseModeByKey(mode)?.color || 'black',
-      pct: Math.round(fract * 100) || '<1' // if rounds to 0%, show <1%
-    };
-  });
-
-  return sectionPcts;
+      pct: Math.round((dist / trip.distance) * 100) || '<1', // if rounds to 0%, show <1%
+    }));
 }
 
 export function getFormattedSectionProperties(trip, ImperialConfig) {

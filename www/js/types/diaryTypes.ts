@@ -3,6 +3,8 @@
   Since we are using TypeScript now, we should strive to enforce type safety and also benefit from
     IntelliSense and other IDE features. */
 
+import { BaseModeKey, MotionTypeKey } from "../diary/diaryHelper";
+
 // Since it is WIP, these types are not used anywhere yet.
 
 type ConfirmedPlace = any; // TODO
@@ -12,7 +14,7 @@ type ConfirmedPlace = any; // TODO
 export type CompositeTrip = {
   _id: {$oid: string},
   additions: any[], // TODO
-  cleaned_section_summary: any, // TODO
+  cleaned_section_summary: SectionSummary,
   cleaned_trip: {$oid: string},
   confidence_threshold: number,
   confirmed_trip: {$oid: string},
@@ -27,7 +29,7 @@ export type CompositeTrip = {
   expectation: any, // TODO "{to_label: boolean}"
   expected_trip: {$oid: string},
   inferred_labels: any[], // TODO
-  inferred_section_summary: any, // TODO
+  inferred_section_summary: SectionSummary,
   inferred_trip: {$oid: string},
   key: string,
   locations: any[], // TODO
@@ -69,6 +71,12 @@ export type PopulatedTrip = CompositeTrip & {
   getNextEntry?: () => PopulatedTrip | ConfirmedPlace,
   userInput?: UserInput, 
   verifiability?: string,
+}
+
+export type SectionSummary = {
+  count: {[k: MotionTypeKey | BaseModeKey]: number},
+  distance: {[k: MotionTypeKey | BaseModeKey]: number},
+  duration: {[k: MotionTypeKey | BaseModeKey]: number},
 }
 
 export type UserInput = {
