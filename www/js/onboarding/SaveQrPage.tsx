@@ -31,13 +31,6 @@ const SaveQrPage = ({  }) => {
             setRegisterUserDone(true);
             preloadDemoSurveyResponse();
             refreshOnboardingState();
-
-            //fully consented, so can handle other aspects
-            //other plugins - previously used $emit
-            const PushNotify = getAngularService("PushNotify");
-            PushNotify.afterConsent();
-            const StoreSeviceSettings = getAngularService("StoreDeviceSettings");
-            StoreSeviceSettings.afterConsent();
           })
         );
     } else {

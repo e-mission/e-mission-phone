@@ -1,5 +1,7 @@
+import { getAngularService } from "../angular-react-helper";
 import { storageGet, storageSet } from '../plugin/storage';
 import { logInfo, logDebug, displayErrorMsg } from '../plugin/logger';
+import { readIntroDone } from "../onboarding/onboardingHelper";
 
 export const startPrefs = {
   CONSENTED_EVENT: "data_collection_consented",
@@ -32,13 +34,26 @@ export function markConsented() {
   logInfo("changing consent from " +
     _curr_consented + " -> " + JSON.stringify(_req_consent));
   // mark in native storage
-  return readConsentState().then(writeConsentToNative).then(function (response) {
-    // mark in local storage
-    storageSet(DATA_COLLECTION_CONSENTED_PROTOCOL,
-      _req_consent);
-    // mark in local variable as well
-    _curr_consented = {..._req_consent};
-  });
+  return readConsentState()
+    .then(writeConsentToNative)
+    .then(function (response) {
+      // mark in local storage
+      storageSet(DATA_COLLECTION_CONSENTED_PROTOCOL,
+        _req_consent);
+      // mark in local variable as well
+      _curr_consented = { ..._req_consent };
+    })
+    //check for reconsent
+    .then(readIntroDone)
+    .then((isIntroDone) => {
+      if(isIntroDone) {
+        console.debug("reconsent scenario - marked consent after intro done - registering pushnoify and storing device settings")
+        const PushNotify = getAngularService("PushNotify");
+        const StoreSeviceSettings = getAngularService("StoreDeviceSettings");
+        PushNotify.registerPush();
+        StoreSeviceSettings.storeDeviceSettings();
+      }
+    });
 };
 
 let _is_consented;

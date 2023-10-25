@@ -45,16 +45,6 @@ angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
       Logger.log("storedevicesettings startup done");
     });
 
-    storedevicesettings.afterConsent = function() {
-      console.log("in storedevicesettings, executing after consent is received");
-      readIntroDone().then((intro_done) => {
-        if (intro_done) {
-          console.log("intro is done -> reconsent situation, we already have a token -> register");
-          storedevicesettings.storeDeviceSettings();
-      }
-      })
-    }
-
     $rootScope.$on(startPrefs.INTRO_DONE_EVENT, function(event, data) {
           console.log("intro is done -> original consent situation, we should have a token by now -> register");
        storedevicesettings.storeDeviceSettings();
