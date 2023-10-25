@@ -42,7 +42,7 @@ const ProfileSettings = () => {
     const StartPrefs = getAngularService('StartPrefs');
 
     //functions that come directly from an Angular service
-    const editCollectionConfig = () => setEditCollection(true);
+    const editCollectionConfig = () => setEditCollectionVis(true);
     const editSyncConfig = () => setEditSync(true);
 
     //states and variables used to control/create the settings
