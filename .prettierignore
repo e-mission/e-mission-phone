@@ -2,12 +2,13 @@ node_modules
 # Ignore artifacts:
 build
 coverage
-# Ignore all HTML files:
-**/*.html
-# Ignore all CSS files:
-**/*.css
-**/*.scss
 
-bin/*
-setup/*
-survey-resources/*
+# Ignore www/dist:
+www/dist
+
+# This is the pattern to check only www directory:
+# Ignore all
+/*
+# but don't ignore all the files in www directory
+!/www
+
