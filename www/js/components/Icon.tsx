@@ -7,19 +7,14 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
-import { Props as IconButtonProps } from 'react-native-paper/lib/typescript/src/components/IconButton/IconButton';
+import { Props as IconButtonProps } from 'react-native-paper/lib/typescript/src/components/IconButton/IconButton'
 
-export const Icon = ({ style, ...rest }: IconButtonProps) => {
+export const Icon = ({style, ...rest}: IconButtonProps) => {
   return (
-    <IconButton
-      style={[s.icon, style]}
-      {...rest}
-      role="none"
-      focusable={false}
-      accessibilityHidden={true}
-    />
+    <IconButton style={[s.icon, style]} {...rest}
+      role='none' focusable={false} accessibilityHidden={true} />
   );
-};
+}
 
 const s = StyleSheet.create({
   icon: {

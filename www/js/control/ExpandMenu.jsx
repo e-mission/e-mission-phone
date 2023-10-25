@@ -1,15 +1,15 @@
-import React from 'react';
+import React from "react";
 import { StyleSheet } from 'react-native';
 import { List, useTheme } from 'react-native-paper';
-import { useTranslation } from 'react-i18next';
-import { styles as rowStyles } from './SettingRow';
+import { useTranslation } from "react-i18next";
+import { styles as rowStyles } from "./SettingRow";
 
 const ExpansionSection = (props) => {
-  const { t } = useTranslation(); //this accesses the translations
-  const { colors } = useTheme(); // use this to get the theme colors instead of hardcoded #hex colors
-  const [expanded, setExpanded] = React.useState(false);
+    const { t } = useTranslation(); //this accesses the translations
+    const { colors } = useTheme(); // use this to get the theme colors instead of hardcoded #hex colors
+    const [expanded, setExpanded] = React.useState(false);
 
-  const handlePress = () => setExpanded(!expanded);
+    const handlePress = () => setExpanded(!expanded);
 
   return (
     <List.Accordion
@@ -18,15 +18,15 @@ const ExpansionSection = (props) => {
       titleStyle={rowStyles.title}
       expanded={expanded}
       onPress={handlePress}>
-      {props.children}
+        {props.children}
     </List.Accordion>
   );
 };
 const styles = StyleSheet.create({
   section: (surfaceColor) => ({
-    justifyContent: 'space-between',
-    backgroundColor: surfaceColor,
-    margin: 1,
+      justifyContent: 'space-between',
+      backgroundColor: surfaceColor,
+      margin: 1,
   }),
 });
 

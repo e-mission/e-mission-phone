@@ -7,15 +7,15 @@ name: osx-build-android
 on:
   push:
     branches:
-      - master
-      - maint_upgrade_**
+        - master
+        - maint_upgrade_**
   pull_request:
     branches:
-      - master
-      - maint_upgrade_**
+        - master
+        - maint_upgrade_**
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron: '5 4 * * 0'
+    - cron:  '5 4 * * 0'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -26,55 +26,55 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Print the java and gradle versions
-        run: |
-          echo "Default java version"
-          java -version
-          echo "Setting to Java 11 instead"
-          export JAVA_HOME=$JAVA_HOME_11_X64
-          java -version
-          echo "Checking gradle"
-          which gradle
-          gradle -version
+    # Runs a single command using the runners shell
+    - name: Print the java and gradle versions
+      run: |
+        echo "Default java version"
+        java -version
+        echo "Setting to Java 11 instead"
+        export JAVA_HOME=$JAVA_HOME_11_X64
+        java -version
+        echo "Checking gradle"
+        which gradle
+        gradle -version
 
-      - name: Tries to figure out where android is installed
-        run: |
-          echo "Android listed at $ANDROID_SDK_ROOT"
-          ls -al /opt/
+    - name: Tries to figure out where android is installed
+      run: |
+        echo "Android listed at $ANDROID_SDK_ROOT"
+        ls -al /opt/
 
-      - name: Setup the cordova environment
-        shell: bash -l {0}
-        run: |
-          export JAVA_HOME=$JAVA_HOME_11_X64
-          bash setup/setup_android_native.sh
+    - name: Setup the cordova environment
+      shell: bash -l {0}
+      run: |
+        export JAVA_HOME=$JAVA_HOME_11_X64
+        bash setup/setup_android_native.sh
 
-      - name: Check tool versions
-        shell: bash -l {0}
-        run: |
-          export JAVA_HOME=$JAVA_HOME_11_X64
-          source setup/activate_native.sh
-          echo "cordova version"
-          npx cordova -version
-          echo "ionic version"
-          npx ionic --version
-          which gradle
-          echo "gradle version"
-          gradle -version
+    - name: Check tool versions
+      shell: bash -l {0}
+      run: |
+        export JAVA_HOME=$JAVA_HOME_11_X64
+        source setup/activate_native.sh
+        echo "cordova version"
+        npx cordova -version
+        echo "ionic version"
+        npx ionic --version
+        which gradle
+        echo "gradle version"
+        gradle -version
 
-      - name: Build android
-        shell: bash -l {0}
-        run: |
-          echo $PATH
-          which gradle
-          gradle -version
-          echo "Let's rerun the activation"
-          source setup/activate_native.sh
-          export JAVA_HOME=$JAVA_HOME_11_X64
-          echo $PATH
-          which gradle
-          gradle --version
-          npx cordova build android
+    - name: Build android
+      shell: bash -l {0}
+      run: |
+        echo $PATH
+        which gradle
+        gradle -version
+        echo "Let's rerun the activation"
+        source setup/activate_native.sh
+        export JAVA_HOME=$JAVA_HOME_11_X64
+        echo $PATH
+        which gradle
+        gradle --version
+        npx cordova build android

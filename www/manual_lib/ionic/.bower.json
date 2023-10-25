@@ -9,7 +9,12 @@
     "Ben Sperry <ben@drifty.com>"
   ],
   "description": "Advanced HTML5 hybrid mobile app development framework.",
-  "main": ["css/ionic.css", "fonts/*", "js/ionic.js", "js/ionic-angular.js"],
+  "main": [
+    "css/ionic.css",
+    "fonts/*",
+    "js/ionic.js",
+    "js/ionic-angular.js"
+  ],
   "keywords": [
     "mobile",
     "html5",

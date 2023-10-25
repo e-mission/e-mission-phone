@@ -1,14 +1,13 @@
 import React from 'react';
-import { SegmentedButtons, SegmentedButtonsProps, useTheme } from 'react-native-paper';
+import { SegmentedButtons, SegmentedButtonsProps, useTheme } from "react-native-paper";
 
-const ToggleSwitch = ({ value, buttons, ...rest }: SegmentedButtonsProps) => {
+const ToggleSwitch = ({ value, buttons, ...rest}: SegmentedButtonsProps) => {
+
   const { colors } = useTheme();
 
   return (
-    <SegmentedButtons
-      value={value as any}
-      onValueChange={(v) => rest.onValueChange(v as any)}
-      buttons={buttons.map((o) => ({
+    <SegmentedButtons value={value as any} onValueChange={v => rest.onValueChange(v as any)}
+      buttons={buttons.map(o => ({
         value: o.value,
         icon: o.icon,
         uncheckedColor: colors.onSurfaceDisabled,
@@ -19,11 +18,9 @@ const ToggleSwitch = ({ value, buttons, ...rest }: SegmentedButtonsProps) => {
           borderBottomWidth: rest.density == 'high' ? 0 : 1,
           backgroundColor: value == o.value ? colors.elevation.level1 : colors.surfaceDisabled,
         },
-        ...o,
-      }))}
-      {...rest}
-    />
-  );
-};
+        ...o
+      }))} {...rest} />
+  )
+}
 
 export default ToggleSwitch;

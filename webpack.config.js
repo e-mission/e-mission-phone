@@ -1,5 +1,5 @@
-const path = require('path');
-const webpack = require('webpack');
+const path = require('path')
+const webpack = require('webpack')
 
 module.exports = {
   entry: './www/index.js',
@@ -12,31 +12,25 @@ module.exports = {
       // to load CSS and SCSS (enketo-core only supplies SCSS)
       {
         test: /\.(scss|css)$/,
-        include: [
-          path.resolve(__dirname, 'www/css'),
-          path.resolve(__dirname, 'www/manual_lib'),
-          path.resolve(__dirname, 'node_modules/enketo-core'),
-          path.resolve(__dirname, 'node_modules/leaflet'),
-        ],
+        include: [path.resolve(__dirname, 'www/css'),
+                  path.resolve(__dirname, 'www/manual_lib'),
+                  path.resolve(__dirname, 'node_modules/enketo-core'),
+                  path.resolve(__dirname, 'node_modules/leaflet')],
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       // to resolve url() in CSS
       {
         test: /\.(png|jpg)$/,
-        include: [
-          path.resolve(__dirname, 'www/css'),
-          path.resolve(__dirname, 'node_modules/react-native-paper'),
-          path.resolve(__dirname, 'node_modules/@react-navigation/elements'),
-        ],
+        include: [path.resolve(__dirname, 'www/css'),
+                  path.resolve(__dirname, 'node_modules/react-native-paper'),
+                  path.resolve(__dirname, 'node_modules/@react-navigation/elements')],
         use: 'url-loader',
       },
       // necessary for react-native-web to bundle JSX
       {
         test: /\.(js|jsx|ts|tsx)$/,
-        include: [
-          path.resolve(__dirname, 'www'),
-          path.resolve(__dirname, 'node_modules/react-native-vector-icons'),
-        ],
+        include: [path.resolve(__dirname, 'www'),
+                  path.resolve(__dirname, 'node_modules/react-native-vector-icons')],
         loader: 'babel-loader',
         options: {
           presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
@@ -55,11 +49,9 @@ module.exports = {
       // necessary for react-native-paper to load images, fonts, and vector graphics
       {
         test: /\.(jpg|png|woff|woff2|eot|ttf|svg)$/,
-        include: [
-          path.resolve(__dirname, 'www'),
-          path.resolve(__dirname, 'resources'),
-          path.resolve(__dirname, 'node_modules/react-native-vector-icons'),
-        ],
+        include: [path.resolve(__dirname, 'www'),
+                  path.resolve(__dirname, 'resources'),
+                  path.resolve(__dirname, 'node_modules/react-native-vector-icons')],
         type: 'asset/resource',
       },
     ],
@@ -87,8 +79,8 @@ module.exports = {
       /* Enketo expects its per-app configuration to be available as 'enketo-config',
         so we have to alias it here.
       https://github.com/enketo/enketo-core#global-configuration */
-      'enketo/config': path.resolve(__dirname, 'www/js/config/enketo-config'),
+      'enketo/config': path.resolve(__dirname, 'www/js/config/enketo-config')
     },
     extensions: ['.web.js', '.jsx', '.tsx', '.ts', '.js'],
   },
-};
+}

@@ -1,15 +1,16 @@
-import React, { useContext } from 'react';
-import { StyleSheet } from 'react-native';
-import { AppContext } from '../App';
-import WelcomePage from './WelcomePage';
-import ProtocolPage from './ProtocolPage';
-import SurveyPage from './SurveyPage';
-import SaveQrPage from './SaveQrPage';
-import SummaryPage from './SummaryPage';
-import { OnboardingRoute } from './onboardingHelper';
-import { displayErrorMsg } from '../plugin/logger';
+import React, { useContext } from "react";
+import { StyleSheet } from "react-native";
+import { AppContext } from "../App";
+import WelcomePage from "./WelcomePage";
+import ProtocolPage from "./ProtocolPage";
+import SurveyPage from "./SurveyPage";
+import SaveQrPage from "./SaveQrPage";
+import SummaryPage from "./SummaryPage";
+import { OnboardingRoute } from "./onboardingHelper";
+import { displayErrorMsg } from "../plugin/logger";
 
 const OnboardingStack = () => {
+
   const { onboardingState } = useContext(AppContext);
 
   console.debug('onboardingState in OnboardingStack', onboardingState);
@@ -27,7 +28,7 @@ const OnboardingStack = () => {
   } else {
     displayErrorMsg('OnboardingStack: unknown route', onboardingState.route);
   }
-};
+}
 
 export const onboardingStyles = StyleSheet.create({
   page: {
@@ -49,4 +50,4 @@ export const onboardingStyles = StyleSheet.create({
   },
 });
 
-export default OnboardingStack;
+export default OnboardingStack
