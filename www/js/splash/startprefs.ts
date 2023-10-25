@@ -1,12 +1,7 @@
 import { storageGet, storageSet } from '../plugin/storage';
 import { logInfo, logDebug, displayErrorMsg } from '../plugin/logger';
 
-type StartPrefs = {
-  CONSENTED_EVENT: string,
-  INTRO_DONE_EVENT: string,
-}
-
-export const startPrefs: StartPrefs = {
+export const startPrefs = {
   CONSENTED_EVENT: "data_collection_consented",
   INTRO_DONE_EVENT: "intro_done",
 };
