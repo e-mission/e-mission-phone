@@ -45,10 +45,5 @@ angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
       Logger.log("storedevicesettings startup done");
     });
 
-    $rootScope.$on(startPrefs.INTRO_DONE_EVENT, function(event, data) {
-          console.log("intro is done -> original consent situation, we should have a token by now -> register");
-       storedevicesettings.storeDeviceSettings();
-    });
-
     return storedevicesettings;
 });

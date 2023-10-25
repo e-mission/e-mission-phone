@@ -173,10 +173,5 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
       Logger.log("pushnotify startup done");
     });
 
-    $rootScope.$on(startPrefs.INTRO_DONE_EVENT, function(event, data) {
-          console.log("intro is done -> original consent situation, we should have a token by now -> register");
-       pushnotify.registerPush();
-    });
-
     return pushnotify;
 });
