@@ -23,7 +23,7 @@ const WelcomePage = () => {
   const checkURL = function (result) {
     let notCancelled = result.cancelled == false;
     let isQR = result.format == "QR_CODE";
-    let hasPrefix = result.text.split(":")[0] == "nrelopenpath" || result.text.split(":")[0] == "emission";
+    let hasPrefix = result.text.split(":")[0] == "emission";
     let hasToken = result.text.includes("login_token?token");
 
     logDebug("QR code " + result.text + " checks: cancel, format, prefix, params " + notCancelled + isQR + hasPrefix + hasToken);

@@ -37,7 +37,7 @@ export function shareQR(message) {
 const QrCode = ({ value, ...rest }) => {
   let hasLink = value.toString().includes("//");
   if(!hasLink) {
-    value =  "nrelopenpath://login_token?token=" + value;
+    value =  "emission://login_token?token=" + value;
   }
   
   return <QRCode className="qr-code" value={value} style={[{ width: '100%', height: '100%' }, rest.style] as any} {...rest} />;
