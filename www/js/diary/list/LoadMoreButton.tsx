@@ -6,7 +6,7 @@ const LoadMoreButton = ({ children, onPressFn, ...otherProps }) => {
   const { colors } = useTheme();
   return (
     <View style={s.container}>
-      <Button style={s.btn} mode='outlined' buttonColor={colors.onPrimary}
+      <Button testID="load-button" style={s.btn} mode='outlined' buttonColor={colors.onPrimary}
         textColor={colors.onBackground} onPress={onPressFn} {...otherProps}>
         {children}
       </Button>
