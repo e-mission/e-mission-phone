@@ -3,11 +3,6 @@ import { storageGet, storageSet } from '../plugin/storage';
 import { logInfo, logDebug, displayErrorMsg } from '../plugin/logger';
 import { readIntroDone } from "../onboarding/onboardingHelper";
 
-export const startPrefs = {
-  CONSENTED_EVENT: "data_collection_consented",
-  INTRO_DONE_EVENT: "intro_done",
-};
-
 // data collection consented protocol: string, represents the date on
 // which the consented protocol was approved by the IRB
 const DATA_COLLECTION_CONSENTED_PROTOCOL = 'data_collection_consented_protocol';
