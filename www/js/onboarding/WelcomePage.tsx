@@ -5,7 +5,7 @@ import { Button, Dialog, Divider, IconButton, Surface, Text, TextInput, Touchabl
 import color from 'color';
 import { initByUser } from '../config/dynamicConfig';
 import { AppContext } from '../App';
-import { displayError } from "../plugin/logger";
+import { displayError, logDebug } from "../plugin/logger";
 import { onboardingStyles } from './OnboardingStack';
 import { Icon } from '../components/Icon';
 
@@ -20,12 +20,22 @@ const WelcomePage = () => {
   const [infoPopupVis, setInfoPopupVis] = useState(false);
   const [existingToken, setExistingToken] = useState('');
 
+  const checkURL = function (result) {
+    let notCancelled = result.cancelled == false;
+    let isQR = result.format == "QR_CODE";
+    let hasPrefix = result.text.split(":")[0] == "emission";
+    let hasToken = result.text.includes("login_token?token");
+
+    logDebug("QR code " + result.text + " checks: cancel, format, prefix, params " + notCancelled + isQR + hasPrefix + hasToken);
+
+    return notCancelled && isQR && hasPrefix && hasToken;
+  }  
+
   const scanCode = function() {
-    window.cordova.plugins.barcodeScanner.scan(
+    window['cordova'].plugins.barcodeScanner.scan(
       function (result) {
         console.debug("scanned code", result);
-          if (result.format == "QR_CODE" && 
-              result.cancelled == false) {
+          if (checkURL(result)) {
                 let text = result.text.split("=")[1];
                 console.log("found code", text);
               loginWithToken(text);
