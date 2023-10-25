@@ -3,12 +3,13 @@ node_modules
 build
 coverage
 
-# Ignore www/dist:
+# Ignore www/dist, manual_lib, json
 www/dist
+www/manual_lib
+www/json
 
-# This is the pattern to check only www directory:
+# This is the pattern to check only www directory
 # Ignore all
 /*
 # but don't ignore all the files in www directory
 !/www
-
