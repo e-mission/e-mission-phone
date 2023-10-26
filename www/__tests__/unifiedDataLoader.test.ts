@@ -1,10 +1,10 @@
 import { mockLogger } from '../__mocks__/globalMocks';
 import { combineWithDedup, combinedPromises } from '../js/unifiedDataLoader';
-import { ServerDataPoint } from '../js/types/diaryTypes';
+import { ServerData } from '../js/types/serverData';
 
 mockLogger();
 
-const testOne: ServerDataPoint = {
+const testOne: ServerData<any> = {
   data: '',
   metadata: {
     key: '',
@@ -46,7 +46,7 @@ describe('combineWithDedup can', () => {
 });
 
 // combinedPromises tests
-const promiseGenerator = (values: Array<ServerDataPoint>) => {
+const promiseGenerator = (values: Array<ServerData<any>>) => {
   return Promise.resolve(values);
 };
 

@@ -1,6 +1,6 @@
 import { logDebug } from './plugin/logger'
 import { getRawEntries } from './commHelper';
-import { ServerDataPoint, ServerData, TimeQuery } from './types/diaryTypes'
+import { ServerResponse, ServerData, TimeQuery } from './types/serverData';
 
 /**
  * combineWithDedup is a helper function for combinedPromises 
@@ -8,7 +8,7 @@ import { ServerDataPoint, ServerData, TimeQuery } from './types/diaryTypes'
  * @param list2 same as list1 
  * @returns a dedup array generated from the input lists
  */
-export const combineWithDedup = function(list1: Array<ServerDataPoint>, list2: Array<ServerDataPoint>) {
+export const combineWithDedup = function(list1: Array<ServerData<any>>, list2: Array<any>) {
     const combinedList = list1.concat(list2);
     return combinedList.filter(function(value, i, array) {
       const firstIndexOfValue = array.findIndex(function(element) {
@@ -95,7 +95,7 @@ export const getUnifiedDataForInterval = function(key: string, tq: TimeQuery,
     const test = true;
     const getPromise = getMethod(key, tq, test);
     const remotePromise = getRawEntries([key], tq.startTs, tq.endTs)
-      .then(function(serverResponse: ServerData) {
+      .then(function(serverResponse: ServerResponse<any>) {
         return serverResponse.phone_data;
       });
     var promiseList = [getPromise, remotePromise]
