@@ -1,8 +1,8 @@
-import moment from "moment";
 import { getAngularService } from "../angular-react-helper";
 import { displayError, logDebug } from "../plugin/logger";
 import { getBaseModeByKey, getBaseModeOfLabeledTrip } from "./diaryHelper";
 import i18next from "i18next";
+import { DateTime } from "luxon";
 
 const cachedGeojsons = new Map();
 /**
@@ -99,7 +99,7 @@ export function populateCompositeTrips(ctList, showPlaces, labelsFactory, labels
 const getUnprocessedInputQuery = (pipelineRange) => ({
   key: "write_ts",
   startTs: pipelineRange.end_ts - 10,
-  endTs: moment().unix() + 10
+  endTs: DateTime.now().toUnixInteger() + 10
 });
 
 function getUnprocessedResults(labelsFactory, notesFactory, labelsPromises, notesPromises) {
