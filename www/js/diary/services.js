@@ -27,45 +27,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       });
     });
 
-    // DB entries retrieved from the server have '_id', 'metadata', and 'data' fields.
-    // This function returns a shallow copy of the obj, which flattens the
-    // 'data' field into the top level, while also including '_id' and 'metadata.key'
-    const unpack = (obj) => ({
-      ...obj.data,
-      _id: obj._id,
-      key: obj.metadata.key,
-      origin_key: obj.metadata.origin_key || obj.metadata.key,
-    });
-
-    timeline.readAllCompositeTrips = function(startTs, endTs) {
-      $ionicLoading.show({
-        template: i18next.t('service.reading-server')
-      });
-      const readPromises = [
-        getRawEntries(["analysis/composite_trip"],
-            startTs, endTs, "data.end_ts"),
-      ];
-      return Promise.all(readPromises)
-        .then(([ctList]) => {
-            $ionicLoading.hide();
-            return ctList.phone_data.map((ct) => {
-              const unpackedCt = unpack(ct);
-              return {
-                ...unpackedCt,
-                start_confirmed_place: unpack(unpackedCt.start_confirmed_place),
-                end_confirmed_place: unpack(unpackedCt.end_confirmed_place),
-                locations: unpackedCt.locations?.map(unpack),
-                sections: unpackedCt.sections?.map(unpack),
-              }
-            });
-        })
-        .catch((err) => {
-            Logger.displayError("while reading confirmed trips", err);
-            $ionicLoading.hide();
-            return [];
-        });
-    };
-
     /*
      * This is going to be a bit tricky. As we can see from
      * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163,

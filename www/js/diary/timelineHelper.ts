@@ -1,6 +1,9 @@
 import { getAngularService } from "../angular-react-helper";
 import { displayError, logDebug } from "../plugin/logger";
 import { getBaseModeByKey, getBaseModeOfLabeledTrip } from "./diaryHelper";
+import { getRawEntries } from "../commHelper";
+import { ServerResponse, ServerData } from "../types/serverData";
+
 import i18next from "i18next";
 import { DateTime } from "luxon";
 
@@ -210,3 +213,41 @@ const locations2GeojsonTrajectory = (trip, locationList, trajectoryColor?) => {
     }
   });
 }
+
+// Remaining functions from /diary/services.js
+const unpackServerData = (obj: ServerData<any>) => ({
+  ...obj.data,
+  _id: obj._id,
+  key: obj.metadata.key,
+  origin_key: obj.metadata.origin_key || obj.metadata.key,
+});
+
+export const readAllCompositeTrips = function(startTs: number, endTs: number) {
+  const $ionicLoading = getAngularService('$ionicLoading');
+  $ionicLoading.show({
+    template: i18next.t('service.reading-server')
+  });
+  const readPromises = [
+    getRawEntries(["analysis/composite_trip"],
+        startTs, endTs, "data.end_ts"),
+  ];
+  return Promise.all(readPromises)
+    .then(([ctList]: [ServerResponse<any>]) => {
+      $ionicLoading.hide();
+      return ctList.phone_data.map((ct) => {
+        const unpackedCt = unpackServerData(ct);
+        return {
+          ...unpackedCt,
+          start_confirmed_place: unpackServerData(unpackedCt.start_confirmed_place),
+          end_confirmed_place: unpackServerData(unpackedCt.end_confirmed_place),
+          locations: unpackedCt.locations?.map(unpackServerData),
+          sections: unpackedCt.sections?.map(unpackServerData),
+        }
+      });
+    })
+    .catch((err) => {
+      displayError(err, "while reading confirmed trips");
+      $ionicLoading.hide();
+      return [];
+    });
+};
