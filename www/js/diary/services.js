@@ -1,15 +1,15 @@
 'use strict';
 
 import angular from 'angular';
-import { getBaseModeByKey, getBaseModeOfLabeledTrip } from './diaryHelper';
 import { SurveyOptions } from '../survey/survey';
 import { getConfig } from '../config/dynamicConfig';
 import { getRawEntries } from '../commHelper';
+import { getUnifiedDataForInterval } from '../unifiedDataLoader'
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])
 .factory('Timeline', function($http, $ionicLoading, $ionicPlatform, $window,
-    $rootScope, UnifiedDataLoader, Logger, $injector) {
+    $rootScope, Logger, $injector) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -193,7 +193,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       Logger.log("About to pull location data for range "
         + moment.unix(tripStartTransition.data.ts).toString() + " -> " 
         + moment.unix(tripEndTransition.data.ts).toString());
-      return UnifiedDataLoader.getUnifiedSensorDataForInterval("background/filtered_location", tq).then(function(locationList) {
+      const getSensorData = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
+      return getUnifiedDataForInterval("background/filtered_location", tq, getSensorData)
+        .then(function(locationList) {
           if (locationList.length == 0) {
             return undefined;
           }
@@ -265,7 +267,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
        }
        Logger.log("about to query for unprocessed trips from "
          +moment.unix(tq.startTs).toString()+" -> "+moment.unix(tq.endTs).toString());
-       return UnifiedDataLoader.getUnifiedMessagesForInterval("statemachine/transition", tq)
+      
+      const getMessageMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
+      return getUnifiedDataForInterval("statemachine/transition", tq, getMessageMethod)
         .then(function(transitionList) {
           if (transitionList.length == 0) {
             Logger.log("No unprocessed trips. yay!");
@@ -317,7 +321,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 return trip_gj_list;
             });
           }
-        });
+      });
     }
 
     var localCacheReadFn = timeline.updateFromDatabase;

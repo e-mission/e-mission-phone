@@ -30,4 +30,9 @@ export type LocalDt = {
   year: number,
   timezone: string,
 };
-  
+
+export type TimeQuery = {
+  key: string;
+  startTs: number;
+  endTs: number;
+}
