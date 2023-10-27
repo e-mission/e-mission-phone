@@ -1,7 +1,7 @@
 import moment from "moment";
 import { displayError, logDebug } from "../plugin/logger";
 import { getBaseModeByKey, getBaseModeOfLabeledTrip } from "./diaryHelper";
-import { getUnifiedDataForInterval} from "../unifiedDataLoader";
+import { getUnifiedDataForInterval } from "../services/unifiedDataLoader";
 import i18next from "i18next";
 
 const cachedGeojsons = new Map();

@@ -3,7 +3,7 @@ import { Form } from 'enketo-core';
 import { XMLParser } from 'fast-xml-parser';
 import i18next from 'i18next';
 import { logDebug } from "../../plugin/logger";
-import { getUnifiedDataForInterval} from "../../unifiedDataLoader";
+import { getUnifiedDataForInterval} from "../../services/unifiedDataLoader";
 
 export type PrefillFields = {[key: string]: string};
 

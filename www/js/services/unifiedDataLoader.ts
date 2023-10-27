@@ -1,6 +1,6 @@
-import { logDebug } from './plugin/logger'
+import { logDebug } from '../plugin/logger'
 import { getRawEntries } from './commHelper';
-import { ServerResponse, ServerData, TimeQuery } from './types/serverData';
+import { ServerResponse, ServerData, TimeQuery } from '../types/serverData';
 
 /**
  * combineWithDedup is a helper function for combinedPromises 

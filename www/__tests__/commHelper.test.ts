@@ -1,5 +1,5 @@
 import { mockLogger } from '../__mocks__/globalMocks';
-import { fetchUrlCached } from '../js/commHelper';
+import { fetchUrlCached } from '../js/services/commHelper';
 
 mockLogger();
 

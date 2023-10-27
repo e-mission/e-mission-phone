@@ -5,7 +5,7 @@ import { ModalProps } from 'react-native-paper';
 import useAppConfig from '../../useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { SurveyOptions, getInstanceStr, saveResponse } from './enketoHelper';
-import { fetchUrlCached } from '../../commHelper';
+import { fetchUrlCached } from '../../services/commHelper';
 import { displayError, displayErrorMsg } from '../../plugin/logger';
 // import { transform } from 'enketo-transformer/web';
 

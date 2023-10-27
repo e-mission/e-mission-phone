@@ -1,5 +1,5 @@
 import { mockLogger } from '../__mocks__/globalMocks';
-import { combineWithDedup, combinedPromises } from '../js/unifiedDataLoader';
+import { combineWithDedup, combinedPromises } from '../js/services/unifiedDataLoader';
 import { ServerData } from '../js/types/serverData';
 
 mockLogger();

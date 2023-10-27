@@ -3,7 +3,7 @@
 import angular from 'angular';
 import { getConfig } from '../config/dynamicConfig';
 import { addStatReading, statKeys } from '../plugin/clientStats';
-import { getUser, updateUser } from '../commHelper';
+import { getUser, updateUser } from '../services/commHelper';
 
 angular.module('emission.splash.notifscheduler',
                     ['emission.services',
