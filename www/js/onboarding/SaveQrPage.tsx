@@ -10,7 +10,7 @@ import QrCode, { shareQR } from "../components/QrCode";
 import { onboardingStyles } from "./OnboardingStack";
 import { preloadDemoSurveyResponse } from "./SurveyPage";
 import { storageSet } from "../plugin/storage";
-import { registerUser } from "../commHelper";
+import { registerUser } from "../services/commHelper";
 import { resetDataAndRefresh } from "../config/dynamicConfig";
 import i18next from "i18next";
 

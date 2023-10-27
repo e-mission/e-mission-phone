@@ -16,7 +16,7 @@ import Carousel from "../components/Carousel";
 import DailyActiveMinutesCard from "./DailyActiveMinutesCard";
 import CarbonTextCard from "./CarbonTextCard";
 import ActiveMinutesTableCard from "./ActiveMinutesTableCard";
-import { getAggregateData, getMetrics } from "../commHelper";
+import { getAggregateData, getMetrics } from "../services/commHelper";
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 

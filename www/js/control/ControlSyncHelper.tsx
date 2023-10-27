@@ -9,7 +9,7 @@ import SettingRow from "./SettingRow";
 import AlertBar from "./AlertBar";
 import moment from "moment";
 import { addStatEvent, statKeys } from "../plugin/clientStats";
-import { updateUser } from "../commHelper";
+import { updateUser } from "../services/commHelper";
 
 /*
 * BEGIN: Simple read/write wrappers

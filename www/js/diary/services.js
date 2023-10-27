@@ -4,7 +4,7 @@ import angular from 'angular';
 import { getBaseModeByKey, getBaseModeOfLabeledTrip } from './diaryHelper';
 import { SurveyOptions } from '../survey/survey';
 import { getConfig } from '../config/dynamicConfig';
-import { getRawEntries } from '../commHelper';
+import { getRawEntries } from '../services/commHelper';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])

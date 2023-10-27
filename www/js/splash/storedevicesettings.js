@@ -1,5 +1,5 @@
 import angular from 'angular';
-import { updateUser } from '../commHelper';
+import { updateUser } from '../services/commHelper';
 
 angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
                                              'emission.services',
