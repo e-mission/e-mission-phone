@@ -74,7 +74,7 @@ export async function markIntroDone() {
   return storageSet(INTRO_DONE_KEY, currDateTime)
     .then(() => {
       //handle "on intro" events
-      console.log("intro done, calling registerPush and storeDeviceSettings");
+      logDebug("intro done, calling registerPush and storeDeviceSettings");
       const PushNotify = getAngularService("PushNotify");
       const StoreSeviceSettings = getAngularService("StoreDeviceSettings");
       PushNotify.registerPush();
