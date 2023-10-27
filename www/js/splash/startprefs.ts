@@ -41,13 +41,16 @@ export function markConsented() {
     //check for reconsent
     .then(readIntroDone)
     .then((isIntroDone) => {
-      if(isIntroDone) {
+      if (isIntroDone) {
         logDebug("reconsent scenario - marked consent after intro done - registering pushnoify and storing device settings")
         const PushNotify = getAngularService("PushNotify");
         const StoreSeviceSettings = getAngularService("StoreDeviceSettings");
         PushNotify.registerPush();
         StoreSeviceSettings.storeDeviceSettings();
       }
+    })
+    .catch((error) => {
+      displayErrorMsg(error, "Error while while wrting consent to storage");
     });
 };
 
