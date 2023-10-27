@@ -1,4 +1,12 @@
-import { LocalDt } from "./diaryTypes"; 
+import { ServerData } from './serverData'; 
+
+export type TimeStampData = ServerData<RawTimelineData>;
+
+export type RawTimelineData = {
+    name: string, 
+    ts: number,
+    reading: number,
+};
 
 export interface FsWindow extends Window {
   requestFileSystem: (
@@ -12,32 +20,3 @@ export interface FsWindow extends Window {
     PERSISTENT: number;
   };
 };
-
-/* These are the objects returned from getRawEnteries when it is called by 
-   the getMyData() method. */ 
-export interface RawDataCluster {
-  phone_data: Array<RawData>
-}
-
-export interface RawData {
-  data: {
-    name: string, 
-    ts: number,
-    reading: number,
-  },
-  metadata: {
-    key: string,
-    platform: string, 
-    write_ts: number,
-    time_zone: string, 
-    write_fmt_time: string,
-    write_local_dt: LocalDt,
-  },
-  user_id: {
-    $uuid: string,
-  },
-  _id: {
-    $oid: string,
-  }
-}
-

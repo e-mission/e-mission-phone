@@ -2,7 +2,8 @@ import { DateTime } from "luxon";
 
 import { getRawEntries } from "./commHelper";
 import { logInfo, displayError, logDebug } from "./plugin/logger";
-import { FsWindow, RawDataCluster } from "./types/fileShareTypes"
+import { FsWindow } from "./types/fileShareTypes"
+import { ServerResponse} from "./types/serverData";
 import i18next from "./i18nextInit" ;
 
 declare let window: FsWindow;
@@ -13,7 +14,7 @@ declare let window: FsWindow;
  * @returns a function that returns a promise, which writes the file upon evaluation.
  */
 export const createWriteFile = function (fileName: string) {
-  return function(result: RawDataCluster) {
+  return function(result: ServerResponse<any>) {
     const resultList = result.phone_data;
       return new Promise<void>(function(resolve, reject) {
         window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {

@@ -1,6 +1,7 @@
 import { mockLogger } from "../__mocks__/globalMocks";
 import { createWriteFile } from "../js/controlHelper";
-import { FsWindow, RawData, RawDataCluster } from "../js/types/fileShareTypes"
+import { FsWindow } from "../js/types/fileShareTypes"
+import { ServerData, ServerResponse} from "../js/types/serverData"
 
 mockLogger();
 declare let window: FsWindow;
@@ -14,7 +15,7 @@ const generateFakeValues = (arraySize: number) => {
   if (arraySize <= 0) 
     return new Promise (() => {return []});
 
-  const sampleDataObj : RawData = {
+  const sampleDataObj : ServerData<any>= {
     data: {
       name: 'testValue #', 
       ts: 1234567890.9876543,
@@ -51,14 +52,14 @@ const generateFakeValues = (arraySize: number) => {
     values[index].data.name = element.data.name + index.toString()
   });
   
-  return new Promise<RawDataCluster>(() => {
+  return new Promise<ServerResponse<any>>(() => {
     return { phone_data: values };
   });
 };
 
 // A variation of createShareData; confirms the file has been written,
 // without calling the sharing components
-const confirmFileExists = (fileName: string, dataCluster: RawDataCluster) => {
+const confirmFileExists = (fileName: string, dataCluster: ServerResponse<any>) => {
   return function() {
     return new Promise(function() {
       window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
