@@ -51,8 +51,6 @@ export function markConsented() {
     });
 };
 
-let _is_consented;
-
 /**
  * @function checking for consent locally
  * @returns {boolean} if the consent is marked in the local var
@@ -62,11 +60,9 @@ export function isConsented() {
   if (_curr_consented == null || _curr_consented == "" ||
     _curr_consented.approval_date != _req_consent.approval_date) {
     logDebug("Not consented in local storage, need to show consent");
-    _is_consented = false;
     return false;
   } else {
     logDebug("Consented in local storage, no need to show consent");
-    _is_consented = true;
     return true;
   }
 }
