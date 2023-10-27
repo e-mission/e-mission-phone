@@ -25,12 +25,14 @@ const unmungeValue = (key, retData) => {
 }
 
 const localStorageSet = (key: string, value: {[k: string]: any}) => {
-  localStorage.setItem(key, JSON.stringify(value));
+  if (value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
 }
 
 const localStorageGet = (key: string) => {
   const value = localStorage.getItem(key);
-  if (value && value != "undefined") {
+  if (value) {
     return JSON.parse(value);
   } else {
     return null;
