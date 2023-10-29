@@ -18,12 +18,14 @@ import { useGeojsonForTrip } from "../timelineHelper";
 import TripSectionsDescriptives from "./TripSectionsDescriptives";
 import OverallTripDescriptives from "./OverallTripDescriptives";
 import ToggleSwitch from "../../components/ToggleSwitch";
+import useAppConfig from "../../useAppConfig";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
-  const { surveyOpt, timelineMap, labelOptions } = useContext(LabelTabContext);
+  const { timelineMap, labelOptions } = useContext(LabelTabContext);
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
+  const appConfig = useAppConfig();
   const { tripId, flavoredTheme } = route.params;
   const trip = timelineMap.get(tripId);
   const { colors } = flavoredTheme || useTheme();
@@ -51,10 +53,11 @@ const LabelScreenDetails = ({ route, navigation }) => {
             style={{margin: 10, paddingHorizontal: 10, rowGap: 12, borderRadius: 15 }}>
             {/* MultiLabel or UserInput button, inline on one row */}
             <View style={{ paddingVertical: 10 }}>
-              {surveyOpt?.elementTag == 'multilabel' &&
-                <MultilabelButtonGroup trip={trip} buttonsInline={true} />}
-              {surveyOpt?.elementTag == 'enketo-trip-button'
-                && <UserInputButton timelineEntry={trip} />}
+              {appConfig?.survey_info?.['trip-labels'] == 'ENKETO' ? (
+                <UserInputButton timelineEntry={trip} />
+              ) : (
+                <MultilabelButtonGroup trip={trip} buttonsInline={true} />
+              )}
             </View>
 
             {/* Full-size Leaflet map, with zoom controls */}

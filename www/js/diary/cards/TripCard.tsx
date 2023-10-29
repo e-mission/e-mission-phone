@@ -34,7 +34,7 @@ const TripCard = ({ trip }: Props) => {
     distanceSuffix, displayTime, detectedModes } = useDerivedProperties(trip);
   let [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
   const navigation = useNavigation<any>();
-  const { surveyOpt, labelOptions } = useContext(LabelTabContext);
+  const { labelOptions } = useContext(LabelTabContext);
   const tripGeojson = useGeojsonForTrip(trip, labelOptions, trip?.userInput?.MODE?.value);
 
   const isDraft = trip.key.includes('UNPROCESSED');
@@ -70,10 +70,11 @@ const TripCard = ({ trip }: Props) => {
               displayEndName={tripEndDisplayName} />
           </View>
           <View style={[cardStyles.panelSection, {marginBottom: 0}]}>{/* mode and purpose buttons / survey button */}
-            {surveyOpt?.elementTag == 'multilabel' &&
-                <MultilabelButtonGroup trip={trip} />}
-            {surveyOpt?.elementTag == 'enketo-trip-button'
-                && <UserInputButton timelineEntry={trip} />}
+            {appConfig?.survey_info?.['trip-labels'] == 'ENKETO' ? (
+              <UserInputButton timelineEntry={trip} />
+            ) : (
+                <MultilabelButtonGroup trip={trip} />
+            )}
           </View>
         </View>
         <View style={{flex: 1, paddingBottom: showAddNoteButton ? 8 : 0}}>{/* left panel */}

@@ -18,7 +18,6 @@ import LabelScreenDetails from "./details/LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateCompositeTrips } from "./timelineHelper";
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
-import { SurveyOptions } from "../survey/survey";
 import { getLabelOptions } from "../survey/multilabel/confirmHelper";
 import { displayError } from "../plugin/logger";
 import { useTheme } from "react-native-paper";
@@ -34,7 +33,6 @@ const LabelTab = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const [surveyOpt, setSurveyOpt] = useState(null);
   const [labelOptions, setLabelOptions] = useState(null);
   const [filterInputs, setFilterInputs] = useState([]);
   const [pipelineRange, setPipelineRange] = useState(null);
@@ -54,9 +52,6 @@ const LabelTab = () => {
   // initialization, once the appConfig is loaded
   useEffect(() => {
     if (!appConfig) return;
-    const surveyOptKey = appConfig.survey_info['trip-labels'];
-    const surveyOpt = SurveyOptions[surveyOptKey];
-    setSurveyOpt(surveyOpt);
     showPlaces = appConfig.survey_info?.buttons?.['place-notes'];
     getLabelOptions(appConfig).then((labelOptions) => setLabelOptions(labelOptions));
     labelPopulateFactory = getAngularService(surveyOpt.service);
@@ -68,8 +63,11 @@ const LabelTab = () => {
     // https://github.com/e-mission/e-mission-docs/issues/894
     if (appConfig.survey_info?.buttons == undefined) {
       // initalize filters
-      const tripFilter = surveyOpt.filter;
-      const allFalseFilters = tripFilter.map((f, i) => ({
+      const tripFilters =
+        appConfig.survey_info?.['trip-labels'] == 'ENKETO'
+          ? enketoConfiguredFilters
+          : multilabelConfiguredFilters;
+      const allFalseFilters = tripFilters.map((f, i) => ({
         ...f, state: (i == 0 ? true : false) // only the first filter will have state true on init
       }));
       setFilterInputs(allFalseFilters);
@@ -86,7 +84,7 @@ const LabelTab = () => {
     let entriesToDisplay = allEntries;
     if (activeFilter) {
       const entriesAfterFilter = allEntries.filter(
-        t => t.justRepopulated || activeFilter?.filter(t)
+        t => t.justRepopulated || activeFilter?.filter(t, t.user_input)
       );
       /* next, filter out any untracked time if the trips that came before and
         after it are no longer displayed */
