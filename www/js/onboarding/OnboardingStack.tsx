@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { StyleSheet } from "react-native";
 import { AppContext } from "../App";
 import WelcomePage from "./WelcomePage";
-import ConsentPage from "./ConsentPage";
+import ProtocolPage from "./ProtocolPage";
 import SurveyPage from "./SurveyPage";
 import SaveQrPage from "./SaveQrPage";
 import SummaryPage from "./SummaryPage";
@@ -19,8 +19,8 @@ const OnboardingStack = () => {
     return <WelcomePage />;
   } else if (onboardingState.route == OnboardingRoute.SUMMARY) {
     return <SummaryPage />;
-  } else if (onboardingState.route == OnboardingRoute.CONSENT) {
-    return <ConsentPage />;
+  } else if (onboardingState.route == OnboardingRoute.PROTOCOL) {
+    return <ProtocolPage />;
   } else if (onboardingState.route == OnboardingRoute.SAVE_QR) {
     return <SaveQrPage />;
   } else if (onboardingState.route == OnboardingRoute.SURVEY) {
