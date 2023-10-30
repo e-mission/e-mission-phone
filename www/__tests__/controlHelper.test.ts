@@ -1,5 +1,5 @@
 import { mockLogger } from "../__mocks__/globalMocks";
-import { createWriteFile } from "../js/controlHelper";
+import { createWriteFile } from "../js/services/controlHelper";
 import { FsWindow } from "../js/types/fileShareTypes"
 import { ServerData, ServerResponse} from "../js/types/serverData"
 

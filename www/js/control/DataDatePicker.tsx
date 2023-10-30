@@ -4,7 +4,7 @@
 import React from "react";
 import { DatePickerModal } from 'react-native-paper-dates';
 import { useTranslation } from "react-i18next";
-import { getMyData } from "../controlHelper";
+import { getMyData } from "../services/controlHelper";
 
 const DataDatePicker = ({date, setDate, open, setOpen, minDate}) => {
   const { t, i18n } = useTranslation(); //able to pull lang from this

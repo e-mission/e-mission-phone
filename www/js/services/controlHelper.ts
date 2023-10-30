@@ -1,10 +1,10 @@
 import { DateTime } from "luxon";
 
 import { getRawEntries } from "./commHelper";
-import { logInfo, displayError, logDebug } from "./plugin/logger";
-import { FsWindow } from "./types/fileShareTypes"
-import { ServerResponse} from "./types/serverData";
-import i18next from "./i18nextInit" ;
+import { logInfo, displayError, logDebug } from "../plugin/logger";
+import { FsWindow } from "../types/fileShareTypes"
+import { ServerResponse} from "../types/serverData";
+import i18next from "../i18nextInit" ;
 
 declare let window: FsWindow;
 
