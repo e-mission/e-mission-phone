@@ -1,3 +1,7 @@
+//naming of this file can be a little confusing - "pushnotifysettings" for rewritten file
+//https://github.com/e-mission/e-mission-phone/pull/1072#discussion_r1375360832
+
+
 /*
  * This module deals with the interaction with the push plugin, the redirection
  * of silent push notifications and the re-parsing of iOS pushes. It then
