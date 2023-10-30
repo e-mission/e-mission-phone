@@ -25,6 +25,9 @@ const unmungeValue = (key, retData) => {
 }
 
 const localStorageSet = (key: string, value: {[k: string]: any}) => {
+  //checking for a value to prevent storing undefined
+  //case where local was null and native was undefined stored "undefined"
+  //see discussion: https://github.com/e-mission/e-mission-phone/pull/1072#discussion_r1373753945
   if (value) {
     localStorage.setItem(key, JSON.stringify(value));
   }
