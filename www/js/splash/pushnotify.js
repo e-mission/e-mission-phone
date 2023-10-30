@@ -19,8 +19,7 @@
 
 import angular from 'angular';
 import { updateUser } from '../commHelper';
-import { readConsentState, isConsented, startPrefs } from './startprefs';
-import { readIntroDone } from '../onboarding/onboardingHelper';
+import { readConsentState, isConsented } from './startprefs';
 
 angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
                                               'emission.services'])

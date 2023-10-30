@@ -1,7 +1,6 @@
 import angular from 'angular';
 import { updateUser } from '../commHelper';
-import { isConsented, readConsentState, startPrefs } from "./startprefs";
-import { readIntroDone } from '../onboarding/onboardingHelper';
+import { isConsented, readConsentState } from "./startprefs";
 
 angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
                                              'emission.services'])
