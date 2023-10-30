@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { Modal, StyleSheet, ScrollView } from "react-native";
-import { Dialog, Button, useTheme, Text, Appbar, IconButton } from "react-native-paper";
+import { Dialog, Button, useTheme, Text, Appbar, IconButton, TextInput } from "react-native-paper";
 import { getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
@@ -12,8 +12,9 @@ import ReminderTime from "./ReminderTime"
 import useAppConfig from "../useAppConfig";
 import AlertBar from "./AlertBar";
 import DataDatePicker from "./DataDatePicker";
-import AppStatusModal from "./AppStatusModal";
 import PrivacyPolicyModal from "./PrivacyPolicyModal";
+
+import {uploadFile} from "./uploadService";
 import ActionMenu from "../components/ActionMenu";
 import SensedPage from "./SensedPage"
 import LogPage from "./LogPage";
@@ -36,13 +37,12 @@ const ProfileSettings = () => {
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
-    const UploadHelper = getAngularService('UploadHelper');
     const EmailHelper = getAngularService('EmailHelper');
     const NotificationScheduler = getAngularService('NotificationScheduler');
     const StartPrefs = getAngularService('StartPrefs');
 
     //functions that come directly from an Angular service
-    const editCollectionConfig = () => setEditCollection(true);
+    const editCollectionConfig = () => setEditCollectionVis(true);
     const editSyncConfig = () => setEditSync(true);
 
     //states and variables used to control/create the settings
@@ -57,10 +57,11 @@ const ProfileSettings = () => {
     const [consentVis, setConsentVis] = useState(false);
     const [dateDumpVis, setDateDumpVis] = useState(false);
     const [privacyVis, setPrivacyVis] = useState(false);
+    const [uploadVis, setUploadVis] = useState(false);
     const [showingSensed, setShowingSensed] = useState(false);
     const [showingLog, setShowingLog] = useState(false);
     const [editSync, setEditSync] = useState(false);
-    const [editCollection, setEditCollection] = useState(false);
+    const [editCollectionVis, setEditCollectionVis] = useState(false);
 
     // const [collectConfig, setCollectConfig] = useState({});
     const [collectSettings, setCollectSettings] = useState({});
@@ -72,6 +73,7 @@ const ProfileSettings = () => {
     const [uiConfig, setUiConfig] = useState({});
     const [consentDoc, setConsentDoc] = useState({});
     const [dumpDate, setDumpDate] = useState(new Date());
+    const [uploadReason, setUploadReason] = useState("");
     const appVersion = useRef();
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
@@ -158,8 +160,13 @@ const ProfileSettings = () => {
 
     //ensure ui table updated when editor closes
     useEffect(() => {
-        refreshCollectSettings();
-    }, [editCollection])
+        if(editCollectionVis == false) {
+            setTimeout(function() {
+                console.log("closed editor, time to refresh collect");
+                refreshCollectSettings();
+              }, 1000);
+        }
+    }, [editCollectionVis])
 
     async function refreshNotificationSettings() {
         console.debug('about to refreshNotificationSettings, notificationSettings = ', notificationSettings);
@@ -219,8 +226,12 @@ const ProfileSettings = () => {
     
     //methods that control the settings
     const uploadLog = function () {
-        UploadHelper.uploadFile("loggerDB")
-    };
+        if(uploadReason != "") {
+            let reason = uploadReason;
+            uploadFile("loggerDB", reason);
+            setUploadVis(false);
+        }
+    }
 
     const emailLog = function () {
         // Passing true, we want to send logs
@@ -254,13 +265,15 @@ const ProfileSettings = () => {
 
     async function userStartStopTracking() {
         const transitionToForce = collectSettings.trackingOn ? 'STOP_TRACKING' : 'START_TRACKING';
-        forceTransition(transitionToForce);
+        await forceTransition(transitionToForce);
         refreshCollectSettings();
     }
 
-    async function toggleLowAccuracy() {
+    async function toggleLowAccuracy() {  
         let toggle = await helperToggleLowAccuracy();
-        refreshCollectSettings();
+        setTimeout(function() {
+            refreshCollectSettings();
+          }, 1500);
     }
 
     const viewQRCode = function(e) {
@@ -329,7 +342,7 @@ const ProfileSettings = () => {
     let logUploadSection;
     console.debug("appConfg: support_upload:", appConfig?.profile_controls?.support_upload);
     if (appConfig?.profile_controls?.support_upload) {
-        logUploadSection = <SettingRow textKey="control.upload-log" iconName="cloud" action={uploadLog}></SettingRow>;
+        logUploadSection = <SettingRow textKey="control.upload-log" iconName="cloud" action={() => setUploadVis(true)}></SettingRow>;
     }
 
     let timePicker;
@@ -414,6 +427,27 @@ const ProfileSettings = () => {
             {/* force state sheet */}
             <ActionMenu vis={forceStateVis} setVis={setForceStateVis} title={"Force State"} actionSet={stateActions} onAction={onSelectState} onExit={() => {}}></ActionMenu>
 
+            {/* upload reason input */}
+            <Modal visible={uploadVis} onDismiss={() => setUploadVis(false)}
+            transparent={true}>
+                <Dialog visible={uploadVis}
+                onDismiss={() => setUploadVis(false)}
+                style={settingStyles.dialog(colors.elevation.level3)}>
+                    <Dialog.Title>{t('upload-service.upload-database', {db: "loggerDB"})}</Dialog.Title>
+                    <Dialog.Content>
+                        <TextInput label="Reason"
+                                value={uploadReason}
+                                onChangeText={uploadReason => setUploadReason(uploadReason)}
+                                placeholder={t('upload-service.please-fill-in-what-is-wrong')}>
+                            </TextInput>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setUploadVis(false)}>{t('general-settings.cancel')}</Button>
+                        <Button onPress={() => uploadLog()}>Upload</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Modal>
+
             {/* opcode viewing popup */}
             <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={() => shareQR(authSettings.opcode)}></PopOpCode>
 
@@ -491,7 +525,7 @@ const ProfileSettings = () => {
             <LogPage pageVis={showingLog} setPageVis={setShowingLog}></LogPage>
 
             <ControlSyncHelper editVis={editSync} setEditVis={setEditSync}></ControlSyncHelper>
-            <ControlCollectionHelper editVis={editCollection} setEditVis={setEditCollection}></ControlCollectionHelper>
+            <ControlCollectionHelper editVis={editCollectionVis} setEditVis={setEditCollectionVis}></ControlCollectionHelper>
         
         </>
     );

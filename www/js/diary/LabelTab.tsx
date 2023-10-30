@@ -68,8 +68,8 @@ const LabelTab = () => {
     // https://github.com/e-mission/e-mission-docs/issues/894
     if (appConfig.survey_info?.buttons == undefined) {
       // initalize filters
-      const tripFilterFactory = getAngularService(surveyOpt.filter);
-      const allFalseFilters = tripFilterFactory.configuredFilters.map((f, i) => ({
+      const tripFilter = surveyOpt.filter;
+      const allFalseFilters = tripFilter.map((f, i) => ({
         ...f, state: (i == 0 ? true : false) // only the first filter will have state true on init
       }));
       setFilterInputs(allFalseFilters);
