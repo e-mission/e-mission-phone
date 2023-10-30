@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import color from "color";
 import { LabelTabContext } from '../LabelTab';
 import { logDebug } from '../../plugin/logger';
-import { getBaseModeOfLabeledTrip } from '../diaryHelper';
+import { getBaseModeByValue } from '../diaryHelper';
 import { Icon } from '../../components/Icon';
 import { Text, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -11,15 +11,16 @@ import { useTranslation } from 'react-i18next';
 const ModesIndicator = ({ trip, detectedModes, }) => {
 
   const { t } = useTranslation();
-  const { labelOptions } = useContext(LabelTabContext);
+  const { labelOptions, timelineLabelMap } = useContext(LabelTabContext);
   const { colors } = useTheme();
 
   const indicatorBackgroundColor = color(colors.onPrimary).alpha(.8).rgb().string();
   let indicatorBorderColor = color('black').alpha(.5).rgb().string();
 
   let modeViews;
-  if (trip.userInput.MODE) {
-    const baseMode = getBaseModeOfLabeledTrip(trip, labelOptions);
+  const labeledModeForTrip = timelineLabelMap[trip._id.$oid]?.['MODE'];
+  if (labeledModeForTrip?.value) {
+    const baseMode = getBaseModeByValue(labeledModeForTrip.value, labelOptions);
     indicatorBorderColor = baseMode.color;
     logDebug(`TripCard: got baseMode = ${JSON.stringify(baseMode)}`);
     modeViews = (
@@ -27,7 +28,7 @@ const ModesIndicator = ({ trip, detectedModes, }) => {
         <Icon icon={baseMode.icon} iconColor={baseMode.color} size={15} />
         <Text accessibilityLabel={`Labeled mode: ${baseMode.icon}`}
           style={{color: baseMode.color, fontSize: 12, fontWeight: '500', textDecorationLine:'underline'}}>
-          {trip.userInput.MODE.text}
+          {timelineLabelMap[trip._id.$oid]?.MODE.text}
         </Text>
       </View>
     );

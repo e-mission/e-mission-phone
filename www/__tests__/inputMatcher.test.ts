@@ -8,10 +8,10 @@ import {
     getAdditionsForTimelineEntry,
     getUniqueEntries
 } from '../js/survey/inputMatcher';
-import { TlEntry, UserInput } from '../js/types/diaryTypes';
+import { TlEntry, UnprocessedUserInput } from '../js/types/diaryTypes';
 
 describe('input-matcher', () => {
-    let userTrip: UserInput;
+    let userTrip: UnprocessedUserInput;
     let trip: TlEntry;
 
     beforeEach(() => {
@@ -212,13 +212,13 @@ describe('input-matcher', () => {
 
         // make the linst unsorted and then check if userInputWriteThird(latest one) is return output
         const userInputList = [userInputWriteSecond, userInputWriteThird, userInputWriteFirst];
-        const mostRecentEntry = getUserInputForTrip(trip, {}, userInputList);
+        const mostRecentEntry = getUserInputForTrip(trip, userInputList);
         expect(mostRecentEntry).toMatchObject(userInputWriteThird);
     });
 
     it('tests getUserInputForTrip with invalid userInputList', () => {
         const userInputList = undefined;
-        const mostRecentEntry = getUserInputForTrip(trip, {}, userInputList);
+        const mostRecentEntry = getUserInputForTrip(trip, userInputList);
         expect(mostRecentEntry).toBe(undefined);
     });
 

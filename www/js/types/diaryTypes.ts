@@ -43,7 +43,7 @@ export type CompositeTrip = {
   start_local_dt: LocalDt, 
   start_place: {$oid: string},
   start_ts: number,
-  user_input: UserInput, 
+  user_input: UnprocessedUserInput, 
 }
 
 /* These properties aren't received from the server, but are derived from the above properties.
@@ -69,7 +69,7 @@ export type PopulatedTrip = CompositeTrip & {
   finalInference?: any, // TODO
   geojson?: any, // TODO
   getNextEntry?: () => PopulatedTrip | ConfirmedPlace,
-  userInput?: UserInput, 
+  userInput?: UnprocessedUserInput, 
   verifiability?: string,
 }
 
@@ -79,7 +79,7 @@ export type SectionSummary = {
   duration: {[k: MotionTypeKey | BaseModeKey]: number},
 }
 
-export type UserInput = {
+export type UnprocessedUserInput = {
   data: {
       end_ts: number,
       start_ts: number
@@ -117,6 +117,7 @@ export type Trip = {
 }
 
 export type TlEntry = {
+  _id: { $oid: string },
   key: string,
   origin_key: string,
   start_ts: number,

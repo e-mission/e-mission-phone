@@ -13,22 +13,24 @@ type InputDetails<T extends string> = {
     key: string,
   }
 };
-export type LabelOptions<T extends string = 'MODE'|'PURPOSE'|'REPLACED_MODE'> = {
-  [k in T]: {
-    value: string,
-    baseMode: string,
-    met?: {range: any[], mets: number}
-    met_equivalent?: string,
-    kgCo2PerKm: number,
-    text?: string,
-  }[]
+export type LabelOption = {
+  value: string,
+  baseMode: string,
+  met?: {range: any[], mets: number}
+  met_equivalent?: string,
+  kgCo2PerKm: number,
+  text?: string,
+};
+export type MultilabelKey = 'MODE'|'PURPOSE'|'REPLACED_MODE';
+export type LabelOptions<T extends string = MultilabelKey> = {
+  [k in T]: LabelOption[]
 } & { translations: {
   [lang: string]: { [translationKey: string]: string }
 }};
 
 let appConfig;
-export let labelOptions: LabelOptions<'MODE'|'PURPOSE'|'REPLACED_MODE'>;
-export let inputDetails: InputDetails<'MODE'|'PURPOSE'|'REPLACED_MODE'>;
+export let labelOptions: LabelOptions<MultilabelKey>;
+export let inputDetails: InputDetails<MultilabelKey>;
 
 export async function getLabelOptions(appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;
@@ -94,6 +96,22 @@ export function getLabelInputDetails(appConfigParam?) {
   return inputDetails;
 }
 
+export function labelInputDetailsForTrip(userInputForTrip, appConfigParam?) {
+  if (appConfigParam) appConfig = appConfigParam;
+  if (appConfig.intro.mode_studied) {
+    if (userInputForTrip?.['MODE']?.value == appConfig.intro.mode_studied) {
+      logDebug("Found trip labeled with mode of study "+appConfig.intro.mode_studied+". Needs REPLACED_MODE");
+      return getLabelInputDetails();
+    } else {
+      logDebug("Found trip not labeled with mode of study "+appConfig.intro.mode_studied+". Doesn't need REPLACED_MODE");
+      return baseLabelInputDetails;
+    }
+  } else {
+    logDebug("No mode of study, so there is no REPLACED_MODE label option");
+    return getLabelInputDetails();
+  }
+}
+
 export const getLabelInputs = () => Object.keys(getLabelInputDetails());
 export const getBaseLabelInputs = () => Object.keys(baseLabelInputDetails);
 
@@ -117,3 +135,64 @@ export const getFakeEntry = (otherValue) => ({
 
 export const labelKeyToRichMode = (labelKey: string) =>
   labelOptions?.MODE?.find(m => m.value == labelKey)?.text || labelKeyToReadable(labelKey);
+
+/* manual/mode_confirm becomes mode_confirm */
+export const inputType2retKey = (inputType) => getLabelInputDetails()[inputType].key.split('/')[1];
+
+export function inferFinalLabels(trip, userInputForTrip) {
+  // Deep copy the possibility tuples
+  let labelsList = [];
+  if (trip.inferred_labels) {
+    labelsList = JSON.parse(JSON.stringify(trip.inferred_labels));
+  }
+
+  // Capture the level of certainty so we can reconstruct it later
+  const totalCertainty = labelsList.map((item) => item.p).reduce((item, rest) => item + rest, 0);
+
+  // Filter out the tuples that are inconsistent with existing green labels
+  for (const inputType of getLabelInputs()) {
+    const userInput = userInputForTrip?.[inputType];
+    if (userInput) {
+      const retKey = inputType2retKey(inputType);
+      labelsList = labelsList.filter((item) => item.labels[retKey] == userInput.value);
+    }
+  }
+
+  const finalInference = {};
+
+  // Red labels if we have no possibilities left
+  if (labelsList.length == 0) {
+    for (const inputType of getLabelInputs()) {
+      finalInference[inputType] = undefined;
+    }
+    return finalInference;
+  } else {
+    // Normalize probabilities to previous level of certainty
+    const certaintyScalar =
+      totalCertainty / labelsList.map((item) => item.p).reduce((item, rest) => item + rest);
+    labelsList.forEach((item) => (item.p *= certaintyScalar));
+
+    for (const inputType of getLabelInputs()) {
+      // For each label type, find the most probable value by binning by label value and summing
+      const retKey = inputType2retKey(inputType);
+      let valueProbs = new Map();
+      for (const tuple of labelsList) {
+        const labelValue = tuple.labels[retKey];
+        if (!valueProbs.has(labelValue)) valueProbs.set(labelValue, 0);
+        valueProbs.set(labelValue, valueProbs.get(labelValue) + tuple.p);
+      }
+      let max = { p: 0, labelValue: undefined };
+      for (const [thisLabelValue, thisP] of valueProbs) {
+        // In the case of a tie, keep the label with earlier first appearance in the labelsList (we used a Map to preserve this order)
+        if (thisP > max.p) max = { p: thisP, labelValue: thisLabelValue };
+      }
+
+      // Display a label as red if its most probable inferred value has a probability less than or equal to the trip's confidence_threshold
+      // Fails safe if confidence_threshold doesn't exist
+      if (max.p <= trip.confidence_threshold) max.labelValue = undefined;
+
+      finalInference[inputType] = labelOptions[inputType].find((opt) => opt.value == max.labelValue);
+    }
+    return finalInference;
+  }
+}

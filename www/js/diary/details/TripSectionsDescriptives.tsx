@@ -3,24 +3,25 @@ import { View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper'
 import { Icon } from '../../components/Icon';
 import useDerivedProperties from '../useDerivedProperties';
-import { getBaseModeByKey, getBaseModeOfLabeledTrip } from '../diaryHelper';
+import { getBaseModeByKey, getBaseModeByValue } from '../diaryHelper';
 import { LabelTabContext } from '../LabelTab';
 
 const TripSectionsDescriptives = ({ trip, showLabeledMode=false }) => {
 
-  const { labelOptions } = useContext(LabelTabContext);
+  const { labelOptions, timelineLabelMap } = useContext(LabelTabContext);
   const { displayStartTime, displayTime, formattedDistance,
           distanceSuffix, formattedSectionProperties } = useDerivedProperties(trip);
 
   const { colors } = useTheme();
 
+  const labeledModeForTrip = timelineLabelMap[trip._id.$oid]?.MODE;
   let sections = formattedSectionProperties;
   /* if we're only showing the labeled mode, or there are no sections (i.e. unprocessed trip),
     we treat this as unimodal and use trip-level attributes to construct a single section */
-  if (showLabeledMode && trip?.userInput?.MODE || !trip.sections?.length) {
+  if (showLabeledMode && labeledModeForTrip || !trip.sections?.length) {
     let baseMode;
-    if (showLabeledMode && trip?.userInput?.MODE) {
-      baseMode = getBaseModeOfLabeledTrip(trip, labelOptions);
+    if (showLabeledMode && labeledModeForTrip) {
+      baseMode = getBaseModeByValue(labeledModeForTrip.value, labelOptions);
     } else {
       baseMode = getBaseModeByKey('UNPROCESSED');
     }
@@ -30,7 +31,7 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode=false }) => {
       distance: formattedDistance,
       color: baseMode.color,
       icon: baseMode.icon,
-      text: showLabeledMode && trip.userInput?.MODE?.text, // label text only shown for labeled trips
+      text: showLabeledMode && labeledModeForTrip?.text, // label text only shown for labeled trips
     }];
   }
   return (

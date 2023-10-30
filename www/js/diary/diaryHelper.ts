@@ -66,13 +66,6 @@ export function getBaseModeByKey(motionName: BaseModeKey | MotionTypeKey | `Moti
   return BaseModes[key] || BaseModes.UNKNOWN;
 }
 
-export function getBaseModeOfLabeledTrip(trip, labelOptions) {
-  const modeKey = trip?.userInput?.MODE?.value;
-  if (!modeKey) return null; // trip has no MODE label
-  const modeOption = labelOptions?.MODE?.find(opt => opt.value == modeKey);
-  return getBaseModeByKey(modeOption?.baseMode || "OTHER");
-}
-
 export function getBaseModeByValue(value, labelOptions: LabelOptions) {
   const modeOption = labelOptions?.MODE?.find(opt => opt.value == value);
   return getBaseModeByKey(modeOption?.baseMode || "OTHER");

@@ -1,8 +1,6 @@
 'use strict';
 
 import angular from 'angular';
-import { getBaseModeByKey, getBaseModeOfLabeledTrip } from './diaryHelper';
-import { SurveyOptions } from '../survey/survey';
 import { getConfig } from '../config/dynamicConfig';
 import { getRawEntries } from '../commHelper';
 
@@ -16,16 +14,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     timeline.data = {};
     timeline.data.unifiedConfirmsResults = null;
     timeline.UPDATE_DONE = "TIMELINE_UPDATE_DONE";
-
-    let manualInputFactory;
-    $ionicPlatform.ready(function () {
-      getConfig().then((configObj) => {
-        const surveyOptKey = configObj.survey_info['trip-labels'];
-        const surveyOpt = SurveyOptions[surveyOptKey];
-        console.log('surveyOpt in services.js is', surveyOpt);
-        manualInputFactory = $injector.get(surveyOpt.service);
-      });
-    });
 
     // DB entries retrieved from the server have '_id', 'metadata', and 'data' fields.
     // This function returns a shallow copy of the obj, which flattens the

@@ -34,8 +34,8 @@ const TripCard = ({ trip }: Props) => {
     distanceSuffix, displayTime, detectedModes } = useDerivedProperties(trip);
   let [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
   const navigation = useNavigation<any>();
-  const { labelOptions } = useContext(LabelTabContext);
-  const tripGeojson = useGeojsonForTrip(trip, labelOptions, trip?.userInput?.MODE?.value);
+  const { labelOptions, timelineLabelMap, timelineNotesMap } = useContext(LabelTabContext);
+  const tripGeojson = useGeojsonForTrip(trip, labelOptions, timelineLabelMap[trip._id.$oid]?.MODE?.value);
 
   const isDraft = trip.key.includes('UNPROCESSED');
   const flavoredTheme = getTheme(isDraft ? 'draft' : undefined);
@@ -92,9 +92,9 @@ const TripCard = ({ trip }: Props) => {
           }
         </View>
       </View>
-      {trip.additionsList?.length != 0 &&
+      {timelineNotesMap[trip._id.$oid]?.length != 0 &&
         <View style={cardStyles.cardFooter}>
-          <AddedNotesList timelineEntry={trip} additionEntries={trip.additionsList} />
+          <AddedNotesList timelineEntry={trip} additionEntries={timelineNotesMap[trip._id.$oid]} />
         </View>
       }
     </DiaryCard>

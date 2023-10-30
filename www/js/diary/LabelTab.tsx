@@ -16,14 +16,18 @@ import LabelListScreen from "./list/LabelListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import LabelScreenDetails from "./details/LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
-import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateCompositeTrips } from "./timelineHelper";
+import { compositeTrips2TimelineMap, updateAllUnprocessedInputs, updateLocalUnprocessedInputs, populateCompositeTrips, unprocessedLabels, unprocessedNotes } from "./timelineHelper";
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
 import { getLabelOptions } from "../survey/multilabel/confirmHelper";
-import { displayError } from "../plugin/logger";
+import { displayError, logDebug } from "../plugin/logger";
 import { useTheme } from "react-native-paper";
 import { getPipelineRangeTs } from "../commHelper";
+import { UnprocessedUserInput } from "../types/diaryTypes";
+import { mapInputsToTimelineEntries } from "../survey/inputMatcher";
+import { configuredFilters as multilabelConfiguredFilters } from "../survey/multilabel/infinite_scroll_filters";
+import { configuredFilters as enketoConfiguredFilters } from "../survey/enketo/infinite_scroll_filters";
 
-let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
+let showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
 const ONE_WEEK = ONE_DAY * 7; // seconds
 export const LabelTabContext = React.createContext<any>(null);
@@ -37,7 +41,9 @@ const LabelTab = () => {
   const [filterInputs, setFilterInputs] = useState([]);
   const [pipelineRange, setPipelineRange] = useState(null);
   const [queriedRange, setQueriedRange] = useState(null);
-  const [timelineMap, setTimelineMap] = useState(null);
+  const [timelineMap, setTimelineMap] = useState<Map<string, any>>(null);
+  const [timelineLabelMap, setTimelineLabelMap] = useState<{[k: string]: {[k: string]: UnprocessedUserInput}}>(null);
+  const [timelineNotesMap, setTimelineNotesMap] = useState<{[k: string]: UnprocessedUserInput[]}>(null);
   const [displayedEntries, setDisplayedEntries] = useState(null);
   const [refreshTime, setRefreshTime] = useState(null);
   const [isLoading, setIsLoading] = useState<string|false>('replace');
@@ -47,17 +53,12 @@ const LabelTab = () => {
   const $ionicPopup = getAngularService('$ionicPopup');
   const Logger = getAngularService('Logger');
   const Timeline = getAngularService('Timeline');
-  const enbs = getAngularService('EnketoNotesButtonService');
 
   // initialization, once the appConfig is loaded
   useEffect(() => {
     if (!appConfig) return;
     showPlaces = appConfig.survey_info?.buttons?.['place-notes'];
     getLabelOptions(appConfig).then((labelOptions) => setLabelOptions(labelOptions));
-    labelPopulateFactory = getAngularService(surveyOpt.service);
-    const tripSurveyName = appConfig.survey_info?.buttons?.['trip-notes']?.surveyName;
-    const placeSurveyName = appConfig.survey_info?.buttons?.['place-notes']?.surveyName;
-    enbs.initConfig(tripSurveyName, placeSurveyName);
 
     // we will show filters if 'additions' are not configured
     // https://github.com/e-mission/e-mission-docs/issues/894
@@ -75,16 +76,24 @@ const LabelTab = () => {
     loadTimelineEntries();
   }, [appConfig, refreshTime]);
 
-  // whenever timelineMap is updated, update the displayedEntries
-  // according to the active filter
+  // whenever timelineMap is updated, map unprocessed inputs to timeline entries, and
+  // update the displayedEntries according to the active filter
   useEffect(() => {
     if (!timelineMap) return setDisplayedEntries(null);
     const allEntries = Array.from<any>(timelineMap.values());
+    const [newTimelineLabelMap, newTimelineNotesMap] = mapInputsToTimelineEntries(
+      allEntries,
+      appConfig,
+    );
+
+    setTimelineLabelMap(newTimelineLabelMap);
+    setTimelineNotesMap(newTimelineNotesMap);
+
     const activeFilter = filterInputs?.find((f) => f.state == true);
     let entriesToDisplay = allEntries;
     if (activeFilter) {
       const entriesAfterFilter = allEntries.filter(
-        t => t.justRepopulated || activeFilter?.filter(t, t.user_input)
+        t => t.justRepopulated || activeFilter?.filter(t, newTimelineLabelMap[t._id.$oid])
       );
       /* next, filter out any untracked time if the trips that came before and
         after it are no longer displayed */
@@ -104,9 +113,13 @@ const LabelTab = () => {
   async function loadTimelineEntries() {
     try {
       const pipelineRange = await getPipelineRangeTs();
-      [labelsResultMap, notesResultMap] = await getAllUnprocessedInputs(pipelineRange, labelPopulateFactory, enbs);
-      Logger.log("After reading unprocessedInputs, labelsResultMap =" + JSON.stringify(labelsResultMap)
-                                                + "; notesResultMap = " + JSON.stringify(notesResultMap));
+      await updateAllUnprocessedInputs(pipelineRange, appConfig);
+      logDebug(
+        'After updating unprocessed inputs, unprocessedLabels = ' +
+          JSON.stringify(unprocessedLabels) +
+          '; unprocessedNotes = ' +
+          JSON.stringify(unprocessedNotes),
+      );
       setPipelineRange(pipelineRange);
     } catch (error) {
       Logger.displayError("Error while loading pipeline range", error);
@@ -177,7 +190,7 @@ const LabelTab = () => {
 
   function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
     const tripsRead = ctList.concat(utList);
-    populateCompositeTrips(tripsRead, showPlaces, labelPopulateFactory, labelsResultMap, enbs, notesResultMap);
+    populateCompositeTrips(tripsRead, showPlaces);
     // Fill place names on a reversed copy of the list so we fill from the bottom up
     tripsRead.slice().reverse().forEach(function (trip, index) {
       fillLocationNamesOfTrip(trip);
@@ -224,11 +237,9 @@ const LabelTab = () => {
   const timelineMapRef = useRef(timelineMap);
   async function repopulateTimelineEntry(oid: string) {
     if (!timelineMap.has(oid)) return console.error("Item with oid: " + oid + " not found in timeline");
-    const [newLabels, newNotes] = await getLocalUnprocessedInputs(pipelineRange, labelPopulateFactory, enbs);
+    await updateLocalUnprocessedInputs(pipelineRange, appConfig);
     const repopTime = new Date().getTime();
     const newEntry = {...timelineMap.get(oid), justRepopulated: repopTime};
-    labelPopulateFactory.populateInputsAndInferences(newEntry, newLabels);
-    enbs.populateInputsAndInferences(newEntry, newNotes);
     const newTimelineMap = new Map(timelineMap).set(oid, newEntry);
     setTimelineMap(newTimelineMap);
 
@@ -246,9 +257,10 @@ const LabelTab = () => {
   }
 
   const contextVals = {
-    surveyOpt,
     labelOptions,
     timelineMap,
+    timelineLabelMap,
+    timelineNotesMap,
     displayedEntries,
     filterInputs,
     setFilterInputs,

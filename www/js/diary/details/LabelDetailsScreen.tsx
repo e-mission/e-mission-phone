@@ -22,7 +22,7 @@ import useAppConfig from "../../useAppConfig";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
-  const { timelineMap, labelOptions } = useContext(LabelTabContext);
+  const { timelineMap, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
   const appConfig = useAppConfig();
@@ -33,7 +33,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
 
   const [ modesShown, setModesShown ] = useState<'labeled'|'detected'>('labeled');
-  const tripGeojson = useGeojsonForTrip(trip, labelOptions, modesShown=='labeled' && trip?.userInput?.MODE?.value);
+  const tripGeojson = useGeojsonForTrip(trip, labelOptions, modesShown=='labeled' && timelineLabelMap[trip._id.$oid]?.MODE?.value);
   const mapOpts = {minZoom: 3, maxZoom: 17};
 
   const modal = (
@@ -65,7 +65,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
 
             {/* If trip is labeled, show a toggle to switch between "Labeled Mode" and "Detected Modes"
               otherwise, just show "Detected" */}
-            {trip?.userInput?.MODE?.value ?
+            {timelineLabelMap[trip._id.$oid]?.MODE?.value ?
               <ToggleSwitch onValueChange={v => setModesShown(v)} value={modesShown} density='medium'
                 buttons={[{label: t('diary.labeled-mode'), value: 'labeled'}, {label: t('diary.detected-modes'), value: 'detected'}]} />
             :

@@ -6,7 +6,7 @@
   PlaceCards use the blueish 'place' theme flavor.
 */
 
-import React from "react";
+import React, { useContext } from "react";
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
 import useAppConfig from "../../useAppConfig";
@@ -17,11 +17,13 @@ import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useAddressNames } from "../addressNamesHelper";
 import useDerivedProperties from "../useDerivedProperties";
 import StartEndLocations from "../components/StartEndLocations";
+import { LabelTabContext } from "../LabelTab";
 
 type Props = { place: {[key: string]: any} };
 const PlaceCard = ({ place }: Props) => {
 
   const appConfig = useAppConfig();
+  const { timelineNotesMap } = useContext(LabelTabContext);
   const { displayStartTime, displayEndTime, displayDate } = useDerivedProperties(place);
   let [ placeDisplayName ] = useAddressNames(place);
 
@@ -49,7 +51,7 @@ const PlaceCard = ({ place }: Props) => {
         </View>
       </View>
       <View style={cardStyles.cardFooter}>
-        <AddedNotesList timelineEntry={place} additionEntries={place.additionsList} />
+        <AddedNotesList timelineEntry={place} additionEntries={timelineNotesMap[place._id.$oid]} />
       </View>
     </DiaryCard>
   );
