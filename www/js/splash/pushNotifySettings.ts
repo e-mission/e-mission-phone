@@ -13,18 +13,15 @@
  * notification handling gets more complex, we should consider decoupling it as well.
  */
 
-import angular from 'angular';
 import { getAngularService } from '../angular-react-helper';
 import { updateUser } from '../commHelper';
 import { logDebug, displayError } from '../plugin/logger';
 
-const StartPrefs = getAngularService('StartPrefs');
-const readConsentState = StartPrefs.readConsentState;
-const isConsented = StartPrefs.isConsented;
+const $rootScope = getAngularService('$rootScope');
 
-let pushnotify = {};
 let push = null;
 const CLOUD_NOTIFICATION_EVENT = 'cloud:push:notification';
+let handlerRegistered;
 
 const startupInit = function () {
   push = window['PushNotification'].init({
@@ -43,12 +40,11 @@ const startupInit = function () {
   push.on('notification', function (data) {
     if (window['cordova'].platformId == 'ios') {
       // Parse the iOS values that are returned as strings
-      if (angular.isDefined(data) &&
-        angular.isDefined(data.additionalData)) {
-        if (angular.isDefined(data.additionalData.payload)) {
+      if (data && data.additionalData) {
+        if (data.additionalData.payload) {
           data.additionalData.payload = JSON.parse(data.additionalData.payload);
         }
-        if (angular.isDefined(data.additionalData.data) && typeof (data.additionalData.data) == "string") {
+        if (data.additionalData.data && typeof (data.additionalData.data) == "string") {
           data.additionalData.data = JSON.parse(data.additionalData.data);
         } else {
           console.log("additionalData is already an object, no need to parse it");
@@ -80,6 +76,9 @@ const registerPromise = function () {
 }
 
 export const registerPush = function () {
+  //register the handler -- executes the first time
+  //working around no longer using the angular platform ready
+  registerNotificationHandler();
   registerPromise().then(function (t) {
     // alert("Token = "+JSON.stringify(t));
     logDebug("Token = " + JSON.stringify(t));
@@ -106,7 +105,7 @@ export const registerPush = function () {
 
 var redirectSilentPush = function (event, data) {
   logDebug("Found silent push notification, for platform " + window['cordova'].platformId);
-  if (window['cordova'].platformId == 'ios') {
+  if (window['cordova'].platformId != 'ios') {
     logDebug("Platform is not ios, handleSilentPush is not implemented or needed");
     // doesn't matter if we finish or not because platforms other than ios don't care
     return;
@@ -117,9 +116,9 @@ var redirectSilentPush = function (event, data) {
     logDebug("in push.finish, error = " + error);
   };
 
-  _datacollect.getConfig().then(function (config) {
+  window['cordova'].plugins.BEMDataCollection.getConfig().then(function (config) {
     if (config.ios_use_remote_push_for_sync) {
-      _datacollect.handleSilentPush()
+      window['cordova'].plugins.BEMDataCollection.handleSilentPush()
         .then(function () {
           logDebug("silent push finished successfully, calling push.finish");
           showDebugLocalNotification("silent push finished, calling push.finish");
@@ -137,7 +136,7 @@ var redirectSilentPush = function (event, data) {
 }
 
 var showDebugLocalNotification = function (message) {
-  _datacollect.getConfig().then(function (config) {
+  window['cordova'].plugins.BEMDataCollection.getConfig().then(function (config) {
     if (config.simulate_user_interaction) {
       window['cordova'].plugins.notification.local.schedule({
         id: 1,
@@ -151,27 +150,13 @@ var showDebugLocalNotification = function (message) {
 }
 
 const registerNotificationHandler = function () {
-  $rootScope.$on(CLOUD_NOTIFICATION_EVENT, function (event, data) {
-    logDebug("data = " + JSON.stringify(data));
-    if (data.additionalData["content-available"] == 1) {
-      redirectSilentPush(event, data);
-    }; // else no need to call finish
-  });
-};
-
-let _datacollect;
-
-$ionicPlatform.ready().then(function () {
-  _datacollect = window['cordova'].plugins.BEMDataCollection;
-  readConsentState()
-    .then(isConsented)
-    .then(function (consentState) {
-      if (consentState == true) {
-        registerPush();
-      } else {
-        logDebug("no consent yet, waiting to sign up for remote push");
-      }
+  if (!handlerRegistered) {
+    handlerRegistered = true;
+    $rootScope.$on(CLOUD_NOTIFICATION_EVENT, function (event, data) {
+      logDebug("data = " + JSON.stringify(data));
+      if (data.additionalData["content-available"] == 1) {
+        redirectSilentPush(event, data);
+      }; // else no need to call finish
     });
-  registerNotificationHandler();
-  logDebug("pushnotify startup done");
-});
+  }
+};
