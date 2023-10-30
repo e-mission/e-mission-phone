@@ -70,7 +70,7 @@ export const combinedPromises = function(promiseList: Array<Promise<any>>,
       }, function(error) {
         firstResult = [];
         firstError = error;
-        nextPromiseDone = true;
+        firstPromiseDone = true;
       }).then(checkAndResolve);
 
       nextPromise.then(function(currentNextResult: Array<any>) {
@@ -79,6 +79,7 @@ export const combinedPromises = function(promiseList: Array<Promise<any>>,
       }, function(error) {
         nextResult = [];
         nextError = error;
+        nextPromiseDone = true;
       }).then(checkAndResolve);
     });
 };
@@ -87,13 +88,13 @@ export const combinedPromises = function(promiseList: Array<Promise<any>>,
  * getUnifiedDataForInterval is a generalized method to fetch data by its timestamps 
  * @param key string corresponding to a data entry
  * @param tq an object that contains interval start and end times
- * @param getMethod a BEMUserCache method that fetches certain data via a promise
+ * @param localGetMethod a BEMUserCache method that fetches certain data via a promise
  * @returns A promise that evaluates to the all values found within the queried data
  */
 export const getUnifiedDataForInterval = function(key: string, tq: TimeQuery, 
-  getMethod: (key: string, tq: TimeQuery, flag: boolean) => Promise<any>) {
+  localGetMethod: (key: string, tq: TimeQuery, flag: boolean) => Promise<any>) {
     const test = true;
-    const getPromise = getMethod(key, tq, test);
+    const getPromise = localGetMethod(key, tq, test);
     const remotePromise = getRawEntries([key], tq.startTs, tq.endTs)
       .then(function(serverResponse: ServerResponse<any>) {
         return serverResponse.phone_data;
