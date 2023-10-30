@@ -13,11 +13,9 @@
  * notification handling gets more complex, we should consider decoupling it as well.
  */
 
-import { getAngularService } from '../angular-react-helper';
 import { updateUser } from '../commHelper';
 import { logDebug, displayError } from '../plugin/logger';
-
-const $rootScope = getAngularService('$rootScope');
+import { subscribe, publish } from './notificationCenter';
 
 let push = null;
 const CLOUD_NOTIFICATION_EVENT = 'cloud:push:notification';
@@ -53,7 +51,7 @@ const startupInit = function () {
         logDebug("No additional data defined, nothing to parse");
       }
     }
-    $rootScope.$emit(CLOUD_NOTIFICATION_EVENT, data);
+    publish(CLOUD_NOTIFICATION_EVENT, data);
   });
 }
 
@@ -150,9 +148,10 @@ var showDebugLocalNotification = function (message) {
 }
 
 const registerNotificationHandler = function () {
+  //in order to prevent double - registration
   if (!handlerRegistered) {
     handlerRegistered = true;
-    $rootScope.$on(CLOUD_NOTIFICATION_EVENT, function (event, data) {
+    subscribe(CLOUD_NOTIFICATION_EVENT, 'pushNotification', function (event, data) {
       logDebug("data = " + JSON.stringify(data));
       if (data.additionalData["content-available"] == 1) {
         redirectSilentPush(event, data);
