@@ -92,7 +92,7 @@ const TripCard = ({ trip }: Props) => {
           }
         </View>
       </View>
-      {timelineNotesMap[trip._id.$oid]?.length != 0 &&
+      {timelineNotesMap[trip._id.$oid]?.length &&
         <View style={cardStyles.cardFooter}>
           <AddedNotesList timelineEntry={trip} additionEntries={timelineNotesMap[trip._id.$oid]} />
         </View>
