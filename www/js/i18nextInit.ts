@@ -22,14 +22,14 @@ const mergeInTranslations = (lang, fallbackLang) => {
       if (__DEV__) {
         if (typeof value === 'string') {
           lang[key] = `🌐${value}`
-        } else if (typeof value === 'object') {
+        } else if (typeof value === 'object' && typeof lang[key] === 'object') {
           lang[key] = {};
           mergeInTranslations(lang[key], value);
         }
       } else {
         lang[key] = value;
       }
-    } else if (typeof value === 'object') {
+    } else if (typeof value === 'object' && typeof lang[key] === 'object') {
       mergeInTranslations(lang[key], fallbackLang[key])
     }
   });
