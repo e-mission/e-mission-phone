@@ -1,11 +1,8 @@
-/* These type definitions are a work in progress. The goal is to have a single source of truth for
-    the types of the trip / place / untracked objects and all properties they contain.
-  Since we are using TypeScript now, we should strive to enforce type safety and also benefit from
-    IntelliSense and other IDE features. */
+/* This file provides typings for use in '/diary', including timeline objects (trips and places)
+ and user input objects.
+ As much as possible, these types parallel the types used in the server code. */
 
 import { BaseModeKey, MotionTypeKey } from "../diary/diaryHelper";
-
-// Since it is WIP, these types are not used anywhere yet.
 
 type ConfirmedPlace = any; // TODO
 
@@ -46,6 +43,10 @@ export type CompositeTrip = {
   user_input: UnprocessedUserInput, 
 }
 
+/* The 'timeline' for a user is a list of their trips and places,
+ so a 'timeline entry' is either a trip or a place. */
+export type TimelineEntry = ConfirmedPlace | CompositeTrip;
+
 /* These properties aren't received from the server, but are derived from the above properties.
   They are used in the UI to display trip/place details and are computed by the useDerivedProperties hook. */
 export type DerivedProperties = {
@@ -59,18 +60,6 @@ export type DerivedProperties = {
   formattedSectionProperties: any[], // TODO
   distanceSuffix: string,
   detectedModes: { mode: string, icon: string, color: string, pct: number|string }[],
-}
-
-/* These are the properties that are still filled in by some kind of 'populate' mechanism.
-  It would simplify the codebase to just compute them where they're needed
-  (using memoization when apt so performance is not impacted). */
-export type PopulatedTrip = CompositeTrip & {
-  additionsList?: any[], // TODO
-  finalInference?: any, // TODO
-  geojson?: any, // TODO
-  getNextEntry?: () => PopulatedTrip | ConfirmedPlace,
-  userInput?: UnprocessedUserInput, 
-  verifiability?: string,
 }
 
 export type SectionSummary = {
@@ -109,21 +98,4 @@ export type LocalDt = {
   month: number,
   year: number,
   timezone: string,
-}
-
-export type Trip = {
-  end_ts: number,
-  start_ts: number,
-}
-
-export type TlEntry = {
-  _id: { $oid: string },
-  key: string,
-  origin_key: string,
-  start_ts: number,
-  end_ts: number,
-  enter_ts: number,
-  exit_ts: number,
-  duration: number,
-  getNextEntry?: () => PopulatedTrip | ConfirmedPlace,
 }

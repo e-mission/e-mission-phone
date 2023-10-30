@@ -16,9 +16,9 @@ import LabelListScreen from "./list/LabelListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import LabelScreenDetails from "./details/LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
-import { compositeTrips2TimelineMap, updateAllUnprocessedInputs, updateLocalUnprocessedInputs, populateCompositeTrips, unprocessedLabels, unprocessedNotes } from "./timelineHelper";
+import { compositeTrips2TimelineMap, updateAllUnprocessedInputs, updateLocalUnprocessedInputs, unprocessedLabels, unprocessedNotes } from "./timelineHelper";
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
-import { getLabelOptions } from "../survey/multilabel/confirmHelper";
+import { LabelOption, getLabelOptions } from "../survey/multilabel/confirmHelper";
 import { displayError, logDebug } from "../plugin/logger";
 import { useTheme } from "react-native-paper";
 import { getPipelineRangeTs } from "../commHelper";
@@ -42,7 +42,7 @@ const LabelTab = () => {
   const [pipelineRange, setPipelineRange] = useState(null);
   const [queriedRange, setQueriedRange] = useState(null);
   const [timelineMap, setTimelineMap] = useState<Map<string, any>>(null);
-  const [timelineLabelMap, setTimelineLabelMap] = useState<{[k: string]: {[k: string]: UnprocessedUserInput}}>(null);
+  const [timelineLabelMap, setTimelineLabelMap] = useState<{[k: string]: {[k: string]: UnprocessedUserInput | LabelOption}}>(null);
   const [timelineNotesMap, setTimelineNotesMap] = useState<{[k: string]: UnprocessedUserInput[]}>(null);
   const [displayedEntries, setDisplayedEntries] = useState(null);
   const [refreshTime, setRefreshTime] = useState(null);
@@ -190,7 +190,6 @@ const LabelTab = () => {
 
   function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
     const tripsRead = ctList.concat(utList);
-    populateCompositeTrips(tripsRead, showPlaces);
     // Fill place names on a reversed copy of the list so we fill from the bottom up
     tripsRead.slice().reverse().forEach(function (trip, index) {
       fillLocationNamesOfTrip(trip);

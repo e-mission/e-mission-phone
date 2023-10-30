@@ -73,26 +73,6 @@ export function compositeTrips2TimelineMap(ctList: any[], unpackPlaces?: boolean
   return timelineEntriesMap;
 }
 
-export function populateCompositeTrips(ctList, showPlaces) {
-  try {
-    ctList.forEach((ct, i) => {
-      if (showPlaces && ct.start_confirmed_place) {
-        const cp = ct.start_confirmed_place;
-        cp.getNextEntry = () => ctList[i];
-      }
-      if (showPlaces && ct.end_confirmed_place) {
-        const cp = ct.end_confirmed_place;
-        cp.getNextEntry = () => ctList[i + 1];
-        ct.getNextEntry = () => cp;
-      } else {
-        ct.getNextEntry = () => ctList[i + 1];
-      }
-    });
-  } catch (e) {
-    displayError(e, i18next.t('errors.while-populating-composite'));
-  }
-}
-
 /* 'LABELS' are 1:1 - each trip or place has a single label for each label type
   (e.g. 'MODE' and 'PURPOSE' for MULTILABEL configuration, or 'SURVEY' for ENKETO configuration) */
 export let unprocessedLabels: { [key: string]: UnprocessedUserInput[] } = {};
