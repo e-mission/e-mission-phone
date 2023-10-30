@@ -11,4 +11,4 @@ export GRADLE_VERSION=7.6
 export OSX_EXP_VERSION=12
 
 export NVM_DIR="$HOME/.nvm"
-export RUBY_PATH=$HOME/.gem/ruby/$RUBY_VERSION.0/bin
+export RUBY_PATH=$HOME/.local/share/gem/ruby/$RUBY_VERSION.0/bin

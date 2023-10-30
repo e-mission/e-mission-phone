@@ -1,7 +1,9 @@
+import packageJsonBuild from '../../package.cordovabuild.json';
+
 export const mockCordova = () => {
   window['cordova'] ||= {};
   window['cordova'].platformId ||= 'ios';
-  window['cordova'].platformVersion ||= '6.2.0';
+  window['cordova'].platformVersion ||= packageJsonBuild.dependencies['cordova-ios'];
   window['cordova'].plugins ||= {};
 }
 
@@ -20,6 +22,11 @@ export const mockGetAppVersion = () => {
   }
   window['cordova'] ||= {};
   window['cordova'].getAppVersion = mockGetAppVersion;
+}
+
+export const mockFile = () => {
+  window['cordova'].file = { "dataDirectory" : "../path/to/data/directory", 
+                              "applicationStorageDirectory" : "../path/to/app/storage/directory"};
 }
 
 export const mockBEMUserCache = () => {

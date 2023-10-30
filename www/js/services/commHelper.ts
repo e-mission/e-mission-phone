@@ -129,8 +129,13 @@ export function getAggregateData(path: string, data: any) {
   });
 }
 
-export function registerUser(successCallback, errorCallback) {
-  window['cordova'].plugins.BEMServerComm.getUserPersonalData("/profile/create", successCallback, errorCallback);
+export function registerUser() {
+  return new Promise((rs, rj) => {
+    window['cordova'].plugins.BEMServerComm.getUserPersonalData("/profile/create", rs, rj);
+  }).catch(error => {
+    error = `While registering user, ${error}`;
+    throw(error);
+  });
 }
 
 export function updateUser(updateDoc) {

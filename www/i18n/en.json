@@ -146,6 +146,41 @@
         "no-travel-hint": "To see more, change the filters above or go record some travel!"
     },
 
+    "multilabel":{
+        "walk": "Walk",
+        "e-bike": "E-bike",
+        "bike": "Regular Bike",
+        "bikeshare": "Bikeshare",
+        "scootershare": "Scooter share",
+        "drove_alone": "Gas Car Drove Alone",
+        "shared_ride": "Gas Car Shared Ride",
+        "e_car_drove_alone": "E-Car Drove Alone",
+        "e_car_shared_ride": "E-Car Shared Ride",
+        "moped": "Moped",
+        "taxi": "Taxi / Uber / Lyft",
+        "bus": "Bus",
+        "train": "Train",
+        "free_shuttle": "Free Shuttle",
+        "air": "Air",
+        "not_a_trip": "Not a trip",
+        "no_travel": "No travel",
+        "home": "Home",
+        "work": "To Work",
+        "at_work": "At Work",
+        "school": "School",
+        "transit_transfer": "Transit transfer",
+        "shopping": "Shopping",
+        "meal": "Meal",
+        "pick_drop_person": "Pick-up / Drop off Person",
+        "pick_drop_item": "Pick-up / Drop off Item",
+        "personal_med": "Personal / Medical",
+        "access_recreation": "Access Recreation",
+        "exercise": "Recreation / Exercise",
+        "entertainment": "Entertainment / Social",
+        "religious": "Religious",
+        "other": "Other"
+    },
+
     "main-metrics":{
         "summary": "My Summary",
         "chart": "Chart",
@@ -284,10 +319,7 @@
             },
             "ignorebatteryopt": {
                 "name": "Ignore battery optimizations",
-                "description": {
-                    "android-disable": "On the optimization page, go to all apps, search for this app and turn off optimizations.",
-                    "ios": "Please allow."
-                }
+                "description": "Please allow."
             }
         },
         "permissions": {
@@ -362,6 +394,8 @@
         "survey-missing-formpath": "Error while fetching resources in config: survey_info.surveys has a survey without a formPath"
     },
     "errors": {
+      "registration-check-token": "User registration error. Please check your token and try again.",
+      "not-registered-cant-contact": "User is not registered, so the server cannot be contacted.",
       "while-populating-composite": "Error while populating composite trips",
       "while-loading-another-week": "Error while loading travel of {{when}} week",
       "while-loading-specific-week": "Error while loading travel for the week of {{day}}",
