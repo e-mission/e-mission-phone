@@ -7,8 +7,7 @@ angular.module('emission.main', ['emission.main.diary',
                                  'emission.splash.notifscheduler',
                                  'emission.main.metrics.factory',
                                  'emission.main.metrics.mappings',
-                                 'emission.services',
-                                 'emission.services.upload'])
+                                 'emission.services'])
 
 .config(function($stateProvider) {
   $stateProvider.state('root.main', {

@@ -25,6 +25,11 @@ export const mockGetAppVersion = () => {
   window['cordova'].getAppVersion = mockGetAppVersion;
 }
 
+export const mockFile = () => {
+  window['cordova'].file = { "dataDirectory" : "../path/to/data/directory", 
+                              "applicationStorageDirectory" : "../path/to/app/storage/directory"};
+}
+
 export const mockBEMUserCache = () => {
   const _cache = {};
   const messages = [];

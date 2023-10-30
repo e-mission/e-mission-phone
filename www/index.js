@@ -5,7 +5,6 @@ import 'leaflet/dist/leaflet.css';
 
 import './js/ngApp.js';
 import './js/splash/referral.js';
-import './js/splash/customURL.js';
 import './js/splash/startprefs.js';
 import './js/splash/pushnotify.js';
 import './js/splash/storedevicesettings.js';
@@ -23,7 +22,6 @@ import './js/diary/services.js';
 import './js/survey/enketo/enketo-trip-button.js';
 import './js/survey/enketo/enketo-add-note-button.js';
 import './js/control/emailService.js';
-import './js/control/uploadService.js';
 import './js/metrics-factory.js';
 import './js/metrics-mappings.js';
 import './js/plugin/logger.ts';
