@@ -4,6 +4,7 @@ import { storageGet, storageSet } from "../plugin/storage";
 import { logDebug } from "../plugin/logger";
 import { readConsentState, isConsented } from "../splash/startprefs";
 import { getAngularService } from "../angular-react-helper";
+import { registerPush } from "../splash/pushNotifySettings";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
@@ -75,9 +76,8 @@ export async function markIntroDone() {
     .then(() => {
       //handle "on intro" events
       logDebug("intro done, calling registerPush and storeDeviceSettings");
-      const PushNotify = getAngularService("PushNotify");
       const StoreSeviceSettings = getAngularService("StoreDeviceSettings");
-      PushNotify.registerPush();
+      registerPush();
       StoreSeviceSettings.storeDeviceSettings();
     });
 }

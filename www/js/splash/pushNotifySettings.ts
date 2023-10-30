@@ -79,7 +79,7 @@ const registerPromise = function () {
   });
 }
 
-const registerPush = function () {
+export const registerPush = function () {
   registerPromise().then(function (t) {
     // alert("Token = "+JSON.stringify(t));
     logDebug("Token = " + JSON.stringify(t));
@@ -175,18 +175,3 @@ $ionicPlatform.ready().then(function () {
   registerNotificationHandler();
   logDebug("pushnotify startup done");
 });
-
-    // $rootScope.$on(StartPrefs.CONSENTED_EVENT, function(event, data) {
-    //   console.log("got consented event "+JSON.stringify(event.name)
-    //                   +" with data "+ JSON.stringify(data));
-    //   if (StartPrefs.isIntroDone()) {
-    //       console.log("intro is done -> reconsent situation, we already have a token -> register");
-    //       pushnotify.registerPush();
-    //   }
-    // });
-
-    // $rootScope.$on(StartPrefs.INTRO_DONE_EVENT, function(event, data) {
-    //       console.log("intro is done -> original consent situation, we should have a token by now -> register");
-    //    pushnotify.registerPush();
-    // });
-

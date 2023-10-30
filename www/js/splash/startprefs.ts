@@ -2,6 +2,7 @@ import { getAngularService } from "../angular-react-helper";
 import { storageGet, storageSet } from '../plugin/storage';
 import { logInfo, logDebug, displayErrorMsg } from '../plugin/logger';
 import { readIntroDone } from "../onboarding/onboardingHelper";
+import { registerPush } from "./pushNotifySettings";
 
 // data collection consented protocol: string, represents the date on
 // which the consented protocol was approved by the IRB
@@ -43,9 +44,8 @@ export function markConsented() {
     .then((isIntroDone) => {
       if (isIntroDone) {
         logDebug("reconsent scenario - marked consent after intro done - registering pushnoify and storing device settings")
-        const PushNotify = getAngularService("PushNotify");
         const StoreSeviceSettings = getAngularService("StoreDeviceSettings");
-        PushNotify.registerPush();
+        registerPush();
         StoreSeviceSettings.storeDeviceSettings();
       }
     })
