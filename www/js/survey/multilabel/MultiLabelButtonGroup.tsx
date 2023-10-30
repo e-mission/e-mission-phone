@@ -10,7 +10,7 @@ import DiaryButton from "../../components/DiaryButton";
 import { useTranslation } from "react-i18next";
 import { LabelTabContext } from "../../diary/LabelTab";
 import { displayErrorMsg, logDebug } from "../../plugin/logger";
-import { getLabelInputDetails, getLabelInputs, inferFinalLabels, labelInputDetailsForTrip, labelKeyToRichMode, readableLabelToKey } from "./confirmHelper";
+import { getLabelInputDetails, getLabelInputs, inferFinalLabels, labelInputDetailsForTrip, labelKeyToRichMode, readableLabelToKey, verifiabilityForTrip } from "./confirmHelper";
 import useAppConfig from "../../useAppConfig";
 
 const MultilabelButtonGroup = ({ trip, buttonsInline=false }) => {
@@ -104,7 +104,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline=false }) => {
           )
         })}
       </View>
-      {trip.verifiability === 'can-verify' && (
+      {verifiabilityForTrip(trip, timelineLabelMap[trip._id.$oid]) == 'can-verify' && (
         <View style={{marginTop: 16}}>
           <IconButton icon='check-bold' mode='outlined' size={18} onPress={verifyTrip}
                       containerColor={colors.secondaryContainer}

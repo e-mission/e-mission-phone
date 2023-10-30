@@ -139,6 +139,19 @@ export const labelKeyToRichMode = (labelKey: string) =>
 /* manual/mode_confirm becomes mode_confirm */
 export const inputType2retKey = (inputType) => getLabelInputDetails()[inputType].key.split('/')[1];
 
+export function verifiabilityForTrip(trip, userInputForTrip) {
+  let allConfirmed = true;
+  let someInferred = false;
+  const inputsForTrip = Object.keys(labelInputDetailsForTrip(userInputForTrip));
+  for (const inputType of inputsForTrip) {
+    const confirmed = userInputForTrip[inputType];
+    const inferred = inferFinalLabels(trip, userInputForTrip)[inputType] && !confirmed;
+    if (inferred) someInferred = true;
+    if (!confirmed) allConfirmed = false;
+  }
+  return someInferred ? 'can-verify' : allConfirmed ? 'already-verified' : 'cannot-verify';
+}
+ 
 export function inferFinalLabels(trip, userInputForTrip) {
   // Deep copy the possibility tuples
   let labelsList = [];
