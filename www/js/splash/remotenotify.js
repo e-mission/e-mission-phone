@@ -1,3 +1,6 @@
+//naming of this module can be confusing "remotenotifyhandler" for rewritten file
+//https://github.com/e-mission/e-mission-phone/pull/1072#discussion_r1375360832
+
 /*
  * This module deals with handling specific push messages that open web pages
  * or popups. It does not interface with the push plugin directly. Instead, it
@@ -15,8 +18,7 @@
 import angular from 'angular';
 import { addStatEvent, statKeys } from '../plugin/clientStats';
 
-angular.module('emission.splash.remotenotify', ['emission.plugin.logger',
-                    'emission.splash.startprefs'])
+angular.module('emission.splash.remotenotify', ['emission.plugin.logger'])
 
 .factory('RemoteNotify', function($http, $window, $ionicPopup, $rootScope, Logger) {
 
