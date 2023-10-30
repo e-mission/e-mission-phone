@@ -48,10 +48,6 @@ const LabelTab = () => {
   const [refreshTime, setRefreshTime] = useState(null);
   const [isLoading, setIsLoading] = useState<string|false>('replace');
 
-  const $rootScope = getAngularService('$rootScope');
-  const $state = getAngularService('$state');
-  const $ionicPopup = getAngularService('$ionicPopup');
-  const Logger = getAngularService('Logger');
   const Timeline = getAngularService('Timeline');
 
   // initialization, once the appConfig is loaded
@@ -121,8 +117,8 @@ const LabelTab = () => {
           JSON.stringify(unprocessedNotes),
       );
       setPipelineRange(pipelineRange);
-    } catch (error) {
-      Logger.displayError("Error while loading pipeline range", error);
+    } catch (e) {
+      displayError(e, t('errors.while-loading-pipeline-range'));
       setIsLoading(false);
     }
   }
