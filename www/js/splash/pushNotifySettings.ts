@@ -21,6 +21,10 @@ import { getAngularService } from '../angular-react-helper';
 
 let push = null;
 
+/**
+ * @function initializes the PushNotification in window,
+ * assigns on 'notification' functionality
+ */
 const startupInit = function () {
   push = window['PushNotification'].init({
     "ios": {
@@ -56,6 +60,12 @@ const startupInit = function () {
   });
 }
 
+/**
+ * @function registers notifications and handles result
+ * @returns Promise for initialization logic, 
+ * resolves on registration with token 
+ * rejects on error with error
+ */
 const registerPromise = function () {
   return new Promise(function (resolve, reject) {
     startupInit();
@@ -74,6 +84,10 @@ const registerPromise = function () {
   });
 }
 
+/**
+ * @function registers for notifications and updates user
+ * currently called on reconsent and on intro done
+ */
 const registerPush = function () {
   registerPromise().then(function (t) {
     // alert("Token = "+JSON.stringify(t));
@@ -99,6 +113,12 @@ const registerPush = function () {
   });
 }
 
+/**
+ * @function handles silent push notifications
+ * works with BEMDataCollection plugin
+ * @param data from the notification
+ * @returns early if platform is not ios
+ */
 const redirectSilentPush = function (event, data) {
   logDebug("Found silent push notification, for platform " + window['cordova'].platformId);
   if (window['cordova'].platformId != 'ios') {
@@ -131,6 +151,10 @@ const redirectSilentPush = function (event, data) {
     });
 }
 
+/**
+ * @function shows debug notifications if simulating user interaction
+ * @param message string to display in the degug notif
+ */
 var showDebugLocalNotification = function (message) {
   window['cordova'].plugins.BEMDataCollection.getConfig().then(function (config) {
     if (config.simulate_user_interaction) {
@@ -145,6 +169,11 @@ var showDebugLocalNotification = function (message) {
   });
 }
 
+/**
+ * @function handles pushNotification intitially
+ * @param event that called this function
+ * @param data from the notification
+ */
 const onCloudEvent = function (event, data) {
   logDebug("data = " + JSON.stringify(data));
   if (data.additionalData["content-available"] == 1) {
@@ -152,6 +181,11 @@ const onCloudEvent = function (event, data) {
   }; // else no need to call finish
 }
 
+/**
+ * @function registers push on reconsent
+ * @param event that called this function
+ * @param data data from the conesnt event
+ */
 const onConsentEvent = function (event, data) {
   const StartPrefs = getAngularService('StartPrefs');
   console.log("got consented event " + JSON.stringify(event['name'])
@@ -162,11 +196,20 @@ const onConsentEvent = function (event, data) {
   }
 }
 
+/**
+ * @function registers push after intro received
+ * @param event that called this function
+ * @param data from the event
+ */
 const onIntroEvent = function (event, data) {
   console.log("intro is done -> original consent situation, we should have a token by now -> register");
   registerPush();
 }
 
+/**
+ * startup code - 
+ * @function registers push if consented, subscribes event listeners for local handline
+ */
 const initPushNotify = function () {
   const StartPrefs = getAngularService('StartPrefs');
   StartPrefs.readConsentState()
