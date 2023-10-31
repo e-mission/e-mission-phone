@@ -1,9 +1,10 @@
 import { DateTime } from "luxon";
-import { getAngularService } from "../angular-react-helper";
 import { getConfig, resetDataAndRefresh } from "../config/dynamicConfig";
 import { storageGet, storageSet } from "../plugin/storage";
 import { logDebug } from "../plugin/logger";
 import { EVENT_NAMES, publish } from "../customEventHandler";
+import { readConsentState, isConsented } from "../splash/startprefs";
+import { getAngularService } from "../angular-react-helper";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
@@ -62,16 +63,21 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
 };
 
 async function readConsented() {
-  const StartPrefs = getAngularService('StartPrefs');
-  return StartPrefs.readConsentState().then(StartPrefs.isConsented) as Promise<boolean>;
+  return readConsentState().then(isConsented) as Promise<boolean>;
 }
 
-async function readIntroDone() {
+export async function readIntroDone() {
   return storageGet(INTRO_DONE_KEY).then((read_val) => !!read_val) as Promise<boolean>;
 }
 
 export async function markIntroDone() {
   const currDateTime = DateTime.now().toISO();
-  publish(EVENT_NAMES.INTRO_DONE_EVENT, currDateTime);
-  return storageSet(INTRO_DONE_KEY, currDateTime);
+  return storageSet(INTRO_DONE_KEY, currDateTime)
+    .then(() => {
+      //handle "on intro" events
+      logDebug("intro done, calling registerPush and storeDeviceSettings");
+      const StoreSeviceSettings = getAngularService("StoreDeviceSettings");
+      publish(EVENT_NAMES.INTRO_DONE_EVENT, currDateTime);
+      StoreSeviceSettings.storeDeviceSettings();
+    });
 }
