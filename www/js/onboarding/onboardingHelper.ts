@@ -3,6 +3,7 @@ import { getAngularService } from "../angular-react-helper";
 import { getConfig, resetDataAndRefresh } from "../config/dynamicConfig";
 import { storageGet, storageSet } from "../plugin/storage";
 import { logDebug } from "../plugin/logger";
+import { EVENT_NAMES, publish } from "../customEventHandler";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
@@ -71,5 +72,6 @@ async function readIntroDone() {
 
 export async function markIntroDone() {
   const currDateTime = DateTime.now().toISO();
+  publish(EVENT_NAMES.INTRO_DONE_EVENT, currDateTime);
   return storageSet(INTRO_DONE_KEY, currDateTime);
 }

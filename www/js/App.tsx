@@ -11,6 +11,7 @@ import { OnboardingRoute, OnboardingState, getPendingOnboardingState } from './o
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './control/AppStatusModal';
 import usePermissionStatus from './usePermissionStatus';
+import { initPushNotify } from './splash/pushNotifySettings';
 
 const defaultRoutes = (t) => [
   { key: 'label', title: t('diary.label-tab'), focusedIcon: 'check-bold', unfocusedIcon: 'check-outline' },
@@ -52,6 +53,7 @@ const App = () => {
     setServerConnSettings(appConfig).then(() => {
       refreshOnboardingState();
     });
+    initPushNotify();
   }, [appConfig]);
 
   const appContextValue = {

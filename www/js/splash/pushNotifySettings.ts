@@ -210,7 +210,7 @@ const onIntroEvent = function (event, data) {
  * startup code - 
  * @function registers push if consented, subscribes event listeners for local handline
  */
-const initPushNotify = function () {
+export const initPushNotify = function () {
   const StartPrefs = getAngularService('StartPrefs');
   StartPrefs.readConsentState()
     .then(StartPrefs.isConsented)
