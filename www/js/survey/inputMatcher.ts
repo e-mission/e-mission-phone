@@ -1,17 +1,18 @@
 import { logDebug, displayErrorMsg } from "../plugin/logger"
 import { DateTime } from "luxon";
-import { CompositeTrip, TimelineEntry, UnprocessedUserInput } from "../types/diaryTypes";
+import { CompositeTrip, TimelineEntry, UserInputEntry } from "../types/diaryTypes";
 import { keysForLabelInputs, unprocessedLabels, unprocessedNotes } from "../diary/timelineHelper";
 import { LabelOption, MultilabelKey, getLabelInputDetails, getLabelInputs, getLabelOptions, inputType2retKey, labelKeyToRichMode, labelOptions } from "./multilabel/confirmHelper";
+import { TimelineLabelMap, TimelineNotesMap } from "../diary/LabelTabContext";
 
 const EPOCH_MAXIMUM = 2**31 - 1;
 
 export const fmtTs = (ts_in_secs: number, tz: string): string | null => DateTime.fromSeconds(ts_in_secs, {zone : tz}).toISO();
 
-export const printUserInput = (ui: UnprocessedUserInput): string => `${fmtTs(ui.data.start_ts, ui.metadata.time_zone)} (${ui.data.start_ts}) -> 
+export const printUserInput = (ui: UserInputEntry): string => `${fmtTs(ui.data.start_ts, ui.metadata.time_zone)} (${ui.data.start_ts}) -> 
 ${fmtTs(ui.data.end_ts, ui.metadata.time_zone)} (${ui.data.end_ts}) ${ui.data.label} logged at ${ui.metadata.write_ts}`;
 
-export const validUserInputForDraftTrip = (trip: CompositeTrip, userInput: UnprocessedUserInput, logsEnabled: boolean): boolean => {
+export const validUserInputForDraftTrip = (trip: CompositeTrip, userInput: UserInputEntry, logsEnabled: boolean): boolean => {
     if(logsEnabled) {
         logDebug(`Draft trip:
             comparing user = ${fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)}
@@ -32,7 +33,7 @@ export const validUserInputForDraftTrip = (trip: CompositeTrip, userInput: Unpro
 export const validUserInputForTimelineEntry = (
   tlEntry: TimelineEntry,
   nextEntry: TimelineEntry | null,
-  userInput: UnprocessedUserInput,
+  userInput: UserInputEntry,
   logsEnabled: boolean,
 ): boolean => {
     if (!tlEntry.origin_key) return false;
@@ -107,7 +108,7 @@ export const validUserInputForTimelineEntry = (
 }
 
 // parallels get_not_deleted_candidates() in trip_queries.py
-export const getNotDeletedCandidates = (candidates: UnprocessedUserInput[]): UnprocessedUserInput[] => {
+export const getNotDeletedCandidates = (candidates: UserInputEntry[]): UserInputEntry[] => {
     console.log('getNotDeletedCandidates called with ' + candidates.length + ' candidates');
     
     // We want to retain all ACTIVE entries that have not been DELETED
@@ -124,8 +125,8 @@ export const getNotDeletedCandidates = (candidates: UnprocessedUserInput[]): Unp
 export const getUserInputForTimelineEntry = (
   entry: TimelineEntry,
   nextEntry: TimelineEntry | null,
-  userInputList: UnprocessedUserInput[],
-): undefined | UnprocessedUserInput => {
+  userInputList: UserInputEntry[],
+): undefined | UserInputEntry => {
     const logsEnabled = userInputList?.length < 20;
     if (userInputList === undefined) {
         logDebug("In getUserInputForTimelineEntry, no user input, returning undefined");
@@ -162,8 +163,8 @@ export const getUserInputForTimelineEntry = (
 export const getAdditionsForTimelineEntry = (
   entry: TimelineEntry,
   nextEntry: TimelineEntry | null,
-  additionsList: UnprocessedUserInput[],
-): UnprocessedUserInput[] => {
+  additionsList: UserInputEntry[],
+): UserInputEntry[] => {
     const logsEnabled = additionsList?.length < 20;
 
     if (additionsList === undefined) {
@@ -217,9 +218,9 @@ export const getUniqueEntries = (combinedList) => {
  * @returns an array containing: (i) an object mapping timeline entry IDs to label inputs,
  * and (ii) an object mapping timeline entry IDs to note inputs
  */
-export function mapInputsToTimelineEntries(allEntries: TimelineEntry[], appConfig): [{ [k: string]: { [k: string]: UnprocessedUserInput | LabelOption } }, { [k: string]: UnprocessedUserInput[] }] {
-  const timelineLabelMap: { [k: string]: { [k: string]: UnprocessedUserInput | LabelOption } } = {};
-  const timelineNotesMap: { [k: string]: UnprocessedUserInput[] } = {};
+export function mapInputsToTimelineEntries(allEntries: TimelineEntry[], appConfig): [TimelineLabelMap, TimelineNotesMap] {
+  const timelineLabelMap: TimelineLabelMap = {};
+  const timelineNotesMap: TimelineNotesMap = {};
 
   allEntries.forEach((tlEntry, i) => {
     const nextEntry = i + 1 < allEntries.length ? allEntries[i + 1] : null;

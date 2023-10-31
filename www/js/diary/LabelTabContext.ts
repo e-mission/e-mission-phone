@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { TimelineEntry, UnprocessedUserInput } from '../types/diaryTypes';
+import { TimelineEntry, UserInputEntry } from '../types/diaryTypes';
 import { LabelOption } from '../survey/multilabel/confirmHelper';
 
 export type TimelineMap = Map<string, TimelineEntry>;
@@ -7,15 +7,16 @@ export type TimelineLabelMap = {
   [k: string]: {
     /* if the key here is 'SURVEY', we are in the ENKETO configuration, meaning the user input
       value is a raw survey response */
-    SURVEY?: UnprocessedUserInput;
-  } & {
+    SURVEY?: UserInputEntry;
     /* all other keys, (e.g. 'MODE', 'PURPOSE') are from the MULTILABEL configuration
       and use a LabelOption for the user input value */
-    [k: string]: LabelOption;
+    MODE?: LabelOption;
+    PURPOSE?: LabelOption;
+    REPLACED_MODE?: LabelOption;
   };
 };
 export type TimelineNotesMap = {
-  [k: string]: UnprocessedUserInput[];
+  [k: string]: UserInputEntry[];
 };
 
 type ContextProps = {

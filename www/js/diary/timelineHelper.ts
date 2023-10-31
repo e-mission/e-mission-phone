@@ -3,7 +3,7 @@ import { getAngularService } from "../angular-react-helper";
 import { displayError, logDebug } from "../plugin/logger";
 import { getBaseModeByKey, getBaseModeByValue } from "./diaryHelper";
 import i18next from "i18next";
-import { UnprocessedUserInput } from "../types/diaryTypes";
+import { UserInputEntry } from "../types/diaryTypes";
 import { getLabelInputDetails, getLabelInputs } from "../survey/multilabel/confirmHelper";
 import { getNotDeletedCandidates, getUniqueEntries } from "../survey/inputMatcher";
 
@@ -75,9 +75,9 @@ export function compositeTrips2TimelineMap(ctList: any[], unpackPlaces?: boolean
 
 /* 'LABELS' are 1:1 - each trip or place has a single label for each label type
   (e.g. 'MODE' and 'PURPOSE' for MULTILABEL configuration, or 'SURVEY' for ENKETO configuration) */
-export let unprocessedLabels: { [key: string]: UnprocessedUserInput[] } = {};
+export let unprocessedLabels: { [key: string]: UserInputEntry[] } = {};
 /* 'NOTES' are 1:n - each trip or place can have any number of notes */
-export let unprocessedNotes: UnprocessedUserInput[] = [];
+export let unprocessedNotes: UserInputEntry[] = [];
 
 const getUnprocessedInputQuery = (pipelineRange) => ({
   key: "write_ts",

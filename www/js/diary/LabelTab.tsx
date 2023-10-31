@@ -18,11 +18,10 @@ import LabelScreenDetails from "./details/LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { compositeTrips2TimelineMap, updateAllUnprocessedInputs, updateLocalUnprocessedInputs, unprocessedLabels, unprocessedNotes } from "./timelineHelper";
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
-import { LabelOption, getLabelOptions } from "../survey/multilabel/confirmHelper";
+import { getLabelOptions } from "../survey/multilabel/confirmHelper";
 import { displayError, logDebug } from "../plugin/logger";
 import { useTheme } from "react-native-paper";
 import { getPipelineRangeTs } from "../commHelper";
-import { UnprocessedUserInput } from "../types/diaryTypes";
 import { mapInputsToTimelineEntries } from "../survey/inputMatcher";
 import { configuredFilters as multilabelConfiguredFilters } from "../survey/multilabel/infinite_scroll_filters";
 import { configuredFilters as enketoConfiguredFilters } from "../survey/enketo/infinite_scroll_filters";
@@ -41,9 +40,9 @@ const LabelTab = () => {
   const [filterInputs, setFilterInputs] = useState([]);
   const [pipelineRange, setPipelineRange] = useState(null);
   const [queriedRange, setQueriedRange] = useState(null);
-  const [timelineMap, setTimelineMap] = useState<Map<string, any>>(null);
-  const [timelineLabelMap, setTimelineLabelMap] = useState<{[k: string]: {[k: string]: UnprocessedUserInput | LabelOption}}>(null);
-  const [timelineNotesMap, setTimelineNotesMap] = useState<{[k: string]: UnprocessedUserInput[]}>(null);
+  const [timelineMap, setTimelineMap] = useState<TimelineMap>(null);
+  const [timelineLabelMap, setTimelineLabelMap] = useState<TimelineLabelMap>(null);
+  const [timelineNotesMap, setTimelineNotesMap] = useState<TimelineNotesMap>(null);
   const [displayedEntries, setDisplayedEntries] = useState(null);
   const [refreshTime, setRefreshTime] = useState(null);
   const [isLoading, setIsLoading] = useState<string|false>('replace');
@@ -76,7 +75,7 @@ const LabelTab = () => {
   // update the displayedEntries according to the active filter
   useEffect(() => {
     if (!timelineMap) return setDisplayedEntries(null);
-    const allEntries = Array.from<any>(timelineMap.values());
+    const allEntries = Array.from(timelineMap.values());
     const [newTimelineLabelMap, newTimelineNotesMap] = mapInputsToTimelineEntries(
       allEntries,
       appConfig,

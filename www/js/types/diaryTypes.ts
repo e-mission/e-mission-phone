@@ -4,43 +4,72 @@
 
 import { BaseModeKey, MotionTypeKey } from "../diary/diaryHelper";
 
-type ConfirmedPlace = any; // TODO
+type ObjectId = { $oid: string };
+type ConfirmedPlace = {
+  _id: ObjectId;
+  additions: UserInputEntry[];
+  cleaned_place: ObjectId;
+  ending_trip: ObjectId;
+  enter_fmt_time: string; // ISO string 2023-10-31T12:00:00.000-04:00
+  enter_local_dt: LocalDt;
+  enter_ts: number; // Unix timestamp
+  key: string;
+  location: { type: string; coordinates: number[] };
+  origin_key: string;
+  raw_places: ObjectId[];
+  source: string;
+  user_input: {
+    /* for keys ending in 'user_input' (e.g. 'trip_user_input'), the server gives us the raw user
+      input object with 'data' and 'metadata' */
+    [k: `${string}user_input`]: UserInputEntry;
+    /* for keys ending in 'confirm' (e.g. 'mode_confirm'), the server just gives us the user input value
+      as a string (e.g. 'walk', 'drove_alone') */
+    [k: `${string}confirm`]: string;
+  };
+};
 
 /* These are the properties received from the server (basically matches Python code)
   This should match what Timeline.readAllCompositeTrips returns (an array of these objects) */
 export type CompositeTrip = {
-  _id: {$oid: string},
-  additions: any[], // TODO
+  _id: ObjectId,
+  additions: UserInputEntry[],
   cleaned_section_summary: SectionSummary,
-  cleaned_trip: {$oid: string},
+  cleaned_trip: ObjectId,
   confidence_threshold: number,
-  confirmed_trip: {$oid: string},
+  confirmed_trip: ObjectId,
   distance: number,
   duration: number,
   end_confirmed_place: ConfirmedPlace,
   end_fmt_time: string,
   end_loc: {type: string, coordinates: number[]},
   end_local_dt: LocalDt, 
-  end_place: {$oid: string},
+  end_place: ObjectId,
   end_ts: number,
   expectation: any, // TODO "{to_label: boolean}"
-  expected_trip: {$oid: string},
+  expected_trip: ObjectId,
   inferred_labels: any[], // TODO
   inferred_section_summary: SectionSummary,
-  inferred_trip: {$oid: string},
+  inferred_trip: ObjectId,
   key: string,
   locations: any[], // TODO
   origin_key: string,
-  raw_trip: {$oid: string},
+  raw_trip: ObjectId,
   sections: any[], // TODO
   source: string,
   start_confirmed_place: ConfirmedPlace,
   start_fmt_time: string,
   start_loc: {type: string, coordinates: number[]},
   start_local_dt: LocalDt, 
-  start_place: {$oid: string},
+  start_place: ObjectId,
   start_ts: number,
-  user_input: UnprocessedUserInput, 
+  user_input: {
+    /* for keys ending in 'user_input' (e.g. 'trip_user_input'), the server gives us the raw user
+      input object with 'data' and 'metadata' */
+    [k: `${string}user_input`]: UserInputEntry;
+    /* for keys ending in 'confirm' (e.g. 'mode_confirm'), the server just gives us the user input value
+      as a string (e.g. 'walk', 'drove_alone') */
+    [k: `${string}confirm`]: string;
+  };
 }
 
 /* The 'timeline' for a user is a list of their trips and places,
@@ -68,7 +97,7 @@ export type SectionSummary = {
   duration: {[k: MotionTypeKey | BaseModeKey]: number},
 }
 
-export type UnprocessedUserInput = {
+export type UserInputEntry = {
   data: {
       end_ts: number,
       start_ts: number

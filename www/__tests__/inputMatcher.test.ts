@@ -8,10 +8,10 @@ import {
     getAdditionsForTimelineEntry,
     getUniqueEntries
 } from '../js/survey/inputMatcher';
-import { CompositeTrip, TimelineEntry, UnprocessedUserInput } from '../js/types/diaryTypes';
+import { CompositeTrip, TimelineEntry, UserInputEntry } from '../js/types/diaryTypes';
 
 describe('input-matcher', () => {
-    let userTrip: UnprocessedUserInput;
+    let userTrip: UserInputEntry;
     let trip: TimelineEntry;
     let nextTrip: TimelineEntry;
 
