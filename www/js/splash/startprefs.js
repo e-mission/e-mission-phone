@@ -1,5 +1,6 @@
 import angular from 'angular';
 import { getConfig } from '../config/dynamicConfig';
+import { EVENT_NAMES, publish } from '../customEventHandler';
 import { storageGet, storageSet } from '../plugin/storage';
 
 angular.module('emission.splash.startprefs', ['emission.plugin.logger',
@@ -36,6 +37,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
           // mark in local variable as well
           $rootScope.curr_consented = angular.copy($rootScope.req_consent);
           $rootScope.$emit(startprefs.CONSENTED_EVENT, $rootScope.req_consent);
+          publish(EVENT_NAMES.CONSENTED_EVENT, $rootScope.req_consent);
       });
     };
 
@@ -43,6 +45,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       var currTime = moment().format();
       storageSet(INTRO_DONE_KEY, currTime);
       $rootScope.$emit(startprefs.INTRO_DONE_EVENT, currTime);
+      publish(EVENT_NAMES.INTRO_DONE_EVENT, currTime);
     }
 
     // returns boolean
