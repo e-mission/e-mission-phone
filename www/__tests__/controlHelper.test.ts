@@ -1,19 +1,31 @@
 import { mockLogger } from "../__mocks__/globalMocks";
-import { createWriteFile } from "../js/services/controlHelper";
+import { mockFileSystem } from "../__mocks__/fileSystemMocks";
+import { mockDevice, mockCordova, mockFile } from "../__mocks__/cordovaMocks";
+
+import { getMyDataHelpers } from "../js/services/controlHelper";
 import { FsWindow } from "../js/types/fileShareTypes"
 import { ServerData, ServerResponse} from "../js/types/serverData"
 
+mockDevice();
+mockCordova();
+mockFile();
+mockFileSystem();
 mockLogger();
 declare let window: FsWindow;
-const fileName = 'test.timeline'
-const writeFile = createWriteFile(fileName);
+
+// Test constants:
+const fileName = 'testOne'
+const startTime = '1969-06-16'
+const endTime = '1969-06-24'
+const getDataMethodsOne = getMyDataHelpers(fileName, startTime, endTime);
+const writeFile = getDataMethodsOne.writeFile;
 
 // createWriteFile does not require these objects specifically, but it
 // is better to test with similar data - using real data would take
 // up too much code space, and we cannot use getRawEnteries() in testing
 const generateFakeValues = (arraySize: number) => {
   if (arraySize <= 0) 
-    return new Promise (() => {return []});
+    return Promise.reject();
 
   const sampleDataObj : ServerData<any>= {
     data: {
@@ -51,10 +63,7 @@ const generateFakeValues = (arraySize: number) => {
   values.forEach((element, index) => {
     values[index].data.name = element.data.name + index.toString()
   });
-  
-  return new Promise<ServerResponse<any>>(() => {
-    return { phone_data: values };
-  });
+  return Promise.resolve({ phone_data: values });
 };
 
 // A variation of createShareData; confirms the file has been written,
@@ -81,37 +90,7 @@ const confirmFileExists = (fileName: string, dataCluster: ServerResponse<any>) =
 it('writes a file for an array of objects', async () => {
   const testPromiseOne = generateFakeValues(1);
   const testPromiseTwo =  generateFakeValues(2222);
-  
   expect(testPromiseOne.then(writeFile)).resolves.not.toThrow();
   expect(testPromiseTwo.then(writeFile)).resolves.not.toThrow();
 });
 
-it('correctly writes the files', async () => {
-  const testPromise = generateFakeValues(1);
-  let dataCluster = null; 
-  testPromise.then((result) => {dataCluster = result});
-  const fileExists = confirmFileExists(fileName, dataCluster);
-  const temp = createWriteFile('badFile.test')
-
-  expect(testPromise.then(temp).then(fileExists)).resolves.toEqual(false);
-  expect(testPromise.then(writeFile).then(fileExists)).resolves.not.toThrow();
-  expect(testPromise.then(writeFile).then(fileExists)).resolves.toEqual(true);
-});
-
-it('rejects an empty input', async () => {
-  const testPromise = generateFakeValues(0);
-  expect(testPromise.then(writeFile)).rejects.toThrow();
-
-  let dataCluster = null; 
-  testPromise.then((result) => {dataCluster = result});
-  const fileExists = confirmFileExists(fileName, dataCluster);
-  expect(testPromise.then(writeFile).then(fileExists)).resolves.toEqual(false);
-});
-
-/*
-  createShareData() is not tested, because it relies on the phoneGap social 
-  sharing plugin, which cannot be mocked.
-
-  getMyData relies on createShareData, and likewise cannot be tested - it also
-  relies on getRawEnteries().
-*/

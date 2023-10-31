@@ -10,7 +10,20 @@ export const mockFileSystem = () => {
               file: (handleFile) => {
                 let file = new File(["this is a mock"], "loggerDB");
                 handleFile(file);
-              }
+              },
+              nativeURL: 'file:///Users/Jest/test/URL/',
+              isFile: true,
+              createWriter: (handleWriter) => {
+                const mockFileWriter = {
+                  fileWriter: {
+                    write: (myObect) => {
+                      console.log(`Wrote: ${myObect}`)
+                    },
+                    onwriteend: () => {},
+                    onerror: (error) => { return error; }
+                  }
+                }
+              },
             }
             onSuccess(fileEntry);
           }
