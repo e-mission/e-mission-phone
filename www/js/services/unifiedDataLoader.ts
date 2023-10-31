@@ -42,7 +42,7 @@ export const combinedPromises = function(promiseList: Array<Promise<any>>,
       const checkAndResolve = function() {
         if (firstPromiseDone && nextPromiseDone) {
           if (firstError && nextError) {
-            reject([firstError, nextError]);
+            reject([firstError].concat(nextError));
           } else {
             logDebug(`About to dedup firstResult = ${firstResult.length}` +
               ` nextResult = ${nextResult.length}`);
