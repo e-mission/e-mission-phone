@@ -53,10 +53,11 @@ const LabelScreenDetails = ({ route, navigation }) => {
             style={{margin: 10, paddingHorizontal: 10, rowGap: 12, borderRadius: 15 }}>
             {/* MultiLabel or UserInput button, inline on one row */}
             <View style={{ paddingVertical: 10 }}>
-              {appConfig?.survey_info?.['trip-labels'] == 'ENKETO' ? (
+              {appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL' && (
+                <MultilabelButtonGroup trip={trip} />
+              )}
+              {appConfig?.survey_info?.['trip-labels'] == 'ENKETO' && (
                 <UserInputButton timelineEntry={trip} />
-              ) : (
-                <MultilabelButtonGroup trip={trip} buttonsInline={true} />
               )}
             </View>
 
