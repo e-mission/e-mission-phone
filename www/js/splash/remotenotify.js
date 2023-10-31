@@ -41,37 +41,68 @@ angular.module('emission.splash.remotenotify', ['emission.plugin.logger'])
       });
     }
 
-    remoteNotify.init = function() {
-      $rootScope.$on('cloud:push:notification', function(event, data) {
-        addStatEvent(statKeys.NOTIFICATION_OPEN).then(() => {
-          console.log("Added "+statKeys.NOTIFICATION_OPEN+" event. Data = " + JSON.stringify(data));
-        });
-        Logger.log("data = "+JSON.stringify(data));
-        if (angular.isDefined(data.additionalData) &&
-            angular.isDefined(data.additionalData.payload) &&
-            angular.isDefined(data.additionalData.payload.alert_type)) {
-            if(data.additionalData.payload.alert_type == "website") {
-                var webpage_spec = data.additionalData.payload.spec;
-                if (angular.isDefined(webpage_spec) &&
-                    angular.isDefined(webpage_spec.url) &&
-                    webpage_spec.url.startsWith("https://")) {
-                    remoteNotify.launchWebpage(webpage_spec.url);
-                } else {
-                    $ionicPopup.alert("webpage was not specified correctly. spec is "+JSON.stringify(webpage_spec));
-                }
-            }
-            if(data.additionalData.payload.alert_type == "popup") {
-                var popup_spec = data.additionalData.payload.spec;
-                if (angular.isDefined(popup_spec) &&
-                    angular.isDefined(popup_spec.title) &&
-                    angular.isDefined(popup_spec.text)) {
-                    remoteNotify.launchPopup(popup_spec.title, popup_spec.text);
-                } else {
-                    $ionicPopup.alert("webpage was not specified correctly. spec is "+JSON.stringify(popup_spec));
-                }
-            }
-        }
+    remoteNotify.onNotification = function(data) {
+      addStatEvent(statKeys.NOTIFICATION_OPEN).then(() => {
+        console.log("Added "+statKeys.NOTIFICATION_OPEN+" event. Data = " + JSON.stringify(data));
       });
+      Logger.log("data = "+JSON.stringify(data));
+      if (angular.isDefined(data.additionalData) &&
+          angular.isDefined(data.additionalData.payload) &&
+          angular.isDefined(data.additionalData.payload.alert_type)) {
+          if(data.additionalData.payload.alert_type == "website") {
+              var webpage_spec = data.additionalData.payload.spec;
+              if (angular.isDefined(webpage_spec) &&
+                  angular.isDefined(webpage_spec.url) &&
+                  webpage_spec.url.startsWith("https://")) {
+                  remoteNotify.launchWebpage(webpage_spec.url);
+              } else {
+                  $ionicPopup.alert("webpage was not specified correctly. spec is "+JSON.stringify(webpage_spec));
+              }
+          }
+          if(data.additionalData.payload.alert_type == "popup") {
+              var popup_spec = data.additionalData.payload.spec;
+              if (angular.isDefined(popup_spec) &&
+                  angular.isDefined(popup_spec.title) &&
+                  angular.isDefined(popup_spec.text)) {
+                  remoteNotify.launchPopup(popup_spec.title, popup_spec.text);
+              } else {
+                  $ionicPopup.alert("webpage was not specified correctly. spec is "+JSON.stringify(popup_spec));
+              }
+          }
+      }
+    }
+
+    remoteNotify.init = function() {
+      // $rootScope.$on('cloud:push:notification', function(event, data) {
+      //   addStatEvent(statKeys.NOTIFICATION_OPEN).then(() => {
+      //     console.log("Added "+statKeys.NOTIFICATION_OPEN+" event. Data = " + JSON.stringify(data));
+      //   });
+      //   Logger.log("data = "+JSON.stringify(data));
+      //   if (angular.isDefined(data.additionalData) &&
+      //       angular.isDefined(data.additionalData.payload) &&
+      //       angular.isDefined(data.additionalData.payload.alert_type)) {
+      //       if(data.additionalData.payload.alert_type == "website") {
+      //           var webpage_spec = data.additionalData.payload.spec;
+      //           if (angular.isDefined(webpage_spec) &&
+      //               angular.isDefined(webpage_spec.url) &&
+      //               webpage_spec.url.startsWith("https://")) {
+      //               remoteNotify.launchWebpage(webpage_spec.url);
+      //           } else {
+      //               $ionicPopup.alert("webpage was not specified correctly. spec is "+JSON.stringify(webpage_spec));
+      //           }
+      //       }
+      //       if(data.additionalData.payload.alert_type == "popup") {
+      //           var popup_spec = data.additionalData.payload.spec;
+      //           if (angular.isDefined(popup_spec) &&
+      //               angular.isDefined(popup_spec.title) &&
+      //               angular.isDefined(popup_spec.text)) {
+      //               remoteNotify.launchPopup(popup_spec.title, popup_spec.text);
+      //           } else {
+      //               $ionicPopup.alert("webpage was not specified correctly. spec is "+JSON.stringify(popup_spec));
+      //           }
+      //       }
+      //   }
+      // });
     }
 
     remoteNotify.init();

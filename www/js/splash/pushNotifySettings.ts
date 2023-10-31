@@ -13,13 +13,11 @@
  * notification handling gets more complex, we should consider decoupling it as well.
  */
 
+import { getAngularService } from '../angular-react-helper';
 import { updateUser } from '../commHelper';
 import { logDebug, displayError } from '../plugin/logger';
-import { subscribe, publish } from './notificationCenter';
 
 let push = null;
-const CLOUD_NOTIFICATION_EVENT = 'cloud:push:notification';
-let handlerRegistered;
 
 const startupInit = function () {
   push = window['PushNotification'].init({
@@ -51,7 +49,10 @@ const startupInit = function () {
         logDebug("No additional data defined, nothing to parse");
       }
     }
-    publish(CLOUD_NOTIFICATION_EVENT, data);
+    //handle the notifucation in pushNotify and remoteNotify
+    const RemoteNotify = getAngularService("RemoteNotify");
+    RemoteNotify.onNotification(data);
+    pushNotification(data);
   });
 }
 
@@ -74,9 +75,7 @@ const registerPromise = function () {
 }
 
 export const registerPush = function () {
-  //register the handler -- executes the first time
-  //working around no longer using the angular platform ready
-  registerNotificationHandler();
+  console.log("register push is called");
   registerPromise().then(function (t) {
     // alert("Token = "+JSON.stringify(t));
     logDebug("Token = " + JSON.stringify(t));
@@ -101,7 +100,7 @@ export const registerPush = function () {
   });
 }
 
-var redirectSilentPush = function (event, data) {
+const redirectSilentPush = function (data) {
   logDebug("Found silent push notification, for platform " + window['cordova'].platformId);
   if (window['cordova'].platformId != 'ios') {
     logDebug("Platform is not ios, handleSilentPush is not implemented or needed");
@@ -133,7 +132,7 @@ var redirectSilentPush = function (event, data) {
     });
 }
 
-var showDebugLocalNotification = function (message) {
+const showDebugLocalNotification = function (message) {
   window['cordova'].plugins.BEMDataCollection.getConfig().then(function (config) {
     if (config.simulate_user_interaction) {
       window['cordova'].plugins.notification.local.schedule({
@@ -147,15 +146,9 @@ var showDebugLocalNotification = function (message) {
   });
 }
 
-const registerNotificationHandler = function () {
-  //in order to prevent double - registration
-  if (!handlerRegistered) {
-    handlerRegistered = true;
-    subscribe(CLOUD_NOTIFICATION_EVENT, 'pushNotification', function (event, data) {
-      logDebug("data = " + JSON.stringify(data));
+const pushNotification = function(data) {
+  logDebug("data = " + JSON.stringify(data));
       if (data.additionalData["content-available"] == 1) {
-        redirectSilentPush(event, data);
+        redirectSilentPush(data);
       }; // else no need to call finish
-    });
-  }
-};
+}
