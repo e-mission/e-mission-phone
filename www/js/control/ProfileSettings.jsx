@@ -25,6 +25,7 @@ import { AppContext } from "../App";
 import { shareQR } from "../components/QrCode";
 import { storageClear } from "../plugin/storage";
 import { getAppVersion } from "../plugin/clientStats";
+import { useSchedulerHelper } from "../splash/notifScheduler";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -33,6 +34,7 @@ const ProfileSettings = () => {
     const appConfig = useAppConfig();
     const { colors } = useTheme();
     const { setPermissionsPopupVis } = useContext(AppContext);
+    const schedulerHelper = useSchedulerHelper();
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
@@ -173,13 +175,13 @@ const ProfileSettings = () => {
         const newNotificationSettings ={};
 
         if (uiConfig?.reminderSchemes) {
-            const prefs = await  NotificationScheduler.getReminderPrefs();
+            const prefs = await schedulerHelper.getReminderPrefs();
             const m = moment(prefs.reminder_time_of_day, 'HH:mm');
             newNotificationSettings.prefReminderTimeVal = m.toDate();
             const n = moment(newNotificationSettings.prefReminderTimeVal);
             newNotificationSettings.prefReminderTime = n.format('LT');
             newNotificationSettings.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
-            newNotificationSettings.scheduledNotifs = await NotificationScheduler.getScheduledNotifs();
+            newNotificationSettings.scheduledNotifs = await schedulerHelper.getScheduledNotifs();
             updatePrefReminderTime(false);
         }
 
@@ -243,7 +245,7 @@ const ProfileSettings = () => {
         if(storeNewVal){
             const m = moment(newTime);
             // store in HH:mm
-            NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }).then(() => {
+            schedulerHelper.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }).then(() => {
                 refreshNotificationSettings();
             }); 
         }
