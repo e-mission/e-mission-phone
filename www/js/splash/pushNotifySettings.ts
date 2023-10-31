@@ -19,6 +19,10 @@ import { logDebug, displayError } from '../plugin/logger';
 
 let push = null;
 
+/**
+ * @function initializes the PushNotification in window,
+ * assigns on 'notification' functionality
+ */
 const startupInit = function () {
   push = window['PushNotification'].init({
     "ios": {
@@ -56,6 +60,12 @@ const startupInit = function () {
   });
 }
 
+/**
+ * @function registers notifications and handles result
+ * @returns Promise for initialization logic, 
+ * resolves on registration with token 
+ * rejects on error with error
+ */
 const registerPromise = function () {
   return new Promise(function (resolve, reject) {
     startupInit();
@@ -74,6 +84,10 @@ const registerPromise = function () {
   });
 }
 
+/**
+ * @function registers for notifications and updates user
+ * currently called on reconsent and on intro done
+ */
 export const registerPush = function () {
   console.log("register push is called");
   registerPromise().then(function (t) {
@@ -100,6 +114,12 @@ export const registerPush = function () {
   });
 }
 
+/**
+ * @function handles silent push notifications
+ * works with BEMDataCollection plugin
+ * @param data from the notification
+ * @returns early if platform is not ios
+ */
 const redirectSilentPush = function (data) {
   logDebug("Found silent push notification, for platform " + window['cordova'].platformId);
   if (window['cordova'].platformId != 'ios') {
@@ -132,6 +152,10 @@ const redirectSilentPush = function (data) {
     });
 }
 
+/**
+ * @function shows debug notifications if simulating user interaction
+ * @param message string to display in the degug notif
+ */
 const showDebugLocalNotification = function (message) {
   window['cordova'].plugins.BEMDataCollection.getConfig().then(function (config) {
     if (config.simulate_user_interaction) {
@@ -146,9 +170,13 @@ const showDebugLocalNotification = function (message) {
   });
 }
 
-const pushNotification = function(data) {
+/**
+ * @function handles pushNotification intitially
+ * @param data from the notification
+ */
+const pushNotification = function (data) {
   logDebug("data = " + JSON.stringify(data));
-      if (data.additionalData["content-available"] == 1) {
-        redirectSilentPush(data);
-      }; // else no need to call finish
+  if (data.additionalData["content-available"] == 1) {
+    redirectSilentPush(data);
+  }; // else no need to call finish
 }
