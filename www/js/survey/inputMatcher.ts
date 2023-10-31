@@ -1,7 +1,7 @@
 import { logDebug, displayErrorMsg } from "../plugin/logger"
 import { DateTime } from "luxon";
 import { CompositeTrip, TimelineEntry, UnprocessedUserInput } from "../types/diaryTypes";
-import { unprocessedLabels, unprocessedNotes } from "../diary/timelineHelper";
+import { keysForLabelInputs, unprocessedLabels, unprocessedNotes } from "../diary/timelineHelper";
 import { LabelOption, MultilabelKey, getLabelInputDetails, getLabelInputs, getLabelOptions, inputType2retKey, labelKeyToRichMode, labelOptions } from "./multilabel/confirmHelper";
 
 const EPOCH_MAXIMUM = 2**31 - 1;
@@ -232,6 +232,15 @@ export function mapInputsToTimelineEntries(allEntries: TimelineEntry[], appConfi
       );
       if (userInputForTrip) {
         timelineLabelMap[tlEntry._id.$oid] = { SURVEY: userInputForTrip };
+      } else {
+        let processedSurveyResponse;
+        for (const key of keysForLabelInputs(appConfig)) {
+          if (tlEntry.user_input?.[key]) {
+            processedSurveyResponse = tlEntry.user_input[key];
+            break;
+          }
+        }
+        timelineLabelMap[tlEntry._id.$oid] = { SURVEY: processedSurveyResponse };
       }
     } else {
       // MULTILABEL configuration: use the label inputs from the labelOptions to determine which
@@ -263,10 +272,18 @@ export function mapInputsToTimelineEntries(allEntries: TimelineEntry[], appConfi
   ) {
     // trip-level or place-level notes are configured, so we need to match additions too
     allEntries.forEach((tlEntry, i) => {
+      /* With additions/notes, we can have multiple entries for a single trip or place.
+        So, we will read both the processed additions and unprocessed additions
+        and merge them together, removing duplicates. */
       const nextEntry = i + 1 < allEntries.length ? allEntries[i + 1] : null;
-      const additionsForTrip = getAdditionsForTimelineEntry(tlEntry, nextEntry, unprocessedNotes);
-      if (additionsForTrip?.length) {
-        timelineNotesMap[tlEntry._id.$oid] = additionsForTrip;
+      const unprocessedAdditions = getAdditionsForTimelineEntry(tlEntry, nextEntry, unprocessedNotes);
+      const processedAdditions = tlEntry.additions || [];
+
+      const mergedAdditions = getUniqueEntries(
+        getNotDeletedCandidates([...unprocessedAdditions, ...processedAdditions]),
+      );
+      if (mergedAdditions?.length) {
+        timelineNotesMap[tlEntry._id.$oid] = mergedAdditions;
       }
     });
   }

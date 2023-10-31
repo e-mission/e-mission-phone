@@ -99,7 +99,9 @@ function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
     });
     // merge the notes we just read into the existing unprocessedNotes, removing duplicates
     const combinedNotes = [...unprocessedNotes, ...notesResults];
-    unprocessedNotes = getUniqueEntries(getNotDeletedCandidates(combinedNotes));
+    unprocessedNotes = combinedNotes.filter((note, i, self) =>
+      self.findIndex(n => n.metadata.write_ts == note.metadata.write_ts) == i
+    );
   });
 }
 
@@ -143,7 +145,7 @@ export async function updateAllUnprocessedInputs(pipelineRange, appConfig) {
   await updateUnprocessedInputs(labelsPromises, notesPromises, appConfig);
 }
 
-function keysForLabelInputs(appConfig) {
+export function keysForLabelInputs(appConfig) {
   if (appConfig.survey_info?.['trip-labels'] == 'ENKETO') {
     return ['manual/trip_user_input'];
   } else {
