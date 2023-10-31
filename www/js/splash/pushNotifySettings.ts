@@ -17,7 +17,8 @@ import angular from 'angular';
 import { updateUser } from '../commHelper';
 import { logDebug, displayError } from '../plugin/logger';
 import { publish, subscribe, EVENT_NAMES } from '../customEventHandler';
-import { getAngularService } from '../angular-react-helper';
+import { isConsented, readConsentState } from './startprefs';
+import { readIntroDone } from '../onboarding/onboardingHelper';
 
 let push = null;
 
@@ -187,13 +188,14 @@ const onCloudEvent = function (event, data) {
  * @param data data from the conesnt event
  */
 const onConsentEvent = function (event, data) {
-  const StartPrefs = getAngularService('StartPrefs');
   console.log("got consented event " + JSON.stringify(event['name'])
     + " with data " + JSON.stringify(data));
-  if (StartPrefs.isIntroDone()) {
-    console.log("intro is done -> reconsent situation, we already have a token -> register");
-    registerPush();
-  }
+  readIntroDone().then((isIntroDone) => {
+    if (isIntroDone) {
+      console.log("intro is done -> reconsent situation, we already have a token -> register");
+      registerPush();
+    }
+  })
 }
 
 /**
@@ -211,9 +213,8 @@ const onIntroEvent = function (event, data) {
  * @function registers push if consented, subscribes event listeners for local handline
  */
 export const initPushNotify = function () {
-  const StartPrefs = getAngularService('StartPrefs');
-  StartPrefs.readConsentState()
-    .then(StartPrefs.isConsented)
+  readConsentState()
+    .then(isConsented)
     .then(function (consentState) {
       if (consentState == true) {
         registerPush();
