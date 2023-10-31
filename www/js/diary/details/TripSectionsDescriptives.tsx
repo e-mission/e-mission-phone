@@ -4,7 +4,7 @@ import { Text, useTheme } from 'react-native-paper'
 import { Icon } from '../../components/Icon';
 import useDerivedProperties from '../useDerivedProperties';
 import { getBaseModeByKey, getBaseModeByValue } from '../diaryHelper';
-import { LabelTabContext } from '../LabelTab';
+import LabelTabContext from '../LabelTabContext';
 
 const TripSectionsDescriptives = ({ trip, showLabeledMode=false }) => {
 

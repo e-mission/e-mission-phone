@@ -26,11 +26,11 @@ import { UnprocessedUserInput } from "../types/diaryTypes";
 import { mapInputsToTimelineEntries } from "../survey/inputMatcher";
 import { configuredFilters as multilabelConfiguredFilters } from "../survey/multilabel/infinite_scroll_filters";
 import { configuredFilters as enketoConfiguredFilters } from "../survey/enketo/infinite_scroll_filters";
+import LabelTabContext, { TimelineLabelMap, TimelineMap, TimelineNotesMap } from "./LabelTabContext";
 
 let showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
 const ONE_WEEK = ONE_DAY * 7; // seconds
-export const LabelTabContext = React.createContext<any>(null);
 
 const LabelTab = () => {
   const appConfig = useAppConfig();

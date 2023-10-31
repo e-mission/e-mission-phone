@@ -11,7 +11,7 @@ import React, { useEffect, useState, useContext } from "react";
 import DiaryButton from "../../components/DiaryButton";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
-import { LabelTabContext } from "../../diary/LabelTab";
+import LabelTabContext from "../../diary/LabelTabContext";
 import EnketoModal from "./EnketoModal";
 import { displayErrorMsg, logDebug } from "../../plugin/logger";
 

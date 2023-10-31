@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "react-native-paper";
 import { displayErrorMsg, logDebug } from "../../plugin/logger";
 import EnketoModal from "./EnketoModal";
-import { LabelTabContext } from "../../diary/LabelTab";
+import LabelTabContext from "../../diary/LabelTabContext";
 
 type Props = {
   timelineEntry: any,

@@ -17,7 +17,7 @@ import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useAddressNames } from "../addressNamesHelper";
 import useDerivedProperties from "../useDerivedProperties";
 import StartEndLocations from "../components/StartEndLocations";
-import { LabelTabContext } from "../LabelTab";
+import LabelTabContext from '../LabelTabContext';
 
 type Props = { place: {[key: string]: any} };
 const PlaceCard = ({ place }: Props) => {

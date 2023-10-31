@@ -18,7 +18,7 @@ import { getTheme } from "../../appTheme";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useNavigation } from "@react-navigation/native";
 import { useAddressNames } from "../addressNamesHelper";
-import { LabelTabContext } from "../LabelTab";
+import LabelTabContext from '../LabelTabContext';
 import useDerivedProperties from "../useDerivedProperties";
 import StartEndLocations from "../components/StartEndLocations";
 import ModesIndicator from "./ModesIndicator";

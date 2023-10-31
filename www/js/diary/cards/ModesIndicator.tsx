@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
 import color from "color";
-import { LabelTabContext } from '../LabelTab';
+import LabelTabContext from '../LabelTabContext';
 import { logDebug } from '../../plugin/logger';
 import { getBaseModeByValue } from '../diaryHelper';
 import { Icon } from '../../components/Icon';

@@ -8,7 +8,7 @@ import { View, Modal, ScrollView, Pressable, useWindowDimensions } from "react-n
 import { IconButton, Text, Dialog, useTheme, RadioButton, Button, TextInput } from "react-native-paper";
 import DiaryButton from "../../components/DiaryButton";
 import { useTranslation } from "react-i18next";
-import { LabelTabContext } from "../../diary/LabelTab";
+import LabelTabContext from "../../diary/LabelTabContext";
 import { displayErrorMsg, logDebug } from "../../plugin/logger";
 import { getLabelInputDetails, getLabelInputs, inferFinalLabels, labelInputDetailsForTrip, labelKeyToRichMode, readableLabelToKey, verifiabilityForTrip } from "./confirmHelper";
 import useAppConfig from "../../useAppConfig";

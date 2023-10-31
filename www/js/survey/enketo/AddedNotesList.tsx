@@ -6,7 +6,7 @@ import React, { useContext, useState } from "react";
 import moment from "moment";
 import { Modal } from "react-native"
 import { Text, Button, DataTable, Dialog } from "react-native-paper";
-import { LabelTabContext } from "../../diary/LabelTab";
+import LabelTabContext from "../../diary/LabelTabContext";
 import { getFormattedDateAbbr, isMultiDay } from "../../diary/diaryHelper";
 import { Icon } from "../../components/Icon";
 import EnketoModal from "./EnketoModal";
