@@ -22,3 +22,8 @@ export const clearNotifMock = function () {
 export const getOnList = function () {
   return onList;
 }
+
+export const fakeEvent = function (eventName : string) {
+  //fake the event by executing whatever we have stored for it
+  onList[eventName]();
+}
