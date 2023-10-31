@@ -13,6 +13,12 @@
 
 import { logDebug } from './plugin/logger';
 
+export const EVENT_NAMES = {
+  CLOUD_NOTIFICATION_EVENT: 'cloud:push:notification',
+  CONSENTED_EVENT: "data_collection_consented",
+  INTRO_DONE_EVENT: "intro_done",
+}
+
 export function subscribe(eventName: string, listener) {
   logDebug("adding " + eventName + " listener");
   document.addEventListener(eventName, listener);

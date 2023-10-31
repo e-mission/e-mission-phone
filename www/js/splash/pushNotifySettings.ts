@@ -180,8 +180,8 @@ const initPushNotify = function () {
     });
 
   subscribe(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, (event) => onCloudEvent(event, event['detail'].data));
-  subscribe(StartPrefs.CONSENTED_EVENT, (event) => onConsentEvent(event, event['detail'].data));
-  subscribe(StartPrefs.INTRO_DONE_EVENT, (event) => onIntroEvent(event, event['detail'].data));
+  subscribe(EVENT_NAMES.CONSENTED_EVENT, (event) => onConsentEvent(event, event['detail'].data));
+  subscribe(EVENT_NAMES.INTRO_DONE_EVENT, (event) => onIntroEvent(event, event['detail'].data));
 
   logDebug("pushnotify startup done");
 }
