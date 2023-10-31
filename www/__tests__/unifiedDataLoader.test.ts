@@ -51,7 +51,7 @@ const promiseGenerator = (values: Array<ServerData<any>>) => {
 };
 const badPromiseGenerator = (input: string) => {
   return Promise.reject(input);
-}
+};
 
 it('throws an error on an empty input', async () => {
   expect(() => {
@@ -61,11 +61,25 @@ it('throws an error on an empty input', async () => {
 
 it('catches when all promises fails', async () => {
   expect(combinedPromises([badPromiseGenerator('')], combineWithDedup)).rejects.toEqual(['']);
-  expect(combinedPromises([badPromiseGenerator('bad'), badPromiseGenerator('promise')], combineWithDedup)).rejects.toEqual(['bad','promise']);
-  expect(combinedPromises([badPromiseGenerator('very'), badPromiseGenerator('bad'), badPromiseGenerator('promise')], combineWithDedup)).rejects.toEqual(['very','bad','promise']);
+  expect(
+    combinedPromises(
+      [badPromiseGenerator('bad'), badPromiseGenerator('promise')],
+      combineWithDedup,
+    ),
+  ).rejects.toEqual(['bad', 'promise']);
+  expect(
+    combinedPromises(
+      [badPromiseGenerator('very'), badPromiseGenerator('bad'), badPromiseGenerator('promise')],
+      combineWithDedup,
+    ),
+  ).rejects.toEqual(['very', 'bad', 'promise']);
 
-  expect(combinedPromises([badPromiseGenerator('bad'), promiseGenerator([testOne])], combineWithDedup)).resolves.toEqual([testOne]);
-  expect(combinedPromises([promiseGenerator([testOne]), badPromiseGenerator('bad')], combineWithDedup)).resolves.toEqual([testOne]);
+  expect(
+    combinedPromises([badPromiseGenerator('bad'), promiseGenerator([testOne])], combineWithDedup),
+  ).resolves.toEqual([testOne]);
+  expect(
+    combinedPromises([promiseGenerator([testOne]), badPromiseGenerator('bad')], combineWithDedup),
+  ).resolves.toEqual([testOne]);
 });
 
 it('work with arrays of len 1', async () => {
