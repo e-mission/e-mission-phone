@@ -1,25 +1,20 @@
 import { DateTime } from "luxon";
 
 import { getRawEntries } from "./commHelper";
-import { logInfo, displayError, logDebug } from "../plugin/logger";
+import { logInfo, displayError, logDebug, logWarn } from "../plugin/logger";
 import { FsWindow } from "../types/fileShareTypes"
 import { ServerResponse} from "../types/serverData";
 import i18next from "../i18nextInit" ;
 
 declare let window: FsWindow;
 
-/**
- * createWriteFile is a factory method for the JSON dump file creation
- * @param fileName is the name of the file to be created
- * @returns a function that returns a promise, which writes the file upon evaluation.
- */
-export const createWriteFile = function (fileName: string) {
-  return function(result: ServerResponse<any>) {
+export const getMyDataHelpers = function(fileName: string, startTimeString: string, endTimeString: string) {
+  const localWriteFile = function (result: ServerResponse<any>) {
     const resultList = result.phone_data;
       return new Promise<void>(function(resolve, reject) {
-        window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
+        window['resolveLocalFileSystemURL'](window['cordova'].file.tempDirectory, function(fs) {
           logDebug(`file system open: ${fs.name}`);
-          fs.root.getFile(fileName, { create: true, exclusive: false }, function (fileEntry) {
+          fs.filesystem.root.getFile(fileName, { create: true, exclusive: false }, function (fileEntry) {
             logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`)
             fileEntry.createWriter(function (fileWriter) {
               fileWriter.onwriteend = function() {
@@ -39,21 +34,13 @@ export const createWriteFile = function (fileName: string) {
           });
         });
     });
-}};
+  };
 
-/**
- * createShareData returns a shareData method, with the input parameters captured.
- * @param fileName is the existing file to be sent
- * @param startTimeString timestamp used to identify the file
- * @param endTimeString " "
- * @returns a function which returns a promise, which shares an existing file upon evaluation.
- */
-export const createShareData = function(fileName: string, startTimeString: string, endTimeString: string) {
-  return function() {
+  const localShareData = function () {
     return new Promise<void>(function(resolve, reject) {
-    window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
-      logDebug(`During email, file system open: ${fs.name}`);
-      fs.root.getFile(fileName, null, function(fileEntry) {
+    window['resolveLocalFileSystemURL'](window['cordova'].file.tempDirectory, function(fs) {
+      logDebug(`During share, file system open: ${fs.name}`);
+      fs.filesystem.root.getFile(fileName, null, function(fileEntry) {
         logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
         fileEntry.file(function(file) {
           const reader = new FileReader();
@@ -64,12 +51,12 @@ export const createShareData = function(fileName: string, startTimeString: strin
             const dataArray = JSON.parse(readResult);
             logDebug(`Successfully read resultList of size ${dataArray.length}`);
             let attachFile = fileEntry.nativeURL;
-            const email = {
+            const shareObj = {
               'files': [attachFile],
               'message': i18next.t("email-service.email-data.body-data-consists-of-list-of-entries"),
-              'subject': i18next.t("email-service.email-data.subject-data-dump-from-to", {start: startTimeString ,end: endTimeString}),
+              'subject': i18next.t("email-service.email-data.subject-data-dump-from-to", {start: startTimeString, end: endTimeString}),
             }
-            window['plugins'].socialsharing.shareWithOptions(email, function (result) {
+            window['plugins'].socialsharing.shareWithOptions(shareObj, function (result) {
               logDebug(`Share Completed? ${result.completed}`); // On Android, most likely returns false
               logDebug(`Shared to app:  ${result.app}`);
               resolve();
@@ -81,11 +68,38 @@ export const createShareData = function(fileName: string, startTimeString: strin
         }, function(error) {
           displayError(error, "Error while downloading JSON dump");
           reject(error);
-        })                        
+        });
+        
       });
     });
+  })
+  };
+
+  // window['cordova'].file.TempDirectory is not guaranteed to free up memory,
+  // so it's good practice to remove the file right after it's used!
+  const localClearData = function() {
+    return new Promise<void>(function(resolve, reject) {
+      window['resolveLocalFileSystemURL'](window['cordova'].file.tempDirectory, function(fs) {
+        fs.filesystem.root.getFile(fileName, null, function(fileEntry) {
+          fileEntry.remove(() => {
+            logDebug(`Successfully cleaned up file ${fileName}`);
+            resolve();
+          },
+          (err) => {
+            logWarn(`Error deleting ${fileName} : ${err}`);
+            reject(err);
+          });
+        });
+      });
     });
-}};
+  }
+
+  return {
+    writeFile: localWriteFile,
+    shareData: localShareData,
+    clearData: localClearData,
+  };
+}
 
 /**
  * getMyData fetches timeline data for a given day, and then gives the user a prompt to share the data
@@ -104,17 +118,17 @@ export const getMyData = function(timeStamp: Date) {
       + ".timeline";
       alert(`Going to retrieve data to ${dumpFile}`);
 
-    const writeDumpFile = createWriteFile(dumpFile);
-    const shareData = createShareData(dumpFile, startTimeString, endTimeString);
+    const getDataMethods = getMyDataHelpers(dumpFile, startTimeString, endTimeString);
 
     getRawEntries(null, startTime.toUnixInteger(), endTime.toUnixInteger())
-      .then(writeDumpFile)
-      .then(shareData)
+      .then(getDataMethods.writeFile)
+      .then(getDataMethods.shareData)
+      .then(getDataMethods.clearData)
       .then(function() {
-          logInfo("Email queued successfully");
+          logInfo("Share queued successfully");
       })
       .catch(function(error) {
-          displayError(error, "Error emailing JSON dump");
+          displayError(error, "Error sharing JSON dump");
       })
 };
 

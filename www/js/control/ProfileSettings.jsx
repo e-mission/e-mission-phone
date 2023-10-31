@@ -25,7 +25,7 @@ import { AppContext } from "../App";
 import { shareQR } from "../components/QrCode";
 import { storageClear } from "../plugin/storage";
 import { getAppVersion } from "../plugin/clientStats";
-import { fetchOPCode, getSettings } from "../controlHelper";
+import { fetchOPCode, getSettings } from "../services/controlHelper";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
