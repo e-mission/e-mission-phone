@@ -13,7 +13,6 @@ export const getMyDataHelpers = function(fileName: string, startTimeString: stri
     const resultList = result.phone_data;
       return new Promise<void>(function(resolve, reject) {
         window['resolveLocalFileSystemURL'](window['cordova'].file.tempDirectory, function(fs) {
-          logDebug(`file system open: ${fs.name}`);
           fs.filesystem.root.getFile(fileName, { create: true, exclusive: false }, function (fileEntry) {
             logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`)
             fileEntry.createWriter(function (fileWriter) {
@@ -39,7 +38,6 @@ export const getMyDataHelpers = function(fileName: string, startTimeString: stri
   const localShareData = function () {
     return new Promise<void>(function(resolve, reject) {
     window['resolveLocalFileSystemURL'](window['cordova'].file.tempDirectory, function(fs) {
-      logDebug(`During share, file system open: ${fs.name}`);
       fs.filesystem.root.getFile(fileName, null, function(fileEntry) {
         logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
         fileEntry.file(function(file) {

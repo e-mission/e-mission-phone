@@ -13,19 +13,12 @@ mockFileSystem();
 mockLogger();
 declare let window: FsWindow;
 
-// Test constants:
-const fileName = 'testOne'
-const startTime = '1969-06-16'
-const endTime = '1969-06-24'
-const getDataMethodsOne = getMyDataHelpers(fileName, startTime, endTime);
-const writeFile = getDataMethodsOne.writeFile;
-
 // createWriteFile does not require these objects specifically, but it
 // is better to test with similar data - using real data would take
 // up too much code space, and we cannot use getRawEnteries() in testing
 const generateFakeValues = (arraySize: number) => {
   if (arraySize <= 0) 
-    return Promise.reject();
+    return Promise.reject('reject');
 
   const sampleDataObj : ServerData<any>= {
     data: {
@@ -87,10 +80,22 @@ const confirmFileExists = (fileName: string, dataCluster: ServerResponse<any>) =
   };
 };
 
+// Test constants:
+const fileName = 'testOne'
+const startTime = '1969-06-16'
+const endTime = '1969-06-24'
+const getDataMethodsOne = getMyDataHelpers(fileName, startTime, endTime);
+const writeFile = getDataMethodsOne.writeFile;
+
+const testPromiseOne = generateFakeValues(1);
+const testPromiseTwo =  generateFakeValues(2222);
+const badPromise = generateFakeValues(0);
+
 it('writes a file for an array of objects', async () => {
-  const testPromiseOne = generateFakeValues(1);
-  const testPromiseTwo =  generateFakeValues(2222);
   expect(testPromiseOne.then(writeFile)).resolves.not.toThrow();
   expect(testPromiseTwo.then(writeFile)).resolves.not.toThrow();
 });
 
+it('rejects an empty input', async () => {
+  expect(badPromise.then(writeFile)).rejects.toEqual('reject');
+});
