@@ -127,7 +127,9 @@ export const mockBEMDataCollection = () => {
     },
     getConfig: () => {
       return new Promise<any>((rs, rj) => {
-        rs({ 'ios_use_remote_push_for_sync': true });
+        setTimeout(() => {
+          rs({ 'ios_use_remote_push_for_sync': true });
+        }, 100)
       });
     },
     handleSilentPush: () => {
