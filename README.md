@@ -3,7 +3,9 @@ e-mission phone app
 
 This is the phone component of the e-mission system.
 
-:sparkles: This has now been upgraded to cordova android@9.0.0 and iOS@6.0.1 ([details](https://github.com/e-mission/e-mission-docs/issues/554)). It has also been upgraded to [android API 29](https://github.com/e-mission/e-mission-phone/pull/707/), [cordova-lib@10.0.0 and the most recent node and npm versions](https://github.com/e-mission/e-mission-phone/pull/708)It also now supports CI, so we should not have any build issues in the future. The limitations from the [previous upgrade](https://github.com/e-mission/e-mission-docs/issues/519) have all been resolved. This should be ready to build out of the box, after all the configuration files are changed.
+:sparkles: This has been upgraded to the latest **Android**, **iOS**, **cordova-lib**, **node** and **npm** versions. __This is ready to build out of the box.__
+
+The currently supported versions are in [`package.cordovabuild.json`](package.cordovabuild.json)
 
 Additional Documentation
 ---
@@ -11,6 +13,14 @@ Additional documentation has been moved to its own repository [e-mission-docs](h
 https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
 
 **Issues:** Since this repository is part of a larger project, all issues are tracked [in the central docs repository](https://github.com/e-mission/e-mission-docs/issues). If you have a question, [as suggested by the open source guide](https://opensource.guide/how-to-contribute/#communicating-effectively), please file an issue instead of sending an email. Since issues are public, other contributors can try to answer the question and benefit from the answer.
+
+## Contents
+#### 1. [Updating the UI only](#updating-the-ui-only)
+#### 2. [End to End Testing](#end-to-end-testing)   
+#### 3. [Updating the e-mission-* plugins or adding new plugins](#updating-the-e-mission--plugins-or-adding-new-plugins)
+#### 4. [Creating logos](#creating-logos) 
+#### 5. [Beta-testing debugging](#beta-testing-debugging) 
+#### 6. [Contributing](#contributing)
 
 Updating the UI only
 ---
@@ -23,22 +33,13 @@ If you want to make only UI changes, (as opposed to modifying the existing plugi
 Run the setup script
 
 ```
-$ bash setup/setup_serve.sh
-```
-
-**(optional)** Configure by changing the files in `www/json`.
-Defaults are in `www/json/*.sample`
-
-```
-$ ls www/json/*.sample
-$ cp www/json/startupConfig.json.sample www/json/startupConfig.json
-$ cp ..... www/json/connectionConfig.json
+bash setup/setup_serve.sh
 ```
 
 ### Activation (after install, and in every new shell)
 
 ```
-$ source setup/activate_serve.sh
+source setup/activate_serve.sh
 ```
   
 ### Running
@@ -46,7 +47,7 @@ $ source setup/activate_serve.sh
 1. Start the phonegap deployment server and note the URL(s) that the server is listening to.
 
     ```
-    $ npm run serve
+    npm run serve
     ....
     [phonegap] listening on 10.0.0.14:3000
     [phonegap] listening on 192.168.162.1:3000
@@ -56,7 +57,9 @@ $ source setup/activate_serve.sh
     ....
     ```
   
-1. Change the devapp connection URL to one of these (e.g. 192.168.162.1:3000) and press "Connect"
+1. Change the devapp connection URL and press "Connect"
+    - If you are running the devapp in an emulator on the same machine as the devapp server, you may simply use localhost, which would be `127.0.0.1:3000` on iOS and `10.0.2.2:3000` on Android.
+    - If you are running the devapp on a different device, you must type the address manually (e.g. `192.168.162.1:3000`). Note that this is a local IP address; the devices must be on the same network
 1. The app will now display the version of e-mission app that is in your local directory
   1. The console logs will be displayed back in the server window (prefaced by `[console]`)
   1. Breakpoints can be added by connecting through the browser
@@ -65,7 +68,7 @@ $ source setup/activate_serve.sh
     
 **Ta-da!** :gift: If you change any of the files in the `www` directory, the app will automatically be re-loaded without manually restarting either the server or the app :tada:
 
-**Note1**: You may need to scroll up, past all the warnings about `Content Security Policy has been added` to find the port that the server is listening to.
+**Note**: You may need to scroll up, past all the warnings about `Content Security Policy has been added` to find the port that the server is listening to.
 
 End to end testing
 ---
@@ -78,14 +81,15 @@ A lot of the visualizations that we display in the phone client come from the se
 
 are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
 
-In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode.  By default, the phone app connects to the local server (localhost on iOS, [10.0.2.2 on android](https://stackoverflow.com/questions/5806220/how-to-connect-to-my-http-localhost-web-server-from-android-emulator-in-eclips)) with the `prompted-auth` authentication method. To connect to a different server, or to use a different authentication method, you need to create a `www/json/connectionConfig.json` file. More details on configuring authentication [can be found in the docs](https://github.com/e-mission/e-mission-docs/blob/master/docs/install/configuring_authentication.md).
+The dynamic config (see https://github.com/e-mission/nrel-openpath-deploy-configs) controls the server endpoint that the phone app will connect to. If you are running the app in an emulator on the same machine as your local server (i.e. they share a `localhost`), you can use one of the `dev-emulator-*` configs (these configs have no `server` specified so `localhost` is assumed).
 
-One advantage of using `skip` authentication in development mode is that any user email can be entered without a password. Developers can use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
+If you wish to connect to a different server, create your own config file according to https://github.com/e-mission/nrel-openpath-deploy-configs and specify the `server` field accordingly. The [deploy-configs](https://github.com/e-mission/nrel-openpath-deploy-configs/#testing-configs) repo has more information on this. 
 
 Updating the e-mission-\* plugins or adding new plugins
 ---
 [![osx-build-ios](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml)
 [![osx-build-android](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml)
+[![osx-android-prereq-sdk-install](https://github.com/e-mission/e-mission-phone/actions/workflows/android-automated-sdk-install.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/android-automated-sdk-install.yml)
 
 Pre-requisites
 ---
@@ -97,7 +101,7 @@ Pre-requisites
 - Java 17. Tested with [OpenJDK 17 (Temurin) using Adoptium](https://adoptium.net).
 - android SDK; install manually or use setup script below. Note that you only need to run this once **per computer**.
     ```
-    $ bash setup/prereq_android_sdk_install.sh
+    bash setup/prereq_android_sdk_install.sh
     ```
 
     <details><summary>Expected output</summary>
@@ -142,27 +146,38 @@ Installing (one time only)
 Run the setup script for the platform you want to build
 
 ```
-$ bash setup/setup_android_native.sh
+bash setup/setup_android_native.sh
+```
 AND/OR
-$ bash setup/setup_ios_native.sh
 ```
-
-**(optional)** Configure by changing the files in `www/json`.
-Defaults are in `www/json/*.sample`
-
-```
-$ ls www/json/*.sample
-$ cp www/json/startupConfig.json.sample www/json/startupConfig.json
-$ cp ..... www/json/connectionConfig.json
+bash setup/setup_ios_native.sh
 ```
 
 ### Activation (after install, and in every new shell)
 
 ```
-$ source setup/activate_native.sh
+source setup/activate_native.sh
 ```
 
-### Activation (after install, and in every new shell)
+<details><summary> Expected Output </summary>
+
+``` 
+Activating nvm
+Using version <X version number>
+Now using node <X version number> (npm <Y version>)
+npm version = <Y version>
+Adding cocoapods to the path
+Verifying /Users/<username>/Library/Android/sk or /Users/<username>/Library/Android/sdk is set
+Activating sdkman, and by default, gradle
+Ensuring that we use the most recent version of the command line tools
+Configuring the repo for building native code
+Copied config.cordovabuild.xml -> config.xml and package.cordovabuild.json -> package.json
+```
+
+</details>
+
+
+### Enable HTTP support on android by editing `config.xml`
 
 If connecting to a development server over http, make sure to turn on http support on android
 
@@ -172,13 +187,28 @@ If connecting to a development server over http, make sure to turn on http suppo
     </edit-config>
 ```
 
-### Run in the emulator
+### Building the app
+
+We offer a set of build scripts to pick from, each of which: (i) bundle the JS with Webpack, and then (ii) proceed with a Cordova build.
+The common use cases will be:
+
+- `npm run build` (to build for production on both Android and iOS platforms)
+- `npm run build-prod-android` (to build for production on Android platform only)
+- `npm run build-prod-ios` (to build for production on iOS platform only)
+
+There are a variety of options because Webpack can bundle the JS in 'production' or 'dev' mode, and you can build Android or iOS or both.
+Find the full list of these scripts in [`package.cordovabuild.json`](package.cordovabuild.json)
+
+<details><summary>Expected output (Android build)</summary>
 
 ```
-$ npx cordova emulate ios
-AND/OR
-$ npx cordova emulate android
+BUILD SUCCESSFUL in 2m 48s
+52 actionable tasks: 52 executed
+Built the following apk(s):
+/Users/<Username>/e-mission-phone/platforms/android/app/build/outputs/apk/debug/app-debug.apk
 ```
+
+</details> 
 
 Creating logos
 ---
@@ -223,19 +253,19 @@ Contributing
 
 Add the main repo as upstream
 
-    $ git remote add upstream https://github.com/covid19database/phone-app.git
+    git remote add upstream https://github.com/e-mission/e-mission-phone.git
 
 Create a new branch (IMPORTANT). Please do not submit pull requests from master
 
-    $ git checkout -b mybranch
+    git checkout -b mybranch
 
 Make changes to the branch and commit them
 
-    $ git commit
+    git commit
 
 Push the changes to your local fork
 
-    $ git push origin mybranch
+    git push origin mybranch
 
 Generate a pull request from the UI
 
@@ -243,8 +273,14 @@ Address my review comments
 
 Once I merge the pull request, pull the changes to your fork and delete the branch
 ```
-$ git checkout master
-$ git pull upstream master
-$ git push origin master
-$ git branch -d mybranch
+git checkout master
+```
+```
+git pull upstream master
+```
+```
+git push origin master
+```
+```
+git branch -d <branch>
 ```

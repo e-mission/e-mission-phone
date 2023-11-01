@@ -42,7 +42,7 @@ const ProfileSettings = () => {
     const StartPrefs = getAngularService('StartPrefs');
 
     //functions that come directly from an Angular service
-    const editCollectionConfig = () => setEditCollection(true);
+    const editCollectionConfig = () => setEditCollectionVis(true);
     const editSyncConfig = () => setEditSync(true);
 
     //states and variables used to control/create the settings
@@ -61,7 +61,7 @@ const ProfileSettings = () => {
     const [showingSensed, setShowingSensed] = useState(false);
     const [showingLog, setShowingLog] = useState(false);
     const [editSync, setEditSync] = useState(false);
-    const [editCollection, setEditCollection] = useState(false);
+    const [editCollectionVis, setEditCollectionVis] = useState(false);
 
     // const [collectConfig, setCollectConfig] = useState({});
     const [collectSettings, setCollectSettings] = useState({});
@@ -160,8 +160,13 @@ const ProfileSettings = () => {
 
     //ensure ui table updated when editor closes
     useEffect(() => {
-        refreshCollectSettings();
-    }, [editCollection])
+        if(editCollectionVis == false) {
+            setTimeout(function() {
+                console.log("closed editor, time to refresh collect");
+                refreshCollectSettings();
+              }, 1000);
+        }
+    }, [editCollectionVis])
 
     async function refreshNotificationSettings() {
         console.debug('about to refreshNotificationSettings, notificationSettings = ', notificationSettings);
@@ -260,13 +265,15 @@ const ProfileSettings = () => {
 
     async function userStartStopTracking() {
         const transitionToForce = collectSettings.trackingOn ? 'STOP_TRACKING' : 'START_TRACKING';
-        forceTransition(transitionToForce);
+        await forceTransition(transitionToForce);
         refreshCollectSettings();
     }
 
-    async function toggleLowAccuracy() {
+    async function toggleLowAccuracy() {  
         let toggle = await helperToggleLowAccuracy();
-        refreshCollectSettings();
+        setTimeout(function() {
+            refreshCollectSettings();
+          }, 1500);
     }
 
     const viewQRCode = function(e) {
@@ -518,7 +525,7 @@ const ProfileSettings = () => {
             <LogPage pageVis={showingLog} setPageVis={setShowingLog}></LogPage>
 
             <ControlSyncHelper editVis={editSync} setEditVis={setEditSync}></ControlSyncHelper>
-            <ControlCollectionHelper editVis={editCollection} setEditVis={setEditCollection}></ControlCollectionHelper>
+            <ControlCollectionHelper editVis={editCollectionVis} setEditVis={setEditCollectionVis}></ControlCollectionHelper>
         
         </>
     );
