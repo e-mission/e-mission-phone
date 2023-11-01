@@ -30,7 +30,7 @@ export function unsubscribe(eventName: string, listener){
 }
 
 export function publish(eventName, data) {
-  logDebug("publishing " + eventName);
+  logDebug("publishing " + eventName + " with data " + JSON.stringify(data));
   const event = new CustomEvent(eventName, { detail: data });
   document.dispatchEvent(event);
 }
