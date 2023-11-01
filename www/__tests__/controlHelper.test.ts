@@ -51,33 +51,12 @@ const generateFakeValues = (arraySize: number) => {
     }
   };
 
-  // The parse/stringify lets us "deep copy" the objects, to quickly populate/change the data
+  // The parse/stringify lets us "deep copy" the objects, to quickly populate/change test data
   let values = Array.from({length: arraySize}, e => JSON.parse(JSON.stringify(sampleDataObj)));
   values.forEach((element, index) => {
     values[index].data.name = element.data.name + index.toString()
   });
   return Promise.resolve({ phone_data: values });
-};
-
-// A variation of createShareData; confirms the file has been written,
-// without calling the sharing components
-const confirmFileExists = (fileName: string, dataCluster: ServerResponse<any>) => {
-  return function() {
-    return new Promise(function() {
-      window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
-        fs.root.getFile(fileName, null, function(fileEntry) {
-          if (!fileEntry.isFile)
-            return fileEntry.isFile;
-          const reader = new FileReader();
-          reader.onloadend = function () {
-            const readResult = this.result as string;
-            const expectedResult = JSON.stringify(dataCluster);
-            return (readResult === expectedResult);
-          }
-        });
-      });
-    });
-  };
 };
 
 // Test constants:

@@ -24,7 +24,7 @@ export const getMyDataHelpers = function(fileName: string, startTimeString: stri
                 logDebug(`Failed file write: ${e.toString()}`);
                 reject();
               }
-
+              logDebug(`fileWriter is: ${JSON.stringify(fileWriter.onwriteend, null, 2)}`)
               // if data object is not passed in, create a new blob instead.
               const dataObj = new Blob([JSON.stringify(resultList, null, 2)],
                 { type: "application/json" });
