@@ -4,13 +4,13 @@ PROJECT=$1
 VERSION=$2
 
 if [[ $# -eq 0 ]]; then
-    echo "No arguments supplied"
+    echo "sign_and_align_keys <PROJECT> <VERSION>"
     exit 1
 fi
 
 # Sign and release the L+ version
 # Make sure the highest supported version has the biggest version code
-npm run build-prod-android
+npm run build-prod-android-release
 # cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.aab platforms/android/app/build/outputs/apk/app-release-signed-unaligned.apk
 jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore ../config_files/production.keystore ./platforms/android/app/build/outputs/bundle/release/app-release.aab androidproductionkey
 cp platforms/android/app/build/outputs/bundle/release/app-release.aab $1-build-$2.aab
