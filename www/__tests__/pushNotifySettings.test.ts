@@ -22,20 +22,21 @@ global.fetch = (url: string) => new Promise((rs, rj) => {
   }));
 }) as any;
 
-it('intro done does nothing if not registered', () => {
+afterEach(() => {
   clearNotifMock();
+});
+
+it('intro done does nothing if not registered', () => {
   expect(getOnList()).toStrictEqual({});
   publish(EVENT_NAMES.INTRO_DONE_EVENT, "test data");
   expect(getOnList()).toStrictEqual({});
 })
 
 it('intro done initializes the push notifications', () => {
-  clearNotifMock();
   expect(getOnList()).toStrictEqual({});
 
   initPushNotify();
   publish(EVENT_NAMES.INTRO_DONE_EVENT, "test data");
-  // setTimeout(() => {}, 100);
   expect(getOnList()).toStrictEqual(expect.objectContaining({
     notification: expect.any(Function),
     error: expect.any(Function),
@@ -45,23 +46,20 @@ it('intro done initializes the push notifications', () => {
 
 it('cloud event does nothing if not registered', () => {
   expect(window['cordova'].platformId).toEqual('ios');
-  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {additionalData: {'content-available': 1, 'payload' : {'notID' : 3}}});
+  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {additionalData: {'content-available': 1, 'payload' : {'notId' : 3}}});
   expect(getCalled()).toBeNull();
 })
 
-it('cloud event handles notification if registered', () => {
-  clearNotifMock();
+it('cloud event handles notification if registered', async () => {
   expect(window['cordova'].platformId).toEqual('ios');
   initPushNotify();
   publish(EVENT_NAMES.INTRO_DONE_EVENT, "intro done");
-  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {additionalData: {'content-available': 1, 'payload' : {'notID' : 3}}});
-  setTimeout(() => {
-    expect(getCalled()).toEqual(3);
-  }, 300)
-})
+  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {additionalData: {'content-available': 1, 'payload' : {'notId' : 3}}});
+  await new Promise((r) => setTimeout(r, 1000));
+  expect(getCalled()).toEqual(3);
+}, 10000)
 
 it('consent event does nothing if not registered', () => {
-  clearNotifMock();
   expect(getOnList()).toStrictEqual({});
   publish(EVENT_NAMES.CONSENTED_EVENT, "test data");
   expect(getOnList()).toStrictEqual({});
@@ -69,17 +67,14 @@ it('consent event does nothing if not registered', () => {
 
 it('consent event registers if intro done', async () => {
   //make sure the mock is clear
-  clearNotifMock();
   expect(getOnList()).toStrictEqual({});
 
   //initialize the pushNotify, to subscribe to events
   initPushNotify();
-  console.log("initialized");
 
   //mark the intro as done
   const currDateTime = DateTime.now().toISO();
   let marked = await storageSet(INTRO_DONE_KEY, currDateTime);
-  console.log("marked intro");
   let introDone = await readIntroDone();
   expect(introDone).toBeTruthy();
 
@@ -96,7 +91,6 @@ it('consent event registers if intro done', async () => {
 })
 
 it('consent event does not register if intro not done', () => {
-  clearNotifMock();
   expect(getOnList()).toStrictEqual({});
   initPushNotify();
   publish(EVENT_NAMES.CONSENTED_EVENT, "test data");
