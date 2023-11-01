@@ -1,5 +1,7 @@
+import { DateTime } from 'luxon';
 import { EVENT_NAMES, publish } from '../js/customEventHandler';
-import { markIntroDone } from '../js/onboarding/onboardingHelper';
+import { INTRO_DONE_KEY, markIntroDone, readIntroDone } from '../js/onboarding/onboardingHelper';
+import { storageSet } from '../js/plugin/storage';
 import { initPushNotify } from '../js/splash/pushNotifySettings';
 import { mockCordova, mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
@@ -58,20 +60,33 @@ it('consent event does nothing if not registered', () => {
   expect(getOnList()).toStrictEqual({});
 })
 
-// it('consent event registers if intro done', () => {
-//   clearNotifMock();
-//   expect(getOnList()).toStrictEqual({});
-//   initPushNotify();
-//   markIntroDone();
-//   // setTimeout(() => {}, 100);
-//   publish(EVENT_NAMES.CONSENTED_EVENT, "test data");
-//   setTimeout(() => {}, 200);
-//   expect(getOnList()).toStrictEqual(expect.objectContaining({
-//     notification: expect.any(Function),
-//     error: expect.any(Function),
-//     registration: expect.any(Function)
-//   }));
-// })
+it('consent event registers if intro done', async () => {
+  //make sure the mock is clear
+  clearNotifMock();
+  expect(getOnList()).toStrictEqual({});
+
+  //initialize the pushNotify, to subscribe to events
+  initPushNotify();
+  console.log("initialized");
+
+  //mark the intro as done
+  const currDateTime = DateTime.now().toISO();
+  let marked = await storageSet(INTRO_DONE_KEY, currDateTime);
+  console.log("marked intro");
+  let introDone = await readIntroDone();
+  expect(introDone).toBeTruthy();
+
+  //publish consent event and check results
+  publish(EVENT_NAMES.CONSENTED_EVENT, "test data");
+  //have to wait a beat since event response is async
+  setTimeout(() => {
+    expect(getOnList()).toStrictEqual(expect.objectContaining({
+      notification: expect.any(Function),
+      error: expect.any(Function),
+      registration: expect.any(Function)
+    }));
+  }, 100);
+})
 
 it('consent event does not register if intro not done', () => {
   clearNotifMock();

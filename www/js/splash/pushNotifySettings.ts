@@ -190,12 +190,13 @@ const onCloudEvent = function (event, data) {
 const onConsentEvent = function (event, data) {
   console.log("got consented event " + JSON.stringify(event['name'])
     + " with data " + JSON.stringify(data));
-  readIntroDone().then((isIntroDone) => {
-    if (isIntroDone) {
-      console.log("intro is done -> reconsent situation, we already have a token -> register");
-      registerPush();
-    }
-  })
+  readIntroDone()
+    .then((isIntroDone) => {
+      if (isIntroDone) {
+        console.log("intro is done -> reconsent situation, we already have a token -> register");
+        registerPush();
+      }
+    });
 }
 
 /**
