@@ -57,7 +57,7 @@ it('cloud event handles notification if registered', async () => {
   publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {additionalData: {'content-available': 1, 'payload' : {'notId' : 3}}});
   await new Promise((r) => setTimeout(r, 1000));
   expect(getCalled()).toEqual(3);
-}, 10000)
+})
 
 it('consent event does nothing if not registered', () => {
   expect(getOnList()).toStrictEqual({});
@@ -81,13 +81,12 @@ it('consent event registers if intro done', async () => {
   //publish consent event and check results
   publish(EVENT_NAMES.CONSENTED_EVENT, "test data");
   //have to wait a beat since event response is async
-  setTimeout(() => {
-    expect(getOnList()).toStrictEqual(expect.objectContaining({
-      notification: expect.any(Function),
-      error: expect.any(Function),
-      registration: expect.any(Function)
-    }));
-  }, 100);
+  await new Promise((r) => setTimeout(r, 1000));
+  expect(getOnList()).toStrictEqual(expect.objectContaining({
+    notification: expect.any(Function),
+    error: expect.any(Function),
+    registration: expect.any(Function)
+  }));
 })
 
 it('consent event does not register if intro not done', () => {
