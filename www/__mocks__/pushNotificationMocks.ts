@@ -1,5 +1,5 @@
 let notifSettings;
-let onList = {};
+let onList : any = {};
 
 export const mockPushNotification = () => {
   window['PushNotification'] = {

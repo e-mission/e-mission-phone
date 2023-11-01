@@ -217,6 +217,7 @@ export const initPushNotify = function () {
     .then(isConsented)
     .then(function (consentState) {
       if (consentState == true) {
+        logDebug("already consented, signing up for remote push");
         registerPush();
       } else {
         logDebug("no consent yet, waiting to sign up for remote push");
