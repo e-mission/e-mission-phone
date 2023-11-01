@@ -1,21 +1,22 @@
 import { DateTime } from 'luxon';
 import { EVENT_NAMES, publish } from '../js/customEventHandler';
-import { INTRO_DONE_KEY, markIntroDone, readIntroDone } from '../js/onboarding/onboardingHelper';
+import { INTRO_DONE_KEY, readIntroDone } from '../js/onboarding/onboardingHelper';
 import { storageSet } from '../js/plugin/storage';
 import { initPushNotify } from '../js/splash/pushNotifySettings';
-import { mockCordova, mockBEMUserCache } from '../__mocks__/cordovaMocks';
+import { mockCordova, mockBEMUserCache, mockBEMDataCollection } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
-import { clearNotifMock, getOnList, mockPushNotification } from '../__mocks__/pushNotificationMocks';
+import { clearNotifMock, getOnList, mockPushNotification, getCalled } from '../__mocks__/pushNotificationMocks';
 
 mockCordova();
 mockLogger();
 mockPushNotification();
 mockBEMUserCache();
+mockBEMDataCollection();
 
 global.fetch = (url: string) => new Promise((rs, rj) => {
   setTimeout(() => rs({
     json: () => new Promise((rs, rj) => {
-      let myJSON = { "emSensorDataCollectionProtocol": { "protocol_id": "2014-04-6267", "approval_date": "2016-07-14" } };
+      let myJSON = { "emSensorDataCollectionProtocol": { "protocol_id": "2014-04-6267", "approval_date": "2016-07-14" }, };
       setTimeout(() => rs(myJSON), 100);
     })
   }));
@@ -43,14 +44,20 @@ it('intro done initializes the push notifications', () => {
 })
 
 it('cloud event does nothing if not registered', () => {
-  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {additionalData: {'content-avaliable': 1}});
-  //how to test did nothing?
+  expect(window['cordova'].platformId).toEqual('ios');
+  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {additionalData: {'content-available': 1, 'payload' : {'notID' : 3}}});
+  expect(getCalled()).toBeNull();
 })
 
 it('cloud event handles notification if registered', () => {
+  clearNotifMock();
+  expect(window['cordova'].platformId).toEqual('ios');
   initPushNotify();
-  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {additionalData: {'content-avaliable': 1}});
-  //how to test did something?
+  publish(EVENT_NAMES.INTRO_DONE_EVENT, "intro done");
+  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {additionalData: {'content-available': 1, 'payload' : {'notID' : 3}}});
+  setTimeout(() => {
+    expect(getCalled()).toEqual(3);
+  }, 300)
 })
 
 it('consent event does nothing if not registered', () => {

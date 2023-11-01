@@ -124,6 +124,18 @@ export const mockBEMDataCollection = () => {
       setTimeout(() => {
         _storage['config/consent'] = consentDoc;
       }, 100)
+    },
+    getConfig: () => {
+      return new Promise<any>((rs, rj) => {
+        rs({ 'ios_use_remote_push_for_sync': true });
+      });
+    },
+    handleSilentPush: () => {
+      return new Promise<void>((rs, rj) =>
+        setTimeout(() => {
+          rs();
+        }, 100)
+      );
     }
   }
   window['cordova'] ||= {};
