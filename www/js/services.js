@@ -119,12 +119,6 @@ angular
         },
       );
       return combinedPromise(localPromise, remotePromise, combineWithDedup);
-<<<<<<< HEAD
-    }
-})
-.factory('Chats', function() {
-  // Might use a resource here that returns a JSON array
-=======
     };
 
     this.getUnifiedMessagesForInterval = function (key, tq, withMetadata) {
