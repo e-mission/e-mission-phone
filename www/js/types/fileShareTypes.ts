@@ -1,11 +1,11 @@
-import { ServerData } from './serverData'; 
+import { ServerData } from './serverData';
 
 export type TimeStampData = ServerData<RawTimelineData>;
 
 export type RawTimelineData = {
-    name: string, 
-    ts: number,
-    reading: number,
+  name: string;
+  ts: number;
+  reading: number;
 };
 
 export interface FsWindow extends Window {
@@ -13,10 +13,10 @@ export interface FsWindow extends Window {
     type: number,
     size: number,
     successCallback: (fs: any) => void,
-    errorCallback?: (error: any) => void
+    errorCallback?: (error: any) => void,
   ) => void;
   LocalFileSystem: {
     TEMPORARY: number;
     PERSISTENT: number;
   };
-};
+}
