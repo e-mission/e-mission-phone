@@ -19,7 +19,58 @@
  * ========================================================================
  */
 
-.tour-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1100;background-color:#000;opacity:.8;filter:alpha(opacity=80)}.tour-step-backdrop{position:relative;z-index:1101;background:inherit}.tour-step-backdrop>td{position:relative;z-index:1101}.tour-step-background{position:absolute!important;z-index:1100;background:inherit;border-radius:6px}.popover[class*=tour-]{z-index:1100}.popover[class*=tour-] .popover-navigation{padding:9px 14px}.popover[class*=tour-] .popover-navigation [data-role=end]{float:right}.popover[class*=tour-] .popover-navigation [data-role=prev],.popover[class*=tour-] .popover-navigation [data-role=next],.popover[class*=tour-] .popover-navigation [data-role=end]{cursor:pointer}.popover[class*=tour-] .popover-navigation [data-role=prev].disabled,.popover[class*=tour-] .popover-navigation [data-role=next].disabled,.popover[class*=tour-] .popover-navigation [data-role=end].disabled{cursor:default}.popover[class*=tour-].orphan{position:fixed;margin-top:0}.popover[class*=tour-].orphan .arrow{display:none}
+.tour-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1100;
+  background-color: #000;
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+}
+.tour-step-backdrop {
+  position: relative;
+  z-index: 1101;
+  background: inherit;
+}
+.tour-step-backdrop > td {
+  position: relative;
+  z-index: 1101;
+}
+.tour-step-background {
+  position: absolute !important;
+  z-index: 1100;
+  background: inherit;
+  border-radius: 6px;
+}
+.popover[class*='tour-'] {
+  z-index: 1100;
+}
+.popover[class*='tour-'] .popover-navigation {
+  padding: 9px 14px;
+}
+.popover[class*='tour-'] .popover-navigation [data-role='end'] {
+  float: right;
+}
+.popover[class*='tour-'] .popover-navigation [data-role='prev'],
+.popover[class*='tour-'] .popover-navigation [data-role='next'],
+.popover[class*='tour-'] .popover-navigation [data-role='end'] {
+  cursor: pointer;
+}
+.popover[class*='tour-'] .popover-navigation [data-role='prev'].disabled,
+.popover[class*='tour-'] .popover-navigation [data-role='next'].disabled,
+.popover[class*='tour-'] .popover-navigation [data-role='end'].disabled {
+  cursor: default;
+}
+.popover[class*='tour-'].orphan {
+  position: fixed;
+  margin-top: 0;
+}
+.popover[class*='tour-'].orphan .arrow {
+  display: none;
+}
 /*! 
  * angular-loading-bar v0.6.0
  * https://chieffancypants.github.io/angular-loading-bar
@@ -76,7 +127,7 @@
   right: 0;
   top: 0;
   height: 2px;
-  opacity: .45;
+  opacity: 0.45;
   -moz-box-shadow: #29d 1px 0 6px 1px;
   -ms-box-shadow: #29d 1px 0 6px 1px;
   -webkit-box-shadow: #29d 1px 0 6px 1px;
@@ -98,50 +149,80 @@
   width: 14px;
   height: 14px;
 
-  border:  solid 2px transparent;
-  border-top-color:  #29d;
+  border: solid 2px transparent;
+  border-top-color: #29d;
   border-left-color: #29d;
   border-radius: 10px;
 
   -webkit-animation: loading-bar-spinner 400ms linear infinite;
-  -moz-animation:    loading-bar-spinner 400ms linear infinite;
-  -ms-animation:     loading-bar-spinner 400ms linear infinite;
-  -o-animation:      loading-bar-spinner 400ms linear infinite;
-  animation:         loading-bar-spinner 400ms linear infinite;
+  -moz-animation: loading-bar-spinner 400ms linear infinite;
+  -ms-animation: loading-bar-spinner 400ms linear infinite;
+  -o-animation: loading-bar-spinner 400ms linear infinite;
+  animation: loading-bar-spinner 400ms linear infinite;
 }
 
 @-webkit-keyframes loading-bar-spinner {
-  0%   { -webkit-transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
 @-moz-keyframes loading-bar-spinner {
-  0%   { -moz-transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { -moz-transform: rotate(360deg); transform: rotate(360deg); }
+  0% {
+    -moz-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -moz-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
 @-o-keyframes loading-bar-spinner {
-  0%   { -o-transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { -o-transform: rotate(360deg); transform: rotate(360deg); }
+  0% {
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
 @-ms-keyframes loading-bar-spinner {
-  0%   { -ms-transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { -ms-transform: rotate(360deg); transform: rotate(360deg); }
+  0% {
+    -ms-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -ms-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
 @keyframes loading-bar-spinner {
-  0%   { transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { transform: rotate(360deg); transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
 
 /*
 Version: 3.4.8 Timestamp: Thu May  1 09:50:32 EDT 2014
 */
 .select2-container {
-    margin: 0;
-    position: relative;
-    display: inline-block;
-    /* inline-block for ie7 */
-    zoom: 1;
-    *display: inline;
-    vertical-align: middle;
+  margin: 0;
+  position: relative;
+  display: inline-block;
+  /* inline-block for ie7 */
+  zoom: 1;
+  *display: inline;
+  vertical-align: middle;
 }
 
 .select2-container,
@@ -154,379 +235,438 @@ Version: 3.4.8 Timestamp: Thu May  1 09:50:32 EDT 2014
     More Info : http://www.quirksmode.org/css/box.html
   */
   -webkit-box-sizing: border-box; /* webkit */
-     -moz-box-sizing: border-box; /* firefox */
-          box-sizing: border-box; /* css3 */
+  -moz-box-sizing: border-box; /* firefox */
+  box-sizing: border-box; /* css3 */
 }
 
 .select2-container .select2-choice {
-    display: block;
-    height: 26px;
-    padding: 0 0 0 8px;
-    overflow: hidden;
-    position: relative;
+  display: block;
+  height: 26px;
+  padding: 0 0 0 8px;
+  overflow: hidden;
+  position: relative;
 
-    border: 1px solid #aaa;
-    white-space: nowrap;
-    line-height: 26px;
-    color: #444;
-    text-decoration: none;
+  border: 1px solid #aaa;
+  white-space: nowrap;
+  line-height: 26px;
+  color: #444;
+  text-decoration: none;
 
-    border-radius: 4px;
+  border-radius: 4px;
 
-    background-clip: padding-box;
+  background-clip: padding-box;
 
-    -webkit-touch-callout: none;
-      -webkit-user-select: none;
-         -moz-user-select: none;
-          -ms-user-select: none;
-              user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 
-    background-color: #fff;
-    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(0.5, #fff));
-    background-image: -webkit-linear-gradient(center bottom, #eee 0%, #fff 50%);
-    background-image: -moz-linear-gradient(center bottom, #eee 0%, #fff 50%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#eeeeee', GradientType = 0);
-    background-image: linear-gradient(to top, #eee 0%, #fff 50%);
+  background-color: #fff;
+  background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0, #eee),
+    color-stop(0.5, #fff)
+  );
+  background-image: -webkit-linear-gradient(center bottom, #eee 0%, #fff 50%);
+  background-image: -moz-linear-gradient(center bottom, #eee 0%, #fff 50%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#eeeeee', GradientType = 0);
+  background-image: linear-gradient(to top, #eee 0%, #fff 50%);
 }
 
 .select2-container.select2-drop-above .select2-choice {
-    border-bottom-color: #aaa;
+  border-bottom-color: #aaa;
 
-    border-radius: 0 0 4px 4px;
+  border-radius: 0 0 4px 4px;
 
-    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(0.9, #fff));
-    background-image: -webkit-linear-gradient(center bottom, #eee 0%, #fff 90%);
-    background-image: -moz-linear-gradient(center bottom, #eee 0%, #fff 90%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#eeeeee', GradientType=0);
-    background-image: linear-gradient(to bottom, #eee 0%, #fff 90%);
+  background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0, #eee),
+    color-stop(0.9, #fff)
+  );
+  background-image: -webkit-linear-gradient(center bottom, #eee 0%, #fff 90%);
+  background-image: -moz-linear-gradient(center bottom, #eee 0%, #fff 90%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#eeeeee', GradientType=0);
+  background-image: linear-gradient(to bottom, #eee 0%, #fff 90%);
 }
 
 .select2-container.select2-allowclear .select2-choice .select2-chosen {
-    margin-right: 42px;
+  margin-right: 42px;
 }
 
 .select2-container .select2-choice > .select2-chosen {
-    margin-right: 26px;
-    display: block;
-    overflow: hidden;
+  margin-right: 26px;
+  display: block;
+  overflow: hidden;
 
-    white-space: nowrap;
+  white-space: nowrap;
 
-    text-overflow: ellipsis;
-    float: none;
-    width: auto;
+  text-overflow: ellipsis;
+  float: none;
+  width: auto;
 }
 
 .select2-container .select2-choice abbr {
-    display: none;
-    width: 12px;
-    height: 12px;
-    position: absolute;
-    right: 24px;
-    top: 8px;
+  display: none;
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  right: 24px;
+  top: 8px;
 
-    font-size: 1px;
-    text-decoration: none;
+  font-size: 1px;
+  text-decoration: none;
 
-    border: 0;
-    background: url('select2.png') right top no-repeat;
-    cursor: pointer;
-    outline: 0;
+  border: 0;
+  background: url('select2.png') right top no-repeat;
+  cursor: pointer;
+  outline: 0;
 }
 
 .select2-container.select2-allowclear .select2-choice abbr {
-    display: inline-block;
+  display: inline-block;
 }
 
 .select2-container .select2-choice abbr:hover {
-    background-position: right -11px;
-    cursor: pointer;
+  background-position: right -11px;
+  cursor: pointer;
 }
 
 .select2-drop-mask {
-    border: 0;
-    margin: 0;
-    padding: 0;
-    position: fixed;
-    left: 0;
-    top: 0;
-    min-height: 100%;
-    min-width: 100%;
-    height: auto;
-    width: auto;
-    opacity: 0;
-    z-index: 9998;
-    /* styles required for IE to work */
-    background-color: #fff;
-    filter: alpha(opacity=0);
+  border: 0;
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  left: 0;
+  top: 0;
+  min-height: 100%;
+  min-width: 100%;
+  height: auto;
+  width: auto;
+  opacity: 0;
+  z-index: 9998;
+  /* styles required for IE to work */
+  background-color: #fff;
+  filter: alpha(opacity=0);
 }
 
 .select2-drop {
-    width: 100%;
-    margin-top: -1px;
-    position: absolute;
-    z-index: 9999;
-    top: 100%;
+  width: 100%;
+  margin-top: -1px;
+  position: absolute;
+  z-index: 9999;
+  top: 100%;
 
-    background: #fff;
-    color: #000;
-    border: 1px solid #aaa;
-    border-top: 0;
+  background: #fff;
+  color: #000;
+  border: 1px solid #aaa;
+  border-top: 0;
 
-    border-radius: 0 0 4px 4px;
+  border-radius: 0 0 4px 4px;
 
-    -webkit-box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
-            box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
+  -webkit-box-shadow: 0 4px 5px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.15);
 }
 
 .select2-drop.select2-drop-above {
-    margin-top: 1px;
-    border-top: 1px solid #aaa;
-    border-bottom: 0;
+  margin-top: 1px;
+  border-top: 1px solid #aaa;
+  border-bottom: 0;
 
-    border-radius: 4px 4px 0 0;
+  border-radius: 4px 4px 0 0;
 
-    -webkit-box-shadow: 0 -4px 5px rgba(0, 0, 0, .15);
-            box-shadow: 0 -4px 5px rgba(0, 0, 0, .15);
+  -webkit-box-shadow: 0 -4px 5px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 -4px 5px rgba(0, 0, 0, 0.15);
 }
 
 .select2-drop-active {
-    border: 1px solid #5897fb;
-    border-top: none;
+  border: 1px solid #5897fb;
+  border-top: none;
 }
 
 .select2-drop.select2-drop-above.select2-drop-active {
-    border-top: 1px solid #5897fb;
+  border-top: 1px solid #5897fb;
 }
 
 .select2-drop-auto-width {
-    border-top: 1px solid #aaa;
-    width: auto;
+  border-top: 1px solid #aaa;
+  width: auto;
 }
 
 .select2-drop-auto-width .select2-search {
-    padding-top: 4px;
+  padding-top: 4px;
 }
 
 .select2-container .select2-choice .select2-arrow {
-    display: inline-block;
-    width: 18px;
-    height: 100%;
-    position: absolute;
-    right: 0;
-    top: 0;
+  display: inline-block;
+  width: 18px;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
 
-    border-left: 1px solid #aaa;
-    border-radius: 0 4px 4px 0;
+  border-left: 1px solid #aaa;
+  border-radius: 0 4px 4px 0;
 
-    background-clip: padding-box;
+  background-clip: padding-box;
 
-    background: #ccc;
-    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #ccc), color-stop(0.6, #eee));
-    background-image: -webkit-linear-gradient(center bottom, #ccc 0%, #eee 60%);
-    background-image: -moz-linear-gradient(center bottom, #ccc 0%, #eee 60%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#eeeeee', endColorstr = '#cccccc', GradientType = 0);
-    background-image: linear-gradient(to top, #ccc 0%, #eee 60%);
+  background: #ccc;
+  background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0, #ccc),
+    color-stop(0.6, #eee)
+  );
+  background-image: -webkit-linear-gradient(center bottom, #ccc 0%, #eee 60%);
+  background-image: -moz-linear-gradient(center bottom, #ccc 0%, #eee 60%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#eeeeee', endColorstr = '#cccccc', GradientType = 0);
+  background-image: linear-gradient(to top, #ccc 0%, #eee 60%);
 }
 
 .select2-container .select2-choice .select2-arrow b {
-    display: block;
-    width: 100%;
-    height: 100%;
-    background: url('select2.png') no-repeat 0 1px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: url('select2.png') no-repeat 0 1px;
 }
 
 .select2-search {
-    display: inline-block;
-    width: 100%;
-    min-height: 26px;
-    margin: 0;
-    padding-left: 4px;
-    padding-right: 4px;
+  display: inline-block;
+  width: 100%;
+  min-height: 26px;
+  margin: 0;
+  padding-left: 4px;
+  padding-right: 4px;
 
-    position: relative;
-    z-index: 10000;
+  position: relative;
+  z-index: 10000;
 
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 .select2-search input {
-    width: 100%;
-    height: auto !important;
-    min-height: 26px;
-    padding: 4px 20px 4px 5px;
-    margin: 0;
+  width: 100%;
+  height: auto !important;
+  min-height: 26px;
+  padding: 4px 20px 4px 5px;
+  margin: 0;
 
-    outline: 0;
-    font-family: sans-serif;
-    font-size: 1em;
+  outline: 0;
+  font-family: sans-serif;
+  font-size: 1em;
 
-    border: 1px solid #aaa;
-    border-radius: 0;
+  border: 1px solid #aaa;
+  border-radius: 0;
 
-    -webkit-box-shadow: none;
-            box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
 
-    background: #fff url('select2.png') no-repeat 100% -22px;
-    background: url('select2.png') no-repeat 100% -22px, -webkit-gradient(linear, left bottom, left top, color-stop(0.85, #fff), color-stop(0.99, #eee));
-    background: url('select2.png') no-repeat 100% -22px, -webkit-linear-gradient(center bottom, #fff 85%, #eee 99%);
-    background: url('select2.png') no-repeat 100% -22px, -moz-linear-gradient(center bottom, #fff 85%, #eee 99%);
-    background: url('select2.png') no-repeat 100% -22px, linear-gradient(to bottom, #fff 85%, #eee 99%) 0 0;
+  background: #fff url('select2.png') no-repeat 100% -22px;
+  background:
+    url('select2.png') no-repeat 100% -22px,
+    -webkit-gradient(linear, left bottom, left top, color-stop(0.85, #fff), color-stop(0.99, #eee));
+  background:
+    url('select2.png') no-repeat 100% -22px,
+    -webkit-linear-gradient(center bottom, #fff 85%, #eee 99%);
+  background:
+    url('select2.png') no-repeat 100% -22px,
+    -moz-linear-gradient(center bottom, #fff 85%, #eee 99%);
+  background:
+    url('select2.png') no-repeat 100% -22px,
+    linear-gradient(to bottom, #fff 85%, #eee 99%) 0 0;
 }
 
 .select2-drop.select2-drop-above .select2-search input {
-    margin-top: 4px;
+  margin-top: 4px;
 }
 
 .select2-search input.select2-active {
-    background: #fff url('select2-spinner.gif') no-repeat 100%;
-    background: url('select2-spinner.gif') no-repeat 100%, -webkit-gradient(linear, left bottom, left top, color-stop(0.85, #fff), color-stop(0.99, #eee));
-    background: url('select2-spinner.gif') no-repeat 100%, -webkit-linear-gradient(center bottom, #fff 85%, #eee 99%);
-    background: url('select2-spinner.gif') no-repeat 100%, -moz-linear-gradient(center bottom, #fff 85%, #eee 99%);
-    background: url('select2-spinner.gif') no-repeat 100%, linear-gradient(to bottom, #fff 85%, #eee 99%) 0 0;
+  background: #fff url('select2-spinner.gif') no-repeat 100%;
+  background:
+    url('select2-spinner.gif') no-repeat 100%,
+    -webkit-gradient(linear, left bottom, left top, color-stop(0.85, #fff), color-stop(0.99, #eee));
+  background:
+    url('select2-spinner.gif') no-repeat 100%,
+    -webkit-linear-gradient(center bottom, #fff 85%, #eee 99%);
+  background:
+    url('select2-spinner.gif') no-repeat 100%,
+    -moz-linear-gradient(center bottom, #fff 85%, #eee 99%);
+  background:
+    url('select2-spinner.gif') no-repeat 100%,
+    linear-gradient(to bottom, #fff 85%, #eee 99%) 0 0;
 }
 
 .select2-container-active .select2-choice,
 .select2-container-active .select2-choices {
-    border: 1px solid #5897fb;
-    outline: none;
+  border: 1px solid #5897fb;
+  outline: none;
 
-    -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, .3);
-            box-shadow: 0 0 5px rgba(0, 0, 0, .3);
+  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 .select2-dropdown-open .select2-choice {
-    border-bottom-color: transparent;
-    -webkit-box-shadow: 0 1px 0 #fff inset;
-            box-shadow: 0 1px 0 #fff inset;
+  border-bottom-color: transparent;
+  -webkit-box-shadow: 0 1px 0 #fff inset;
+  box-shadow: 0 1px 0 #fff inset;
 
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 
-    background-color: #eee;
-    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #fff), color-stop(0.5, #eee));
-    background-image: -webkit-linear-gradient(center bottom, #fff 0%, #eee 50%);
-    background-image: -moz-linear-gradient(center bottom, #fff 0%, #eee 50%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#ffffff', GradientType=0);
-    background-image: linear-gradient(to top, #fff 0%, #eee 50%);
+  background-color: #eee;
+  background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0, #fff),
+    color-stop(0.5, #eee)
+  );
+  background-image: -webkit-linear-gradient(center bottom, #fff 0%, #eee 50%);
+  background-image: -moz-linear-gradient(center bottom, #fff 0%, #eee 50%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#ffffff', GradientType=0);
+  background-image: linear-gradient(to top, #fff 0%, #eee 50%);
 }
 
 .select2-dropdown-open.select2-drop-above .select2-choice,
 .select2-dropdown-open.select2-drop-above .select2-choices {
-    border: 1px solid #5897fb;
-    border-top-color: transparent;
+  border: 1px solid #5897fb;
+  border-top-color: transparent;
 
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #fff), color-stop(0.5, #eee));
-    background-image: -webkit-linear-gradient(center top, #fff 0%, #eee 50%);
-    background-image: -moz-linear-gradient(center top, #fff 0%, #eee 50%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#ffffff', GradientType=0);
-    background-image: linear-gradient(to bottom, #fff 0%, #eee 50%);
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0, #fff),
+    color-stop(0.5, #eee)
+  );
+  background-image: -webkit-linear-gradient(center top, #fff 0%, #eee 50%);
+  background-image: -moz-linear-gradient(center top, #fff 0%, #eee 50%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#ffffff', GradientType=0);
+  background-image: linear-gradient(to bottom, #fff 0%, #eee 50%);
 }
 
 .select2-dropdown-open .select2-choice .select2-arrow {
-    background: transparent;
-    border-left: none;
-    filter: none;
+  background: transparent;
+  border-left: none;
+  filter: none;
 }
 .select2-dropdown-open .select2-choice .select2-arrow b {
-    background-position: -18px 1px;
+  background-position: -18px 1px;
 }
 
 .select2-hidden-accessible {
-    border: 0;
-    clip: rect(0 0 0 0);
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    padding: 0;
-    position: absolute;
-    width: 1px;
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }
 
 /* results */
 .select2-results {
-    max-height: 200px;
-    padding: 0 0 0 4px;
-    margin: 4px 4px 4px 0;
-    position: relative;
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  max-height: 200px;
+  padding: 0 0 0 4px;
+  margin: 4px 4px 4px 0;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 .select2-results ul.select2-result-sub {
-    margin: 0;
-    padding-left: 0;
+  margin: 0;
+  padding-left: 0;
 }
 
 .select2-results li {
-    list-style: none;
-    display: list-item;
-    background-image: none;
+  list-style: none;
+  display: list-item;
+  background-image: none;
 }
 
 .select2-results li.select2-result-with-children > .select2-result-label {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .select2-results .select2-result-label {
-    padding: 3px 7px 4px;
-    margin: 0;
-    cursor: pointer;
+  padding: 3px 7px 4px;
+  margin: 0;
+  cursor: pointer;
 
-    min-height: 1em;
+  min-height: 1em;
 
-    -webkit-touch-callout: none;
-      -webkit-user-select: none;
-         -moz-user-select: none;
-          -ms-user-select: none;
-              user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-.select2-results-dept-1 .select2-result-label { padding-left: 20px }
-.select2-results-dept-2 .select2-result-label { padding-left: 40px }
-.select2-results-dept-3 .select2-result-label { padding-left: 60px }
-.select2-results-dept-4 .select2-result-label { padding-left: 80px }
-.select2-results-dept-5 .select2-result-label { padding-left: 100px }
-.select2-results-dept-6 .select2-result-label { padding-left: 110px }
-.select2-results-dept-7 .select2-result-label { padding-left: 120px }
+.select2-results-dept-1 .select2-result-label {
+  padding-left: 20px;
+}
+.select2-results-dept-2 .select2-result-label {
+  padding-left: 40px;
+}
+.select2-results-dept-3 .select2-result-label {
+  padding-left: 60px;
+}
+.select2-results-dept-4 .select2-result-label {
+  padding-left: 80px;
+}
+.select2-results-dept-5 .select2-result-label {
+  padding-left: 100px;
+}
+.select2-results-dept-6 .select2-result-label {
+  padding-left: 110px;
+}
+.select2-results-dept-7 .select2-result-label {
+  padding-left: 120px;
+}
 
 .select2-results .select2-highlighted {
-    background: #3875d7;
-    color: #fff;
+  background: #3875d7;
+  color: #fff;
 }
 
 .select2-results li em {
-    background: #feffde;
-    font-style: normal;
+  background: #feffde;
+  font-style: normal;
 }
 
 .select2-results .select2-highlighted em {
-    background: transparent;
+  background: transparent;
 }
 
 .select2-results .select2-highlighted ul {
-    background: #fff;
-    color: #000;
+  background: #fff;
+  color: #000;
 }
-
 
 .select2-results .select2-no-results,
 .select2-results .select2-searching,
 .select2-results .select2-selection-limit {
-    background: #f4f4f4;
-    display: list-item;
-    padding-left: 5px;
+  background: #f4f4f4;
+  display: list-item;
+  padding-left: 5px;
 }
 
 /*
 disabled look for disabled choices in the results dropdown
 */
 .select2-results .select2-disabled.select2-highlighted {
-    color: #666;
-    background: #f4f4f4;
-    display: list-item;
-    cursor: default;
+  color: #666;
+  background: #f4f4f4;
+  display: list-item;
+  cursor: default;
 }
 .select2-results .select2-disabled {
   background: #f4f4f4;
@@ -535,56 +675,61 @@ disabled look for disabled choices in the results dropdown
 }
 
 .select2-results .select2-selected {
-    display: none;
+  display: none;
 }
 
 .select2-more-results.select2-active {
-    background: #f4f4f4 url('select2-spinner.gif') no-repeat 100%;
+  background: #f4f4f4 url('select2-spinner.gif') no-repeat 100%;
 }
 
 .select2-more-results {
-    background: #f4f4f4;
-    display: list-item;
+  background: #f4f4f4;
+  display: list-item;
 }
 
 /* disabled styles */
 
 .select2-container.select2-container-disabled .select2-choice {
-    background-color: #f4f4f4;
-    background-image: none;
-    border: 1px solid #ddd;
-    cursor: default;
+  background-color: #f4f4f4;
+  background-image: none;
+  border: 1px solid #ddd;
+  cursor: default;
 }
 
 .select2-container.select2-container-disabled .select2-choice .select2-arrow {
-    background-color: #f4f4f4;
-    background-image: none;
-    border-left: 0;
+  background-color: #f4f4f4;
+  background-image: none;
+  border-left: 0;
 }
 
 .select2-container.select2-container-disabled .select2-choice abbr {
-    display: none;
+  display: none;
 }
-
 
 /* multiselect */
 
 .select2-container-multi .select2-choices {
-    height: auto !important;
-    height: 1%;
-    margin: 0;
-    padding: 0;
-    position: relative;
+  height: auto !important;
+  height: 1%;
+  margin: 0;
+  padding: 0;
+  position: relative;
 
-    border: 1px solid #aaa;
-    cursor: text;
-    overflow: hidden;
+  border: 1px solid #aaa;
+  cursor: text;
+  overflow: hidden;
 
-    background-color: #fff;
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(1%, #eee), color-stop(15%, #fff));
-    background-image: -webkit-linear-gradient(top, #eee 1%, #fff 15%);
-    background-image: -moz-linear-gradient(top, #eee 1%, #fff 15%);
-    background-image: linear-gradient(to bottom, #eee 1%, #fff 15%);
+  background-color: #fff;
+  background-image: -webkit-gradient(
+    linear,
+    0% 0%,
+    0% 100%,
+    color-stop(1%, #eee),
+    color-stop(15%, #fff)
+  );
+  background-image: -webkit-linear-gradient(top, #eee 1%, #fff 15%);
+  background-image: -moz-linear-gradient(top, #eee 1%, #fff 15%);
+  background-image: linear-gradient(to bottom, #eee 1%, #fff 15%);
 }
 
 .select2-locked {
@@ -592,197 +737,218 @@ disabled look for disabled choices in the results dropdown
 }
 
 .select2-container-multi .select2-choices {
-    min-height: 26px;
+  min-height: 26px;
 }
 
 .select2-container-multi.select2-container-active .select2-choices {
-    border: 1px solid #5897fb;
-    outline: none;
+  border: 1px solid #5897fb;
+  outline: none;
 
-    -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, .3);
-            box-shadow: 0 0 5px rgba(0, 0, 0, .3);
+  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 .select2-container-multi .select2-choices li {
-    float: left;
-    list-style: none;
+  float: left;
+  list-style: none;
 }
-html[dir="rtl"] .select2-container-multi .select2-choices li
-{
-    float: right;
+html[dir='rtl'] .select2-container-multi .select2-choices li {
+  float: right;
 }
 .select2-container-multi .select2-choices .select2-search-field {
-    margin: 0;
-    padding: 0;
-    white-space: nowrap;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
 }
 
 .select2-container-multi .select2-choices .select2-search-field input {
-    padding: 5px;
-    margin: 1px 0;
+  padding: 5px;
+  margin: 1px 0;
 
-    font-family: sans-serif;
-    font-size: 100%;
-    color: #666;
-    outline: 0;
-    border: 0;
-    -webkit-box-shadow: none;
-            box-shadow: none;
-    background: transparent !important;
+  font-family: sans-serif;
+  font-size: 100%;
+  color: #666;
+  outline: 0;
+  border: 0;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  background: transparent !important;
 }
 
 .select2-container-multi .select2-choices .select2-search-field input.select2-active {
-    background: #fff url('select2-spinner.gif') no-repeat 100% !important;
+  background: #fff url('select2-spinner.gif') no-repeat 100% !important;
 }
 
 .select2-default {
-    color: #999 !important;
+  color: #999 !important;
 }
 
 .select2-container-multi .select2-choices .select2-search-choice {
-    padding: 3px 5px 3px 18px;
-    margin: 3px 0 3px 5px;
-    position: relative;
+  padding: 3px 5px 3px 18px;
+  margin: 3px 0 3px 5px;
+  position: relative;
 
-    line-height: 13px;
-    color: #333;
-    cursor: default;
-    border: 1px solid #aaaaaa;
+  line-height: 13px;
+  color: #333;
+  cursor: default;
+  border: 1px solid #aaaaaa;
 
-    border-radius: 3px;
+  border-radius: 3px;
 
-    -webkit-box-shadow: 0 0 2px #fff inset, 0 1px 0 rgba(0, 0, 0, 0.05);
-            box-shadow: 0 0 2px #fff inset, 0 1px 0 rgba(0, 0, 0, 0.05);
+  -webkit-box-shadow:
+    0 0 2px #fff inset,
+    0 1px 0 rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 0 2px #fff inset,
+    0 1px 0 rgba(0, 0, 0, 0.05);
 
-    background-clip: padding-box;
+  background-clip: padding-box;
 
-    -webkit-touch-callout: none;
-      -webkit-user-select: none;
-         -moz-user-select: none;
-          -ms-user-select: none;
-              user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 
-    background-color: #e4e4e4;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#f4f4f4', GradientType=0);
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(20%, #f4f4f4), color-stop(50%, #f0f0f0), color-stop(52%, #e8e8e8), color-stop(100%, #eee));
-    background-image: -webkit-linear-gradient(top, #f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
-    background-image: -moz-linear-gradient(top, #f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
-    background-image: linear-gradient(to top, #f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
+  background-color: #e4e4e4;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eeeeee', endColorstr='#f4f4f4', GradientType=0);
+  background-image: -webkit-gradient(
+    linear,
+    0% 0%,
+    0% 100%,
+    color-stop(20%, #f4f4f4),
+    color-stop(50%, #f0f0f0),
+    color-stop(52%, #e8e8e8),
+    color-stop(100%, #eee)
+  );
+  background-image: -webkit-linear-gradient(top, #f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
+  background-image: -moz-linear-gradient(top, #f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
+  background-image: linear-gradient(to top, #f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
 }
-html[dir="rtl"] .select2-container-multi .select2-choices .select2-search-choice
-{
-    margin-left: 0;
-    margin-right: 5px;
+html[dir='rtl'] .select2-container-multi .select2-choices .select2-search-choice {
+  margin-left: 0;
+  margin-right: 5px;
 }
 .select2-container-multi .select2-choices .select2-search-choice .select2-chosen {
-    cursor: default;
+  cursor: default;
 }
 .select2-container-multi .select2-choices .select2-search-choice-focus {
-    background: #d4d4d4;
+  background: #d4d4d4;
 }
 
 .select2-search-choice-close {
-    display: block;
-    width: 12px;
-    height: 13px;
-    position: absolute;
-    right: 3px;
-    top: 4px;
+  display: block;
+  width: 12px;
+  height: 13px;
+  position: absolute;
+  right: 3px;
+  top: 4px;
 
-    font-size: 1px;
-    outline: none;
-    background: url('select2.png') right top no-repeat;
+  font-size: 1px;
+  outline: none;
+  background: url('select2.png') right top no-repeat;
 }
-html[dir="rtl"] .select2-search-choice-close {
-    right: auto;
-    left: 3px;
+html[dir='rtl'] .select2-search-choice-close {
+  right: auto;
+  left: 3px;
 }
 
 .select2-container-multi .select2-search-choice-close {
-    left: 3px;
+  left: 3px;
 }
 
-.select2-container-multi .select2-choices .select2-search-choice .select2-search-choice-close:hover {
+.select2-container-multi
+  .select2-choices
+  .select2-search-choice
+  .select2-search-choice-close:hover {
   background-position: right -11px;
 }
-.select2-container-multi .select2-choices .select2-search-choice-focus .select2-search-choice-close {
-    background-position: right -11px;
+.select2-container-multi
+  .select2-choices
+  .select2-search-choice-focus
+  .select2-search-choice-close {
+  background-position: right -11px;
 }
 
 /* disabled styles */
 .select2-container-multi.select2-container-disabled .select2-choices {
-    background-color: #f4f4f4;
-    background-image: none;
-    border: 1px solid #ddd;
-    cursor: default;
+  background-color: #f4f4f4;
+  background-image: none;
+  border: 1px solid #ddd;
+  cursor: default;
 }
 
 .select2-container-multi.select2-container-disabled .select2-choices .select2-search-choice {
-    padding: 3px 5px 3px 5px;
-    border: 1px solid #ddd;
-    background-image: none;
-    background-color: #f4f4f4;
+  padding: 3px 5px 3px 5px;
+  border: 1px solid #ddd;
+  background-image: none;
+  background-color: #f4f4f4;
 }
 
-.select2-container-multi.select2-container-disabled .select2-choices .select2-search-choice .select2-search-choice-close {    display: none;
-    background: none;
+.select2-container-multi.select2-container-disabled
+  .select2-choices
+  .select2-search-choice
+  .select2-search-choice-close {
+  display: none;
+  background: none;
 }
 /* end multiselect */
 
-
 .select2-result-selectable .select2-match,
 .select2-result-unselectable .select2-match {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
-.select2-offscreen, .select2-offscreen:focus {
-    clip: rect(0 0 0 0) !important;
-    width: 1px !important;
-    height: 1px !important;
-    border: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    position: absolute !important;
-    outline: 0 !important;
-    left: 0px !important;
-    top: 0px !important;
+.select2-offscreen,
+.select2-offscreen:focus {
+  clip: rect(0 0 0 0) !important;
+  width: 1px !important;
+  height: 1px !important;
+  border: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  outline: 0 !important;
+  left: 0px !important;
+  top: 0px !important;
 }
 
 .select2-display-none {
-    display: none;
+  display: none;
 }
 
 .select2-measure-scrollbar {
-    position: absolute;
-    top: -10000px;
-    left: -10000px;
-    width: 100px;
-    height: 100px;
-    overflow: scroll;
+  position: absolute;
+  top: -10000px;
+  left: -10000px;
+  width: 100px;
+  height: 100px;
+  overflow: scroll;
 }
 
 /* Retina-ize icons */
 
-@media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-resolution: 2dppx)  {
-    .select2-search input,
-    .select2-search-choice-close,
-    .select2-container .select2-choice abbr,
-    .select2-container .select2-choice .select2-arrow b {
-        background-image: url('select2x2.png') !important;
-        background-repeat: no-repeat !important;
-        background-size: 60px 40px !important;
-    }
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+  only screen and (min-resolution: 2dppx) {
+  .select2-search input,
+  .select2-search-choice-close,
+  .select2-container .select2-choice abbr,
+  .select2-container .select2-choice .select2-arrow b {
+    background-image: url('select2x2.png') !important;
+    background-repeat: no-repeat !important;
+    background-size: 60px 40px !important;
+  }
 
-    .select2-search input {
-        background-position: 100% -21px !important;
-    }
+  .select2-search input {
+    background-position: 100% -21px !important;
+  }
 }
 
 .task-checklist-edit > .checklist-form li:after,
 .task-filter:after,
 .filters:after,
 .filters .filters-controls:after {
-  content: "";
+  content: '';
   display: table;
   clear: both;
 }
@@ -2232,7 +2398,11 @@ html[dir="rtl"] .select2-search-choice-close {
   font-weight: bold;
   letter-spacing: 0.0618em;
   color: #fff;
-  text-shadow: -1px -1px 1px #333, 1px -1px 1px #333, -1px 1px 1px #333, 1px 1px 1px #333;
+  text-shadow:
+    -1px -1px 1px #333,
+    1px -1px 1px #333,
+    -1px 1px 1px #333,
+    1px 1px 1px #333;
 }
 .herobox .avatar-level > a,
 .herobox .avatar-name > a,
@@ -2270,8 +2440,8 @@ html[dir="rtl"] .select2-search-choice-close {
     left: 2%;
     width: 96%;
     height: 96%;
-    -webkit-box-shadow: 0 0 0 30px rgba(0,0,0,0.63);
-    box-shadow: 0 0 0 30px rgba(0,0,0,0.63);
+    -webkit-box-shadow: 0 0 0 30px rgba(0, 0, 0, 0.63);
+    box-shadow: 0 0 0 30px rgba(0, 0, 0, 0.63);
   }
   .toolbar-mobile > div h4:before,
   .toolbar-nav .toolbar-button-dropdown > div h4:before,
@@ -2439,7 +2609,7 @@ html[dir="rtl"] .select2-search-choice-close {
 }
 @media screen and (max-width: 767px) {
   .toolbar-controls,
-.toolbar-controls {
+  .toolbar-controls {
     width: 96%;
     position: fixed;
     bottom: 2%;
@@ -2449,7 +2619,7 @@ html[dir="rtl"] .select2-search-choice-close {
 }
 @media screen and (min-width: 768px) {
   .toolbar-controls,
-.toolbar-controls {
+  .toolbar-controls {
     display: none;
   }
 }
@@ -2460,8 +2630,8 @@ html[dir="rtl"] .select2-search-choice-close {
 @media screen and (min-width: 768px) {
   .options-menu,
   .options-submenu,
-.options-menu,
-.options-submenu {
+  .options-menu,
+  .options-submenu {
     padding: 1em 1em 0em 1em;
   }
 }
@@ -2550,26 +2720,66 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #763225 !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-worst:not(.completed) .priority-multiplier li > input + button:focus,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-worst:not(.completed) .task-attributes li > input + button:focus,
 .task-column:not(.rewards) .color-worst:not(.completed) .repeat-days li > input + button:focus,
 .task-column:not(.rewards) .color-worst:not(.completed) .repeat-frequency li > input + button:focus,
-.task-column:not(.rewards) .color-worst:not(.completed) .priority-multiplier li textarea + button:focus,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:focus,
 .task-column:not(.rewards) .color-worst:not(.completed) .task-attributes li textarea + button:focus,
 .task-column:not(.rewards) .color-worst:not(.completed) .repeat-days li textarea + button:focus,
-.task-column:not(.rewards) .color-worst:not(.completed) .repeat-frequency li textarea + button:focus {
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .repeat-frequency
+  li
+  textarea
+  + button:focus {
   border-color: #c65e4a !important;
   background-color: #e0a79c !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-worst:not(.completed) .priority-multiplier li > input + button:active,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-worst:not(.completed) .task-attributes li > input + button:active,
 .task-column:not(.rewards) .color-worst:not(.completed) .repeat-days li > input + button:active,
-.task-column:not(.rewards) .color-worst:not(.completed) .repeat-frequency li > input + button:active,
-.task-column:not(.rewards) .color-worst:not(.completed) .priority-multiplier li textarea + button:active,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-attributes li textarea + button:active,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .repeat-frequency
+  li
+  > input
+  + button:active,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:active,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-attributes
+  li
+  textarea
+  + button:active,
 .task-column:not(.rewards) .color-worst:not(.completed) .repeat-days li textarea + button:active,
-.task-column:not(.rewards) .color-worst:not(.completed) .repeat-frequency li textarea + button:active {
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .repeat-frequency
+  li
+  textarea
+  + button:active {
   background-color: #d68c7d !important;
 }
 .task-column:not(.rewards) .color-worst:not(.completed) .priority-multiplier li > a:nth-of-type(2),
@@ -2594,14 +2804,54 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #e6b8af;
   border-color: #d68c7d;
 }
-.task-column:not(.rewards) .color-worst:not(.completed) .priority-multiplier li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-attributes li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-worst:not(.completed) .repeat-days li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-worst:not(.completed) .repeat-frequency li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-worst:not(.completed) .priority-multiplier li > div > div:first-child:before,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-attributes li > div > div:first-child:before,
-.task-column:not(.rewards) .color-worst:not(.completed) .repeat-days li > div > div:first-child:before,
-.task-column:not(.rewards) .color-worst:not(.completed) .repeat-frequency li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-attributes
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .repeat-days
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-attributes
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .repeat-days
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #d68c7d;
 }
@@ -2655,26 +2905,77 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #e2aea3 !important;
   border-color: #9a4230 !important;
 }
-.task-column:not(.rewards) .color-worst:not(.completed) .priority-multiplier li.active.filters-tags a,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  a,
 .task-column:not(.rewards) .color-worst:not(.completed) .task-attributes li.active.filters-tags a,
 .task-column:not(.rewards) .color-worst:not(.completed) .repeat-days li.active.filters-tags a,
 .task-column:not(.rewards) .color-worst:not(.completed) .repeat-frequency li.active.filters-tags a,
-.task-column:not(.rewards) .color-worst:not(.completed) .priority-multiplier li.active.filters-tags button,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-attributes li.active.filters-tags button,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button,
 .task-column:not(.rewards) .color-worst:not(.completed) .repeat-days li.active.filters-tags button,
-.task-column:not(.rewards) .color-worst:not(.completed) .repeat-frequency li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button {
   background-color: #c65e4a !important;
   border-color: #e6b8af !important;
   color: #fff !important;
 }
-.task-column:not(.rewards) .color-worst:not(.completed) .priority-multiplier li.active.filters-tags a span,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-attributes li.active.filters-tags a span,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  a
+  span,
 .task-column:not(.rewards) .color-worst:not(.completed) .repeat-days li.active.filters-tags a span,
-.task-column:not(.rewards) .color-worst:not(.completed) .repeat-frequency li.active.filters-tags a span,
-.task-column:not(.rewards) .color-worst:not(.completed) .priority-multiplier li.active.filters-tags button span,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-attributes li.active.filters-tags button span,
-.task-column:not(.rewards) .color-worst:not(.completed) .repeat-days li.active.filters-tags button span,
-.task-column:not(.rewards) .color-worst:not(.completed) .repeat-frequency li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .repeat-days
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-worst:not(.completed) .priority-multiplier li button.active,
@@ -2695,7 +2996,12 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-worst:not(.completed) .plusminus .task-checker label:after {
   border: 1px solid #c96652 !important;
 }
-.task-column:not(.rewards) .color-worst:not(.completed) .plusminus .task-checker input[type=checkbox]:checked + label:after {
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .plusminus
+  .task-checker
+  input[type='checkbox']:checked
+  + label:after {
   -webkit-box-shadow: inset 0 0 0 1px #b94f3a !important;
   box-shadow: inset 0 0 0 1px #b94f3a !important;
   background-color: #e1aaa0 !important;
@@ -2745,17 +3051,37 @@ html[dir="rtl"] .select2-search-choice-close {
   outline: none;
 }
 .task-column:not(.rewards) .color-worst:not(.completed) .save-close > input + button:focus,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-checklist-edit li > input + button:focus,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-worst:not(.completed) .save-close textarea + button:focus,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-checklist-edit li textarea + button:focus {
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:focus {
   border-color: #c35440 !important;
   background-color: #db9a8e !important;
   outline: none;
 }
 .task-column:not(.rewards) .color-worst:not(.completed) .save-close > input + button:active,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-checklist-edit li > input + button:active,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-worst:not(.completed) .save-close textarea + button:active,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-checklist-edit li textarea + button:active {
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:active {
   background-color: #d28071 !important;
 }
 .task-column:not(.rewards) .color-worst:not(.completed) .save-close > a:nth-of-type(2),
@@ -2775,9 +3101,19 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #d28071;
 }
 .task-column:not(.rewards) .color-worst:not(.completed) .save-close > div > ul:first-child:before,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-checklist-edit li > div > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > ul:first-child:before,
 .task-column:not(.rewards) .color-worst:not(.completed) .save-close > div > div:first-child:before,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-checklist-edit li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #d28071;
 }
@@ -2814,17 +3150,35 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #923e2e !important;
 }
 .task-column:not(.rewards) .color-worst:not(.completed) .save-close.active.filters-tags a,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-checklist-edit li.active.filters-tags a,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  a,
 .task-column:not(.rewards) .color-worst:not(.completed) .save-close.active.filters-tags button,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-checklist-edit li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button {
   background-color: #c35440 !important;
   border-color: #e1aaa0 !important;
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-worst:not(.completed) .save-close.active.filters-tags a span,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-checklist-edit li.active.filters-tags a span,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  a
+  span,
 .task-column:not(.rewards) .color-worst:not(.completed) .save-close.active.filters-tags button span,
-.task-column:not(.rewards) .color-worst:not(.completed) .task-checklist-edit li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-worst:not(.completed) .save-close button:focus,
@@ -2848,7 +3202,10 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-worst:not(.completed) .task-actions a:focus {
   background-color: #b94f3a;
 }
-.task-column:not(.rewards) .color-worst:not(.completed) input[type=checkbox].task-input:focus + label,
+.task-column:not(.rewards)
+  .color-worst:not(.completed)
+  input[type='checkbox'].task-input:focus
+  + label,
 .task-column:not(.rewards) .color-worst:not(.completed) input.habit:focus + a {
   background-color: #b94f3a;
 }
@@ -2947,26 +3304,66 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #8d1e1e !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-worse:not(.completed) .priority-multiplier li > input + button:focus,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-worse:not(.completed) .task-attributes li > input + button:focus,
 .task-column:not(.rewards) .color-worse:not(.completed) .repeat-days li > input + button:focus,
 .task-column:not(.rewards) .color-worse:not(.completed) .repeat-frequency li > input + button:focus,
-.task-column:not(.rewards) .color-worse:not(.completed) .priority-multiplier li textarea + button:focus,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:focus,
 .task-column:not(.rewards) .color-worse:not(.completed) .task-attributes li textarea + button:focus,
 .task-column:not(.rewards) .color-worse:not(.completed) .repeat-days li textarea + button:focus,
-.task-column:not(.rewards) .color-worse:not(.completed) .repeat-frequency li textarea + button:focus {
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .repeat-frequency
+  li
+  textarea
+  + button:focus {
   border-color: #da5353 !important;
   background-color: #efb5b5 !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-worse:not(.completed) .priority-multiplier li > input + button:active,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-worse:not(.completed) .task-attributes li > input + button:active,
 .task-column:not(.rewards) .color-worse:not(.completed) .repeat-days li > input + button:active,
-.task-column:not(.rewards) .color-worse:not(.completed) .repeat-frequency li > input + button:active,
-.task-column:not(.rewards) .color-worse:not(.completed) .priority-multiplier li textarea + button:active,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-attributes li textarea + button:active,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .repeat-frequency
+  li
+  > input
+  + button:active,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:active,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-attributes
+  li
+  textarea
+  + button:active,
 .task-column:not(.rewards) .color-worse:not(.completed) .repeat-days li textarea + button:active,
-.task-column:not(.rewards) .color-worse:not(.completed) .repeat-frequency li textarea + button:active {
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .repeat-frequency
+  li
+  textarea
+  + button:active {
   background-color: #e79090 !important;
 }
 .task-column:not(.rewards) .color-worse:not(.completed) .priority-multiplier li > a:nth-of-type(2),
@@ -2991,14 +3388,54 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #f4cccc;
   border-color: #e79090;
 }
-.task-column:not(.rewards) .color-worse:not(.completed) .priority-multiplier li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-attributes li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-worse:not(.completed) .repeat-days li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-worse:not(.completed) .repeat-frequency li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-worse:not(.completed) .priority-multiplier li > div > div:first-child:before,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-attributes li > div > div:first-child:before,
-.task-column:not(.rewards) .color-worse:not(.completed) .repeat-days li > div > div:first-child:before,
-.task-column:not(.rewards) .color-worse:not(.completed) .repeat-frequency li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-attributes
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .repeat-days
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-attributes
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .repeat-days
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #e79090;
 }
@@ -3052,26 +3489,77 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #f1bebe !important;
   border-color: #b82828 !important;
 }
-.task-column:not(.rewards) .color-worse:not(.completed) .priority-multiplier li.active.filters-tags a,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  a,
 .task-column:not(.rewards) .color-worse:not(.completed) .task-attributes li.active.filters-tags a,
 .task-column:not(.rewards) .color-worse:not(.completed) .repeat-days li.active.filters-tags a,
 .task-column:not(.rewards) .color-worse:not(.completed) .repeat-frequency li.active.filters-tags a,
-.task-column:not(.rewards) .color-worse:not(.completed) .priority-multiplier li.active.filters-tags button,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-attributes li.active.filters-tags button,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button,
 .task-column:not(.rewards) .color-worse:not(.completed) .repeat-days li.active.filters-tags button,
-.task-column:not(.rewards) .color-worse:not(.completed) .repeat-frequency li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button {
   background-color: #da5353 !important;
   border-color: #f4cccc !important;
   color: #fff !important;
 }
-.task-column:not(.rewards) .color-worse:not(.completed) .priority-multiplier li.active.filters-tags a span,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-attributes li.active.filters-tags a span,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  a
+  span,
 .task-column:not(.rewards) .color-worse:not(.completed) .repeat-days li.active.filters-tags a span,
-.task-column:not(.rewards) .color-worse:not(.completed) .repeat-frequency li.active.filters-tags a span,
-.task-column:not(.rewards) .color-worse:not(.completed) .priority-multiplier li.active.filters-tags button span,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-attributes li.active.filters-tags button span,
-.task-column:not(.rewards) .color-worse:not(.completed) .repeat-days li.active.filters-tags button span,
-.task-column:not(.rewards) .color-worse:not(.completed) .repeat-frequency li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .repeat-days
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-worse:not(.completed) .priority-multiplier li button.active,
@@ -3092,7 +3580,12 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-worse:not(.completed) .plusminus .task-checker label:after {
   border: 1px solid #dc5d5d !important;
 }
-.task-column:not(.rewards) .color-worse:not(.completed) .plusminus .task-checker input[type=checkbox]:checked + label:after {
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .plusminus
+  .task-checker
+  input[type='checkbox']:checked
+  + label:after {
   -webkit-box-shadow: inset 0 0 0 1px #d43939 !important;
   box-shadow: inset 0 0 0 1px #d43939 !important;
   background-color: #f0baba !important;
@@ -3142,17 +3635,37 @@ html[dir="rtl"] .select2-search-choice-close {
   outline: none;
 }
 .task-column:not(.rewards) .color-worse:not(.completed) .save-close > input + button:focus,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-checklist-edit li > input + button:focus,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-worse:not(.completed) .save-close textarea + button:focus,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-checklist-edit li textarea + button:focus {
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:focus {
   border-color: #d74747 !important;
   background-color: #eba4a4 !important;
   outline: none;
 }
 .task-column:not(.rewards) .color-worse:not(.completed) .save-close > input + button:active,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-checklist-edit li > input + button:active,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-worse:not(.completed) .save-close textarea + button:active,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-checklist-edit li textarea + button:active {
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:active {
   background-color: #e48181 !important;
 }
 .task-column:not(.rewards) .color-worse:not(.completed) .save-close > a:nth-of-type(2),
@@ -3172,9 +3685,19 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #e48181;
 }
 .task-column:not(.rewards) .color-worse:not(.completed) .save-close > div > ul:first-child:before,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-checklist-edit li > div > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > ul:first-child:before,
 .task-column:not(.rewards) .color-worse:not(.completed) .save-close > div > div:first-child:before,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-checklist-edit li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #e48181;
 }
@@ -3211,17 +3734,35 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #af2626 !important;
 }
 .task-column:not(.rewards) .color-worse:not(.completed) .save-close.active.filters-tags a,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-checklist-edit li.active.filters-tags a,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  a,
 .task-column:not(.rewards) .color-worse:not(.completed) .save-close.active.filters-tags button,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-checklist-edit li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button {
   background-color: #d74747 !important;
   border-color: #f0baba !important;
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-worse:not(.completed) .save-close.active.filters-tags a span,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-checklist-edit li.active.filters-tags a span,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  a
+  span,
 .task-column:not(.rewards) .color-worse:not(.completed) .save-close.active.filters-tags button span,
-.task-column:not(.rewards) .color-worse:not(.completed) .task-checklist-edit li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-worse:not(.completed) .save-close button:focus,
@@ -3245,7 +3786,10 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-worse:not(.completed) .task-actions a:focus {
   background-color: #d43939;
 }
-.task-column:not(.rewards) .color-worse:not(.completed) input[type=checkbox].task-input:focus + label,
+.task-column:not(.rewards)
+  .color-worse:not(.completed)
+  input[type='checkbox'].task-input:focus
+  + label,
 .task-column:not(.rewards) .color-worse:not(.completed) input.habit:focus + a {
   background-color: #d43939;
 }
@@ -3344,11 +3888,21 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #a5590a !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-bad:not(.completed) .priority-multiplier li > input + button:focus,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-bad:not(.completed) .task-attributes li > input + button:focus,
 .task-column:not(.rewards) .color-bad:not(.completed) .repeat-days li > input + button:focus,
 .task-column:not(.rewards) .color-bad:not(.completed) .repeat-frequency li > input + button:focus,
-.task-column:not(.rewards) .color-bad:not(.completed) .priority-multiplier li textarea + button:focus,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:focus,
 .task-column:not(.rewards) .color-bad:not(.completed) .task-attributes li textarea + button:focus,
 .task-column:not(.rewards) .color-bad:not(.completed) .repeat-days li textarea + button:focus,
 .task-column:not(.rewards) .color-bad:not(.completed) .repeat-frequency li textarea + button:focus {
@@ -3356,14 +3910,29 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #fad7b2 !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-bad:not(.completed) .priority-multiplier li > input + button:active,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-bad:not(.completed) .task-attributes li > input + button:active,
 .task-column:not(.rewards) .color-bad:not(.completed) .repeat-days li > input + button:active,
 .task-column:not(.rewards) .color-bad:not(.completed) .repeat-frequency li > input + button:active,
-.task-column:not(.rewards) .color-bad:not(.completed) .priority-multiplier li textarea + button:active,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:active,
 .task-column:not(.rewards) .color-bad:not(.completed) .task-attributes li textarea + button:active,
 .task-column:not(.rewards) .color-bad:not(.completed) .repeat-days li textarea + button:active,
-.task-column:not(.rewards) .color-bad:not(.completed) .repeat-frequency li textarea + button:active {
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .repeat-frequency
+  li
+  textarea
+  + button:active {
   background-color: #f8c187 !important;
 }
 .task-column:not(.rewards) .color-bad:not(.completed) .priority-multiplier li > a:nth-of-type(2),
@@ -3388,14 +3957,49 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #fce5cd;
   border-color: #f8c187;
 }
-.task-column:not(.rewards) .color-bad:not(.completed) .priority-multiplier li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-attributes li > div > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-attributes
+  li
+  > div
+  > ul:first-child:before,
 .task-column:not(.rewards) .color-bad:not(.completed) .repeat-days li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-bad:not(.completed) .repeat-frequency li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-bad:not(.completed) .priority-multiplier li > div > div:first-child:before,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-attributes li > div > div:first-child:before,
-.task-column:not(.rewards) .color-bad:not(.completed) .repeat-days li > div > div:first-child:before,
-.task-column:not(.rewards) .color-bad:not(.completed) .repeat-frequency li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-attributes
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .repeat-days
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #f8c187;
 }
@@ -3453,22 +4057,69 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-bad:not(.completed) .task-attributes li.active.filters-tags a,
 .task-column:not(.rewards) .color-bad:not(.completed) .repeat-days li.active.filters-tags a,
 .task-column:not(.rewards) .color-bad:not(.completed) .repeat-frequency li.active.filters-tags a,
-.task-column:not(.rewards) .color-bad:not(.completed) .priority-multiplier li.active.filters-tags button,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-attributes li.active.filters-tags button,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button,
 .task-column:not(.rewards) .color-bad:not(.completed) .repeat-days li.active.filters-tags button,
-.task-column:not(.rewards) .color-bad:not(.completed) .repeat-frequency li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button {
   background-color: #f49b40 !important;
   border-color: #fce5cd !important;
   color: #fff !important;
 }
-.task-column:not(.rewards) .color-bad:not(.completed) .priority-multiplier li.active.filters-tags a span,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-attributes li.active.filters-tags a span,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  a
+  span,
 .task-column:not(.rewards) .color-bad:not(.completed) .repeat-days li.active.filters-tags a span,
-.task-column:not(.rewards) .color-bad:not(.completed) .repeat-frequency li.active.filters-tags a span,
-.task-column:not(.rewards) .color-bad:not(.completed) .priority-multiplier li.active.filters-tags button span,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-attributes li.active.filters-tags button span,
-.task-column:not(.rewards) .color-bad:not(.completed) .repeat-days li.active.filters-tags button span,
-.task-column:not(.rewards) .color-bad:not(.completed) .repeat-frequency li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .repeat-days
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-bad:not(.completed) .priority-multiplier li button.active,
@@ -3489,7 +4140,12 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-bad:not(.completed) .plusminus .task-checker label:after {
   border: 1px solid #f4a24c !important;
 }
-.task-column:not(.rewards) .color-bad:not(.completed) .plusminus .task-checker input[type=checkbox]:checked + label:after {
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .plusminus
+  .task-checker
+  input[type='checkbox']:checked
+  + label:after {
   -webkit-box-shadow: inset 0 0 0 1px #f28b21 !important;
   box-shadow: inset 0 0 0 1px #f28b21 !important;
   background-color: #fbdab7 !important;
@@ -3539,17 +4195,37 @@ html[dir="rtl"] .select2-search-choice-close {
   outline: none;
 }
 .task-column:not(.rewards) .color-bad:not(.completed) .save-close > input + button:focus,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-checklist-edit li > input + button:focus,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-bad:not(.completed) .save-close textarea + button:focus,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-checklist-edit li textarea + button:focus {
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:focus {
   border-color: #f49530 !important;
   background-color: #facd9e !important;
   outline: none;
 }
 .task-column:not(.rewards) .color-bad:not(.completed) .save-close > input + button:active,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-checklist-edit li > input + button:active,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-bad:not(.completed) .save-close textarea + button:active,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-checklist-edit li textarea + button:active {
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:active {
   background-color: #f7b874 !important;
 }
 .task-column:not(.rewards) .color-bad:not(.completed) .save-close > a:nth-of-type(2),
@@ -3569,9 +4245,19 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #f7b874;
 }
 .task-column:not(.rewards) .color-bad:not(.completed) .save-close > div > ul:first-child:before,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-checklist-edit li > div > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > ul:first-child:before,
 .task-column:not(.rewards) .color-bad:not(.completed) .save-close > div > div:first-child:before,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-checklist-edit li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #f7b874;
 }
@@ -3610,15 +4296,29 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-bad:not(.completed) .save-close.active.filters-tags a,
 .task-column:not(.rewards) .color-bad:not(.completed) .task-checklist-edit li.active.filters-tags a,
 .task-column:not(.rewards) .color-bad:not(.completed) .save-close.active.filters-tags button,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-checklist-edit li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button {
   background-color: #f49530 !important;
   border-color: #fbdab7 !important;
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-bad:not(.completed) .save-close.active.filters-tags a span,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-checklist-edit li.active.filters-tags a span,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  a
+  span,
 .task-column:not(.rewards) .color-bad:not(.completed) .save-close.active.filters-tags button span,
-.task-column:not(.rewards) .color-bad:not(.completed) .task-checklist-edit li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-bad:not(.completed) .save-close button:focus,
@@ -3642,7 +4342,10 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-bad:not(.completed) .task-actions a:focus {
   background-color: #f28b21;
 }
-.task-column:not(.rewards) .color-bad:not(.completed) input[type=checkbox].task-input:focus + label,
+.task-column:not(.rewards)
+  .color-bad:not(.completed)
+  input[type='checkbox'].task-input:focus
+  + label,
 .task-column:not(.rewards) .color-bad:not(.completed) input.habit:focus + a {
   background-color: #f28b21;
 }
@@ -3741,29 +4444,93 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #af8300 !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-neutral:not(.completed) .priority-multiplier li > input + button:focus,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-attributes li > input + button:focus,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:focus,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-attributes
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-neutral:not(.completed) .repeat-days li > input + button:focus,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-frequency li > input + button:focus,
-.task-column:not(.rewards) .color-neutral:not(.completed) .priority-multiplier li textarea + button:focus,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-attributes li textarea + button:focus,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-frequency
+  li
+  > input
+  + button:focus,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:focus,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-attributes
+  li
+  textarea
+  + button:focus,
 .task-column:not(.rewards) .color-neutral:not(.completed) .repeat-days li textarea + button:focus,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-frequency li textarea + button:focus {
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-frequency
+  li
+  textarea
+  + button:focus {
   border-color: #ffcc35 !important;
   background-color: #ffebb0 !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-neutral:not(.completed) .priority-multiplier li > input + button:active,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-attributes li > input + button:active,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:active,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-attributes
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-neutral:not(.completed) .repeat-days li > input + button:active,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-frequency li > input + button:active,
-.task-column:not(.rewards) .color-neutral:not(.completed) .priority-multiplier li textarea + button:active,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-attributes li textarea + button:active,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-frequency
+  li
+  > input
+  + button:active,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:active,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-attributes
+  li
+  textarea
+  + button:active,
 .task-column:not(.rewards) .color-neutral:not(.completed) .repeat-days li textarea + button:active,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-frequency li textarea + button:active {
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-frequency
+  li
+  textarea
+  + button:active {
   background-color: #ffdf82 !important;
 }
-.task-column:not(.rewards) .color-neutral:not(.completed) .priority-multiplier li > a:nth-of-type(2),
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .priority-multiplier
+  li
+  > a:nth-of-type(2),
 .task-column:not(.rewards) .color-neutral:not(.completed) .task-attributes li > a:nth-of-type(2),
 .task-column:not(.rewards) .color-neutral:not(.completed) .repeat-days li > a:nth-of-type(2),
 .task-column:not(.rewards) .color-neutral:not(.completed) .repeat-frequency li > a:nth-of-type(2) {
@@ -3785,14 +4552,54 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #fff2cc;
   border-color: #ffdf82;
 }
-.task-column:not(.rewards) .color-neutral:not(.completed) .priority-multiplier li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-attributes li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-days li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-frequency li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-neutral:not(.completed) .priority-multiplier li > div > div:first-child:before,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-attributes li > div > div:first-child:before,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-days li > div > div:first-child:before,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-frequency li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-attributes
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-days
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-attributes
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-days
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #ffdf82;
 }
@@ -3846,26 +4653,90 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #ffeeba !important;
   border-color: #e6ab00 !important;
 }
-.task-column:not(.rewards) .color-neutral:not(.completed) .priority-multiplier li.active.filters-tags a,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  a,
 .task-column:not(.rewards) .color-neutral:not(.completed) .task-attributes li.active.filters-tags a,
 .task-column:not(.rewards) .color-neutral:not(.completed) .repeat-days li.active.filters-tags a,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-frequency li.active.filters-tags a,
-.task-column:not(.rewards) .color-neutral:not(.completed) .priority-multiplier li.active.filters-tags button,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-attributes li.active.filters-tags button,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-days li.active.filters-tags button,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-frequency li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  a,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-days
+  li.active.filters-tags
+  button,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button {
   background-color: #ffcc35 !important;
   border-color: #fff2cc !important;
   color: #fff !important;
 }
-.task-column:not(.rewards) .color-neutral:not(.completed) .priority-multiplier li.active.filters-tags a span,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-attributes li.active.filters-tags a span,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-days li.active.filters-tags a span,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-frequency li.active.filters-tags a span,
-.task-column:not(.rewards) .color-neutral:not(.completed) .priority-multiplier li.active.filters-tags button span,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-attributes li.active.filters-tags button span,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-days li.active.filters-tags button span,
-.task-column:not(.rewards) .color-neutral:not(.completed) .repeat-frequency li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-days
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-days
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-neutral:not(.completed) .priority-multiplier li button.active,
@@ -3886,7 +4757,12 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-neutral:not(.completed) .plusminus .task-checker label:after {
   border: 1px solid #ffcf42 !important;
 }
-.task-column:not(.rewards) .color-neutral:not(.completed) .plusminus .task-checker input[type=checkbox]:checked + label:after {
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .plusminus
+  .task-checker
+  input[type='checkbox']:checked
+  + label:after {
   -webkit-box-shadow: inset 0 0 0 1px #ffc314 !important;
   box-shadow: inset 0 0 0 1px #ffc314 !important;
   background-color: #ffecb5 !important;
@@ -3936,21 +4812,45 @@ html[dir="rtl"] .select2-search-choice-close {
   outline: none;
 }
 .task-column:not(.rewards) .color-neutral:not(.completed) .save-close > input + button:focus,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-checklist-edit li > input + button:focus,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-neutral:not(.completed) .save-close textarea + button:focus,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-checklist-edit li textarea + button:focus {
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:focus {
   border-color: #ffc726 !important;
   background-color: #ffe59a !important;
   outline: none;
 }
 .task-column:not(.rewards) .color-neutral:not(.completed) .save-close > input + button:active,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-checklist-edit li > input + button:active,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-neutral:not(.completed) .save-close textarea + button:active,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-checklist-edit li textarea + button:active {
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:active {
   background-color: #ffda6e !important;
 }
 .task-column:not(.rewards) .color-neutral:not(.completed) .save-close > a:nth-of-type(2),
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-checklist-edit li > a:nth-of-type(2) {
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-checklist-edit
+  li
+  > a:nth-of-type(2) {
   border-left: 1px solid #ffe8a4 !important;
 }
 @media screen and (min-width: 768px) {
@@ -3966,9 +4866,23 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #ffda6e;
 }
 .task-column:not(.rewards) .color-neutral:not(.completed) .save-close > div > ul:first-child:before,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-checklist-edit li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-neutral:not(.completed) .save-close > div > div:first-child:before,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-checklist-edit li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .save-close
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #ffda6e;
 }
@@ -4005,17 +4919,39 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #daa200 !important;
 }
 .task-column:not(.rewards) .color-neutral:not(.completed) .save-close.active.filters-tags a,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-checklist-edit li.active.filters-tags a,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  a,
 .task-column:not(.rewards) .color-neutral:not(.completed) .save-close.active.filters-tags button,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-checklist-edit li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button {
   background-color: #ffc726 !important;
   border-color: #ffecb5 !important;
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-neutral:not(.completed) .save-close.active.filters-tags a span,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-checklist-edit li.active.filters-tags a span,
-.task-column:not(.rewards) .color-neutral:not(.completed) .save-close.active.filters-tags button span,
-.task-column:not(.rewards) .color-neutral:not(.completed) .task-checklist-edit li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .save-close.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-neutral:not(.completed) .save-close button:focus,
@@ -4039,7 +4975,10 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-neutral:not(.completed) .task-actions a:focus {
   background-color: #ffc314;
 }
-.task-column:not(.rewards) .color-neutral:not(.completed) input[type=checkbox].task-input:focus + label,
+.task-column:not(.rewards)
+  .color-neutral:not(.completed)
+  input[type='checkbox'].task-input:focus
+  + label,
 .task-column:not(.rewards) .color-neutral:not(.completed) input.habit:focus + a {
   background-color: #ffc314;
 }
@@ -4138,26 +5077,56 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #477337 !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-good:not(.completed) .priority-multiplier li > input + button:focus,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-good:not(.completed) .task-attributes li > input + button:focus,
 .task-column:not(.rewards) .color-good:not(.completed) .repeat-days li > input + button:focus,
 .task-column:not(.rewards) .color-good:not(.completed) .repeat-frequency li > input + button:focus,
-.task-column:not(.rewards) .color-good:not(.completed) .priority-multiplier li textarea + button:focus,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:focus,
 .task-column:not(.rewards) .color-good:not(.completed) .task-attributes li textarea + button:focus,
 .task-column:not(.rewards) .color-good:not(.completed) .repeat-days li textarea + button:focus,
-.task-column:not(.rewards) .color-good:not(.completed) .repeat-frequency li textarea + button:focus {
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .repeat-frequency
+  li
+  textarea
+  + button:focus {
   border-color: #84bb70 !important;
   background-color: #c9e1c0 !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-good:not(.completed) .priority-multiplier li > input + button:active,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-good:not(.completed) .task-attributes li > input + button:active,
 .task-column:not(.rewards) .color-good:not(.completed) .repeat-days li > input + button:active,
 .task-column:not(.rewards) .color-good:not(.completed) .repeat-frequency li > input + button:active,
-.task-column:not(.rewards) .color-good:not(.completed) .priority-multiplier li textarea + button:active,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:active,
 .task-column:not(.rewards) .color-good:not(.completed) .task-attributes li textarea + button:active,
 .task-column:not(.rewards) .color-good:not(.completed) .repeat-days li textarea + button:active,
-.task-column:not(.rewards) .color-good:not(.completed) .repeat-frequency li textarea + button:active {
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .repeat-frequency
+  li
+  textarea
+  + button:active {
   background-color: #afd3a2 !important;
 }
 .task-column:not(.rewards) .color-good:not(.completed) .priority-multiplier li > a:nth-of-type(2),
@@ -4182,14 +5151,54 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #d9ead3;
   border-color: #afd3a2;
 }
-.task-column:not(.rewards) .color-good:not(.completed) .priority-multiplier li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-good:not(.completed) .task-attributes li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-good:not(.completed) .repeat-days li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-good:not(.completed) .repeat-frequency li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-good:not(.completed) .priority-multiplier li > div > div:first-child:before,
-.task-column:not(.rewards) .color-good:not(.completed) .task-attributes li > div > div:first-child:before,
-.task-column:not(.rewards) .color-good:not(.completed) .repeat-days li > div > div:first-child:before,
-.task-column:not(.rewards) .color-good:not(.completed) .repeat-frequency li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-attributes
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .repeat-days
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-attributes
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .repeat-days
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #afd3a2;
 }
@@ -4243,26 +5252,77 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #cfe5c7 !important;
   border-color: #5c9748 !important;
 }
-.task-column:not(.rewards) .color-good:not(.completed) .priority-multiplier li.active.filters-tags a,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  a,
 .task-column:not(.rewards) .color-good:not(.completed) .task-attributes li.active.filters-tags a,
 .task-column:not(.rewards) .color-good:not(.completed) .repeat-days li.active.filters-tags a,
 .task-column:not(.rewards) .color-good:not(.completed) .repeat-frequency li.active.filters-tags a,
-.task-column:not(.rewards) .color-good:not(.completed) .priority-multiplier li.active.filters-tags button,
-.task-column:not(.rewards) .color-good:not(.completed) .task-attributes li.active.filters-tags button,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button,
 .task-column:not(.rewards) .color-good:not(.completed) .repeat-days li.active.filters-tags button,
-.task-column:not(.rewards) .color-good:not(.completed) .repeat-frequency li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button {
   background-color: #84bb70 !important;
   border-color: #d9ead3 !important;
   color: #fff !important;
 }
-.task-column:not(.rewards) .color-good:not(.completed) .priority-multiplier li.active.filters-tags a span,
-.task-column:not(.rewards) .color-good:not(.completed) .task-attributes li.active.filters-tags a span,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  a
+  span,
 .task-column:not(.rewards) .color-good:not(.completed) .repeat-days li.active.filters-tags a span,
-.task-column:not(.rewards) .color-good:not(.completed) .repeat-frequency li.active.filters-tags a span,
-.task-column:not(.rewards) .color-good:not(.completed) .priority-multiplier li.active.filters-tags button span,
-.task-column:not(.rewards) .color-good:not(.completed) .task-attributes li.active.filters-tags button span,
-.task-column:not(.rewards) .color-good:not(.completed) .repeat-days li.active.filters-tags button span,
-.task-column:not(.rewards) .color-good:not(.completed) .repeat-frequency li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .repeat-days
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-good:not(.completed) .priority-multiplier li button.active,
@@ -4283,7 +5343,12 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-good:not(.completed) .plusminus .task-checker label:after {
   border: 1px solid #8bbf79 !important;
 }
-.task-column:not(.rewards) .color-good:not(.completed) .plusminus .task-checker input[type=checkbox]:checked + label:after {
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .plusminus
+  .task-checker
+  input[type='checkbox']:checked
+  + label:after {
   -webkit-box-shadow: inset 0 0 0 1px #71b05b !important;
   box-shadow: inset 0 0 0 1px #71b05b !important;
   background-color: #cce3c4 !important;
@@ -4333,17 +5398,37 @@ html[dir="rtl"] .select2-search-choice-close {
   outline: none;
 }
 .task-column:not(.rewards) .color-good:not(.completed) .save-close > input + button:focus,
-.task-column:not(.rewards) .color-good:not(.completed) .task-checklist-edit li > input + button:focus,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-good:not(.completed) .save-close textarea + button:focus,
-.task-column:not(.rewards) .color-good:not(.completed) .task-checklist-edit li textarea + button:focus {
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:focus {
   border-color: #7bb666 !important;
   background-color: #bddbb2 !important;
   outline: none;
 }
 .task-column:not(.rewards) .color-good:not(.completed) .save-close > input + button:active,
-.task-column:not(.rewards) .color-good:not(.completed) .task-checklist-edit li > input + button:active,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-good:not(.completed) .save-close textarea + button:active,
-.task-column:not(.rewards) .color-good:not(.completed) .task-checklist-edit li textarea + button:active {
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:active {
   background-color: #a4cd96 !important;
 }
 .task-column:not(.rewards) .color-good:not(.completed) .save-close > a:nth-of-type(2),
@@ -4363,9 +5448,19 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #a4cd96;
 }
 .task-column:not(.rewards) .color-good:not(.completed) .save-close > div > ul:first-child:before,
-.task-column:not(.rewards) .color-good:not(.completed) .task-checklist-edit li > div > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > ul:first-child:before,
 .task-column:not(.rewards) .color-good:not(.completed) .save-close > div > div:first-child:before,
-.task-column:not(.rewards) .color-good:not(.completed) .task-checklist-edit li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #a4cd96;
 }
@@ -4402,17 +5497,35 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #588f44 !important;
 }
 .task-column:not(.rewards) .color-good:not(.completed) .save-close.active.filters-tags a,
-.task-column:not(.rewards) .color-good:not(.completed) .task-checklist-edit li.active.filters-tags a,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  a,
 .task-column:not(.rewards) .color-good:not(.completed) .save-close.active.filters-tags button,
-.task-column:not(.rewards) .color-good:not(.completed) .task-checklist-edit li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button {
   background-color: #7bb666 !important;
   border-color: #cce3c4 !important;
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-good:not(.completed) .save-close.active.filters-tags a span,
-.task-column:not(.rewards) .color-good:not(.completed) .task-checklist-edit li.active.filters-tags a span,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  a
+  span,
 .task-column:not(.rewards) .color-good:not(.completed) .save-close.active.filters-tags button span,
-.task-column:not(.rewards) .color-good:not(.completed) .task-checklist-edit li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-good:not(.completed) .save-close button:focus,
@@ -4436,7 +5549,10 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-good:not(.completed) .task-actions a:focus {
   background-color: #71b05b;
 }
-.task-column:not(.rewards) .color-good:not(.completed) input[type=checkbox].task-input:focus + label,
+.task-column:not(.rewards)
+  .color-good:not(.completed)
+  input[type='checkbox'].task-input:focus
+  + label,
 .task-column:not(.rewards) .color-good:not(.completed) input.habit:focus + a {
   background-color: #71b05b;
 }
@@ -4535,26 +5651,81 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #3e6168 !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-better:not(.completed) .priority-multiplier li > input + button:focus,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-better:not(.completed) .task-attributes li > input + button:focus,
 .task-column:not(.rewards) .color-better:not(.completed) .repeat-days li > input + button:focus,
-.task-column:not(.rewards) .color-better:not(.completed) .repeat-frequency li > input + button:focus,
-.task-column:not(.rewards) .color-better:not(.completed) .priority-multiplier li textarea + button:focus,
-.task-column:not(.rewards) .color-better:not(.completed) .task-attributes li textarea + button:focus,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .repeat-frequency
+  li
+  > input
+  + button:focus,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:focus,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-attributes
+  li
+  textarea
+  + button:focus,
 .task-column:not(.rewards) .color-better:not(.completed) .repeat-days li textarea + button:focus,
-.task-column:not(.rewards) .color-better:not(.completed) .repeat-frequency li textarea + button:focus {
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .repeat-frequency
+  li
+  textarea
+  + button:focus {
   border-color: #77a5ae !important;
   background-color: #bfd5d9 !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-better:not(.completed) .priority-multiplier li > input + button:active,
-.task-column:not(.rewards) .color-better:not(.completed) .task-attributes li > input + button:active,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:active,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-attributes
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-better:not(.completed) .repeat-days li > input + button:active,
-.task-column:not(.rewards) .color-better:not(.completed) .repeat-frequency li > input + button:active,
-.task-column:not(.rewards) .color-better:not(.completed) .priority-multiplier li textarea + button:active,
-.task-column:not(.rewards) .color-better:not(.completed) .task-attributes li textarea + button:active,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .repeat-frequency
+  li
+  > input
+  + button:active,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:active,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-attributes
+  li
+  textarea
+  + button:active,
 .task-column:not(.rewards) .color-better:not(.completed) .repeat-days li textarea + button:active,
-.task-column:not(.rewards) .color-better:not(.completed) .repeat-frequency li textarea + button:active {
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .repeat-frequency
+  li
+  textarea
+  + button:active {
   background-color: #a4c3c9 !important;
 }
 .task-column:not(.rewards) .color-better:not(.completed) .priority-multiplier li > a:nth-of-type(2),
@@ -4579,14 +5750,54 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #d0e0e3;
   border-color: #a4c3c9;
 }
-.task-column:not(.rewards) .color-better:not(.completed) .priority-multiplier li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-better:not(.completed) .task-attributes li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-better:not(.completed) .repeat-days li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-better:not(.completed) .repeat-frequency li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-better:not(.completed) .priority-multiplier li > div > div:first-child:before,
-.task-column:not(.rewards) .color-better:not(.completed) .task-attributes li > div > div:first-child:before,
-.task-column:not(.rewards) .color-better:not(.completed) .repeat-days li > div > div:first-child:before,
-.task-column:not(.rewards) .color-better:not(.completed) .repeat-frequency li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-attributes
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .repeat-days
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-attributes
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .repeat-days
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #a4c3c9;
 }
@@ -4640,26 +5851,77 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #c6d9dd !important;
   border-color: #518088 !important;
 }
-.task-column:not(.rewards) .color-better:not(.completed) .priority-multiplier li.active.filters-tags a,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  a,
 .task-column:not(.rewards) .color-better:not(.completed) .task-attributes li.active.filters-tags a,
 .task-column:not(.rewards) .color-better:not(.completed) .repeat-days li.active.filters-tags a,
 .task-column:not(.rewards) .color-better:not(.completed) .repeat-frequency li.active.filters-tags a,
-.task-column:not(.rewards) .color-better:not(.completed) .priority-multiplier li.active.filters-tags button,
-.task-column:not(.rewards) .color-better:not(.completed) .task-attributes li.active.filters-tags button,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button,
 .task-column:not(.rewards) .color-better:not(.completed) .repeat-days li.active.filters-tags button,
-.task-column:not(.rewards) .color-better:not(.completed) .repeat-frequency li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button {
   background-color: #77a5ae !important;
   border-color: #d0e0e3 !important;
   color: #fff !important;
 }
-.task-column:not(.rewards) .color-better:not(.completed) .priority-multiplier li.active.filters-tags a span,
-.task-column:not(.rewards) .color-better:not(.completed) .task-attributes li.active.filters-tags a span,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  a
+  span,
 .task-column:not(.rewards) .color-better:not(.completed) .repeat-days li.active.filters-tags a span,
-.task-column:not(.rewards) .color-better:not(.completed) .repeat-frequency li.active.filters-tags a span,
-.task-column:not(.rewards) .color-better:not(.completed) .priority-multiplier li.active.filters-tags button span,
-.task-column:not(.rewards) .color-better:not(.completed) .task-attributes li.active.filters-tags button span,
-.task-column:not(.rewards) .color-better:not(.completed) .repeat-days li.active.filters-tags button span,
-.task-column:not(.rewards) .color-better:not(.completed) .repeat-frequency li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .repeat-days
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-better:not(.completed) .priority-multiplier li button.active,
@@ -4680,7 +5942,12 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-better:not(.completed) .plusminus .task-checker label:after {
   border: 1px solid #7eaab2 !important;
 }
-.task-column:not(.rewards) .color-better:not(.completed) .plusminus .task-checker input[type=checkbox]:checked + label:after {
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .plusminus
+  .task-checker
+  input[type='checkbox']:checked
+  + label:after {
   -webkit-box-shadow: inset 0 0 0 1px #6398a2 !important;
   box-shadow: inset 0 0 0 1px #6398a2 !important;
   background-color: #c2d7db !important;
@@ -4730,21 +5997,45 @@ html[dir="rtl"] .select2-search-choice-close {
   outline: none;
 }
 .task-column:not(.rewards) .color-better:not(.completed) .save-close > input + button:focus,
-.task-column:not(.rewards) .color-better:not(.completed) .task-checklist-edit li > input + button:focus,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-better:not(.completed) .save-close textarea + button:focus,
-.task-column:not(.rewards) .color-better:not(.completed) .task-checklist-edit li textarea + button:focus {
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:focus {
   border-color: #6d9fa9 !important;
   background-color: #b2ccd2 !important;
   outline: none;
 }
 .task-column:not(.rewards) .color-better:not(.completed) .save-close > input + button:active,
-.task-column:not(.rewards) .color-better:not(.completed) .task-checklist-edit li > input + button:active,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-better:not(.completed) .save-close textarea + button:active,
-.task-column:not(.rewards) .color-better:not(.completed) .task-checklist-edit li textarea + button:active {
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:active {
   background-color: #98bbc2 !important;
 }
 .task-column:not(.rewards) .color-better:not(.completed) .save-close > a:nth-of-type(2),
-.task-column:not(.rewards) .color-better:not(.completed) .task-checklist-edit li > a:nth-of-type(2) {
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-checklist-edit
+  li
+  > a:nth-of-type(2) {
   border-left: 1px solid #b8d0d5 !important;
 }
 @media screen and (min-width: 768px) {
@@ -4760,9 +6051,19 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #98bbc2;
 }
 .task-column:not(.rewards) .color-better:not(.completed) .save-close > div > ul:first-child:before,
-.task-column:not(.rewards) .color-better:not(.completed) .task-checklist-edit li > div > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > ul:first-child:before,
 .task-column:not(.rewards) .color-better:not(.completed) .save-close > div > div:first-child:before,
-.task-column:not(.rewards) .color-better:not(.completed) .task-checklist-edit li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #98bbc2;
 }
@@ -4799,17 +6100,39 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #4d7982 !important;
 }
 .task-column:not(.rewards) .color-better:not(.completed) .save-close.active.filters-tags a,
-.task-column:not(.rewards) .color-better:not(.completed) .task-checklist-edit li.active.filters-tags a,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  a,
 .task-column:not(.rewards) .color-better:not(.completed) .save-close.active.filters-tags button,
-.task-column:not(.rewards) .color-better:not(.completed) .task-checklist-edit li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button {
   background-color: #6d9fa9 !important;
   border-color: #c2d7db !important;
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-better:not(.completed) .save-close.active.filters-tags a span,
-.task-column:not(.rewards) .color-better:not(.completed) .task-checklist-edit li.active.filters-tags a span,
-.task-column:not(.rewards) .color-better:not(.completed) .save-close.active.filters-tags button span,
-.task-column:not(.rewards) .color-better:not(.completed) .task-checklist-edit li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .save-close.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-better:not(.completed) .save-close button:focus,
@@ -4833,7 +6156,10 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-better:not(.completed) .task-actions a:focus {
   background-color: #6398a2;
 }
-.task-column:not(.rewards) .color-better:not(.completed) input[type=checkbox].task-input:focus + label,
+.task-column:not(.rewards)
+  .color-better:not(.completed)
+  input[type='checkbox'].task-input:focus
+  + label,
 .task-column:not(.rewards) .color-better:not(.completed) input.habit:focus + a {
   background-color: #6398a2;
 }
@@ -4932,26 +6258,56 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #144398 !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-best:not(.completed) .priority-multiplier li > input + button:focus,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-best:not(.completed) .task-attributes li > input + button:focus,
 .task-column:not(.rewards) .color-best:not(.completed) .repeat-days li > input + button:focus,
 .task-column:not(.rewards) .color-best:not(.completed) .repeat-frequency li > input + button:focus,
-.task-column:not(.rewards) .color-best:not(.completed) .priority-multiplier li textarea + button:focus,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:focus,
 .task-column:not(.rewards) .color-best:not(.completed) .task-attributes li textarea + button:focus,
 .task-column:not(.rewards) .color-best:not(.completed) .repeat-days li textarea + button:focus,
-.task-column:not(.rewards) .color-best:not(.completed) .repeat-frequency li textarea + button:focus {
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .repeat-frequency
+  li
+  textarea
+  + button:focus {
   border-color: #4781e7 !important;
   background-color: #b0c9f5 !important;
   outline: none;
 }
-.task-column:not(.rewards) .color-best:not(.completed) .priority-multiplier li > input + button:active,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .priority-multiplier
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-best:not(.completed) .task-attributes li > input + button:active,
 .task-column:not(.rewards) .color-best:not(.completed) .repeat-days li > input + button:active,
 .task-column:not(.rewards) .color-best:not(.completed) .repeat-frequency li > input + button:active,
-.task-column:not(.rewards) .color-best:not(.completed) .priority-multiplier li textarea + button:active,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .priority-multiplier
+  li
+  textarea
+  + button:active,
 .task-column:not(.rewards) .color-best:not(.completed) .task-attributes li textarea + button:active,
 .task-column:not(.rewards) .color-best:not(.completed) .repeat-days li textarea + button:active,
-.task-column:not(.rewards) .color-best:not(.completed) .repeat-frequency li textarea + button:active {
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .repeat-frequency
+  li
+  textarea
+  + button:active {
   background-color: #89aef0 !important;
 }
 .task-column:not(.rewards) .color-best:not(.completed) .priority-multiplier li > a:nth-of-type(2),
@@ -4976,14 +6332,54 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #c9daf8;
   border-color: #89aef0;
 }
-.task-column:not(.rewards) .color-best:not(.completed) .priority-multiplier li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-best:not(.completed) .task-attributes li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-best:not(.completed) .repeat-days li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-best:not(.completed) .repeat-frequency li > div > ul:first-child:before,
-.task-column:not(.rewards) .color-best:not(.completed) .priority-multiplier li > div > div:first-child:before,
-.task-column:not(.rewards) .color-best:not(.completed) .task-attributes li > div > div:first-child:before,
-.task-column:not(.rewards) .color-best:not(.completed) .repeat-days li > div > div:first-child:before,
-.task-column:not(.rewards) .color-best:not(.completed) .repeat-frequency li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-attributes
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .repeat-days
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .priority-multiplier
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-attributes
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .repeat-days
+  li
+  > div
+  > div:first-child:before,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .repeat-frequency
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #89aef0;
 }
@@ -5037,26 +6433,77 @@ html[dir="rtl"] .select2-search-choice-close {
   background-color: #bad0f6 !important;
   border-color: #1a58c7 !important;
 }
-.task-column:not(.rewards) .color-best:not(.completed) .priority-multiplier li.active.filters-tags a,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  a,
 .task-column:not(.rewards) .color-best:not(.completed) .task-attributes li.active.filters-tags a,
 .task-column:not(.rewards) .color-best:not(.completed) .repeat-days li.active.filters-tags a,
 .task-column:not(.rewards) .color-best:not(.completed) .repeat-frequency li.active.filters-tags a,
-.task-column:not(.rewards) .color-best:not(.completed) .priority-multiplier li.active.filters-tags button,
-.task-column:not(.rewards) .color-best:not(.completed) .task-attributes li.active.filters-tags button,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button,
 .task-column:not(.rewards) .color-best:not(.completed) .repeat-days li.active.filters-tags button,
-.task-column:not(.rewards) .color-best:not(.completed) .repeat-frequency li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button {
   background-color: #4781e7 !important;
   border-color: #c9daf8 !important;
   color: #fff !important;
 }
-.task-column:not(.rewards) .color-best:not(.completed) .priority-multiplier li.active.filters-tags a span,
-.task-column:not(.rewards) .color-best:not(.completed) .task-attributes li.active.filters-tags a span,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  a
+  span,
 .task-column:not(.rewards) .color-best:not(.completed) .repeat-days li.active.filters-tags a span,
-.task-column:not(.rewards) .color-best:not(.completed) .repeat-frequency li.active.filters-tags a span,
-.task-column:not(.rewards) .color-best:not(.completed) .priority-multiplier li.active.filters-tags button span,
-.task-column:not(.rewards) .color-best:not(.completed) .task-attributes li.active.filters-tags button span,
-.task-column:not(.rewards) .color-best:not(.completed) .repeat-days li.active.filters-tags button span,
-.task-column:not(.rewards) .color-best:not(.completed) .repeat-frequency li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  a
+  span,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .priority-multiplier
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-attributes
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .repeat-days
+  li.active.filters-tags
+  button
+  span,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .repeat-frequency
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-best:not(.completed) .priority-multiplier li button.active,
@@ -5077,7 +6524,12 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-best:not(.completed) .plusminus .task-checker label:after {
   border: 1px solid #5288e9 !important;
 }
-.task-column:not(.rewards) .color-best:not(.completed) .plusminus .task-checker input[type=checkbox]:checked + label:after {
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .plusminus
+  .task-checker
+  input[type='checkbox']:checked
+  + label:after {
   -webkit-box-shadow: inset 0 0 0 1px #2a6de3 !important;
   box-shadow: inset 0 0 0 1px #2a6de3 !important;
   background-color: #b5ccf5 !important;
@@ -5127,17 +6579,37 @@ html[dir="rtl"] .select2-search-choice-close {
   outline: none;
 }
 .task-column:not(.rewards) .color-best:not(.completed) .save-close > input + button:focus,
-.task-column:not(.rewards) .color-best:not(.completed) .task-checklist-edit li > input + button:focus,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:focus,
 .task-column:not(.rewards) .color-best:not(.completed) .save-close textarea + button:focus,
-.task-column:not(.rewards) .color-best:not(.completed) .task-checklist-edit li textarea + button:focus {
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:focus {
   border-color: #3a77e4 !important;
   background-color: #9ebcf2 !important;
   outline: none;
 }
 .task-column:not(.rewards) .color-best:not(.completed) .save-close > input + button:active,
-.task-column:not(.rewards) .color-best:not(.completed) .task-checklist-edit li > input + button:active,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-checklist-edit
+  li
+  > input
+  + button:active,
 .task-column:not(.rewards) .color-best:not(.completed) .save-close textarea + button:active,
-.task-column:not(.rewards) .color-best:not(.completed) .task-checklist-edit li textarea + button:active {
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-checklist-edit
+  li
+  textarea
+  + button:active {
   background-color: #78a2ed !important;
 }
 .task-column:not(.rewards) .color-best:not(.completed) .save-close > a:nth-of-type(2),
@@ -5157,9 +6629,19 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #78a2ed;
 }
 .task-column:not(.rewards) .color-best:not(.completed) .save-close > div > ul:first-child:before,
-.task-column:not(.rewards) .color-best:not(.completed) .task-checklist-edit li > div > ul:first-child:before,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > ul:first-child:before,
 .task-column:not(.rewards) .color-best:not(.completed) .save-close > div > div:first-child:before,
-.task-column:not(.rewards) .color-best:not(.completed) .task-checklist-edit li > div > div:first-child:before {
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-checklist-edit
+  li
+  > div
+  > div:first-child:before {
   background-color: #fff;
   border-color: #78a2ed;
 }
@@ -5196,17 +6678,35 @@ html[dir="rtl"] .select2-search-choice-close {
   border-color: #1954bc !important;
 }
 .task-column:not(.rewards) .color-best:not(.completed) .save-close.active.filters-tags a,
-.task-column:not(.rewards) .color-best:not(.completed) .task-checklist-edit li.active.filters-tags a,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  a,
 .task-column:not(.rewards) .color-best:not(.completed) .save-close.active.filters-tags button,
-.task-column:not(.rewards) .color-best:not(.completed) .task-checklist-edit li.active.filters-tags button {
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button {
   background-color: #3a77e4 !important;
   border-color: #b5ccf5 !important;
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-best:not(.completed) .save-close.active.filters-tags a span,
-.task-column:not(.rewards) .color-best:not(.completed) .task-checklist-edit li.active.filters-tags a span,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  a
+  span,
 .task-column:not(.rewards) .color-best:not(.completed) .save-close.active.filters-tags button span,
-.task-column:not(.rewards) .color-best:not(.completed) .task-checklist-edit li.active.filters-tags button span {
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  .task-checklist-edit
+  li.active.filters-tags
+  button
+  span {
   color: #fff !important;
 }
 .task-column:not(.rewards) .color-best:not(.completed) .save-close button:focus,
@@ -5230,7 +6730,10 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:not(.rewards) .color-best:not(.completed) .task-actions a:focus {
   background-color: #2a6de3;
 }
-.task-column:not(.rewards) .color-best:not(.completed) input[type=checkbox].task-input:focus + label,
+.task-column:not(.rewards)
+  .color-best:not(.completed)
+  input[type='checkbox'].task-input:focus
+  + label,
 .task-column:not(.rewards) .color-best:not(.completed) input.habit:focus + a {
   background-color: #2a6de3;
 }
@@ -5260,7 +6763,7 @@ html[dir="rtl"] .select2-search-choice-close {
 }
 .completed .task-text .habitica-emoji {
   opacity: 0.39;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=39)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=39)';
   filter: alpha(opacity=39);
 }
 .completed .priority-multiplier li > a,
@@ -5480,7 +6983,7 @@ html[dir="rtl"] .select2-search-choice-close {
 .completed .plusminus .task-checker label:after {
   border: 1px solid #989898 !important;
 }
-.completed .plusminus .task-checker input[type=checkbox]:checked + label:after {
+.completed .plusminus .task-checker input[type='checkbox']:checked + label:after {
   -webkit-box-shadow: inset 0 0 0 1px #828282 !important;
   box-shadow: inset 0 0 0 1px #828282 !important;
   background-color: #cecece !important;
@@ -5627,7 +7130,7 @@ html[dir="rtl"] .select2-search-choice-close {
 .completed .task-action-btn:focus {
   background-color: #828282;
 }
-.completed input[type=checkbox]:focus + label {
+.completed input[type='checkbox']:focus + label {
   background-color: #828282;
 }
 .completed .task-options {
@@ -5668,7 +7171,7 @@ html[dir="rtl"] .select2-search-choice-close {
 .task-column:after {
   clear: both;
   display: block;
-  content: "";
+  content: '';
 }
 .task-column h2 {
   color: #4c666e;
@@ -5840,8 +7343,8 @@ html[dir="rtl"] .select2-search-choice-close {
 .task label {
   font-weight: 400;
 }
-.task input[type="text"],
-.task input[type="number"],
+.task input[type='text'],
+.task input[type='number'],
 .task textarea.option-content {
   border: 1px solid #aaa;
   -webkit-border-radius: 0.382em;
@@ -5865,14 +7368,18 @@ html[dir="rtl"] .select2-search-choice-close {
   margin-left: 20px;
 }
 .task.ui-sortable-helper {
-  -webkit-box-shadow: 0 0 3px rgba(0,0,0,0.15), 0 0 5px rgba(0,0,0,0.1);
-  box-shadow: 0 0 3px rgba(0,0,0,0.15), 0 0 5px rgba(0,0,0,0.1);
+  -webkit-box-shadow:
+    0 0 3px rgba(0, 0, 0, 0.15),
+    0 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 0 3px rgba(0, 0, 0, 0.15),
+    0 0 5px rgba(0, 0, 0, 0.1);
   -webkit-transform: scale(1.05);
   -moz-transform: scale(1.05);
   -o-transform: scale(1.05);
   -ms-transform: scale(1.05);
   transform: scale(1.05);
-  outline: 1px solid rgba(0,0,0,0.2);
+  outline: 1px solid rgba(0, 0, 0, 0.2);
 }
 .task-controls {
   display: inline-block;
@@ -5898,7 +7405,7 @@ html[dir="rtl"] .select2-search-choice-close {
   text-align: center;
   color: #222;
   vertical-align: top;
-  border-right: 1px solid rgba(0,0,0,0.25);
+  border-right: 1px solid rgba(0, 0, 0, 0.25);
 }
 .task-action-btn:last-child {
   border: 0;
@@ -5908,14 +7415,14 @@ html[dir="rtl"] .select2-search-choice-close {
   color: #222;
   text-decoration: none;
 }
-.task-checker input[type=checkbox],
-.task-checker input[type=checkbox]:focus {
+.task-checker input[type='checkbox'],
+.task-checker input[type='checkbox']:focus {
   position: absolute;
   margin: 0;
   padding: 0;
   height: 10px;
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
   filter: alpha(opacity=0);
   width: 10px;
 }
@@ -5941,10 +7448,10 @@ html[dir="rtl"] .select2-search-choice-close {
   width: 2em;
   line-height: 1.5;
 }
-.plusminus .task-checker label[for$="plus"]:after {
+.plusminus .task-checker label[for$='plus']:after {
   content: '＋';
 }
-.plusminus .task-checker label[for$="minus"]:after {
+.plusminus .task-checker label[for$='minus']:after {
   content: '−';
 }
 .action-yesno {
@@ -5961,7 +7468,7 @@ html[dir="rtl"] .select2-search-choice-close {
   text-align: center;
   color: #000;
   opacity: 0.2;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=20)';
   filter: alpha(opacity=20);
 }
 .action-yesno label:after {
@@ -5978,15 +7485,15 @@ html[dir="rtl"] .select2-search-choice-close {
 .action-yesno label:focus:before {
   content: '';
 }
-.action-yesno input[type=checkbox]:focus + label {
+.action-yesno input[type='checkbox']:focus + label {
   opacity: 1 !important;
   -ms-filter: none;
   filter: none;
   border: none;
 }
 .action-yesno label:hover:after {
-  content: "\E013";
-  font-family: "Glyphicons Halflings";
+  content: '\E013';
+  font-family: 'Glyphicons Halflings';
   border: none;
   margin: 0;
   line-height: 1.714285714em;
@@ -5994,17 +7501,17 @@ html[dir="rtl"] .select2-search-choice-close {
   width: 1.714285714em;
   text-align: center;
   opacity: 0.5 !important;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)" !important;
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=50)' !important;
   filter: alpha(opacity=50) !important;
 }
 .action-yesno label:active:after {
   opacity: 0.75 !important;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=75)" !important;
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=75)' !important;
   filter: alpha(opacity=75) !important;
 }
-.action-yesno input[type=checkbox]:checked + label:after {
-  content: "\E013";
-  font-family: "Glyphicons Halflings";
+.action-yesno input[type='checkbox']:checked + label:after {
+  content: '\E013';
+  font-family: 'Glyphicons Halflings';
   border: none;
   margin: 0;
   line-height: 1.714285714em;
@@ -6012,7 +7519,7 @@ html[dir="rtl"] .select2-search-choice-close {
   width: 1.714285714em;
   text-align: center;
   opacity: 0.75;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=75)';
   filter: alpha(opacity=75);
 }
 .task-meta-controls {
@@ -6020,7 +7527,7 @@ html[dir="rtl"] .select2-search-choice-close {
   margin: 0.75em 0.5em 0 0.5em;
   height: 1em;
   opacity: 0.25;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=25)';
   filter: alpha(opacity=25);
 }
 .task-meta-controls a {
@@ -6064,17 +7571,17 @@ form {
   color: #333;
   position: relative;
 }*/
-[class$="-options"] .option-group {
+[class$='-options'] .option-group {
   padding: 0 0 1em;
   margin-bottom: 1em;
   margin-top: 1em;
 }
-[class$="-options"] button.advanced-options-toggle {
+[class$='-options'] button.advanced-options-toggle {
   display: block;
   width: 100%;
   background: none;
 }
-[class$="-options"] .option-title {
+[class$='-options'] .option-title {
   font-size: 1em;
   margin: 0.5em 0 0.5em;
   line-height: 1;
@@ -6083,17 +7590,17 @@ form {
   font-weight: bold;
   text-align: center;
 }
-[class$="-options"] .option-title.mega {
+[class$='-options'] .option-title.mega {
   cursor: pointer;
 }
-[class$="-options"] .option-title.mega:after {
-  font-family: "Glyphicons Halflings";
+[class$='-options'] .option-title.mega:after {
+  font-family: 'Glyphicons Halflings';
   font-size: 0.75em;
-  content: "\E114";
+  content: '\E114';
   padding-left: 0.75em;
 }
-[class$="-options"] .option-title.mega.active:after {
-  content: "\E113";
+[class$='-options'] .option-title.mega.active:after {
+  content: '\E113';
 }
 .option-content {
   height: 2.5em;
@@ -6135,12 +7642,12 @@ textarea.option-content {
   border: 0;
   font-size: 1.15em;
   font-weight: 300;
-  outline: 1px solid rgba(0,0,0,0.2);
+  outline: 1px solid rgba(0, 0, 0, 0.2);
   outline-offset: -1px;
   margin: 0 0 0 3px;
   text-align: inherit;
   opacity: 0.5;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=50)';
   filter: alpha(opacity=50);
   width: auto;
   padding: 0 0.5em;
@@ -6171,7 +7678,7 @@ textarea.option-content {
 }
 .tile.flush {
   margin-left: 0;
-  border: 1px solid rgba(0,0,0,0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   outline: 0;
   line-height: 2em;
 }
@@ -6266,7 +7773,7 @@ textarea.option-content {
 }
 .task-checklist-edit > .checklist-form input {
   width: 70%;
-/* Add interaction cues on hover and focus */
+  /* Add interaction cues on hover and focus */
 }
 .task-checklist-edit > .checklist-form input:hover,
 .task-checklist-edit > .checklist-form input:focus {
@@ -6279,7 +7786,7 @@ textarea.option-content {
 }
 .task-checklist-edit > .checklist-form .checklist-icon {
   opacity: 0.25;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=25)';
   filter: alpha(opacity=25);
   text-align: center;
   line-height: 1.5;
@@ -6434,7 +7941,7 @@ textarea.option-content {
   -webkit-box-shadow: none;
   box-shadow: none;
   opacity: 0.65;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=65)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=65)';
   filter: alpha(opacity=65);
 }
 .rewards .btn-buy span {
@@ -6463,7 +7970,7 @@ textarea.option-content {
   margin: 15px auto;
   border: 1px solid #222;
   opacity: 0.2 !important;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)" !important;
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=20)' !important;
   filter: alpha(opacity=20) !important;
 }
 .locked-task .action-yesno label:focus,
@@ -6533,7 +8040,7 @@ textarea.option-content {
   top: 4px;
   left: 4px;
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
   filter: alpha(opacity=0);
   -webkit-transition: opacity 0.2s ease-out;
   -moz-transition: opacity 0.2s ease-out;
@@ -6589,7 +8096,7 @@ textarea.option-content {
   left: 4px;
   z-index: 2;
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
   filter: alpha(opacity=0);
 }
 .herobox:hover .addthis_native_toolbox {
@@ -6716,7 +8223,7 @@ menu {
 }
 .btn-buy input:focus {
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
   filter: alpha(opacity=0);
 }
 input:focus + a.btn-buy {
@@ -6730,7 +8237,7 @@ input:focus + a.btn-buy {
 .rewards {
   margin-bottom: 1.5em;
   padding-bottom: 1.5em;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 .reward-item {
   background: #fff;
@@ -6755,8 +8262,8 @@ input:focus + a.btn-buy {
   padding-left: 0.25em;
   background-color: #d0e0e3;
   cursor: pointer;
-  -webkit-box-shadow: inset -1px -1px 0 rgba(0,0,0,0.1);
-  box-shadow: inset -1px -1px 0 rgba(0,0,0,0.1);
+  -webkit-box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.1);
 }
 .btn-reroll:hover,
 .btn-reroll:focus {
@@ -6781,7 +8288,7 @@ input:focus + a.btn-buy {
 }
 .gem-wallet .add-gems-btn {
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
   filter: alpha(opacity=0);
 }
 .gem-wallet:hover .add-gems-btn,
@@ -6890,9 +8397,9 @@ menu.pets .customize-menu .progress {
 .mount-not-owned {
   width: 81px;
   height: 99px;
-/* Would use css3 filters and just display the original pet image with a black hue,
+  /* Would use css3 filters and just display the original pet image with a black hue,
        but doesn't seem to work in Firefox or Opera */
-/*filter: brightness(0%)
+  /*filter: brightness(0%)
     -webkit-filter: brightness(0%)
     -moz-filter: brightness(0%)
     -o-filter: brightness(0%)
@@ -6904,7 +8411,7 @@ menu.pets .customize-menu .progress {
 }
 .pet-evolved {
   opacity: 0.1;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=10)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=10)';
   filter: alpha(opacity=10);
 }
 .selectableInventory {
@@ -6925,7 +8432,7 @@ menu.pets .customize-menu .progress {
   height: 0;
   z-index: 1010;
 }
-.new-stuff> .alert {
+.new-stuff > .alert {
   border-top: 0;
   -webkit-border-radius: 0 0 4px 4px;
   border-radius: 0 0 4px 4px;
@@ -7034,7 +8541,7 @@ menu.pets .customize-menu .progress {
 }
 .transparent {
   opacity: 0.5;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=50)';
   filter: alpha(opacity=50);
 }
 .col-centered {
@@ -7075,7 +8582,7 @@ menu.pets .customize-menu .progress {
   z-index: 100;
   padding: 46px 0 0 0;
   background-color: #c5d3d6;
-  border-bottom: 1px solid rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   overflow-y: hidden;
   overflow-x: auto;
 }
@@ -7104,7 +8611,7 @@ menu.pets .customize-menu .progress {
   cursor: pointer;
   font-weight: 400;
   color: #494949;
-  color: rgba(38,38,38,0.8);
+  color: rgba(38, 38, 38, 0.8);
   background-color: #c2d7db;
 }
 .user-menu .tile:hover,
@@ -7152,7 +8659,7 @@ menu.pets .customize-menu .progress {
 }
 .stacked .tile {
   outline: 0;
-  border: 1px solid rgba(0,0,0,0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-top: 0;
 }
 .site-header {
@@ -7182,7 +8689,11 @@ menu.pets .customize-menu .progress {
 .hero-stats .meter-label {
   float: left;
   background-color: #b0c3c7 !important;
-  text-shadow: -1px -1px 1px #2f3f42, 1px -1px 1px #2f3f42, -1px 1px 1px #2f3f42, 1px 1px 1px #2f3f42;
+  text-shadow:
+    -1px -1px 1px #2f3f42,
+    1px -1px 1px #2f3f42,
+    -1px 1px 1px #2f3f42,
+    1px 1px 1px #2f3f42;
   width: 2.618em;
   text-align: center;
   margin-right: 0.618em;
@@ -7243,7 +8754,7 @@ menu.pets .customize-menu .progress {
 .hero-stats .meter-text.value {
   right: 0.382em;
 }
-[class^="quest_"] + .hero-stats {
+[class^='quest_'] + .hero-stats {
   min-width: 220px;
   padding: 1.618em 0 1em;
 }
@@ -7706,25 +9217,33 @@ button.party-invite {
   border-width: 4px 0 0;
 }
 .task-column::-webkit-scrollbar-track:hover {
-  background-color: rgba(150,150,150,0.05);
-  -webkit-box-shadow: inset 1px 0 0 rgba(150,150,150,0.1);
-  box-shadow: inset 1px 0 0 rgba(150,150,150,0.1);
+  background-color: rgba(150, 150, 150, 0.05);
+  -webkit-box-shadow: inset 1px 0 0 rgba(150, 150, 150, 0.1);
+  box-shadow: inset 1px 0 0 rgba(150, 150, 150, 0.1);
 }
 .task-column::-webkit-scrollbar-track:horizontal:hover {
-  -webkit-box-shadow: inset 0 1px 0 rgba(150,150,150,0.1);
-  box-shadow: inset 0 1px 0 rgba(150,150,150,0.1);
+  -webkit-box-shadow: inset 0 1px 0 rgba(150, 150, 150, 0.1);
+  box-shadow: inset 0 1px 0 rgba(150, 150, 150, 0.1);
 }
 .task-column::-webkit-scrollbar-track:active {
-  background-color: rgba(150,150,150,0.05);
-  -webkit-box-shadow: inset 1px 0 0 rgba(150,150,150,0.14), inset -1px 0 0 rgba(150,150,150,0.07);
-  box-shadow: inset 1px 0 0 rgba(150,150,150,0.14), inset -1px 0 0 rgba(150,150,150,0.07);
+  background-color: rgba(150, 150, 150, 0.05);
+  -webkit-box-shadow:
+    inset 1px 0 0 rgba(150, 150, 150, 0.14),
+    inset -1px 0 0 rgba(150, 150, 150, 0.07);
+  box-shadow:
+    inset 1px 0 0 rgba(150, 150, 150, 0.14),
+    inset -1px 0 0 rgba(150, 150, 150, 0.07);
 }
 .task-column::-webkit-scrollbar-track:horizontal:active {
-  -webkit-box-shadow: inset 0 1px 0 rgba(150,150,150,0.14), inset 0 -1px 0 rgba(150,150,150,0.07);
-  box-shadow: inset 0 1px 0 rgba(150,150,150,0.14), inset 0 -1px 0 rgba(150,150,150,0.07);
+  -webkit-box-shadow:
+    inset 0 1px 0 rgba(150, 150, 150, 0.14),
+    inset 0 -1px 0 rgba(150, 150, 150, 0.07);
+  box-shadow:
+    inset 0 1px 0 rgba(150, 150, 150, 0.14),
+    inset 0 -1px 0 rgba(150, 150, 150, 0.07);
 }
 .task-column::-webkit-scrollbar-thumb {
-  background-color: rgba(150,150,150,0.2);
+  background-color: rgba(150, 150, 150, 0.2);
   -webkit-background-clip: padding;
   -moz-background-clip: padding;
   background-clip: padding-box;
@@ -7732,24 +9251,32 @@ button.party-invite {
   border-width: 1px 1px 1px 6px;
   min-height: 28px;
   padding: 100px 0 0;
-  -webkit-box-shadow: inset 1px 1px 0 rgba(150,150,150,0.1), inset 0 -1px 0 rgba(150,150,150,0.07);
-  box-shadow: inset 1px 1px 0 rgba(150,150,150,0.1), inset 0 -1px 0 rgba(150,150,150,0.07);
+  -webkit-box-shadow:
+    inset 1px 1px 0 rgba(150, 150, 150, 0.1),
+    inset 0 -1px 0 rgba(150, 150, 150, 0.07);
+  box-shadow:
+    inset 1px 1px 0 rgba(150, 150, 150, 0.1),
+    inset 0 -1px 0 rgba(150, 150, 150, 0.07);
 }
 .task-column::-webkit-scrollbar-thumb:horizontal {
   border-width: 6px 1px 1px;
   padding: 0 0 0 100px;
-  -webkit-box-shadow: inset 1px 1px 0 rgba(150,150,150,0.1), inset -1px 0 0 rgba(150,150,150,0.07);
-  box-shadow: inset 1px 1px 0 rgba(150,150,150,0.1), inset -1px 0 0 rgba(150,150,150,0.07);
+  -webkit-box-shadow:
+    inset 1px 1px 0 rgba(150, 150, 150, 0.1),
+    inset -1px 0 0 rgba(150, 150, 150, 0.07);
+  box-shadow:
+    inset 1px 1px 0 rgba(150, 150, 150, 0.1),
+    inset -1px 0 0 rgba(150, 150, 150, 0.07);
 }
 .task-column::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(150,150,150,0.4);
-  -webkit-box-shadow: inset 1px 1px 1px rgba(150,150,150,0.25);
-  box-shadow: inset 1px 1px 1px rgba(150,150,150,0.25);
+  background-color: rgba(150, 150, 150, 0.4);
+  -webkit-box-shadow: inset 1px 1px 1px rgba(150, 150, 150, 0.25);
+  box-shadow: inset 1px 1px 1px rgba(150, 150, 150, 0.25);
 }
 .task-column::-webkit-scrollbar-thumb:active {
-  background-color: rgba(150,150,150,0.5);
-  -webkit-box-shadow: inset 1px 1px 3px rgba(150,150,150,0.35);
-  box-shadow: inset 1px 1px 3px rgba(150,150,150,0.35);
+  background-color: rgba(150, 150, 150, 0.5);
+  -webkit-box-shadow: inset 1px 1px 3px rgba(150, 150, 150, 0.35);
+  box-shadow: inset 1px 1px 3px rgba(150, 150, 150, 0.35);
 }
 .task-column::-webkit-scrollbar-track {
   border-width: 0 1px 0 6px;
@@ -7758,9 +9285,13 @@ button.party-invite {
   border-width: 6px 0 1px;
 }
 .task-column::-webkit-scrollbar-track:hover {
-  background-color: rgba(150,150,150,0.035);
-  -webkit-box-shadow: inset 1px 1px 0 rgba(150,150,150,0.14), inset -1px -1px 0 rgba(150,150,150,0.07);
-  box-shadow: inset 1px 1px 0 rgba(150,150,150,0.14), inset -1px -1px 0 rgba(150,150,150,0.07);
+  background-color: rgba(150, 150, 150, 0.035);
+  -webkit-box-shadow:
+    inset 1px 1px 0 rgba(150, 150, 150, 0.14),
+    inset -1px -1px 0 rgba(150, 150, 150, 0.07);
+  box-shadow:
+    inset 1px 1px 0 rgba(150, 150, 150, 0.14),
+    inset -1px -1px 0 rgba(150, 150, 150, 0.07);
 }
 .task-column::-webkit-scrollbar-thumb {
   border-width: 0 1px 0 6px;
@@ -7817,7 +9348,7 @@ button.party-invite {
 }
 .chat-message .chat-plus-one {
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
   filter: alpha(opacity=0);
   background-color: #eee;
   padding: 3px 3px 0px 3px;
@@ -7922,8 +9453,8 @@ button.party-invite {
 .party-chat markdown blockquote p:first-child {
   display: block;
 }
-.tavern-chat markdown blockquote>:last-child,
-.party-chat markdown blockquote>:last-child {
+.tavern-chat markdown blockquote > :last-child,
+.party-chat markdown blockquote > :last-child {
   margin-bottom: 0;
 }
 .panel-tiers div {
@@ -7932,43 +9463,83 @@ button.party-invite {
 }
 .label-contributor-1 {
   background-color: #f57a9d !important;
-  text-shadow: -1px -1px 1px #660823, 1px -1px 1px #660823, -1px 1px 1px #660823, 1px 1px 1px #660823;
+  text-shadow:
+    -1px -1px 1px #660823,
+    1px -1px 1px #660823,
+    -1px 1px 1px #660823,
+    1px 1px 1px #660823;
 }
 .label-contributor-2 {
   background-color: #b93030 !important;
-  text-shadow: -1px -1px 1px #380e0e, 1px -1px 1px #380e0e, -1px 1px 1px #380e0e, 1px 1px 1px #380e0e;
+  text-shadow:
+    -1px -1px 1px #380e0e,
+    1px -1px 1px #380e0e,
+    -1px 1px 1px #380e0e,
+    1px 1px 1px #380e0e;
 }
 .label-contributor-3 {
   background-color: #f30 !important;
-  text-shadow: -1px -1px 1px #4d0f00, 1px -1px 1px #4d0f00, -1px 1px 1px #4d0f00, 1px 1px 1px #4d0f00;
+  text-shadow:
+    -1px -1px 1px #4d0f00,
+    1px -1px 1px #4d0f00,
+    -1px 1px 1px #4d0f00,
+    1px 1px 1px #4d0f00;
 }
 .label-contributor-4 {
   background-color: #ff9500 !important;
-  text-shadow: -1px -1px 1px #4d2d00, 1px -1px 1px #4d2d00, -1px 1px 1px #4d2d00, 1px 1px 1px #4d2d00;
+  text-shadow:
+    -1px -1px 1px #4d2d00,
+    1px -1px 1px #4d2d00,
+    -1px 1px 1px #4d2d00,
+    1px 1px 1px #4d2d00;
 }
 .label-contributor-5 {
   background-color: #fff700 !important;
-  text-shadow: -1px -1px 1px #4d4a00, 1px -1px 1px #4d4a00, -1px 1px 1px #4d4a00, 1px 1px 1px #4d4a00;
+  text-shadow:
+    -1px -1px 1px #4d4a00,
+    1px -1px 1px #4d4a00,
+    -1px 1px 1px #4d4a00,
+    1px 1px 1px #4d4a00;
 }
 .label-contributor-6 {
   background-color: #5eff00 !important;
-  text-shadow: -1px -1px 1px #1c4d00, 1px -1px 1px #1c4d00, -1px 1px 1px #1c4d00, 1px 1px 1px #1c4d00;
+  text-shadow:
+    -1px -1px 1px #1c4d00,
+    1px -1px 1px #1c4d00,
+    -1px 1px 1px #1c4d00,
+    1px 1px 1px #1c4d00;
 }
 .label-contributor-7 {
   background-color: #0af !important;
-  text-shadow: -1px -1px 1px #00334d, 1px -1px 1px #00334d, -1px 1px 1px #00334d, 1px 1px 1px #00334d;
+  text-shadow:
+    -1px -1px 1px #00334d,
+    1px -1px 1px #00334d,
+    -1px 1px 1px #00334d,
+    1px 1px 1px #00334d;
 }
 .label-contributor-8 {
   background-color: #130ead !important;
-  text-shadow: -1px -1px 1px #060434, 1px -1px 1px #060434, -1px 1px 1px #060434, 1px 1px 1px #060434;
+  text-shadow:
+    -1px -1px 1px #060434,
+    1px -1px 1px #060434,
+    -1px 1px 1px #060434,
+    1px 1px 1px #060434;
 }
 .label-contributor-9 {
   background-color: #88108f !important;
-  text-shadow: -1px -1px 1px #29052b, 1px -1px 1px #29052b, -1px 1px 1px #29052b, 1px 1px 1px #29052b;
+  text-shadow:
+    -1px -1px 1px #29052b,
+    1px -1px 1px #29052b,
+    -1px 1px 1px #29052b,
+    1px 1px 1px #29052b;
 }
 .label-npc {
   background-color: #000 !important;
-  text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;
+  text-shadow:
+    -1px -1px 1px #000,
+    1px -1px 1px #000,
+    -1px 1px 1px #000,
+    1px 1px 1px #000;
   color: #0f0 !important;
 }
 #market-tab {
@@ -8951,7 +10522,7 @@ li.spaced {
 }
 .toolbar-notifs > a span.inactive {
   opacity: 0.236 !important;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=24)" !important;
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=24)' !important;
   filter: alpha(opacity=24) !important;
 }
 .toolbar-notifs div {
@@ -9540,14 +11111,16 @@ noscript.banner {
   animation-delay: -0.2s;
 }
 @-moz-keyframes sk-bouncedelay {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     -webkit-transform: scale(0);
     -moz-transform: scale(0);
     -o-transform: scale(0);
     -ms-transform: scale(0);
     transform: scale(0);
     opacity: 0;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
     filter: alpha(opacity=0);
   }
   40% {
@@ -9562,14 +11135,16 @@ noscript.banner {
   }
 }
 @-webkit-keyframes sk-bouncedelay {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     -webkit-transform: scale(0);
     -moz-transform: scale(0);
     -o-transform: scale(0);
     -ms-transform: scale(0);
     transform: scale(0);
     opacity: 0;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
     filter: alpha(opacity=0);
   }
   40% {
@@ -9584,14 +11159,16 @@ noscript.banner {
   }
 }
 @-o-keyframes sk-bouncedelay {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     -webkit-transform: scale(0);
     -moz-transform: scale(0);
     -o-transform: scale(0);
     -ms-transform: scale(0);
     transform: scale(0);
     opacity: 0;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
     filter: alpha(opacity=0);
   }
   40% {
@@ -9606,14 +11183,16 @@ noscript.banner {
   }
 }
 @keyframes sk-bouncedelay {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     -webkit-transform: scale(0);
     -moz-transform: scale(0);
     -o-transform: scale(0);
     -ms-transform: scale(0);
     transform: scale(0);
     opacity: 0;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+    -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
     filter: alpha(opacity=0);
   }
   40% {
@@ -9646,12 +11225,12 @@ td {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-family: "Lato", sans-serif;
+  font-family: 'Lato', sans-serif;
 }
 hr {
   border-top: 0;
   border-bottom: 1px solid #ddd;
-  border-color: rgba(0,0,0,0.1);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 /* Customizations to make footer sticky */
 html,
@@ -9688,7 +11267,7 @@ body {
   position: relative;
 }
 .gem-cost::before {
-  content: "";
+  content: '';
   display: block;
   width: 0;
   height: 0;
@@ -9701,7 +11280,7 @@ body {
   margin-top: -6px;
 }
 .gem-cost::after {
-  content: "";
+  content: '';
   display: block;
   width: 0;
   height: 0;
@@ -9786,7 +11365,7 @@ a.label {
 .buy-gems .gem-wallet .task-action-btn {
   -webkit-border-radius: 0 4px 0 0;
   border-radius: 0 4px 0 0;
-  border: 1px solid rgba(0,0,0,0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
 }
 .badge-info {
   background-color: #428bca;
