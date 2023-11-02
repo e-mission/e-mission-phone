@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
-import color from "color";
+import color from 'color';
 import LabelTabContext from '../LabelTabContext';
 import { logDebug } from '../../plugin/logger';
 import { getBaseModeByValue } from '../diaryHelper';
@@ -25,8 +25,14 @@ const ModesIndicator = ({ trip, detectedModes }) => {
     modeViews = (
       <View style={s.mode}>
         <Icon icon={baseMode.icon} iconColor={baseMode.color} size={15} />
-        <Text accessibilityLabel={`Labeled mode: ${baseMode.icon}`}
-          style={{color: baseMode.color, fontSize: 12, fontWeight: '500', textDecorationLine:'underline'}}>
+        <Text
+          accessibilityLabel={`Labeled mode: ${baseMode.icon}`}
+          style={{
+            color: baseMode.color,
+            fontSize: 12,
+            fontWeight: '500',
+            textDecorationLine: 'underline',
+          }}>
           {timelineLabelMap[trip._id.$oid]?.MODE.text}
         </Text>
       </View>

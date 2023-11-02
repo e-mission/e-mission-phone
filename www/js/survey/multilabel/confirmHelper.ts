@@ -14,19 +14,21 @@ type InputDetails<T extends string> = {
   };
 };
 export type LabelOption = {
-  value: string,
-  baseMode: string,
-  met?: {range: any[], mets: number}
-  met_equivalent?: string,
-  kgCo2PerKm: number,
-  text?: string,
+  value: string;
+  baseMode: string;
+  met?: { range: any[]; mets: number };
+  met_equivalent?: string;
+  kgCo2PerKm: number;
+  text?: string;
 };
-export type MultilabelKey = 'MODE'|'PURPOSE'|'REPLACED_MODE';
+export type MultilabelKey = 'MODE' | 'PURPOSE' | 'REPLACED_MODE';
 export type LabelOptions<T extends string = MultilabelKey> = {
-  [k in T]: LabelOption[]
-} & { translations: {
-  [lang: string]: { [translationKey: string]: string }
-}};
+  [k in T]: LabelOption[];
+} & {
+  translations: {
+    [lang: string]: { [translationKey: string]: string };
+  };
+};
 
 let appConfig;
 export let labelOptions: LabelOptions<MultilabelKey>;
@@ -108,14 +110,22 @@ export function labelInputDetailsForTrip(userInputForTrip, appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;
   if (appConfig.intro.mode_studied) {
     if (userInputForTrip?.['MODE']?.value == appConfig.intro.mode_studied) {
-      logDebug("Found trip labeled with mode of study "+appConfig.intro.mode_studied+". Needs REPLACED_MODE");
+      logDebug(
+        'Found trip labeled with mode of study ' +
+          appConfig.intro.mode_studied +
+          '. Needs REPLACED_MODE',
+      );
       return getLabelInputDetails();
     } else {
-      logDebug("Found trip not labeled with mode of study "+appConfig.intro.mode_studied+". Doesn't need REPLACED_MODE");
+      logDebug(
+        'Found trip not labeled with mode of study ' +
+          appConfig.intro.mode_studied +
+          ". Doesn't need REPLACED_MODE",
+      );
       return baseLabelInputDetails;
     }
   } else {
-    logDebug("No mode of study, so there is no REPLACED_MODE label option");
+    logDebug('No mode of study, so there is no REPLACED_MODE label option');
     return getLabelInputDetails();
   }
 }
@@ -140,7 +150,7 @@ export const getFakeEntry = (otherValue) => ({
 });
 
 export const labelKeyToRichMode = (labelKey: string) =>
-  labelOptions?.MODE?.find(m => m.value == labelKey)?.text || labelKeyToReadable(labelKey);
+  labelOptions?.MODE?.find((m) => m.value == labelKey)?.text || labelKeyToReadable(labelKey);
 
 /* manual/mode_confirm becomes mode_confirm */
 export const inputType2retKey = (inputType) => getLabelInputDetails()[inputType].key.split('/')[1];
@@ -157,7 +167,7 @@ export function verifiabilityForTrip(trip, userInputForTrip) {
   }
   return someInferred ? 'can-verify' : allConfirmed ? 'already-verified' : 'cannot-verify';
 }
- 
+
 export function inferFinalLabels(trip, userInputForTrip) {
   // Deep copy the possibility tuples
   let labelsList = [];
@@ -210,7 +220,9 @@ export function inferFinalLabels(trip, userInputForTrip) {
       // Fails safe if confidence_threshold doesn't exist
       if (max.p <= trip.confidence_threshold) max.labelValue = undefined;
 
-      finalInference[inputType] = labelOptions[inputType].find((opt) => opt.value == max.labelValue);
+      finalInference[inputType] = labelOptions[inputType].find(
+        (opt) => opt.value == max.labelValue,
+      );
     }
     return finalInference;
   }

@@ -460,7 +460,7 @@
       "while-loading-another-week": "Error while loading travel of {{when}} week",
       "while-loading-specific-week": "Error while loading travel for the week of {{day}}",
       "while-log-messages": "While getting messages from the log ",
-      "while-max-index" : "While getting max index "
+      "while-max-index": "While getting max index "
     },
     "consent": {
       "header": "Consent",

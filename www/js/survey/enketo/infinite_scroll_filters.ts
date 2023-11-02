@@ -6,18 +6,16 @@
  * All UI elements should only use $scope variables.
  */
 
-import i18next from "i18next";
+import i18next from 'i18next';
 
 const unlabeledCheck = (trip, userInputForTrip) => {
   return !userInputForTrip?.['SURVEY'];
-}
+};
 
 const TO_LABEL = {
-  key: "to_label",
-  text: i18next.t("diary.to-label"),
+  key: 'to_label',
+  text: i18next.t('diary.to-label'),
   filter: unlabeledCheck,
-}
+};
 
-export const configuredFilters = [
-  TO_LABEL,
-];
+export const configuredFilters = [TO_LABEL];

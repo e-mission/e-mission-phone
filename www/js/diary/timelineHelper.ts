@@ -1,11 +1,11 @@
-import moment from "moment";
-import { getAngularService } from "../angular-react-helper";
-import { displayError, logDebug } from "../plugin/logger";
-import { getBaseModeByKey, getBaseModeByValue } from "./diaryHelper";
-import i18next from "i18next";
-import { UserInputEntry } from "../types/diaryTypes";
-import { getLabelInputDetails, getLabelInputs } from "../survey/multilabel/confirmHelper";
-import { getNotDeletedCandidates, getUniqueEntries } from "../survey/inputMatcher";
+import moment from 'moment';
+import { getAngularService } from '../angular-react-helper';
+import { displayError, logDebug } from '../plugin/logger';
+import { getBaseModeByKey, getBaseModeByValue } from './diaryHelper';
+import i18next from 'i18next';
+import { UserInputEntry } from '../types/diaryTypes';
+import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
+import { getNotDeletedCandidates, getUniqueEntries } from '../survey/inputMatcher';
 
 const cachedGeojsons = new Map();
 /**
@@ -99,8 +99,8 @@ function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
     });
     // merge the notes we just read into the existing unprocessedNotes, removing duplicates
     const combinedNotes = [...unprocessedNotes, ...notesResults];
-    unprocessedNotes = combinedNotes.filter((note, i, self) =>
-      self.findIndex(n => n.metadata.write_ts == note.metadata.write_ts) == i
+    unprocessedNotes = combinedNotes.filter(
+      (note, i, self) => self.findIndex((n) => n.metadata.write_ts == note.metadata.write_ts) == i,
     );
   });
 }
@@ -110,17 +110,17 @@ function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
  * pipeline range and have not yet been pushed to the server.
  * @param pipelineRange an object with start_ts and end_ts representing the range of time
  *     for which travel data has been processed through the pipeline on the server
-*  @param appConfig the app configuration
+ *  @param appConfig the app configuration
  * @returns Promise an array with 1) results for labels and 2) results for notes
  */
 export async function updateLocalUnprocessedInputs(pipelineRange, appConfig) {
   const BEMUserCache = window['cordova'].plugins.BEMUserCache;
   const tq = getUnprocessedInputQuery(pipelineRange);
   const labelsPromises = keysForLabelInputs(appConfig).map((key) =>
-    BEMUserCache.getMessagesForInterval(key, tq, true)
+    BEMUserCache.getMessagesForInterval(key, tq, true),
   );
   const notesPromises = keysForNotesInputs(appConfig).map((key) =>
-    BEMUserCache.getMessagesForInterval(key, tq, true)
+    BEMUserCache.getMessagesForInterval(key, tq, true),
   );
   await updateUnprocessedInputs(labelsPromises, notesPromises, appConfig);
 }
@@ -137,10 +137,10 @@ export async function updateAllUnprocessedInputs(pipelineRange, appConfig) {
   const UnifiedDataLoader = getAngularService('UnifiedDataLoader');
   const tq = getUnprocessedInputQuery(pipelineRange);
   const labelsPromises = keysForLabelInputs(appConfig).map((key) =>
-    UnifiedDataLoader.getUnifiedMessagesForInterval(key, tq, true)
+    UnifiedDataLoader.getUnifiedMessagesForInterval(key, tq, true),
   );
   const notesPromises = keysForNotesInputs(appConfig).map((key) =>
-    UnifiedDataLoader.getUnifiedMessagesForInterval(key, tq, true)
+    UnifiedDataLoader.getUnifiedMessagesForInterval(key, tq, true),
   );
   await updateUnprocessedInputs(labelsPromises, notesPromises, appConfig);
 }
@@ -155,8 +155,7 @@ export function keysForLabelInputs(appConfig) {
 
 function keysForNotesInputs(appConfig) {
   const notesKeys = [];
-  if (appConfig.survey_info?.buttons?.['trip-notes'])
-    notesKeys.push('manual/trip_addition_input');
+  if (appConfig.survey_info?.buttons?.['trip-notes']) notesKeys.push('manual/trip_addition_input');
   if (appConfig.survey_info?.buttons?.['place-notes'])
     notesKeys.push('manual/place_addition_input');
   return notesKeys;

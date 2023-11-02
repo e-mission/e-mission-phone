@@ -6,17 +6,17 @@
   PlaceCards use the blueish 'place' theme flavor.
 */
 
-import React, { useContext } from "react";
+import React, { useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
-import useAppConfig from "../../useAppConfig";
-import AddNoteButton from "../../survey/enketo/AddNoteButton";
-import AddedNotesList from "../../survey/enketo/AddedNotesList";
-import { getTheme } from "../../appTheme";
-import { DiaryCard, cardStyles } from "./DiaryCard";
-import { useAddressNames } from "../addressNamesHelper";
-import useDerivedProperties from "../useDerivedProperties";
-import StartEndLocations from "../components/StartEndLocations";
+import useAppConfig from '../../useAppConfig';
+import AddNoteButton from '../../survey/enketo/AddNoteButton';
+import AddedNotesList from '../../survey/enketo/AddedNotesList';
+import { getTheme } from '../../appTheme';
+import { DiaryCard, cardStyles } from './DiaryCard';
+import { useAddressNames } from '../addressNamesHelper';
+import useDerivedProperties from '../useDerivedProperties';
+import StartEndLocations from '../components/StartEndLocations';
 import LabelTabContext from '../LabelTabContext';
 
 type Props = { place: { [key: string]: any } };

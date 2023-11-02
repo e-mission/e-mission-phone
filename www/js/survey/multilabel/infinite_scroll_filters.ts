@@ -6,36 +6,33 @@
  * All UI elements should only use $scope variables.
  */
 
-import i18next from "i18next";
-import { labelInputDetailsForTrip } from "./confirmHelper";
-import { logDebug } from "../../plugin/logger";
+import i18next from 'i18next';
+import { labelInputDetailsForTrip } from './confirmHelper';
+import { logDebug } from '../../plugin/logger';
 
 const unlabeledCheck = (trip, userInputForTrip) => {
   const tripInputDetails = labelInputDetailsForTrip(userInputForTrip);
   return Object.keys(tripInputDetails)
     .map((inputType) => !userInputForTrip?.[inputType])
     .reduce((acc, val) => acc || val, false);
-}
+};
 
 const toLabelCheck = (trip, userInputForTrip) => {
-  logDebug('Expectation: '+trip.expectation);
+  logDebug('Expectation: ' + trip.expectation);
   if (!trip.expectation) return true;
   return trip.expectation.to_label && unlabeledCheck(trip, userInputForTrip);
-}
+};
 
 const UNLABELED = {
-  key: "unlabeled",
-  text: i18next.t("diary.unlabeled"),
+  key: 'unlabeled',
+  text: i18next.t('diary.unlabeled'),
   filter: unlabeledCheck,
-}
+};
 
 const TO_LABEL = {
-  key: "to_label",
-  text: i18next.t("diary.to-label"),
+  key: 'to_label',
+  text: i18next.t('diary.to-label'),
   filter: toLabelCheck,
-}
+};
 
-export const configuredFilters = [
-  TO_LABEL,
-  UNLABELED,
-];
+export const configuredFilters = [TO_LABEL, UNLABELED];

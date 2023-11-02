@@ -6,15 +6,15 @@
     and allows the user to select a date.
 */
 
-import React, { useEffect, useState, useMemo, useContext } from "react";
-import { StyleSheet } from "react-native";
-import moment from "moment";
+import React, { useEffect, useState, useMemo, useContext } from 'react';
+import { StyleSheet } from 'react-native';
+import moment from 'moment';
 import LabelTabContext from '../LabelTabContext';
-import { DatePickerModal } from "react-native-paper-dates";
-import { Text, Divider, useTheme } from "react-native-paper";
-import i18next from "i18next";
-import { useTranslation } from "react-i18next";
-import NavBarButton from "../../components/NavBarButton";
+import { DatePickerModal } from 'react-native-paper-dates';
+import { Text, Divider, useTheme } from 'react-native-paper';
+import i18next from 'i18next';
+import { useTranslation } from 'react-i18next';
+import NavBarButton from '../../components/NavBarButton';
 
 const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
   const { pipelineRange } = useContext(LabelTabContext);

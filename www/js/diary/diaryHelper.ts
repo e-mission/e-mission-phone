@@ -1,9 +1,9 @@
 // here we have some helper functions used throughout the label tab
 // these functions are being gradually migrated out of services.js
 
-import moment from "moment";
-import { DateTime } from "luxon";
-import { LabelOptions, readableLabelToKey } from "../survey/multilabel/confirmHelper";
+import moment from 'moment';
+import { DateTime } from 'luxon';
+import { LabelOptions, readableLabelToKey } from '../survey/multilabel/confirmHelper';
 import { CompositeTrip } from '../types/diaryTypes';
 
 export const modeColors = {
@@ -25,10 +25,20 @@ type BaseMode = {
 };
 
 // parallels the server-side MotionTypes enum: https://github.com/e-mission/e-mission-server/blob/94e7478e627fa8c171323662f951c611c0993031/emission/core/wrapper/motionactivity.py#L12
-export type MotionTypeKey = 'IN_VEHICLE' | 'BICYCLING' | 'ON_FOOT' | 'STILL' | 'UNKNOWN' | 'TILTING'
-                  | 'WALKING' | 'RUNNING' | 'NONE' | 'STOPPED_WHILE_IN_VEHICLE' | 'AIR_OR_HSR';
+export type MotionTypeKey =
+  | 'IN_VEHICLE'
+  | 'BICYCLING'
+  | 'ON_FOOT'
+  | 'STILL'
+  | 'UNKNOWN'
+  | 'TILTING'
+  | 'WALKING'
+  | 'RUNNING'
+  | 'NONE'
+  | 'STOPPED_WHILE_IN_VEHICLE'
+  | 'AIR_OR_HSR';
 
-const BaseModes: {[k: string]: BaseMode} = {
+const BaseModes: { [k: string]: BaseMode } = {
   // BEGIN MotionTypes
   IN_VEHICLE: { name: 'IN_VEHICLE', icon: 'speedometer', color: modeColors.red },
   BICYCLING: { name: 'BICYCLING', icon: 'bike', color: modeColors.green },

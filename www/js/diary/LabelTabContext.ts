@@ -20,20 +20,20 @@ export type TimelineNotesMap = {
 };
 
 type ContextProps = {
-  labelOptions: any,
-  timelineMap: TimelineMap,
-  timelineLabelMap: TimelineLabelMap,
-  timelineNotesMap: TimelineNotesMap,
-  displayedEntries: TimelineEntry[],
-  filterInputs: any, // TODO
-  setFilterInputs: any, // TODO
-  queriedRange: any, // TODO
-  pipelineRange: any, // TODO
-  isLoading: string|false,
-  loadAnotherWeek: any, // TODO
-  loadSpecificWeek: any, // TODO
-  refresh: any, // TODO
-  repopulateTimelineEntry: any, // TODO
+  labelOptions: any;
+  timelineMap: TimelineMap;
+  timelineLabelMap: TimelineLabelMap;
+  timelineNotesMap: TimelineNotesMap;
+  displayedEntries: TimelineEntry[];
+  filterInputs: any; // TODO
+  setFilterInputs: any; // TODO
+  queriedRange: any; // TODO
+  pipelineRange: any; // TODO
+  isLoading: string | false;
+  loadAnotherWeek: any; // TODO
+  loadSpecificWeek: any; // TODO
+  refresh: any; // TODO
+  repopulateTimelineEntry: any; // TODO
 };
 
 export default createContext<ContextProps>(null);

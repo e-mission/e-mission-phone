@@ -94,4 +94,4 @@ it('returns the detected modes, with percentages, for a trip', () => {
   expect(getDetectedModes(myFakeTrip)).toEqual(myFakeDetectedModes);
   expect(getDetectedModes(myFakeTrip2)).toEqual(myFakeDetectedModes2);
   expect(getDetectedModes({} as any)).toEqual([]); // empty trip, no sections, no modes
-})
+});

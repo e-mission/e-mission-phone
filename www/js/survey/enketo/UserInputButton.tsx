@@ -8,14 +8,14 @@
   The start and end times of the addition are the same as the trip or place.
 */
 
-import React, { useContext, useMemo, useState } from "react";
-import { getAngularService } from "../../angular-react-helper";
-import DiaryButton from "../../components/DiaryButton";
-import { useTranslation } from "react-i18next";
-import { useTheme } from "react-native-paper";
-import { displayErrorMsg, logDebug } from "../../plugin/logger";
-import EnketoModal from "./EnketoModal";
-import LabelTabContext from "../../diary/LabelTabContext";
+import React, { useContext, useMemo, useState } from 'react';
+import { getAngularService } from '../../angular-react-helper';
+import DiaryButton from '../../components/DiaryButton';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from 'react-native-paper';
+import { displayErrorMsg, logDebug } from '../../plugin/logger';
+import EnketoModal from './EnketoModal';
+import LabelTabContext from '../../diary/LabelTabContext';
 
 type Props = {
   timelineEntry: any;
@@ -29,9 +29,10 @@ const UserInputButton = ({ timelineEntry }: Props) => {
   const { repopulateTimelineEntry, timelineLabelMap } = useContext(LabelTabContext);
 
   // the label resolved from the survey response, or null if there is no response yet
-  const responseLabel = useMemo<string|null>(() => (
-    timelineLabelMap[timelineEntry._id.$oid]?.['SURVEY']?.data?.label || null
-  ), [timelineEntry]);
+  const responseLabel = useMemo<string | null>(
+    () => timelineLabelMap[timelineEntry._id.$oid]?.['SURVEY']?.data?.label || null,
+    [timelineEntry],
+  );
 
   function launchUserInputSurvey() {
     logDebug('UserInputButton: About to launch survey');

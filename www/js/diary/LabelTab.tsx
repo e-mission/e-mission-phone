@@ -6,26 +6,36 @@
     share the data that has been loaded and interacted with.
 */
 
-import React, { useEffect, useState, useRef } from "react";
-import { getAngularService } from "../angular-react-helper";
-import useAppConfig from "../useAppConfig";
-import { useTranslation } from "react-i18next";
-import { invalidateMaps } from "../components/LeafletView";
-import moment from "moment";
-import LabelListScreen from "./list/LabelListScreen";
-import { createStackNavigator } from "@react-navigation/stack";
-import LabelScreenDetails from "./details/LabelDetailsScreen";
-import { NavigationContainer } from "@react-navigation/native";
-import { compositeTrips2TimelineMap, updateAllUnprocessedInputs, updateLocalUnprocessedInputs, unprocessedLabels, unprocessedNotes } from "./timelineHelper";
-import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
-import { getLabelOptions } from "../survey/multilabel/confirmHelper";
-import { displayError, logDebug } from "../plugin/logger";
-import { useTheme } from "react-native-paper";
-import { getPipelineRangeTs } from "../commHelper";
-import { mapInputsToTimelineEntries } from "../survey/inputMatcher";
-import { configuredFilters as multilabelConfiguredFilters } from "../survey/multilabel/infinite_scroll_filters";
-import { configuredFilters as enketoConfiguredFilters } from "../survey/enketo/infinite_scroll_filters";
-import LabelTabContext, { TimelineLabelMap, TimelineMap, TimelineNotesMap } from "./LabelTabContext";
+import React, { useEffect, useState, useRef } from 'react';
+import { getAngularService } from '../angular-react-helper';
+import useAppConfig from '../useAppConfig';
+import { useTranslation } from 'react-i18next';
+import { invalidateMaps } from '../components/LeafletView';
+import moment from 'moment';
+import LabelListScreen from './list/LabelListScreen';
+import { createStackNavigator } from '@react-navigation/stack';
+import LabelScreenDetails from './details/LabelDetailsScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import {
+  compositeTrips2TimelineMap,
+  updateAllUnprocessedInputs,
+  updateLocalUnprocessedInputs,
+  unprocessedLabels,
+  unprocessedNotes,
+} from './timelineHelper';
+import { fillLocationNamesOfTrip, resetNominatimLimiter } from './addressNamesHelper';
+import { getLabelOptions } from '../survey/multilabel/confirmHelper';
+import { displayError, logDebug } from '../plugin/logger';
+import { useTheme } from 'react-native-paper';
+import { getPipelineRangeTs } from '../commHelper';
+import { mapInputsToTimelineEntries } from '../survey/inputMatcher';
+import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
+import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
+import LabelTabContext, {
+  TimelineLabelMap,
+  TimelineMap,
+  TimelineNotesMap,
+} from './LabelTabContext';
 
 let showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -64,7 +74,8 @@ const LabelTab = () => {
           ? enketoConfiguredFilters
           : multilabelConfiguredFilters;
       const allFalseFilters = tripFilters.map((f, i) => ({
-        ...f, state: (i == 0 ? true : false) // only the first filter will have state true on init
+        ...f,
+        state: i == 0 ? true : false, // only the first filter will have state true on init
       }));
       setFilterInputs(allFalseFilters);
     }
@@ -88,7 +99,7 @@ const LabelTab = () => {
     let entriesToDisplay = allEntries;
     if (activeFilter) {
       const entriesAfterFilter = allEntries.filter(
-        t => t.justRepopulated || activeFilter?.filter(t, newTimelineLabelMap[t._id.$oid])
+        (t) => t.justRepopulated || activeFilter?.filter(t, newTimelineLabelMap[t._id.$oid]),
       );
       /* next, filter out any untracked time if the trips that came before and
         after it are no longer displayed */
@@ -244,10 +255,11 @@ const LabelTab = () => {
 
   const timelineMapRef = useRef(timelineMap);
   async function repopulateTimelineEntry(oid: string) {
-    if (!timelineMap.has(oid)) return console.error("Item with oid: " + oid + " not found in timeline");
+    if (!timelineMap.has(oid))
+      return console.error('Item with oid: ' + oid + ' not found in timeline');
     await updateLocalUnprocessedInputs(pipelineRange, appConfig);
     const repopTime = new Date().getTime();
-    const newEntry = {...timelineMap.get(oid), justRepopulated: repopTime};
+    const newEntry = { ...timelineMap.get(oid), justRepopulated: repopTime };
     const newTimelineMap = new Map(timelineMap).set(oid, newEntry);
     setTimelineMap(newTimelineMap);
 
