@@ -1,5 +1,11 @@
-import { mockBEMUserCache, mockDevice, mockGetAppVersion } from "../__mocks__/cordovaMocks";
-import { addStatError, addStatEvent, addStatReading, getAppVersion, statKeys } from "../js/plugin/clientStats";
+import { mockBEMUserCache, mockDevice, mockGetAppVersion } from '../__mocks__/cordovaMocks';
+import {
+  addStatError,
+  addStatEvent,
+  addStatReading,
+  getAppVersion,
+  statKeys,
+} from '../js/plugin/clientStats';
 
 mockDevice();
 // this mocks cordova-plugin-app-version, generating a "Mock App", version "1.2.3"
@@ -22,7 +28,7 @@ it('stores a client stats reading', async () => {
     ts: expect.any(Number),
     reading,
     client_app_version: '1.2.3',
-    client_os_version: '14.0.0'
+    client_os_version: '14.0.0',
   });
 });
 
@@ -34,7 +40,7 @@ it('stores a client stats event', async () => {
     ts: expect.any(Number),
     reading: null,
     client_app_version: '1.2.3',
-    client_os_version: '14.0.0'
+    client_os_version: '14.0.0',
   });
 });
 
@@ -47,6 +53,6 @@ it('stores a client stats error', async () => {
     ts: expect.any(Number),
     reading: errorStr,
     client_app_version: '1.2.3',
-    client_os_version: '14.0.0'
+    client_os_version: '14.0.0',
   });
 });

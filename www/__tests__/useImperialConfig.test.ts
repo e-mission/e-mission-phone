@@ -1,16 +1,15 @@
 import { convertDistance, convertSpeed, formatForDisplay } from '../js/config/useImperialConfig';
 
-
 // This mock is required, or else the test will dive into the import chain of useAppConfig.ts and fail when it gets to the root
 jest.mock('../js/useAppConfig', () => {
   return jest.fn(() => ({
     appConfig: {
-      use_imperial: false
+      use_imperial: false,
     },
-    loading: false
+    loading: false,
   }));
 });
-  
+
 describe('formatForDisplay', () => {
   it('should round to the nearest integer when value is >= 100', () => {
     expect(formatForDisplay(105)).toBe('105');
