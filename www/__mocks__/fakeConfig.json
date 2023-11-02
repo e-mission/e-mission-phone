@@ -20,10 +20,7 @@
         "summary_line_3": "",
         "short_textual_description": "",
         "why_we_collect": "",
-        "research_questions": [
-          "",
-          ""
-        ]
+        "research_questions": ["", ""]
       },
       "es": {
         "deployment_partner_name": "NREL",
@@ -33,10 +30,7 @@
         "summary_line_3": "",
         "short_textual_description": "",
         "why_we_collect": "",
-        "research_questions": [
-          "",
-          ""
-        ]
+        "research_questions": ["", ""]
       }
     }
   },

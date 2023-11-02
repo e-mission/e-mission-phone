@@ -1,78 +1,72 @@
 .no-margin {
-  margin:0px !important;
-  padding:0px !important;
+  margin: 0px !important;
+  padding: 0px !important;
 }
 
 .item {
-  border:0px !important;
+  border: 0px !important;
   border-color: #fff;
   padding: 0 10px; /* Changed from 16px. This change was to ensure the correct alignment of the diary card */
 }
 
 .main {
-  padding-top:50px;
+  padding-top: 50px;
   min-height: 100%;
 }
 
 .row {
-    padding:0px;
+  padding: 0px;
 }
 
 .col {
-   padding:0px !important;
+  padding: 0px !important;
 }
 
 .small {
-  font-size:7px;
+  font-size: 7px;
 }
-.bg-color{
-  background:#71bc98!important;
-  color:whitesmoke !important;
+.bg-color {
+  background: #71bc98 !important;
+  color: whitesmoke !important;
 }
-.summary-color{
-  background:#1b9e77!important;
-  color:whitesmoke !important;
+.summary-color {
+  background: #1b9e77 !important;
+  color: whitesmoke !important;
 }
-.place-color{
-  background:#7570b3!important;
-  color:whitesmoke !important;
+.place-color {
+  background: #7570b3 !important;
+  color: whitesmoke !important;
 }
-
 
 /* leaflet */
 /* ----------- iPhone 5 and 5S ----------- */
 
 /* Portrait and Landscape */
-@media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 568px)
-  and (-webkit-min-device-pixel-ratio: 2) {
-    .angular-leaflet-map { width: 100%; }
+@media only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
+  .angular-leaflet-map {
+    width: 100%;
+  }
 }
 
 /* ----------- iPhone 6 ----------- */
 
 /* Portrait and Landscape */
-@media only screen 
-  and (min-device-width: 375px) 
-  and (max-device-width: 667px) 
-  and (-webkit-min-device-pixel-ratio: 2) { 
-    .angular-leaflet-map { width: 100%; }
+@media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2) {
+  .angular-leaflet-map {
+    width: 100%;
+  }
 }
 
 /* ----------- iPhone 6+ ----------- */
 
 /* Portrait and Landscape */
-@media only screen 
-  and (min-device-width: 414px) 
-  and (max-device-width: 736px) 
-  and (-webkit-min-device-pixel-ratio: 3) { 
-    .angular-leaflet-map { width: 100%; }
+@media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3) {
+  .angular-leaflet-map {
+    width: 100%;
+  }
 }
 
-
 .list .item.item-accordion {
-
   transition: 0.09s all linear;
 }
 .list .item.item-accordion.ng-hide {
@@ -110,16 +104,18 @@ a.item-content {
   font-size: 13px;
   line-height: 1;
   font-weight: 500;
-  box-shadow: 0 1px 2px rgb(0 0 0 / .1), 0 2px 3px rgb(0 0 0 / .12);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.1),
+    0 2px 3px rgb(0 0 0 / 0.12);
   background-color: white;
   color: var(--accent-dark);
-  border: .12em solid var(--accent);
+  border: 0.12em solid var(--accent);
 }
 
 .diary-btn-yellow,
 .diary-btn-yellow:hover,
 .diary-btn-yellow:active {
-  background-color: #FFC108;  /* tentatively orange for now */
+  background-color: #ffc108; /* tentatively orange for now */
   color: white;
   border: 2px solid rgba(0, 136, 206, 0.2);
 }
@@ -135,7 +131,7 @@ a.item-content {
 .diary-btn:before {
   font-weight: bold;
   scale: 1.7;
-  margin-right: .6em;
+  margin-right: 0.6em;
   line-height: 100%;
 }
 
@@ -188,19 +184,20 @@ a.item-content {
   font-size: 13px;
   line-height: 1.2;
   margin: 0;
-  border: 1px solid rgb(0 0 0 / .2);
+  border: 1px solid rgb(0 0 0 / 0.2);
   box-sizing: border-box;
   border-radius: 30px;
   position: relative;
-  box-shadow: 0 3px 4px rgb(0 0 0 / 5%), 0 4px 4px rgb(0 0 0 / 8%);
+  box-shadow:
+    0 3px 4px rgb(0 0 0 / 5%),
+    0 4px 4px rgb(0 0 0 / 8%);
   display: flex;
   flex-wrap: wrap;
-  background: linear-gradient(40deg,
-                  hsla(200, 30%, 97%, 1) 40%,
-                  hsla(0, 0%, 100%, 1)),
+  background: linear-gradient(40deg, hsla(200, 30%, 97%, 1) 40%, hsla(0, 0%, 100%, 1));
 }
 
-.diary-card.place, .diary-card.untracked {
+.diary-card.place,
+.diary-card.untracked {
   color: #222;
   background: hsl(200 100% 85%);
   border: 1px solid hsl(200 100% 10% / 0.2);
@@ -209,23 +206,23 @@ a.item-content {
 }
 
 .diary-card.untracked {
-    color: #333;
-    /* untracked time will have a reddish color */
-    --accent: hsl(350, 25%, 50%);
-    --accent-light: hsl(350, 65%, 85%);
-    --accent-dark: hsl(350, 65%, 30%);
-  
-    --grid: hsla(350, 25%, 80%, .2);
-    /* subtle x-grid lines in the background, fading to white */
-    background: linear-gradient(15deg,
-                  hsla(350, 10%, 92%, 1) 40%,
-                  hsla(350, 10%, 100%, 0.5)),
-                repeating-linear-gradient(45deg,
-                  var(--grid), var(--grid) 0px,
-                  transparent 2px, transparent 20px),
-                repeating-linear-gradient(-45deg,
-                  var(--grid), var(--grid) 0px,
-                  #fff 2px, #fff 21px);
+  color: #333;
+  /* untracked time will have a reddish color */
+  --accent: hsl(350, 25%, 50%);
+  --accent-light: hsl(350, 65%, 85%);
+  --accent-dark: hsl(350, 65%, 30%);
+
+  --grid: hsla(350, 25%, 80%, 0.2);
+  /* subtle x-grid lines in the background, fading to white */
+  background: linear-gradient(15deg, hsla(350, 10%, 92%, 1) 40%, hsla(350, 10%, 100%, 0.5)),
+    repeating-linear-gradient(
+      45deg,
+      var(--grid),
+      var(--grid) 0px,
+      transparent 2px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(-45deg, var(--grid), var(--grid) 0px, #fff 2px, #fff 21px);
 }
 
 .diary-card.untracked .card-title b {
@@ -236,23 +233,24 @@ a.item-content {
   border-radius: 5px;
 }
 
-.diary-card.draft, .diary-details.draft {
+.diary-card.draft,
+.diary-details.draft {
   /* draft trips will have a muted, greenish color */
   --accent: hsl(150, 15%, 40%);
   --accent-light: hsl(150, 25%, 72%);
   --accent-dark: hsl(150, 35%, 30%);
 
-  --grid: hsla(150, 25%, 70%, .3);
+  --grid: hsla(150, 25%, 70%, 0.3);
   /* subtle grid lines in the background, fading to white */
-  background: linear-gradient(30deg,
-                hsla(150, 4%, 94%, .9) 50%,
-                hsla(0, 0%, 100%, .5)),
-              repeating-linear-gradient(90deg,
-                var(--grid), var(--grid) 0px,
-                transparent 2px, transparent 20px),
-              repeating-linear-gradient(0deg,
-                var(--grid), var(--grid) 0px,
-                #fff 2px, #fff 21px);
+  background: linear-gradient(30deg, hsla(150, 4%, 94%, 0.9) 50%, hsla(0, 0%, 100%, 0.5)),
+    repeating-linear-gradient(
+      90deg,
+      var(--grid),
+      var(--grid) 0px,
+      transparent 2px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(0deg, var(--grid), var(--grid) 0px, #fff 2px, #fff 21px);
 }
 
 .card-title {
@@ -304,7 +302,7 @@ a.item-content {
 
 @media screen and (orientation: portrait) {
   .hr-lines:before {
-    content: " ";
+    content: ' ';
     display: block;
     height: 2px;
     width: 30%;
@@ -315,7 +313,7 @@ a.item-content {
   }
 
   .hr-lines:after {
-    content: " ";
+    content: ' ';
     display: block;
     height: 2px;
     width: 30%;
@@ -327,7 +325,7 @@ a.item-content {
 }
 @media screen and (orientation: landscape) {
   .hr-lines:before {
-    content: " ";
+    content: ' ';
     display: block;
     height: 2px;
     width: 41%;
@@ -338,7 +336,7 @@ a.item-content {
   }
 
   .hr-lines:after {
-    content: " ";
+    content: ' ';
     display: block;
     height: 2px;
     width: 41%;
@@ -387,12 +385,13 @@ a.item-content {
   z-index: 0;
 }
 
-.diary-map, .diary-map * {
+.diary-map,
+.diary-map * {
   pointer-events: none !important;
 }
 
 /* when trip notes are enabled, the map has rounded right corners */
-.enhanced-trip-item .diary-map > div{
+.enhanced-trip-item .diary-map > div {
   border-radius: 30px 0px 30px 0px;
 }
 
@@ -479,11 +478,13 @@ a.item-content {
   background-color: var(--accent) !important;
 }
 
-.ionic_datepicker_popup .popup-body .month_select, .ionic_datepicker_popup .popup-body .year_select {
+.ionic_datepicker_popup .popup-body .month_select,
+.ionic_datepicker_popup .popup-body .year_select {
   border-bottom: 1px solid var(--accent) !important;
 }
 
-.ionic_datepicker_popup .popup-body .month_select:after, .ionic_datepicker_popup .popup-body .year_select:after {
+.ionic_datepicker_popup .popup-body .month_select:after,
+.ionic_datepicker_popup .popup-body .year_select:after {
   color: var(--accent) !important;
 }
 
@@ -502,13 +503,15 @@ div.labelfilterlist {
   color: var(--accent);
   border-radius: 0px;
   border-width: 0;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 2px 2px rgba(0,0,0,0.23);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.16),
+    0 2px 2px rgba(0, 0, 0, 0.23);
   padding: 0 0.1em !important;
 }
 
 .button.labelfilter.on {
-    background-color: var(--accent);
-    color: white;
+  background-color: var(--accent);
+  color: white;
 }
 
 .labelfilter:first-of-type {
