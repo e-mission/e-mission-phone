@@ -33,20 +33,6 @@ import { storageClear } from '../plugin/storage';
 import { getAppVersion } from '../plugin/clientStats';
 import { getConsentDocument } from '../splash/startprefs';
 import { logDebug } from '../plugin/logger';
-import {uploadFile} from "./uploadService";
-import ActionMenu from "../components/ActionMenu";
-import SensedPage from "./SensedPage"
-import LogPage from "./LogPage";
-import ControlSyncHelper, {ForceSyncRow, getHelperSyncSettings} from "./ControlSyncHelper";
-import ControlCollectionHelper, {getHelperCollectionSettings, getState, isMediumAccuracy, helperToggleLowAccuracy, forceTransition} from "./ControlCollectionHelper";
-import { resetDataAndRefresh } from "../config/dynamicConfig";
-import { AppContext } from "../App";
-import { shareQR } from "../components/QrCode";
-import { storageClear } from "../plugin/storage";
-import { getAppVersion } from "../plugin/clientStats";
-import { useSchedulerHelper } from "../splash/notifScheduler";
-import { getConsentDocument } from "../splash/startprefs";
-import { logDebug } from "../plugin/logger";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
