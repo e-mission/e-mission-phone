@@ -4,7 +4,7 @@ import { getConfig } from '../config/dynamicConfig';
 import useAppConfig from '../useAppConfig';
 import { addStatReading, statKeys } from '../plugin/clientStats';
 import { getUser, updateUser } from '../commHelper';
-import { logDebug } from '../plugin/logger';
+import { displayErrorMsg, logDebug } from '../plugin/logger';
 import { DateTime } from 'luxon';
 import i18next from 'i18next';
 
@@ -171,7 +171,7 @@ const update = async (reminderSchemes) => {
   try {
     scheme = reminderSchemes[reminder_assignment];
   } catch (e) {
-    console.log(
+    displayErrorMsg(
       'ERROR: Could not find reminder scheme for assignment ' +
         reminderSchemes +
         ' - ' +
