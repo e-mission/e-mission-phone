@@ -92,15 +92,15 @@ export function readConsentState() {
  */
 //used in ProfileSettings
 export function getConsentDocument() {
-  return window['cordova'].plugins.BEMUserCache.getDocument('config/consent', false).then(function (
-    resultDoc,
-  ) {
-    if (window['cordova'].plugins.BEMUserCache.isEmptyDoc(resultDoc)) {
-      return null;
-    } else {
-      return resultDoc;
-    }
-  });
+  return window['cordova'].plugins.BEMUserCache.getDocument('config/consent', false).then(
+    function (resultDoc) {
+      if (window['cordova'].plugins.BEMUserCache.isEmptyDoc(resultDoc)) {
+        return null;
+      } else {
+        return resultDoc;
+      }
+    },
+  );
 }
 
 /**

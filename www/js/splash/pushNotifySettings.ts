@@ -28,91 +28,101 @@ let push = null;
  */
 const startupInit = function () {
   push = window['PushNotification'].init({
-    "ios": {
-      "badge": true,
-      "sound": true,
-      "vibration": true,
-      "clearBadge": true
+    ios: {
+      badge: true,
+      sound: true,
+      vibration: true,
+      clearBadge: true,
     },
-    "android": {
-      "iconColor": "#008acf",
-      "icon": "ic_mood_question",
-      "clearNotifications": true
-    }
+    android: {
+      iconColor: '#008acf',
+      icon: 'ic_mood_question',
+      clearNotifications: true,
+    },
   });
   push.on('notification', function (data) {
     if (window['cordova'].platformId == 'ios') {
       // Parse the iOS values that are returned as strings
-      if (angular.isDefined(data) &&
-        angular.isDefined(data.additionalData)) {
+      if (angular.isDefined(data) && angular.isDefined(data.additionalData)) {
         if (angular.isDefined(data.additionalData.payload)) {
           data.additionalData.payload = JSON.parse(data.additionalData.payload);
         }
-        if (angular.isDefined(data.additionalData.data) && typeof (data.additionalData.data) == "string") {
+        if (
+          angular.isDefined(data.additionalData.data) &&
+          typeof data.additionalData.data == 'string'
+        ) {
           data.additionalData.data = JSON.parse(data.additionalData.data);
         } else {
-          console.log("additionalData is already an object, no need to parse it");
+          console.log('additionalData is already an object, no need to parse it');
         }
       } else {
-        logDebug("No additional data defined, nothing to parse");
+        logDebug('No additional data defined, nothing to parse');
       }
     }
     publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, data);
   });
-}
+};
 
 /**
  * @function registers notifications and handles result
- * @returns Promise for initialization logic, 
- * resolves on registration with token 
+ * @returns Promise for initialization logic,
+ * resolves on registration with token
  * rejects on error with error
  */
 const registerPromise = function () {
   return new Promise(function (resolve, reject) {
     startupInit();
-    push.on("registration", function (data) {
-      console.log("Got registration " + data);
+    push.on('registration', function (data) {
+      console.log('Got registration ' + data);
       resolve({
         token: data.registrationId,
-        type: data.registrationType
+        type: data.registrationType,
       });
     });
-    push.on("error", function (error) {
-      console.log("Got push error " + error);
+    push.on('error', function (error) {
+      console.log('Got push error ' + error);
       reject(error);
     });
-    console.log("push notify = " + push);
+    console.log('push notify = ' + push);
   });
-}
+};
 
 /**
  * @function registers for notifications and updates user
  * currently called on reconsent and on intro done
  */
 const registerPush = function () {
-  registerPromise().then(function (t) {
-    // alert("Token = "+JSON.stringify(t));
-    logDebug("Token = " + JSON.stringify(t));
-    return window['cordova'].plugins.BEMServerSync.getConfig().then(function (config) {
-      return config.sync_interval;
-    }, function (error) {
-      console.log("Got error " + error + " while reading config, returning default = 3600");
-      return 3600;
-    }).then(function (sync_interval) {
-      updateUser({
-        device_token: t['token'],
-        curr_platform: window['cordova'].platformId,
-        curr_sync_interval: sync_interval
-      });
-      return t;
+  registerPromise()
+    .then(function (t) {
+      // alert("Token = "+JSON.stringify(t));
+      logDebug('Token = ' + JSON.stringify(t));
+      return window['cordova'].plugins.BEMServerSync.getConfig()
+        .then(
+          function (config) {
+            return config.sync_interval;
+          },
+          function (error) {
+            console.log('Got error ' + error + ' while reading config, returning default = 3600');
+            return 3600;
+          },
+        )
+        .then(function (sync_interval) {
+          updateUser({
+            device_token: t['token'],
+            curr_platform: window['cordova'].platformId,
+            curr_sync_interval: sync_interval,
+          });
+          return t;
+        });
+    })
+    .then(function (t) {
+      // alert("Finished saving token = "+JSON.stringify(t.token));
+      logDebug('Finished saving token = ' + JSON.stringify(t.token));
+    })
+    .catch(function (error) {
+      displayError(error, 'Error in registering push notifications');
     });
-  }).then(function (t) {
-    // alert("Finished saving token = "+JSON.stringify(t.token));
-    logDebug("Finished saving token = " + JSON.stringify(t.token));
-  }).catch(function (error) {
-    displayError(error, "Error in registering push notifications");
-  });
-}
+};
 
 /**
  * @function handles silent push notifications
@@ -121,36 +131,36 @@ const registerPush = function () {
  * @returns early if platform is not ios
  */
 const redirectSilentPush = function (event, data) {
-  logDebug("Found silent push notification, for platform " + window['cordova'].platformId);
+  logDebug('Found silent push notification, for platform ' + window['cordova'].platformId);
   if (window['cordova'].platformId != 'ios') {
-    logDebug("Platform is not ios, handleSilentPush is not implemented or needed");
+    logDebug('Platform is not ios, handleSilentPush is not implemented or needed');
     // doesn't matter if we finish or not because platforms other than ios don't care
     return;
   }
-  logDebug("Platform is ios, calling handleSilentPush on DataCollection");
+  logDebug('Platform is ios, calling handleSilentPush on DataCollection');
   var notId = data.additionalData.payload.notId;
   var finishErrFn = function (error) {
-    logDebug("in push.finish, error = " + error);
+    logDebug('in push.finish, error = ' + error);
   };
 
-  window['cordova'].plugins.BEMDataCollection.getConfig().then(function (config) {
-    if (config.ios_use_remote_push_for_sync) {
-      window['cordova'].plugins.BEMDataCollection.handleSilentPush()
-        .then(function () {
-          logDebug("silent push finished successfully, calling push.finish");
-          showDebugLocalNotification("silent push finished, calling push.finish");
-          push.finish(function () { }, finishErrFn, notId);
-        })
-    } else {
-      logDebug("Using background fetch for sync, no need to redirect push");
-      push.finish(function () { }, finishErrFn, notId);
-    };
-  })
+  window['cordova'].plugins.BEMDataCollection.getConfig()
+    .then(function (config) {
+      if (config.ios_use_remote_push_for_sync) {
+        window['cordova'].plugins.BEMDataCollection.handleSilentPush().then(function () {
+          logDebug('silent push finished successfully, calling push.finish');
+          showDebugLocalNotification('silent push finished, calling push.finish');
+          push.finish(function () {}, finishErrFn, notId);
+        });
+      } else {
+        logDebug('Using background fetch for sync, no need to redirect push');
+        push.finish(function () {}, finishErrFn, notId);
+      }
+    })
     .catch(function (error) {
-      push.finish(function () { }, finishErrFn, notId);
-      displayError(error, "Error while redirecting silent push");
+      push.finish(function () {}, finishErrFn, notId);
+      displayError(error, 'Error while redirecting silent push');
     });
-}
+};
 
 /**
  * @function shows debug notifications if simulating user interaction
@@ -161,14 +171,14 @@ var showDebugLocalNotification = function (message) {
     if (config.simulate_user_interaction) {
       window['cordova'].plugins.notification.local.schedule({
         id: 1,
-        title: "Debug javascript notification",
+        title: 'Debug javascript notification',
         text: message,
         actions: [],
-        category: 'SIGN_IN_TO_CLASS'
+        category: 'SIGN_IN_TO_CLASS',
       });
     }
   });
-}
+};
 
 /**
  * @function handles pushNotification intitially
@@ -176,11 +186,11 @@ var showDebugLocalNotification = function (message) {
  * @param data from the notification
  */
 const onCloudEvent = function (event, data) {
-  logDebug("data = " + JSON.stringify(data));
-  if (data.additionalData["content-available"] == 1) {
+  logDebug('data = ' + JSON.stringify(data));
+  if (data.additionalData['content-available'] == 1) {
     redirectSilentPush(event, data);
-  }; // else no need to call finish
-}
+  } // else no need to call finish
+};
 
 /**
  * @function registers push on reconsent
@@ -188,16 +198,16 @@ const onCloudEvent = function (event, data) {
  * @param data data from the conesnt event
  */
 const onConsentEvent = function (event, data) {
-  console.log("got consented event " + JSON.stringify(event['name'])
-    + " with data " + JSON.stringify(data));
-  readIntroDone()
-    .then((isIntroDone) => {
-      if (isIntroDone) {
-        console.log("intro is done -> reconsent situation, we already have a token -> register");
-        registerPush();
-      }
-    });
-}
+  console.log(
+    'got consented event ' + JSON.stringify(event['name']) + ' with data ' + JSON.stringify(data),
+  );
+  readIntroDone().then((isIntroDone) => {
+    if (isIntroDone) {
+      console.log('intro is done -> reconsent situation, we already have a token -> register');
+      registerPush();
+    }
+  });
+};
 
 /**
  * @function registers push after intro received
@@ -205,12 +215,14 @@ const onConsentEvent = function (event, data) {
  * @param data from the event
  */
 const onIntroEvent = function (event, data) {
-  console.log("intro is done -> original consent situation, we should have a token by now -> register");
+  console.log(
+    'intro is done -> original consent situation, we should have a token by now -> register',
+  );
   registerPush();
-}
+};
 
 /**
- * startup code - 
+ * startup code -
  * @function registers push if consented, subscribes event listeners for local handline
  */
 export const initPushNotify = function () {
@@ -218,10 +230,10 @@ export const initPushNotify = function () {
     .then(isConsented)
     .then(function (consentState) {
       if (consentState == true) {
-        logDebug("already consented, signing up for remote push");
+        logDebug('already consented, signing up for remote push');
         registerPush();
       } else {
-        logDebug("no consent yet, waiting to sign up for remote push");
+        logDebug('no consent yet, waiting to sign up for remote push');
       }
     });
 
@@ -229,5 +241,5 @@ export const initPushNotify = function () {
   subscribe(EVENT_NAMES.CONSENTED_EVENT, (event) => onConsentEvent(event, event.detail));
   subscribe(EVENT_NAMES.INTRO_DONE_EVENT, (event) => onIntroEvent(event, event.detail));
 
-  logDebug("pushnotify startup done");
-}
+  logDebug('pushnotify startup done');
+};
