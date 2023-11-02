@@ -4,9 +4,9 @@ import { View, ScrollView } from 'react-native';
 import { Button, Surface } from 'react-native-paper';
 import { resetDataAndRefresh } from '../config/dynamicConfig';
 import { AppContext } from '../App';
-import { getAngularService } from '../angular-react-helper';
 import PrivacyPolicy from './PrivacyPolicy';
 import { onboardingStyles } from './OnboardingStack';
+import { markConsented } from '../splash/startprefs';
 import { setProtocolDone } from './onboardingHelper';
 
 const ProtocolPage = () => {

@@ -30,6 +30,9 @@ export const mockFile = () => {
                               "applicationStorageDirectory" : "../path/to/app/storage/directory"};
 }
 
+//for consent document
+const _storage = {};
+
 export const mockBEMUserCache = () => {
   const _cache = {};
   const messages = [];
@@ -98,19 +101,44 @@ export const mockBEMUserCache = () => {
       // this was mocked specifically for enketoHelper's use, could be expanded if needed
       const fakeSurveyConfig = fakeConfig;
 
-      if(key == "config/app_ui_config"){
+      if (key == "config/app_ui_config") {
         return new Promise<any>((rs, rj) =>
-        setTimeout(() => {
-          rs(fakeSurveyConfig);
-        }, 100)
-      );
+          setTimeout(() => {
+            rs(fakeSurveyConfig);
+          }, 100)
+        );
       }
       else {
-        return null;
+        return new Promise<any[]>((rs, rj) =>
+          setTimeout(() => {
+            rs(_storage[key]);
+          }, 100)
+        );
+      }
+    },
+    isEmptyDoc: (doc) => {
+      if (doc == undefined) { return true }
+      let string = doc.toString();
+      if (string.length == 0) {
+        return true;
+      } else {
+        return false;
       }
     }
   }
   window['cordova'] ||= {};
   window['cordova'].plugins ||= {};
   window['cordova'].plugins.BEMUserCache = mockBEMUserCache;
+}
+
+export const mockBEMDataCollection = () => {
+  const mockBEMDataCollection = {
+    markConsented: (consentDoc) => {
+      setTimeout(() => {
+        _storage['config/consent'] = consentDoc;
+      }, 100)
+    }
+  }
+  window['cordova'] ||= {};
+  window['cordova'].plugins.BEMDataCollection = mockBEMDataCollection;
 }
