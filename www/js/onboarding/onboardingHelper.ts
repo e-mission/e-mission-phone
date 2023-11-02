@@ -3,6 +3,7 @@ import { getConfig, resetDataAndRefresh } from "../config/dynamicConfig";
 import { storageGet, storageSet } from "../plugin/storage";
 import { logDebug } from "../plugin/logger";
 import { readConsentState, isConsented } from "../splash/startprefs";
+import { getAngularService } from "../angular-react-helper";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
@@ -70,5 +71,13 @@ export async function readIntroDone() {
 
 export async function markIntroDone() {
   const currDateTime = DateTime.now().toISO();
-  return storageSet(INTRO_DONE_KEY, currDateTime);
+  return storageSet(INTRO_DONE_KEY, currDateTime)
+    .then(() => {
+      //handle "on intro" events
+      logDebug("intro done, calling registerPush and storeDeviceSettings");
+      const PushNotify = getAngularService("PushNotify");
+      const StoreSeviceSettings = getAngularService("StoreDeviceSettings");
+      PushNotify.registerPush();
+      StoreSeviceSettings.storeDeviceSettings();
+    });
 }

@@ -26,6 +26,7 @@ import { shareQR } from "../components/QrCode";
 import { storageClear } from "../plugin/storage";
 import { getAppVersion } from "../plugin/clientStats";
 import { getConsentDocument } from "../splash/startprefs";
+import { logDebug } from "../plugin/logger";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -316,7 +317,7 @@ const ProfileSettings = () => {
     async function checkConsent() {
         getConsentDocument().then(function(resultDoc){
             setConsentDoc(resultDoc);
-            console.debug("In profile settings, consent doc found", resultDoc);
+            logDebug("In profile settings, consent doc found", resultDoc);
             if (resultDoc == null) {
                 setNoConsentVis(true);
             } else {

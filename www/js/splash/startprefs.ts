@@ -1,15 +1,7 @@
+import { getAngularService } from "../angular-react-helper";
 import { storageGet, storageSet } from '../plugin/storage';
 import { logInfo, logDebug, displayErrorMsg } from '../plugin/logger';
-
-type StartPrefs = {
-  CONSENTED_EVENT: string,
-  INTRO_DONE_EVENT: string,
-}
-
-export const startPrefs: StartPrefs = {
-  CONSENTED_EVENT: "data_collection_consented",
-  INTRO_DONE_EVENT: "intro_done",
-};
+import { readIntroDone } from "../onboarding/onboardingHelper";
 
 // data collection consented protocol: string, represents the date on
 // which the consented protocol was approved by the IRB
@@ -37,31 +29,43 @@ export function markConsented() {
   logInfo("changing consent from " +
     _curr_consented + " -> " + JSON.stringify(_req_consent));
   // mark in native storage
-  return readConsentState().then(writeConsentToNative).then(function (response) {
-    // mark in local storage
-    storageSet(DATA_COLLECTION_CONSENTED_PROTOCOL,
-      _req_consent);
-    // mark in local variable as well
-    _curr_consented = {..._req_consent};
-  });
+  return readConsentState()
+    .then(writeConsentToNative)
+    .then(function (response) {
+      // mark in local storage
+      storageSet(DATA_COLLECTION_CONSENTED_PROTOCOL,
+        _req_consent);
+      // mark in local variable as well
+      _curr_consented = { ..._req_consent };
+    })
+    //check for reconsent
+    .then(readIntroDone)
+    .then((isIntroDone) => {
+      if (isIntroDone) {
+        logDebug("reconsent scenario - marked consent after intro done - registering pushnoify and storing device settings")
+        const PushNotify = getAngularService("PushNotify");
+        const StoreSeviceSettings = getAngularService("StoreDeviceSettings");
+        PushNotify.registerPush();
+        StoreSeviceSettings.storeDeviceSettings();
+      }
+    })
+    .catch((error) => {
+      displayErrorMsg(error, "Error while while wrting consent to storage");
+    });
 };
-
-let _is_consented;
 
 /**
  * @function checking for consent locally
  * @returns {boolean} if the consent is marked in the local var
  */
 export function isConsented() {
-  console.log("curr consented is", _curr_consented);
+  logDebug("curr consented is" + JSON.stringify(_curr_consented));
   if (_curr_consented == null || _curr_consented == "" ||
     _curr_consented.approval_date != _req_consent.approval_date) {
-    console.log("Not consented in local storage, need to show consent");
-    _is_consented = false;
+    logDebug("Not consented in local storage, need to show consent");
     return false;
   } else {
-    console.log("Consented in local storage, no need to show consent");
-    _is_consented = true;
+    logDebug("Consented in local storage, no need to show consent");
     return true;
   }
 }
@@ -76,7 +80,7 @@ export function readConsentState() {
     .then(function (startupConfigResult) {
       console.log(startupConfigResult);
       _req_consent = startupConfigResult.emSensorDataCollectionProtocol;
-      logInfo("required consent version = " + JSON.stringify(_req_consent));
+      logDebug("required consent version = " + JSON.stringify(_req_consent));
       return storageGet(DATA_COLLECTION_CONSENTED_PROTOCOL);
     }).then(function (kv_store_consent) {
       _curr_consented = kv_store_consent;

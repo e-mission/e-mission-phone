@@ -1,3 +1,7 @@
+//naming of this file can be a little confusing - "pushnotifysettings" for rewritten file
+//https://github.com/e-mission/e-mission-phone/pull/1072#discussion_r1375360832
+
+
 /*
  * This module deals with the interaction with the push plugin, the redirection
  * of silent push notifications and the re-parsing of iOS pushes. It then
@@ -15,8 +19,7 @@
 
 import angular from 'angular';
 import { updateUser } from '../commHelper';
-import { readConsentState, isConsented, startPrefs } from './startprefs';
-import { readIntroDone } from '../onboarding/onboardingHelper';
+import { readConsentState, isConsented } from './startprefs';
 
 angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
                                               'emission.services'])
@@ -171,22 +174,6 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
         });
       pushnotify.registerNotificationHandler();
       Logger.log("pushnotify startup done");
-    });
-
-    //new way of handling this, called in startprefs by markConsent
-    pushnotify.afterConsent = function () {
-      console.log("in pushnotify, executing after consent is received");
-      readIntroDone().then((intro_done) => {
-        if (intro_done) {
-          console.log("intro is done -> reconsent situation, we already have a token -> register");
-          pushnotify.registerPush();
-        }
-      })
-    }
-
-    $rootScope.$on(startPrefs.INTRO_DONE_EVENT, function(event, data) {
-          console.log("intro is done -> original consent situation, we should have a token by now -> register");
-       pushnotify.registerPush();
     });
 
     return pushnotify;
