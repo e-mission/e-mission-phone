@@ -1,6 +1,6 @@
-import { mockBEMUserCache } from "../__mocks__/cordovaMocks";
-import { mockLogger } from "../__mocks__/globalMocks";
-import { storageClear, storageGet, storageRemove, storageSet } from "../js/plugin/storage";
+import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
+import { mockLogger } from '../__mocks__/globalMocks';
+import { storageClear, storageGet, storageRemove, storageSet } from '../js/plugin/storage';
 
 // mocks used - storage.ts uses BEMUserCache and logging.
 // localStorage is already mocked for us by Jest :)

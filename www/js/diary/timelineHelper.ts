@@ -1,12 +1,12 @@
-import { getAngularService } from "../angular-react-helper";
-import { displayError, logDebug } from "../plugin/logger";
-import { getBaseModeByKey, getBaseModeOfLabeledTrip } from "./diaryHelper";
-import { getUnifiedDataForInterval} from "../unifiedDataLoader";
-import { getRawEntries } from "../commHelper";
-import { ServerResponse, ServerData } from "../types/serverData";
+import { getAngularService } from '../angular-react-helper';
+import { displayError, logDebug } from '../plugin/logger';
+import { getBaseModeByKey, getBaseModeOfLabeledTrip } from './diaryHelper';
+import { getUnifiedDataForInterval } from '../unifiedDataLoader';
+import { getRawEntries } from '../commHelper';
+import { ServerResponse, ServerData } from '../types/serverData';
 import L from 'leaflet';
-import i18next from "i18next";
-import { DateTime } from "luxon";
+import i18next from 'i18next';
+import { DateTime } from 'luxon';
 
 const cachedGeojsons = new Map();
 /**
@@ -19,29 +19,29 @@ export function useGeojsonForTrip(trip, labelOptions, labeledMode?) {
     return cachedGeojsons.get(gjKey);
   }
 
-  let trajectoryColor: string|null;
+  let trajectoryColor: string | null;
   if (labeledMode) {
     trajectoryColor = getBaseModeOfLabeledTrip(trip, labelOptions)?.color;
   }
 
-  logDebug("Reading trip's " + trip.locations.length + " location points at " + (new Date()));
+  logDebug("Reading trip's " + trip.locations.length + ' location points at ' + new Date());
   var features = [
-    location2GeojsonPoint(trip.start_loc, "start_place"),
-    location2GeojsonPoint(trip.end_loc, "end_place"),
-    ...locations2GeojsonTrajectory(trip, trip.locations, trajectoryColor)
+    location2GeojsonPoint(trip.start_loc, 'start_place'),
+    location2GeojsonPoint(trip.end_loc, 'end_place'),
+    ...locations2GeojsonTrajectory(trip, trip.locations, trajectoryColor),
   ];
 
   const gj = {
     data: {
       id: gjKey,
-      type: "FeatureCollection",
+      type: 'FeatureCollection',
       features: features,
       properties: {
         start_ts: trip.start_ts,
-        end_ts: trip.end_ts
-      }
-    }
-  }
+        end_ts: trip.end_ts,
+      },
+    },
+  };
   cachedGeojsons.set(gjKey, gj);
   return gj;
 }
@@ -74,7 +74,14 @@ export function compositeTrips2TimelineMap(ctList: any[], unpackPlaces?: boolean
   return timelineEntriesMap;
 }
 
-export function populateCompositeTrips(ctList, showPlaces, labelsFactory, labelsResultMap, notesFactory, notesResultMap) {
+export function populateCompositeTrips(
+  ctList,
+  showPlaces,
+  labelsFactory,
+  labelsResultMap,
+  notesFactory,
+  notesResultMap,
+) {
   try {
     ctList.forEach((ct, i) => {
       if (showPlaces && ct.start_confirmed_place) {
@@ -101,9 +108,9 @@ export function populateCompositeTrips(ctList, showPlaces, labelsFactory, labels
 }
 
 const getUnprocessedInputQuery = (pipelineRange) => ({
-  key: "write_ts",
+  key: 'write_ts',
   startTs: pipelineRange.end_ts - 10,
-  endTs: DateTime.now().toUnixInteger() + 10
+  endTs: DateTime.now().toUnixInteger() + 10,
 });
 
 function getUnprocessedResults(labelsFactory, notesFactory, labelsPromises, notesPromises) {
@@ -132,10 +139,10 @@ export function getLocalUnprocessedInputs(pipelineRange, labelsFactory, notesFac
   const BEMUserCache = window['cordova'].plugins.BEMUserCache;
   const tq = getUnprocessedInputQuery(pipelineRange);
   const labelsPromises = labelsFactory.MANUAL_KEYS.map((key) =>
-    BEMUserCache.getMessagesForInterval(key, tq, true).then(labelsFactory.extractResult)
+    BEMUserCache.getMessagesForInterval(key, tq, true).then(labelsFactory.extractResult),
   );
   const notesPromises = notesFactory.MANUAL_KEYS.map((key) =>
-    BEMUserCache.getMessagesForInterval(key, tq, true).then(notesFactory.extractResult)
+    BEMUserCache.getMessagesForInterval(key, tq, true).then(notesFactory.extractResult),
   );
   return getUnprocessedResults(labelsFactory, notesFactory, labelsPromises, notesPromises);
 }
@@ -153,12 +160,12 @@ export function getLocalUnprocessedInputs(pipelineRange, labelsFactory, notesFac
 export function getAllUnprocessedInputs(pipelineRange, labelsFactory, notesFactory) {
   const tq = getUnprocessedInputQuery(pipelineRange);
   const getMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
-  
-  const labelsPromises = labelsFactory.MANUAL_KEYS.map((key) => 
-    getUnifiedDataForInterval(key, tq, getMethod).then(labelsFactory.extractResult)
+
+  const labelsPromises = labelsFactory.MANUAL_KEYS.map((key) =>
+    getUnifiedDataForInterval(key, tq, getMethod).then(labelsFactory.extractResult),
   );
-  const notesPromises = notesFactory.MANUAL_KEYS.map((key) => 
-    getUnifiedDataForInterval(key, tq, getMethod).then(notesFactory.extractResult)
+  const notesPromises = notesFactory.MANUAL_KEYS.map((key) =>
+    getUnifiedDataForInterval(key, tq, getMethod).then(notesFactory.extractResult),
   );
   return getUnprocessedResults(labelsFactory, notesFactory, labelsPromises, notesPromises);
 }
@@ -169,14 +176,14 @@ export function getAllUnprocessedInputs(pipelineRange, labelsFactory, notesFacto
  * @returns a GeoJSON feature with type "Point", the given location's coordinates and the given feature type
  */
 const location2GeojsonPoint = (locationPoint: any, featureType: string) => ({
-  type: "Feature",
+  type: 'Feature',
   geometry: {
-    type: "Point",
+    type: 'Point',
     coordinates: locationPoint.coordinates,
   },
   properties: {
     feature_type: featureType,
-  }
+  },
 });
 
 /**
@@ -193,28 +200,26 @@ const locations2GeojsonTrajectory = (trip, locationList, trajectoryColor?) => {
   } else {
     // this is a multimodal trip so we sort the locations into sections by timestamp
     sectionsPoints = trip.sections.map((s) =>
-      trip.locations.filter((l) =>
-        l.ts >= s.start_ts && l.ts <= s.end_ts
-      )
+      trip.locations.filter((l) => l.ts >= s.start_ts && l.ts <= s.end_ts),
     );
   }
 
   return sectionsPoints.map((sectionPoints, i) => {
     const section = trip.sections?.[i];
     return {
-      type: "Feature",
+      type: 'Feature',
       geometry: {
-        type: "LineString",
+        type: 'LineString',
         coordinates: sectionPoints.map((pt) => pt.loc.coordinates),
       },
       style: {
         /* If a color was passed as arg, use it for the whole trajectory. Otherwise, use the
           color for the sensed mode of this section, and fall back to dark grey */
-        color: trajectoryColor || getBaseModeByKey(section?.sensed_mode_str)?.color || "#333",
+        color: trajectoryColor || getBaseModeByKey(section?.sensed_mode_str)?.color || '#333',
       },
-    }
+    };
   });
-}
+};
 
 // Remaining functions from /diary/services.js
 const unpackServerData = (obj: ServerData<any>) => ({
@@ -224,15 +229,12 @@ const unpackServerData = (obj: ServerData<any>) => ({
   origin_key: obj.metadata.origin_key || obj.metadata.key,
 });
 
-export const readAllCompositeTrips = function(startTs: number, endTs: number) {
+export const readAllCompositeTrips = function (startTs: number, endTs: number) {
   const $ionicLoading = getAngularService('$ionicLoading');
   $ionicLoading.show({
-    template: i18next.t('service.reading-server')
+    template: i18next.t('service.reading-server'),
   });
-  const readPromises = [
-    getRawEntries(["analysis/composite_trip"],
-        startTs, endTs, "data.end_ts"),
-  ];
+  const readPromises = [getRawEntries(['analysis/composite_trip'], startTs, endTs, 'data.end_ts')];
   return Promise.all(readPromises)
     .then(([ctList]: [ServerResponse<any>]) => {
       $ionicLoading.hide();
@@ -244,17 +246,17 @@ export const readAllCompositeTrips = function(startTs: number, endTs: number) {
           end_confirmed_place: unpackServerData(unpackedCt.end_confirmed_place),
           locations: unpackedCt.locations?.map(unpackServerData),
           sections: unpackedCt.sections?.map(unpackServerData),
-        }
+        };
       });
     })
     .catch((err) => {
-      displayError(err, "while reading confirmed trips");
+      displayError(err, 'while reading confirmed trips');
       $ionicLoading.hide();
       return [];
     });
 };
 
-const dateTime2localdate = function(currtime: DateTime, tz: string) {
+const dateTime2localdate = function (currtime: DateTime, tz: string) {
   return {
     timezone: tz,
     year: currtime.get('year'),
@@ -263,12 +265,12 @@ const dateTime2localdate = function(currtime: DateTime, tz: string) {
     //modify the months value here
     month: currtime.get('month') + 1,
     day: currtime.get('day'),
-    weekday: currtime.get('weekday'), 
+    weekday: currtime.get('weekday'),
     hour: currtime.get('hour'),
     minute: currtime.get('minute'),
     second: currtime.get('second'),
   };
-}
+};
 /* locationPoints are of form:
  * ServerData<Point>
  * Point = {
@@ -277,14 +279,15 @@ const dateTime2localdate = function(currtime: DateTime, tz: string) {
  *   ts: number, // 1698433683.712
  * }
  */
-const points2TripProps = function(locationPoints) {
+const points2TripProps = function (locationPoints) {
   const startPoint = locationPoints[0];
   const endPoint = locationPoints[locationPoints.length - 1];
   const tripAndSectionId = `unprocessed_${startPoint.data.ts}_${endPoint.data.ts}`;
   const startTime = DateTime.fromSeconds(startPoint.data.ts).setZone(startPoint.metadata.time_zone);
   const endTime = DateTime.fromSeconds(endPoint.data.ts).setZone(endPoint.metadata.time_zone);
 
-  const speeds = [], dists = [];
+  const speeds = [],
+    dists = [];
   var loc, locLatLng;
   locationPoints.forEach((pt) => {
     const ptLatLng = L.latLng([pt.data.latitude, pt.data.longitude]);
@@ -299,19 +302,19 @@ const points2TripProps = function(locationPoints) {
   });
 
   const locations = locationPoints.map((point, i) => ({
-      loc: {
-        coordinates: [point.data.longitude, point.data.latitude]
-      },
-      ts: point.data.ts,
-      speed: speeds[i],
+    loc: {
+      coordinates: [point.data.longitude, point.data.latitude],
+    },
+    ts: point.data.ts,
+    speed: speeds[i],
   }));
 
   // used to mimic old momentJS moment.format()
   const formatString = "yyyy-MM-dd'T'HH:mm:ssZZ";
   return {
-    _id: {$oid: tripAndSectionId},
-    key: "UNPROCESSED_trip",
-    origin_key: "UNPROCESSED_trip",
+    _id: { $oid: tripAndSectionId },
+    key: 'UNPROCESSED_trip',
+    origin_key: 'UNPROCESSED_trip',
     additions: [],
     confidence_threshold: 0,
     distance: dists.reduce((a, b) => a + b, 0),
@@ -319,44 +322,47 @@ const points2TripProps = function(locationPoints) {
     end_fmt_time: endTime.toFormat(formatString),
     end_local_dt: dateTime2localdate(endTime, endPoint.metadata.time_zone),
     end_ts: endPoint.data.ts,
-    expectation: {to_label: true},
+    expectation: { to_label: true },
     inferred_labels: [],
     locations: locations,
-    source: "unprocessed",
+    source: 'unprocessed',
     start_fmt_time: startTime.toFormat(formatString),
     start_local_dt: dateTime2localdate(startTime, startPoint.metadata.time_zone),
     start_ts: startPoint.data.ts,
     user_input: {},
-  }
-}
-const tsEntrySort = function(e1, e2) {
+  };
+};
+const tsEntrySort = function (e1, e2) {
   // compare timestamps
   return e1.data.ts - e2.data.ts;
-}
+};
 
-const transitionTrip2TripObj = function(trip) {
+const transitionTrip2TripObj = function (trip) {
   const tripStartTransition = trip[0];
   const tripEndTransition = trip[1];
-  const tq = {key: "write_ts",
-      startTs: tripStartTransition.data.ts,
-      endTs: tripEndTransition.data.ts
-  }
-  logDebug('About to pull location data for range'
-    + DateTime.fromSeconds(tripStartTransition.data.ts)
-    .toLocaleString(DateTime.DATETIME_MED)
-    + DateTime.fromSeconds(tripEndTransition.data.ts)
-    .toLocaleString(DateTime.DATETIME_MED));
+  const tq = {
+    key: 'write_ts',
+    startTs: tripStartTransition.data.ts,
+    endTs: tripEndTransition.data.ts,
+  };
+  logDebug(
+    'About to pull location data for range' +
+      DateTime.fromSeconds(tripStartTransition.data.ts).toLocaleString(DateTime.DATETIME_MED) +
+      DateTime.fromSeconds(tripEndTransition.data.ts).toLocaleString(DateTime.DATETIME_MED),
+  );
   const getSensorData = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
-  return getUnifiedDataForInterval("background/filtered_location", tq, getSensorData)
-    .then(function(locationList: Array<any>) { // change 'any' later
+  return getUnifiedDataForInterval('background/filtered_location', tq, getSensorData).then(
+    function (locationList: Array<any>) {
+      // change 'any' later
       if (locationList.length == 0) {
         return undefined;
       }
       const sortedLocationList = locationList.sort(tsEntrySort);
-      const retainInRange = function(loc) {
-        return (tripStartTransition.data.ts <= loc.data.ts) && 
-                (loc.data.ts <= tripEndTransition.data.ts)
-      }
+      const retainInRange = function (loc) {
+        return (
+          tripStartTransition.data.ts <= loc.data.ts && loc.data.ts <= tripEndTransition.data.ts
+        );
+      };
 
       var filteredLocationList = sortedLocationList.filter(retainInRange);
 
@@ -366,17 +372,26 @@ const transitionTrip2TripObj = function(trip) {
       }
 
       const tripStartPoint = filteredLocationList[0];
-      const tripEndPoint = filteredLocationList[filteredLocationList.length-1];
-      logDebug("tripStartPoint = "+JSON.stringify(tripStartPoint)+"tripEndPoint = "+JSON.stringify(tripEndPoint));
+      const tripEndPoint = filteredLocationList[filteredLocationList.length - 1];
+      logDebug(
+        'tripStartPoint = ' +
+          JSON.stringify(tripStartPoint) +
+          'tripEndPoint = ' +
+          JSON.stringify(tripEndPoint),
+      );
       // if we get a list but our start and end are undefined
       // let's print out the complete original list to get a clue
-      // this should help with debugging 
+      // this should help with debugging
       // https://github.com/e-mission/e-mission-docs/issues/417
       // if it ever occurs again
       if (tripStartPoint === undefined || tripEndPoint === undefined) {
-        logDebug("BUG 417 check: locationList = "+JSON.stringify(locationList));
-        logDebug("transitions: start = "+JSON.stringify(tripStartTransition.data)
-            + ' end = ' + JSON.stringify(tripEndTransition.data.ts));
+        logDebug('BUG 417 check: locationList = ' + JSON.stringify(locationList));
+        logDebug(
+          'transitions: start = ' +
+            JSON.stringify(tripStartTransition.data) +
+            ' end = ' +
+            JSON.stringify(tripEndTransition.data.ts),
+        );
       }
 
       const tripProps = points2TripProps(filteredLocationList);
@@ -384,166 +399,188 @@ const transitionTrip2TripObj = function(trip) {
       return {
         ...tripProps,
         start_loc: {
-          type: "Point",
-          coordinates: [tripStartPoint.data.longitude, tripStartPoint.data.latitude]
+          type: 'Point',
+          coordinates: [tripStartPoint.data.longitude, tripStartPoint.data.latitude],
         },
         end_loc: {
-          type: "Point",
+          type: 'Point',
           coordinates: [tripEndPoint.data.longitude, tripEndPoint.data.latitude],
         },
-      }
-  });
-}
-const isStartingTransition = function(transWrapper) {
-  if(transWrapper.data.transition == 'local.transition.exited_geofence' ||
+      };
+    },
+  );
+};
+const isStartingTransition = function (transWrapper) {
+  if (
+    transWrapper.data.transition == 'local.transition.exited_geofence' ||
     transWrapper.data.transition == 'T_EXITED_GEOFENCE' ||
-    transWrapper.data.transition == 1) {
+    transWrapper.data.transition == 1
+  ) {
     return true;
   }
   return false;
-}
+};
 
-const isEndingTransition = function(transWrapper) {
+const isEndingTransition = function (transWrapper) {
   // Logger.log("isEndingTransition: transWrapper.data.transition = "+transWrapper.data.transition);
-  if(transWrapper.data.transition == 'T_TRIP_ENDED' ||
-    transWrapper.data.transition == 'local.transition.stopped_moving' || 
-    transWrapper.data.transition == 2) {
+  if (
+    transWrapper.data.transition == 'T_TRIP_ENDED' ||
+    transWrapper.data.transition == 'local.transition.stopped_moving' ||
+    transWrapper.data.transition == 2
+  ) {
     // Logger.log("Returning true");
     return true;
   }
   // Logger.log("Returning false");
   return false;
-}
+};
 /*
-  * This is going to be a bit tricky. As we can see from
-  * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163,
-  * when we read local transitions, they have a string for the transition
-  * (e.g. `T_DATA_PUSHED`), while the remote transitions have an integer
-  * (e.g. `2`).
-  * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286338606
-  * 
-  * Also, at least on iOS, it is possible for trip end to be detected way
-  * after the end of the trip, so the trip end transition of a processed
-  * trip may actually show up as an unprocessed transition.
-  * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163
-  * 
-  * Let's abstract this out into our own minor state machine.
-  */
-const transitions2Trips = function(transitionList) {
+ * This is going to be a bit tricky. As we can see from
+ * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163,
+ * when we read local transitions, they have a string for the transition
+ * (e.g. `T_DATA_PUSHED`), while the remote transitions have an integer
+ * (e.g. `2`).
+ * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286338606
+ *
+ * Also, at least on iOS, it is possible for trip end to be detected way
+ * after the end of the trip, so the trip end transition of a processed
+ * trip may actually show up as an unprocessed transition.
+ * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163
+ *
+ * Let's abstract this out into our own minor state machine.
+ */
+const transitions2Trips = function (transitionList) {
   var inTrip = false;
-  var tripList = []
+  var tripList = [];
   var currStartTransitionIndex = -1;
   var currEndTransitionIndex = -1;
   var processedUntil = 0;
-  
-  while(processedUntil < transitionList.length) { 
+
+  while (processedUntil < transitionList.length) {
     // Logger.log("searching within list = "+JSON.stringify(transitionList.slice(processedUntil)));
-    if(inTrip == false) {
-        const foundStartTransitionIndex = transitionList.slice(processedUntil).findIndex(isStartingTransition);
-        if (foundStartTransitionIndex == -1) {
-            logDebug("No further unprocessed trips started, exiting loop");
-            processedUntil = transitionList.length;
-        } else {
-            currStartTransitionIndex = processedUntil + foundStartTransitionIndex;
-            processedUntil = currStartTransitionIndex;
-            logDebug("Unprocessed trip started at "+JSON.stringify(transitionList[currStartTransitionIndex]));
-            inTrip = true;
-        }
+    if (inTrip == false) {
+      const foundStartTransitionIndex = transitionList
+        .slice(processedUntil)
+        .findIndex(isStartingTransition);
+      if (foundStartTransitionIndex == -1) {
+        logDebug('No further unprocessed trips started, exiting loop');
+        processedUntil = transitionList.length;
+      } else {
+        currStartTransitionIndex = processedUntil + foundStartTransitionIndex;
+        processedUntil = currStartTransitionIndex;
+        logDebug(
+          'Unprocessed trip started at ' + JSON.stringify(transitionList[currStartTransitionIndex]),
+        );
+        inTrip = true;
+      }
     } else {
-        const foundEndTransitionIndex = transitionList.slice(processedUntil).findIndex(isEndingTransition);
-        if (foundEndTransitionIndex == -1) {
-            logDebug("Can't find end for trip starting at "+JSON.stringify(transitionList[currStartTransitionIndex])+" dropping it");
-            processedUntil = transitionList.length;
-        } else {
-            currEndTransitionIndex = processedUntil + foundEndTransitionIndex;
-            processedUntil = currEndTransitionIndex;
-            logDebug(`currEndTransitionIndex ${currEndTransitionIndex}`);
-            logDebug("Unprocessed trip starting at "+JSON.stringify(transitionList[currStartTransitionIndex])+" ends at "+JSON.stringify(transitionList[currEndTransitionIndex]));
-            tripList.push([transitionList[currStartTransitionIndex],
-                            transitionList[currEndTransitionIndex]]);
-            inTrip = false;
-        }
+      const foundEndTransitionIndex = transitionList
+        .slice(processedUntil)
+        .findIndex(isEndingTransition);
+      if (foundEndTransitionIndex == -1) {
+        logDebug(
+          "Can't find end for trip starting at " +
+            JSON.stringify(transitionList[currStartTransitionIndex]) +
+            ' dropping it',
+        );
+        processedUntil = transitionList.length;
+      } else {
+        currEndTransitionIndex = processedUntil + foundEndTransitionIndex;
+        processedUntil = currEndTransitionIndex;
+        logDebug(`currEndTransitionIndex ${currEndTransitionIndex}`);
+        logDebug(
+          'Unprocessed trip starting at ' +
+            JSON.stringify(transitionList[currStartTransitionIndex]) +
+            ' ends at ' +
+            JSON.stringify(transitionList[currEndTransitionIndex]),
+        );
+        tripList.push([
+          transitionList[currStartTransitionIndex],
+          transitionList[currEndTransitionIndex],
+        ]);
+        inTrip = false;
+      }
     }
   }
   return tripList;
-}
+};
 
-const linkTrips = function(trip1, trip2) {
+const linkTrips = function (trip1, trip2) {
   // complete trip1
-  trip1.starting_trip = {$oid: trip2.id};
+  trip1.starting_trip = { $oid: trip2.id };
   trip1.exit_fmt_time = trip2.enter_fmt_time;
   trip1.exit_local_dt = trip2.enter_local_dt;
   trip1.exit_ts = trip2.enter_ts;
 
   // start trip2
-  trip2.ending_trip = {$oid: trip1.id};
+  trip2.ending_trip = { $oid: trip1.id };
   trip2.enter_fmt_time = trip1.exit_fmt_time;
   trip2.enter_local_dt = trip1.exit_local_dt;
   trip2.enter_ts = trip1.exit_ts;
-}
+};
 
-
-export const readUnprocessedTrips = function(startTs, endTs, lastProcessedTrip) {
+export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip) {
   const $ionicLoading = getAngularService('$ionicLoading');
   $ionicLoading.show({
-    template: i18next.t('service.reading-unprocessed-data')
+    template: i18next.t('service.reading-unprocessed-data'),
   });
 
-  var tq = {key: 'write_ts',
-    startTs,
-    endTs
-  }
-  logDebug('about to query for unprocessed trips from '
-    + DateTime.fromSeconds(tq.startTs).toLocaleString(DateTime.DATETIME_MED)
-    + DateTime.fromSeconds(tq.endTs).toLocaleString(DateTime.DATETIME_MED)
+  var tq = { key: 'write_ts', startTs, endTs };
+  logDebug(
+    'about to query for unprocessed trips from ' +
+      DateTime.fromSeconds(tq.startTs).toLocaleString(DateTime.DATETIME_MED) +
+      DateTime.fromSeconds(tq.endTs).toLocaleString(DateTime.DATETIME_MED),
   );
-  
-  const getMessageMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
-  return getUnifiedDataForInterval("statemachine/transition", tq, getMessageMethod)
-    .then(function(transitionList: Array<any>) {
-      if (transitionList.length == 0) {
-        logDebug('No unprocessed trips. yay!');
-        $ionicLoading.hide();
-        return [];
-      } else {
-        logDebug(`Found ${transitionList.length} transitions. yay!`);
-        const tripsList = transitions2Trips(transitionList);
-        logDebug(`Mapped into ${tripsList.length} trips. yay!`);
-        tripsList.forEach(function(trip) {
-            console.log(JSON.stringify(trip));
-        });
-        var tripFillPromises = tripsList.map(transitionTrip2TripObj);
-        return Promise.all(tripFillPromises).then(function(raw_trip_gj_list) {
-            // Now we need to link up the trips. linking unprocessed trips
-            // to one another is fairly simple, but we need to link the
-            // first unprocessed trip to the last processed trip.
-            // This might be challenging if we don't have any processed
-            // trips for the day. I don't want to go back forever until 
-            // I find a trip. So if this is the first trip, we will start a
-            // new chain for now, since this is with unprocessed data
-            // anyway.
 
-            logDebug(`mapped trips to trip_gj_list of size ${raw_trip_gj_list.length}`);
-            /* Filtering: we will keep trips that are 1) defined and 2) have a distance >= 100m or duration >= 5 minutes
+  const getMessageMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
+  return getUnifiedDataForInterval('statemachine/transition', tq, getMessageMethod).then(function (
+    transitionList: Array<any>,
+  ) {
+    if (transitionList.length == 0) {
+      logDebug('No unprocessed trips. yay!');
+      $ionicLoading.hide();
+      return [];
+    } else {
+      logDebug(`Found ${transitionList.length} transitions. yay!`);
+      const tripsList = transitions2Trips(transitionList);
+      logDebug(`Mapped into ${tripsList.length} trips. yay!`);
+      tripsList.forEach(function (trip) {
+        console.log(JSON.stringify(trip));
+      });
+      var tripFillPromises = tripsList.map(transitionTrip2TripObj);
+      return Promise.all(tripFillPromises).then(function (raw_trip_gj_list) {
+        // Now we need to link up the trips. linking unprocessed trips
+        // to one another is fairly simple, but we need to link the
+        // first unprocessed trip to the last processed trip.
+        // This might be challenging if we don't have any processed
+        // trips for the day. I don't want to go back forever until
+        // I find a trip. So if this is the first trip, we will start a
+        // new chain for now, since this is with unprocessed data
+        // anyway.
+
+        logDebug(`mapped trips to trip_gj_list of size ${raw_trip_gj_list.length}`);
+        /* Filtering: we will keep trips that are 1) defined and 2) have a distance >= 100m or duration >= 5 minutes
               https://github.com/e-mission/e-mission-docs/issues/966#issuecomment-1709112578 */
-            const trip_gj_list = raw_trip_gj_list.filter((trip) => 
-              trip && (trip.distance >= 100 || trip.duration >= 300)
-            );
-            logDebug(`after filtering undefined and distance < 100, trip_gj_list size = ${raw_trip_gj_list.length}`);
-            // Link 0th trip to first, first to second, ...
-            for (var i = 0; i < trip_gj_list.length-1; i++) {
-                linkTrips(trip_gj_list[i], trip_gj_list[i+1]);
-            }
-            logDebug(`finished linking trips for list of size ${trip_gj_list.length}`);
-            if (lastProcessedTrip && trip_gj_list.length != 0) {
-                // Need to link the entire chain above to the processed data
-                logDebug("linking unprocessed and processed trip chains");
-                linkTrips(lastProcessedTrip, trip_gj_list[0]);
-            }
-            $ionicLoading.hide();
-            logDebug(`Returning final list of size ${trip_gj_list.length}`);
-            return trip_gj_list;
-        });
-      }
+        const trip_gj_list = raw_trip_gj_list.filter(
+          (trip) => trip && (trip.distance >= 100 || trip.duration >= 300),
+        );
+        logDebug(
+          `after filtering undefined and distance < 100, trip_gj_list size = ${raw_trip_gj_list.length}`,
+        );
+        // Link 0th trip to first, first to second, ...
+        for (var i = 0; i < trip_gj_list.length - 1; i++) {
+          linkTrips(trip_gj_list[i], trip_gj_list[i + 1]);
+        }
+        logDebug(`finished linking trips for list of size ${trip_gj_list.length}`);
+        if (lastProcessedTrip && trip_gj_list.length != 0) {
+          // Need to link the entire chain above to the processed data
+          logDebug('linking unprocessed and processed trip chains');
+          linkTrips(lastProcessedTrip, trip_gj_list[0]);
+        }
+        $ionicLoading.hide();
+        logDebug(`Returning final list of size ${trip_gj_list.length}`);
+        return trip_gj_list;
+      });
+    }
   });
 };

@@ -6,23 +6,28 @@
     share the data that has been loaded and interacted with.
 */
 
-import React, { useEffect, useState, useRef } from "react";
-import { getAngularService } from "../angular-react-helper";
-import useAppConfig from "../useAppConfig";
-import { useTranslation } from "react-i18next";
-import { invalidateMaps } from "../components/LeafletView";
-import moment from "moment";
-import LabelListScreen from "./list/LabelListScreen";
-import { createStackNavigator } from "@react-navigation/stack";
-import LabelScreenDetails from "./details/LabelDetailsScreen";
-import { NavigationContainer } from "@react-navigation/native";
-import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateCompositeTrips, readAllCompositeTrips, readUnprocessedTrips } from "./timelineHelper";
-import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
-import { SurveyOptions } from "../survey/survey";
-import { getLabelOptions } from "../survey/multilabel/confirmHelper";
-import { displayError } from "../plugin/logger";
-import { useTheme } from "react-native-paper";
-import { getPipelineRangeTs } from "../commHelper";
+import React, { useEffect, useState, useRef } from 'react';
+import { getAngularService } from '../angular-react-helper';
+import useAppConfig from '../useAppConfig';
+import { useTranslation } from 'react-i18next';
+import { invalidateMaps } from '../components/LeafletView';
+import moment from 'moment';
+import LabelListScreen from './list/LabelListScreen';
+import { createStackNavigator } from '@react-navigation/stack';
+import LabelScreenDetails from './details/LabelDetailsScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import {
+  compositeTrips2TimelineMap,
+  getAllUnprocessedInputs,
+  getLocalUnprocessedInputs,
+  populateCompositeTrips,
+} from './timelineHelper';
+import { fillLocationNamesOfTrip, resetNominatimLimiter } from './addressNamesHelper';
+import { SurveyOptions } from '../survey/survey';
+import { getLabelOptions } from '../survey/multilabel/confirmHelper';
+import { displayError } from '../plugin/logger';
+import { useTheme } from 'react-native-paper';
+import { getPipelineRangeTs } from '../commHelper';
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -42,7 +47,7 @@ const LabelTab = () => {
   const [timelineMap, setTimelineMap] = useState(null);
   const [displayedEntries, setDisplayedEntries] = useState(null);
   const [refreshTime, setRefreshTime] = useState(null);
-  const [isLoading, setIsLoading] = useState<string|false>('replace');
+  const [isLoading, setIsLoading] = useState<string | false>('replace');
 
   const $rootScope = getAngularService('$rootScope');
   const $state = getAngularService('$state');
@@ -69,7 +74,8 @@ const LabelTab = () => {
       // initalize filters
       const tripFilter = surveyOpt.filter;
       const allFalseFilters = tripFilter.map((f, i) => ({
-        ...f, state: (i == 0 ? true : false) // only the first filter will have state true on init
+        ...f,
+        state: i == 0 ? true : false, // only the first filter will have state true on init
       }));
       setFilterInputs(allFalseFilters);
     }
@@ -85,7 +91,7 @@ const LabelTab = () => {
     let entriesToDisplay = allEntries;
     if (activeFilter) {
       const entriesAfterFilter = allEntries.filter(
-        t => t.justRepopulated || activeFilter?.filter(t)
+        (t) => t.justRepopulated || activeFilter?.filter(t),
       );
       /* next, filter out any untracked time if the trips that came before and
         after it are no longer displayed */
@@ -105,12 +111,20 @@ const LabelTab = () => {
   async function loadTimelineEntries() {
     try {
       const pipelineRange = await getPipelineRangeTs();
-      [labelsResultMap, notesResultMap] = await getAllUnprocessedInputs(pipelineRange, labelPopulateFactory, enbs);
-      Logger.log("After reading unprocessedInputs, labelsResultMap =" + JSON.stringify(labelsResultMap)
-                                                + "; notesResultMap = " + JSON.stringify(notesResultMap));
+      [labelsResultMap, notesResultMap] = await getAllUnprocessedInputs(
+        pipelineRange,
+        labelPopulateFactory,
+        enbs,
+      );
+      Logger.log(
+        'After reading unprocessedInputs, labelsResultMap =' +
+          JSON.stringify(labelsResultMap) +
+          '; notesResultMap = ' +
+          JSON.stringify(notesResultMap),
+      );
       setPipelineRange(pipelineRange);
     } catch (error) {
-      Logger.displayError("Error while loading pipeline range", error);
+      Logger.displayError('Error while loading pipeline range', error);
       setIsLoading(false);
     }
   }
@@ -130,34 +144,39 @@ const LabelTab = () => {
     setRefreshTime(new Date());
   }
 
-  async function loadAnotherWeek(when: 'past'|'future') {
+  async function loadAnotherWeek(when: 'past' | 'future') {
     try {
-      const reachedPipelineStart = queriedRange?.start_ts && queriedRange.start_ts <= pipelineRange.start_ts;
-      const reachedPipelineEnd = queriedRange?.end_ts && queriedRange.end_ts >= pipelineRange.end_ts;
+      const reachedPipelineStart =
+        queriedRange?.start_ts && queriedRange.start_ts <= pipelineRange.start_ts;
+      const reachedPipelineEnd =
+        queriedRange?.end_ts && queriedRange.end_ts >= pipelineRange.end_ts;
 
       if (!queriedRange) {
         // first time loading
-        if(!isLoading) setIsLoading('replace');
+        if (!isLoading) setIsLoading('replace');
         const nowTs = new Date().getTime() / 1000;
         const [ctList, utList] = await fetchTripsInRange(pipelineRange.end_ts - ONE_WEEK, nowTs);
         handleFetchedTrips(ctList, utList, 'replace');
-        setQueriedRange({start_ts: pipelineRange.end_ts - ONE_WEEK, end_ts: nowTs});
+        setQueriedRange({ start_ts: pipelineRange.end_ts - ONE_WEEK, end_ts: nowTs });
       } else if (when == 'past' && !reachedPipelineStart) {
-        if(!isLoading) setIsLoading('prepend');
+        if (!isLoading) setIsLoading('prepend');
         const fetchStartTs = Math.max(queriedRange.start_ts - ONE_WEEK, pipelineRange.start_ts);
-        const [ctList, utList] = await fetchTripsInRange(queriedRange.start_ts - ONE_WEEK, queriedRange.start_ts - 1);
+        const [ctList, utList] = await fetchTripsInRange(
+          queriedRange.start_ts - ONE_WEEK,
+          queriedRange.start_ts - 1,
+        );
         handleFetchedTrips(ctList, utList, 'prepend');
-        setQueriedRange({start_ts: fetchStartTs, end_ts: queriedRange.end_ts})
+        setQueriedRange({ start_ts: fetchStartTs, end_ts: queriedRange.end_ts });
       } else if (when == 'future' && !reachedPipelineEnd) {
-        if(!isLoading) setIsLoading('append');
+        if (!isLoading) setIsLoading('append');
         const fetchEndTs = Math.min(queriedRange.end_ts + ONE_WEEK, pipelineRange.end_ts);
         const [ctList, utList] = await fetchTripsInRange(queriedRange.end_ts + 1, fetchEndTs);
         handleFetchedTrips(ctList, utList, 'append');
-        setQueriedRange({start_ts: queriedRange.start_ts, end_ts: fetchEndTs})
+        setQueriedRange({ start_ts: queriedRange.start_ts, end_ts: fetchEndTs });
       }
     } catch (e) {
       setIsLoading(false);
-      displayError(e, t('errors.while-loading-another-week', {when: when}));
+      displayError(e, t('errors.while-loading-another-week', { when: when }));
     }
   }
 
@@ -169,20 +188,30 @@ const LabelTab = () => {
       const threeDaysAfter = moment(day).add(3, 'days').unix();
       const [ctList, utList] = await fetchTripsInRange(threeDaysBefore, threeDaysAfter);
       handleFetchedTrips(ctList, utList, 'replace');
-      setQueriedRange({start_ts: threeDaysBefore, end_ts: threeDaysAfter});
+      setQueriedRange({ start_ts: threeDaysBefore, end_ts: threeDaysAfter });
     } catch (e) {
       setIsLoading(false);
-      displayError(e, t('errors.while-loading-specific-week', {day: day}));
+      displayError(e, t('errors.while-loading-specific-week', { day: day }));
     }
   }
 
   function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
     const tripsRead = ctList.concat(utList);
-    populateCompositeTrips(tripsRead, showPlaces, labelPopulateFactory, labelsResultMap, enbs, notesResultMap);
+    populateCompositeTrips(
+      tripsRead,
+      showPlaces,
+      labelPopulateFactory,
+      labelsResultMap,
+      enbs,
+      notesResultMap,
+    );
     // Fill place names on a reversed copy of the list so we fill from the bottom up
-    tripsRead.slice().reverse().forEach(function (trip, index) {
-      fillLocationNamesOfTrip(trip);
-    });
+    tripsRead
+      .slice()
+      .reverse()
+      .forEach(function (trip, index) {
+        fillLocationNamesOfTrip(trip);
+      });
     const readTimelineMap = compositeTrips2TimelineMap(tripsRead, showPlaces);
     if (mode == 'append') {
       setTimelineMap(new Map([...timelineMap, ...readTimelineMap]));
@@ -191,13 +220,13 @@ const LabelTab = () => {
     } else if (mode == 'replace') {
       setTimelineMap(readTimelineMap);
     } else {
-      return console.error("Unknown insertion mode " + mode);
+      return console.error('Unknown insertion mode ' + mode);
     }
   }
 
   async function fetchTripsInRange(startTs: number, endTs: number) {
     if (!pipelineRange.start_ts) {
-      console.warn("trying to read data too early, early return");
+      console.warn('trying to read data too early, early return');
       return;
     }
 
@@ -205,8 +234,15 @@ const LabelTab = () => {
     let readUnprocessedPromise;
     if (endTs >= pipelineRange.end_ts) {
       const nowTs = new Date().getTime() / 1000;
-      const lastProcessedTrip = timelineMap && [...timelineMap?.values()].reverse().find(
-        trip => trip.origin_key.includes('confirmed_trip')
+      const lastProcessedTrip =
+        timelineMap &&
+        [...timelineMap?.values()]
+          .reverse()
+          .find((trip) => trip.origin_key.includes('confirmed_trip'));
+      readUnprocessedPromise = Timeline.readUnprocessedTrips(
+        pipelineRange.end_ts,
+        nowTs,
+        lastProcessedTrip,
       );
       readUnprocessedPromise = readUnprocessedTrips(pipelineRange.end_ts, nowTs, lastProcessedTrip);
     } else {
@@ -214,7 +250,7 @@ const LabelTab = () => {
     }
     const results = await Promise.all([readCompositePromise, readUnprocessedPromise]);
     return results;
-  };
+  }
 
   useEffect(() => {
     if (!displayedEntries) return;
@@ -224,10 +260,15 @@ const LabelTab = () => {
 
   const timelineMapRef = useRef(timelineMap);
   async function repopulateTimelineEntry(oid: string) {
-    if (!timelineMap.has(oid)) return console.error("Item with oid: " + oid + " not found in timeline");
-    const [newLabels, newNotes] = await getLocalUnprocessedInputs(pipelineRange, labelPopulateFactory, enbs);
+    if (!timelineMap.has(oid))
+      return console.error('Item with oid: ' + oid + ' not found in timeline');
+    const [newLabels, newNotes] = await getLocalUnprocessedInputs(
+      pipelineRange,
+      labelPopulateFactory,
+      enbs,
+    );
     const repopTime = new Date().getTime();
-    const newEntry = {...timelineMap.get(oid), justRepopulated: repopTime};
+    const newEntry = { ...timelineMap.get(oid), justRepopulated: repopTime };
     labelPopulateFactory.populateInputsAndInferences(newEntry, newLabels);
     enbs.populateInputsAndInferences(newEntry, newNotes);
     const newTimelineMap = new Map(timelineMap).set(oid, newEntry);
@@ -238,10 +279,13 @@ const LabelTab = () => {
       https://legacy.reactjs.org/docs/hooks-faq.html#why-am-i-seeing-stale-props-or-state-inside-my-function */
     timelineMapRef.current = newTimelineMap;
     setTimeout(() => {
-      const entry = {...timelineMapRef.current.get(oid)};
+      const entry = { ...timelineMapRef.current.get(oid) };
       if (entry.justRepopulated != repopTime)
-        return console.log("Entry " + oid + " was repopulated again, skipping");
-      const newTimelineMap = new Map(timelineMapRef.current).set(oid, {...entry, justRepopulated: false});
+        return console.log('Entry ' + oid + ' was repopulated again, skipping');
+      const newTimelineMap = new Map(timelineMapRef.current).set(oid, {
+        ...entry,
+        justRepopulated: false,
+      });
       setTimelineMap(newTimelineMap);
     }, 30000);
   }
@@ -260,24 +304,27 @@ const LabelTab = () => {
     loadSpecificWeek,
     refresh,
     repopulateTimelineEntry,
-  }
+  };
 
   const Tab = createStackNavigator();
 
   return (
     <LabelTabContext.Provider value={contextVals}>
       <NavigationContainer>
-        <Tab.Navigator screenOptions={{headerShown: false, animationEnabled: true}}>
+        <Tab.Navigator screenOptions={{ headerShown: false, animationEnabled: true }}>
           <Tab.Screen name="label.main" component={LabelListScreen} />
-          <Tab.Screen name="label.details" component={LabelScreenDetails}
-                      /* When we go to the details screen, we want to keep the main screen in memory
+          <Tab.Screen
+            name="label.details"
+            component={LabelScreenDetails}
+            /* When we go to the details screen, we want to keep the main screen in memory
                         so that we can go right back to it and the scroll position will be preserved.
                         This is what `detachPreviousScreen:false` does. */
-                      options={{detachPreviousScreen: false}} />
+            options={{ detachPreviousScreen: false }}
+          />
         </Tab.Navigator>
       </NavigationContainer>
     </LabelTabContext.Provider>
   );
-}
+};
 
 export default LabelTab;

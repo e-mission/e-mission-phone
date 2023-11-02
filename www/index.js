@@ -5,7 +5,6 @@ import 'leaflet/dist/leaflet.css';
 
 import './js/ngApp.js';
 import './js/splash/referral.js';
-import './js/splash/startprefs.js';
 import './js/splash/pushnotify.js';
 import './js/splash/storedevicesettings.js';
 import './js/splash/localnotify.js';
