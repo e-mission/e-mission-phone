@@ -1,9 +1,16 @@
-import { useMemo } from "react";
-import { useImperialConfig } from "../config/useImperialConfig";
-import { getFormattedDate, getFormattedDateAbbr, getFormattedSectionProperties, getFormattedTimeRange, getLocalTimeString, getDetectedModes, isMultiDay } from "./diaryHelper";
+import { useMemo } from 'react';
+import { useImperialConfig } from '../config/useImperialConfig';
+import {
+  getFormattedDate,
+  getFormattedDateAbbr,
+  getFormattedSectionProperties,
+  getFormattedTimeRange,
+  getLocalTimeString,
+  getDetectedModes,
+  isMultiDay,
+} from './diaryHelper';
 
 const useDerivedProperties = (tlEntry) => {
-
   const imperialConfig = useImperialConfig();
 
   return useMemo(() => {
@@ -12,7 +19,7 @@ const useDerivedProperties = (tlEntry) => {
     const beginDt = tlEntry.start_local_dt || tlEntry.enter_local_dt;
     const endDt = tlEntry.end_local_dt || tlEntry.exit_local_dt;
     const tlEntryIsMultiDay = isMultiDay(beginFmt, endFmt);
-    
+
     return {
       displayDate: getFormattedDate(beginFmt, endFmt),
       displayStartTime: getLocalTimeString(beginDt),
@@ -24,8 +31,8 @@ const useDerivedProperties = (tlEntry) => {
       formattedSectionProperties: getFormattedSectionProperties(tlEntry, imperialConfig),
       distanceSuffix: imperialConfig.distanceSuffix,
       detectedModes: getDetectedModes(tlEntry),
-    }
+    };
   }, [tlEntry, imperialConfig]);
-}
+};
 
 export default useDerivedProperties;
