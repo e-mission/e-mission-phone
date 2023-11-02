@@ -18,6 +18,7 @@ export type MetaData = {
   write_fmt_time: string,
   write_local_dt: LocalDt,
   origin_key?: string,
+  read_ts?: number,
 };
   
 export type LocalDt = {

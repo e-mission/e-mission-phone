@@ -16,7 +16,7 @@ import LabelListScreen from "./list/LabelListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import LabelScreenDetails from "./details/LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
-import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateCompositeTrips, readAllCompositeTrips } from "./timelineHelper";
+import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateCompositeTrips, readAllCompositeTrips, readUnprocessedTrips } from "./timelineHelper";
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
 import { SurveyOptions } from "../survey/survey";
 import { getLabelOptions } from "../survey/multilabel/confirmHelper";
@@ -209,7 +209,7 @@ const LabelTab = () => {
       const lastProcessedTrip = timelineMap && [...timelineMap?.values()].reverse().find(
         trip => trip.origin_key.includes('confirmed_trip')
       );
-      readUnprocessedPromise = Timeline.readUnprocessedTrips(pipelineRange.end_ts, nowTs, lastProcessedTrip);
+      readUnprocessedPromise = readUnprocessedTrips(pipelineRange.end_ts, nowTs, lastProcessedTrip);
     } else {
       readUnprocessedPromise = Promise.resolve([]);
     }
