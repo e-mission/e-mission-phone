@@ -1,6 +1,6 @@
 import { storageGet, storageSet } from '../plugin/storage';
 import { logInfo, logDebug, displayErrorMsg } from '../plugin/logger';
-import { EVENT_NAMES, publish } from "../customEventHandler";
+import { EVENT_NAMES, publish } from '../customEventHandler';
 
 // data collection consented protocol: string, represents the date on
 // which the consented protocol was approved by the IRB
@@ -31,17 +31,16 @@ export function markConsented() {
     .then(writeConsentToNative)
     .then(function (response) {
       // mark in local storage
-      storageSet(DATA_COLLECTION_CONSENTED_PROTOCOL,
-        _req_consent);
+      storageSet(DATA_COLLECTION_CONSENTED_PROTOCOL, _req_consent);
       // mark in local variable as well
       _curr_consented = { ..._req_consent };
       // publish event
       publish(EVENT_NAMES.CONSENTED_EVENT, _req_consent);
     })
     .catch((error) => {
-      displayErrorMsg(error, "Error while while wrting consent to storage");
+      displayErrorMsg(error, 'Error while while wrting consent to storage');
     });
-};
+}
 
 /**
  * @function checking for consent locally
@@ -93,15 +92,15 @@ export function readConsentState() {
  */
 //used in ProfileSettings
 export function getConsentDocument() {
-  return window['cordova'].plugins.BEMUserCache.getDocument('config/consent', false).then(
-    function (resultDoc) {
-      if (window['cordova'].plugins.BEMUserCache.isEmptyDoc(resultDoc)) {
-        return null;
-      } else {
-        return resultDoc;
-      }
-    },
-  );
+  return window['cordova'].plugins.BEMUserCache.getDocument('config/consent', false).then(function (
+    resultDoc,
+  ) {
+    if (window['cordova'].plugins.BEMUserCache.isEmptyDoc(resultDoc)) {
+      return null;
+    } else {
+      return resultDoc;
+    }
+  });
 }
 
 /**

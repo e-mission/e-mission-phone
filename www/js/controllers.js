@@ -5,10 +5,7 @@ import { addStatError, addStatReading, statKeys } from './plugin/clientStats';
 import { getPendingOnboardingState } from './onboarding/onboardingHelper';
 
 angular
-  .module('emission.controllers', [
-    'emission.splash.localnotify',
-    'emission.splash.remotenotify',
-  ])
+  .module('emission.controllers', ['emission.splash.localnotify', 'emission.splash.remotenotify'])
 
   .controller('RootCtrl', function ($scope) {})
 
@@ -16,14 +13,7 @@ angular
 
   .controller(
     'SplashCtrl',
-    function (
-      $scope,
-      $state,
-      $interval,
-      $rootScope,
-      LocalNotify,
-      RemoteNotify,
-    ) {
+    function ($scope, $state, $interval, $rootScope, LocalNotify, RemoteNotify) {
       console.log('SplashCtrl invoked');
       // alert("attach debugger!");
       // PushNotify.startupInit();
