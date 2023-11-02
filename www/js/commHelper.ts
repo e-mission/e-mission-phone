@@ -196,7 +196,7 @@ export function updateUser(updateDoc) {
   });
 }
 
-export function getUser(): any {
+export function getUser() {
   return new Promise((rs, rj) => {
     window['cordova'].plugins.BEMServerComm.getUserPersonalData('/profile/get', rs, rj);
   }).catch((error) => {
