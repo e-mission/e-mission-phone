@@ -5,14 +5,13 @@ angular.module('emission.main.diary',['emission.main.diary.services',
                                       'emission.plugin.logger',
                                       'emission.survey.enketo.answer'])
 
-.config(function($stateProvider) {
-  $stateProvider
-  .state('root.main.inf_scroll', {
-      url: "/inf_scroll",
+  .config(function ($stateProvider) {
+    $stateProvider.state('root.main.inf_scroll', {
+      url: '/inf_scroll',
       views: {
         'main-inf-scroll': {
-          template: "<label-tab></label-tab>",
+          template: '<label-tab></label-tab>',
         },
-      }
-  })
-});
+      },
+    });
+  });

@@ -15,15 +15,23 @@ export const defaultPalette = [
   '#80afad', // teal oklch(72% 0.05 192)
 ];
 
-export function getChartHeight(chartDatasets, numVisibleDatasets, indexAxis, isHorizontal, stacked) {
+export function getChartHeight(
+  chartDatasets,
+  numVisibleDatasets,
+  indexAxis,
+  isHorizontal,
+  stacked,
+) {
   /* when horizontal charts have more data, they should get taller
     so they don't look squished */
   if (isHorizontal) {
     // 'ideal' chart height is based on the number of datasets and number of unique index values
     const uniqueIndexVals = [];
-    chartDatasets.forEach(e => e.data.forEach(r => {
-      if (!uniqueIndexVals.includes(r[indexAxis])) uniqueIndexVals.push(r[indexAxis]);
-    }));
+    chartDatasets.forEach((e) =>
+      e.data.forEach((r) => {
+        if (!uniqueIndexVals.includes(r[indexAxis])) uniqueIndexVals.push(r[indexAxis]);
+      }),
+    );
     const numIndexVals = uniqueIndexVals.length;
     const heightPerIndexVal = stacked ? 36 : numVisibleDatasets * 8;
     const idealChartHeight = heightPerIndexVal * numIndexVals;
@@ -41,11 +49,11 @@ export function getChartHeight(chartDatasets, numVisibleDatasets, indexAxis, isH
 
 function getBarHeight(stacks) {
   let totalHeight = 0;
-  console.log("ctx stacks", stacks.x);
-  for(let val in stacks.x) {
-    if(!val.startsWith('_')){
+  console.log('ctx stacks', stacks.x);
+  for (let val in stacks.x) {
+    if (!val.startsWith('_')) {
       totalHeight += stacks.x[val];
-      console.log("ctx added ", val );
+      console.log('ctx added ', val);
     }
   }
   return totalHeight;
@@ -54,27 +62,34 @@ function getBarHeight(stacks) {
 //fill pattern creation
 //https://stackoverflow.com/questions/28569667/fill-chart-js-bar-chart-with-diagonal-stripes-or-other-patterns
 function createDiagonalPattern(color = 'black') {
-  let shape = document.createElement('canvas')
-  shape.width = 10
-  shape.height = 10
-  let c = shape.getContext('2d')
-  c.strokeStyle = color
-  c.lineWidth = 2
-  c.beginPath()
-  c.moveTo(2, 0)
-  c.lineTo(10, 8)
-  c.stroke()
-  c.beginPath()
-  c.moveTo(0, 8)
-  c.lineTo(2, 10)
-  c.stroke()
-  return c.createPattern(shape, 'repeat')
+  let shape = document.createElement('canvas');
+  shape.width = 10;
+  shape.height = 10;
+  let c = shape.getContext('2d');
+  c.strokeStyle = color;
+  c.lineWidth = 2;
+  c.beginPath();
+  c.moveTo(2, 0);
+  c.lineTo(10, 8);
+  c.stroke();
+  c.beginPath();
+  c.moveTo(0, 8);
+  c.lineTo(2, 10);
+  c.stroke();
+  return c.createPattern(shape, 'repeat');
 }
 
-export function getMeteredBackgroundColor(meter, currDataset, barCtx, colors, darken=0) {
+export function getMeteredBackgroundColor(meter, currDataset, barCtx, colors, darken = 0) {
   if (!barCtx || !currDataset) return;
   let bar_height = getBarHeight(barCtx.parsed._stacks);
-  console.debug("bar height for", barCtx.raw.y, " is ", bar_height, "which in chart is", currDataset);
+  console.debug(
+    'bar height for',
+    barCtx.raw.y,
+    ' is ',
+    bar_height,
+    'which in chart is',
+    currDataset,
+  );
   let meteredColor;
   if (bar_height > meter.high) meteredColor = colors.danger;
   else if (bar_height > meter.middle) meteredColor = colors.warn;
@@ -95,7 +110,7 @@ const meterColors = {
   // https://www.joshwcomeau.com/gradient-generator?colors=fcab00|ba0000&angle=90&colorMode=lab&precision=3&easingCurve=0.25|0.75|0.75|0.25
   between: ['#fcab00', '#ef8215', '#db5e0c', '#ce3d03', '#b70100'], // yellow-orange-red
   above: '#440000', // dark red
-}
+};
 
 export function getGradient(chart, meter, currDataset, barCtx, alpha = null, darken = 0) {
   const { ctx, chartArea, scales } = chart;
@@ -104,19 +119,26 @@ export function getGradient(chart, meter, currDataset, barCtx, alpha = null, dar
   const total = getBarHeight(barCtx.parsed._stacks);
   alpha = alpha || (currDataset.label == meter.dash_key ? 0.2 : 1);
   if (total < meter.middle) {
-    const adjColor = darken||alpha ? color(meterColors.below).darken(darken).alpha(alpha).rgb().string() : meterColors.below;
+    const adjColor =
+      darken || alpha
+        ? color(meterColors.below).darken(darken).alpha(alpha).rgb().string()
+        : meterColors.below;
     return adjColor;
   }
   const scaleMaxX = scales.x._range.max;
   gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
   meterColors.between.forEach((clr, i) => {
-    const clrPosition = ((i + 1) / meterColors.between.length) * (meter.high - meter.middle) + meter.middle;
+    const clrPosition =
+      ((i + 1) / meterColors.between.length) * (meter.high - meter.middle) + meter.middle;
     const adjColor = darken || alpha ? color(clr).darken(darken).alpha(alpha).rgb().string() : clr;
     gradient.addColorStop(Math.min(clrPosition, scaleMaxX) / scaleMaxX, adjColor);
   });
   if (scaleMaxX > meter.high + 20) {
-    const adjColor = darken||alpha ? color(meterColors.above).darken(0.2).alpha(alpha).rgb().string() : meterColors.above;
-    gradient.addColorStop((meter.high+20) / scaleMaxX, adjColor);
+    const adjColor =
+      darken || alpha
+        ? color(meterColors.above).darken(0.2).alpha(alpha).rgb().string()
+        : meterColors.above;
+    gradient.addColorStop((meter.high + 20) / scaleMaxX, adjColor);
   }
   return gradient;
 }
@@ -129,9 +151,9 @@ export function getGradient(chart, meter, currDataset, barCtx, alpha = null, dar
 export function darkenOrLighten(baseColor: string, change: number) {
   if (!baseColor) return baseColor;
   let colorObj = color(baseColor);
-  if(change < 0) {
+  if (change < 0) {
     // darkening appears more drastic than lightening, so we will be less aggressive (scale change by .5)
-    return colorObj.darken(Math.abs(change * .5)).hex();
+    return colorObj.darken(Math.abs(change * 0.5)).hex();
   } else {
     return colorObj.lighten(Math.abs(change)).hex();
   }
@@ -150,7 +172,7 @@ export const dedupColors = (colors: string[][]) => {
     if (duplicates.length > 1) {
       // there are duplicates; calculate an evenly-spaced adjustment for each one
       duplicates.forEach(([k, c], i) => {
-        const change = -maxAdjustment + (maxAdjustment*2 / (duplicates.length - 1)) * i;
+        const change = -maxAdjustment + ((maxAdjustment * 2) / (duplicates.length - 1)) * i;
         dedupedColors[k] = darkenOrLighten(clr, change);
       });
     } else if (!dedupedColors[key]) {
@@ -158,4 +180,4 @@ export const dedupColors = (colors: string[][]) => {
     }
   }
   return dedupedColors;
-}
+};

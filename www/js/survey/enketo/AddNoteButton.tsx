@@ -16,10 +16,10 @@ import EnketoModal from "./EnketoModal";
 import { displayErrorMsg, logDebug } from "../../plugin/logger";
 
 type Props = {
-  timelineEntry: any,
-  notesConfig: any,
-  storeKey: string,
-}
+  timelineEntry: any;
+  notesConfig: any;
+  storeKey: string;
+};
 const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
   const { t, i18n } = useTranslation();
   const [displayLabel, setDisplayLabel] = useState('');
@@ -39,7 +39,6 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
 
   // return a dictionary of fields we want to prefill, using start/enter and end/exit times
   function getPrefillTimes() {
-
     let begin = timelineEntry.start_ts || timelineEntry.enter_ts;
     let stop = timelineEntry.end_ts || timelineEntry.exit_ts;
 
@@ -48,11 +47,12 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
       if (a.data.end_ts > (begin || 0) && a.data.end_ts != stop)
         begin = a.data.end_ts;
     });
-    
-    const timezone = timelineEntry.start_local_dt?.timezone
-                      || timelineEntry.enter_local_dt?.timezone
-                      || timelineEntry.end_local_dt?.timezone
-                      || timelineEntry.exit_local_dt?.timezone;
+
+    const timezone =
+      timelineEntry.start_local_dt?.timezone ||
+      timelineEntry.enter_local_dt?.timezone ||
+      timelineEntry.end_local_dt?.timezone ||
+      timelineEntry.exit_local_dt?.timezone;
     const momentBegin = begin ? moment(begin * 1000).tz(timezone) : null;
     const momentStop = stop ? moment(stop * 1000).tz(timezone) : null;
 
@@ -80,11 +80,14 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
     console.log('About to launch survey ', surveyName);
     setPrefillTimes(getPrefillTimes());
     setModalVisible(true);
-  };
+  }
 
   function onResponseSaved(result) {
     if (result) {
-      logDebug('AddNoteButton: response was saved, about to repopulateTimelineEntry; result=' + JSON.stringify(result));
+      logDebug(
+        'AddNoteButton: response was saved, about to repopulateTimelineEntry; result=' +
+          JSON.stringify(result),
+      );
       repopulateTimelineEntry(timelineEntry._id.$oid);
     } else {
       displayErrorMsg('AddNoteButton: response was not saved, result=', result);
@@ -94,19 +97,20 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
   const [prefillTimes, setPrefillTimes] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  return (<>
-    <DiaryButton icon={'plus-thick'} onPress={() => launchAddNoteSurvey()}>
-      {displayLabel}
-    </DiaryButton>
-    <EnketoModal visible={modalVisible}
-      onDismiss={() => setModalVisible(false)}
-      onResponseSaved={onResponseSaved}
-      surveyName={notesConfig?.surveyName}
-      opts={{ timelineEntry,
-              dataKey: storeKey,
-              prefillFields: prefillTimes
-      }} />
-  </>);
+  return (
+    <>
+      <DiaryButton icon={'plus-thick'} onPress={() => launchAddNoteSurvey()}>
+        {displayLabel}
+      </DiaryButton>
+      <EnketoModal
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
+        onResponseSaved={onResponseSaved}
+        surveyName={notesConfig?.surveyName}
+        opts={{ timelineEntry, dataKey: storeKey, prefillFields: prefillTimes }}
+      />
+    </>
+  );
 };
 
 export default AddNoteButton;

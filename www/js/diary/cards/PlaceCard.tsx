@@ -19,34 +19,41 @@ import useDerivedProperties from "../useDerivedProperties";
 import StartEndLocations from "../components/StartEndLocations";
 import LabelTabContext from '../LabelTabContext';
 
-type Props = { place: {[key: string]: any} };
+type Props = { place: { [key: string]: any } };
 const PlaceCard = ({ place }: Props) => {
-
   const appConfig = useAppConfig();
   const { timelineNotesMap } = useContext(LabelTabContext);
   const { displayStartTime, displayEndTime, displayDate } = useDerivedProperties(place);
-  let [ placeDisplayName ] = useAddressNames(place);
+  let [placeDisplayName] = useAddressNames(place);
 
   const flavoredTheme = getTheme('place');
 
   return (
     <DiaryCard timelineEntry={place} flavoredTheme={flavoredTheme}>
-      <View style={[cardStyles.cardContent, s.placeCardContent]} focusable={true}
-          accessibilityLabel={`Place from ${displayStartTime} to ${displayEndTime}`}>
-        <View>{/*  date and distance */}
+      <View
+        style={[cardStyles.cardContent, s.placeCardContent]}
+        focusable={true}
+        accessibilityLabel={`Place from ${displayStartTime} to ${displayEndTime}`}>
+        <View>
+          {/*  date and distance */}
           <Text style={{ fontSize: 14, textAlign: 'center' }}>
-            <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>{displayDate}</Text>
+            <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>
+              {displayDate}
+            </Text>
           </Text>
         </View>
-        <View style={cardStyles.panelSection}>{/*  place name */}
-          <StartEndLocations centered={true}
-            displayStartName={placeDisplayName} />
+        <View style={cardStyles.panelSection}>
+          {/*  place name */}
+          <StartEndLocations centered={true} displayStartName={placeDisplayName} />
         </View>
-        <View style={{margin: 'auto'}}>{/*  add note button */}
+        <View style={{ margin: 'auto' }}>
+          {/*  add note button */}
           <View style={s.notesButton}>
-            <AddNoteButton timelineEntry={place}
+            <AddNoteButton
+              timelineEntry={place}
               notesConfig={appConfig?.survey_info?.buttons?.['place-notes']}
-              storeKey={'manual/place_addition_input'} />
+              storeKey={'manual/place_addition_input'}
+            />
           </View>
         </View>
       </View>

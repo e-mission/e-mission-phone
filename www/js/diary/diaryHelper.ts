@@ -7,22 +7,22 @@ import { LabelOptions, readableLabelToKey } from "../survey/multilabel/confirmHe
 import { CompositeTrip } from '../types/diaryTypes';
 
 export const modeColors = {
-  pink: '#c32e85',        // oklch(56% 0.2 350)     // e-car
-  red: '#c21725',         // oklch(52% 0.2 25)      // car
-  orange: '#bf5900',      // oklch(58% 0.16 50)     // air, hsr
-  green: '#008148',       // oklch(53% 0.14 155)    // bike, e-bike, moped
-  blue: '#0074b7',        // oklch(54% 0.14 245)    // walk
-  periwinkle: '#6356bf',  // oklch(52% 0.16 285)    // light rail, train, tram, subway
-  magenta: '#9240a4',     // oklch(52% 0.17 320)    // bus
-  grey: '#555555',        // oklch(45% 0 0)         // unprocessed / unknown
-  taupe: '#7d585a',       // oklch(50% 0.05 15)     // ferry, trolleybus, user-defined modes
-}
+  pink: '#c32e85', // oklch(56% 0.2 350)     // e-car
+  red: '#c21725', // oklch(52% 0.2 25)      // car
+  orange: '#bf5900', // oklch(58% 0.16 50)     // air, hsr
+  green: '#008148', // oklch(53% 0.14 155)    // bike, e-bike, moped
+  blue: '#0074b7', // oklch(54% 0.14 245)    // walk
+  periwinkle: '#6356bf', // oklch(52% 0.16 285)    // light rail, train, tram, subway
+  magenta: '#9240a4', // oklch(52% 0.17 320)    // bus
+  grey: '#555555', // oklch(45% 0 0)         // unprocessed / unknown
+  taupe: '#7d585a', // oklch(50% 0.05 15)     // ferry, trolleybus, user-defined modes
+};
 
 type BaseMode = {
-  name: string,
-  icon: string,
-  color: string
-}
+  name: string;
+  icon: string;
+  color: string;
+};
 
 // parallels the server-side MotionTypes enum: https://github.com/e-mission/e-mission-server/blob/94e7478e627fa8c171323662f951c611c0993031/emission/core/wrapper/motionactivity.py#L12
 export type MotionTypeKey = 'IN_VEHICLE' | 'BICYCLING' | 'ON_FOOT' | 'STILL' | 'UNKNOWN' | 'TILTING'
@@ -30,29 +30,29 @@ export type MotionTypeKey = 'IN_VEHICLE' | 'BICYCLING' | 'ON_FOOT' | 'STILL' | '
 
 const BaseModes: {[k: string]: BaseMode} = {
   // BEGIN MotionTypes
-  IN_VEHICLE: { name: "IN_VEHICLE", icon: "speedometer", color: modeColors.red },
-  BICYCLING: { name: "BICYCLING", icon: "bike", color: modeColors.green },
-  ON_FOOT: { name: "ON_FOOT", icon: "walk", color: modeColors.blue },
-  UNKNOWN: { name: "UNKNOWN", icon: "help", color: modeColors.grey },
-  WALKING: { name: "WALKING", icon: "walk", color: modeColors.blue },
-  AIR_OR_HSR: { name: "AIR_OR_HSR", icon: "airplane", color: modeColors.orange },
+  IN_VEHICLE: { name: 'IN_VEHICLE', icon: 'speedometer', color: modeColors.red },
+  BICYCLING: { name: 'BICYCLING', icon: 'bike', color: modeColors.green },
+  ON_FOOT: { name: 'ON_FOOT', icon: 'walk', color: modeColors.blue },
+  UNKNOWN: { name: 'UNKNOWN', icon: 'help', color: modeColors.grey },
+  WALKING: { name: 'WALKING', icon: 'walk', color: modeColors.blue },
+  AIR_OR_HSR: { name: 'AIR_OR_HSR', icon: 'airplane', color: modeColors.orange },
   // END MotionTypes
-  CAR: { name: "CAR", icon: "car", color: modeColors.red },
-  E_CAR: { name: "E_CAR", icon: "car-electric", color: modeColors.pink },
-  E_BIKE: { name: "E_BIKE", icon: "bicycle-electric", color: modeColors.green },
-  E_SCOOTER: { name: "E_SCOOTER", icon: "scooter-electric", color: modeColors.periwinkle },
-  MOPED: { name: "MOPED", icon: "moped", color: modeColors.green },
-  TAXI: { name: "TAXI", icon: "taxi", color: modeColors.red },
-  BUS: { name: "BUS", icon: "bus-side", color: modeColors.magenta },
-  AIR: { name: "AIR", icon: "airplane", color: modeColors.orange },
-  LIGHT_RAIL: { name: "LIGHT_RAIL", icon: "train-car-passenger", color: modeColors.periwinkle },
-  TRAIN: { name: "TRAIN", icon: "train-car-passenger", color: modeColors.periwinkle },
-  TRAM: { name: "TRAM", icon: "fas fa-tram", color: modeColors.periwinkle },
-  SUBWAY: { name: "SUBWAY", icon: "subway-variant", color: modeColors.periwinkle },
-  FERRY: { name: "FERRY", icon: "ferry", color: modeColors.taupe },
-  TROLLEYBUS: { name: "TROLLEYBUS", icon: "bus-side", color: modeColors.taupe },
-  UNPROCESSED: { name: "UNPROCESSED", icon: "help", color: modeColors.grey },
-  OTHER: { name: "OTHER", icon: "pencil-circle", color: modeColors.taupe },
+  CAR: { name: 'CAR', icon: 'car', color: modeColors.red },
+  E_CAR: { name: 'E_CAR', icon: 'car-electric', color: modeColors.pink },
+  E_BIKE: { name: 'E_BIKE', icon: 'bicycle-electric', color: modeColors.green },
+  E_SCOOTER: { name: 'E_SCOOTER', icon: 'scooter-electric', color: modeColors.periwinkle },
+  MOPED: { name: 'MOPED', icon: 'moped', color: modeColors.green },
+  TAXI: { name: 'TAXI', icon: 'taxi', color: modeColors.red },
+  BUS: { name: 'BUS', icon: 'bus-side', color: modeColors.magenta },
+  AIR: { name: 'AIR', icon: 'airplane', color: modeColors.orange },
+  LIGHT_RAIL: { name: 'LIGHT_RAIL', icon: 'train-car-passenger', color: modeColors.periwinkle },
+  TRAIN: { name: 'TRAIN', icon: 'train-car-passenger', color: modeColors.periwinkle },
+  TRAM: { name: 'TRAM', icon: 'fas fa-tram', color: modeColors.periwinkle },
+  SUBWAY: { name: 'SUBWAY', icon: 'subway-variant', color: modeColors.periwinkle },
+  FERRY: { name: 'FERRY', icon: 'ferry', color: modeColors.taupe },
+  TROLLEYBUS: { name: 'TROLLEYBUS', icon: 'bus-side', color: modeColors.taupe },
+  UNPROCESSED: { name: 'UNPROCESSED', icon: 'help', color: modeColors.grey },
+  OTHER: { name: 'OTHER', icon: 'pencil-circle', color: modeColors.taupe },
 };
 
 export type BaseModeKey = keyof typeof BaseModes;
@@ -60,20 +60,22 @@ export type BaseModeKey = keyof typeof BaseModes;
  * @param motionName A string like "WALKING" or "MotionTypes.WALKING"
  * @returns A BaseMode object containing the name, icon, and color of the motion type
  */
-export function getBaseModeByKey(motionName: BaseModeKey | MotionTypeKey | `MotionTypes.${MotionTypeKey}`) {
+export function getBaseModeByKey(
+  motionName: BaseModeKey | MotionTypeKey | `MotionTypes.${MotionTypeKey}`,
+) {
   let key = ('' + motionName).toUpperCase();
-  key = key.split(".").pop(); // if "MotionTypes.WALKING", then just take "WALKING"
+  key = key.split('.').pop(); // if "MotionTypes.WALKING", then just take "WALKING"
   return BaseModes[key] || BaseModes.UNKNOWN;
 }
 
 export function getBaseModeByValue(value, labelOptions: LabelOptions) {
-  const modeOption = labelOptions?.MODE?.find(opt => opt.value == value);
-  return getBaseModeByKey(modeOption?.baseMode || "OTHER");
+  const modeOption = labelOptions?.MODE?.find((opt) => opt.value == value);
+  return getBaseModeByKey(modeOption?.baseMode || 'OTHER');
 }
 
 export function getBaseModeByText(text, labelOptions: LabelOptions) {
-  const modeOption = labelOptions?.MODE?.find(opt => opt.text == text);
-  return getBaseModeByKey(modeOption?.baseMode || "OTHER");
+  const modeOption = labelOptions?.MODE?.find((opt) => opt.text == text);
+  return getBaseModeByKey(modeOption?.baseMode || 'OTHER');
 }
 
 /**
@@ -84,7 +86,10 @@ export function getBaseModeByText(text, labelOptions: LabelOptions) {
  */
 export function isMultiDay(beginFmtTime: string, endFmtTime: string) {
   if (!beginFmtTime || !endFmtTime) return false;
-  return moment.parseZone(beginFmtTime).format('YYYYMMDD') != moment.parseZone(endFmtTime).format('YYYYMMDD');
+  return (
+    moment.parseZone(beginFmtTime).format('YYYYMMDD') !=
+    moment.parseZone(endFmtTime).format('YYYYMMDD')
+  );
 }
 
 /**
@@ -160,7 +165,7 @@ export function getFormattedSectionProperties(trip, ImperialConfig) {
     distance: ImperialConfig.getFormattedDistance(s.distance),
     distanceSuffix: ImperialConfig.distanceSuffix,
     icon: getBaseModeByKey(s.sensed_mode_str)?.icon,
-    color: getBaseModeByKey(s.sensed_mode_str)?.color || "#333",
+    color: getBaseModeByKey(s.sensed_mode_str)?.color || '#333',
   }));
 }
 
@@ -168,6 +173,6 @@ export function getLocalTimeString(dt) {
   if (!dt) return;
   /* correcting the date of the processed trips knowing that local_dt months are from 1 -> 12
     and for the moment function they need to be between 0 -> 11 */
-  const mdt = { ...dt, month: dt.month-1 };
-  return moment(mdt).format("LT");
+  const mdt = { ...dt, month: dt.month - 1 };
+  return moment(mdt).format('LT');
 }

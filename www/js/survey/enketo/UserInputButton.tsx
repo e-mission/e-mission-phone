@@ -18,8 +18,8 @@ import EnketoModal from "./EnketoModal";
 import LabelTabContext from "../../diary/LabelTabContext";
 
 type Props = {
-  timelineEntry: any,
-}
+  timelineEntry: any;
+};
 const UserInputButton = ({ timelineEntry }: Props) => {
   const { colors } = useTheme();
   const { t, i18n } = useTranslation();
@@ -42,31 +42,37 @@ const UserInputButton = ({ timelineEntry }: Props) => {
 
   function onResponseSaved(result) {
     if (result) {
-      logDebug('UserInputButton: response was saved, about to repopulateTimelineEntry; result=' + JSON.stringify(result));
+      logDebug(
+        'UserInputButton: response was saved, about to repopulateTimelineEntry; result=' +
+          JSON.stringify(result),
+      );
       repopulateTimelineEntry(timelineEntry._id.$oid);
     } else {
       displayErrorMsg('UserInputButton: response was not saved, result=', result);
     }
   }
 
-  return (<>
-    <DiaryButton fillColor={responseLabel && colors.primary}
-      onPress={() => launchUserInputSurvey()}>
-      {/* if no response yet, show the default label */}
-      {responseLabel || t('diary.choose-survey')}
-    </DiaryButton>
+  return (
+    <>
+      <DiaryButton
+        fillColor={responseLabel && colors.primary}
+        onPress={() => launchUserInputSurvey()}>
+        {/* if no response yet, show the default label */}
+        {responseLabel || t('diary.choose-survey')}
+      </DiaryButton>
 
-    <EnketoModal visible={modalVisible}
-      onDismiss={() => setModalVisible(false)}
-      onResponseSaved={onResponseSaved}
-      surveyName={'TripConfirmSurvey'} /* As of now, the survey name is hardcoded.
+      <EnketoModal
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
+        onResponseSaved={onResponseSaved}
+        surveyName={'TripConfirmSurvey'} /* As of now, the survey name is hardcoded.
                                         In the future, if we ever implement something like
                                         a "Place Details" survey, we may want to make this
                                         configurable. */
-      opts={{ timelineEntry,
-              prefilledSurveyResponse: prevSurveyResponse
-      }} />
-  </>);
+        opts={{ timelineEntry, prefilledSurveyResponse: prevSurveyResponse }}
+      />
+    </>
+  );
 };
 
 export default UserInputButton;

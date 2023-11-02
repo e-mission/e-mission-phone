@@ -1,398 +1,456 @@
 {
-    "loading" : "Loading...",
-    "pull-to-refresh": "Pull to refresh",
+  "loading": "Loading...",
+  "pull-to-refresh": "Pull to refresh",
 
-    "weekdays-all": "All",
-    "weekdays-select": "Select day of the week",
+  "weekdays-all": "All",
+  "weekdays-select": "Select day of the week",
 
-    "trip-confirm": {
-        "services-please-fill-in": "Please fill in the {{text}} not listed.",
-        "services-cancel": "Cancel",
-        "services-save": "Save"
+  "trip-confirm": {
+    "services-please-fill-in": "Please fill in the {{text}} not listed.",
+    "services-cancel": "Cancel",
+    "services-save": "Save"
+  },
+
+  "control": {
+    "profile-tab": "Profile",
+    "edit-demographics": "Edit Demographics",
+    "tracking": "Tracking",
+    "app-status": "App Status",
+    "incorrect-app-status": "Please update permissions",
+    "fix-app-status": "Click to view and fix app status",
+    "fix": "Fix",
+    "medium-accuracy": "Medium accuracy",
+    "force-sync": "Force sync",
+    "share": "Share",
+    "download-json-dump": "Download json dump",
+    "email-log": "Email log",
+    "upload-log": "Upload log",
+    "view-privacy": "View Privacy Policy",
+    "user-data": "User data",
+    "erase-data": "Erase data",
+    "dev-zone": "Developer zone",
+    "refresh": "Refresh",
+    "end-trip-sync": "End trip + sync",
+    "check-consent": "Check consent",
+    "invalidate-cached-docs": "Invalidate cached docs",
+    "nuke-all": "Nuke all buffers and cache",
+    "test-notification": "Test local notification",
+    "check-log": "Check log",
+    "log-title": "Log",
+    "check-sensed-data": "Check sensed data",
+    "sensed-title": "Sensed Data: Transitions",
+    "collection": "Collection",
+    "sync": "Sync",
+    "button-accept": "I accept",
+    "view-qrc": "My OPcode",
+    "app-version": "App Version",
+    "reminders-time-of-day": "Time of Day for Reminders ({{time}})",
+    "upcoming-notifications": "Upcoming Notifications",
+    "dummy-notification": "Dummy Notification in 5 Seconds",
+    "log-out": "Log Out"
+  },
+
+  "general-settings": {
+    "choose-date": "Choose date to download data",
+    "choose-dataset": "Choose a dataset for carbon footprint calculations",
+    "carbon-dataset": "Carbon dataset",
+    "nuke-ui-state-only": "UI state only",
+    "nuke-native-cache-only": "Native cache only",
+    "nuke-everything": "Everything",
+    "clear-data": "Clear data",
+    "are-you-sure": "Are you sure?",
+    "log-out-warning": "You will be logged out and your credentials will not be saved. Unsynced data may be lost.",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "user-data-erased": "User data erased.",
+    "consent-not-found": "Consent for data collection not found, consent now?",
+    "no-consent-logout": "Consent for data collection not found, please save your opcode, log out, and log back in with the same opcode. Note that you won't get any personalized stats until you do!",
+    "no-consent-message": "OK! Note that you won't get any personalized stats until you do!",
+    "consent-found": "Consent found!",
+    "consented-to": "Consented to protocol last updated on {{approval_date}}",
+    "consented-ok": "OK",
+    "qrcode": "My OPcode",
+    "qrcode-share-title": "You can save your OPcode to login easily in the future!"
+  },
+
+  "metrics": {
+    "dashboard-tab": "Dashboard",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "get": "Get",
+    "range": "Range",
+    "filter": "Filter",
+    "from": "From:",
+    "to": "To:",
+    "last-week": "last week",
+    "frequency": "Frequency:",
+    "pandafreqoptions-daily": "DAILY",
+    "pandafreqoptions-weekly": "WEEKLY",
+    "pandafreqoptions-biweekly": "BIWEEKLY",
+    "pandafreqoptions-monthly": "MONTHLY",
+    "pandafreqoptions-yearly": "YEARLY",
+    "freqoptions-daily": "DAILY",
+    "freqoptions-monthly": "MONTHLY",
+    "freqoptions-yearly": "YEARLY",
+    "select-pandafrequency": "Select summary freqency",
+    "select-frequency": "Select summary freqency",
+    "chart-xaxis-date": "Date",
+    "chart-no-data": "No Data Available",
+    "trips-yaxis-number": "Number",
+    "calorie-data-change": " change",
+    "calorie-data-unknown": "Unknown...",
+    "greater-than": " greater than ",
+    "greater": " greater ",
+    "or": "or",
+    "less-than": " less than ",
+    "less": " less ",
+    "week-before": "vs. week before",
+    "this-week": "this week",
+    "pick-a-date": "Pick a date",
+    "trips": "trips",
+    "hours": "hours",
+    "minutes": "minutes",
+    "custom": "Custom"
+  },
+
+  "diary": {
+    "label-tab": "Label",
+    "distance-in-time": "{{distance}} {{distsuffix}} in {{time}}",
+    "distance": "Distance",
+    "time": "Time",
+    "mode": "Mode",
+    "replaces": "Replaces",
+    "purpose": "Purpose",
+    "survey": "Details",
+    "untracked-time-range": "Untracked: {{start}} - {{end}}",
+    "unlabeled": "All Unlabeled",
+    "invalid-ebike": "Invalid",
+    "to-label": "To Label",
+    "show-all": "All Trips",
+    "no-trips-found": "No trips found",
+    "choose-mode": "Mode 📝 ",
+    "choose-replaced-mode": "Replaces 📝",
+    "choose-purpose": "Purpose 📝",
+    "choose-survey": "Add Trip Details 📝 ",
+    "select-mode-scroll": "Mode (👇 for more)",
+    "select-replaced-mode-scroll": "Replaces (👇 for more)",
+    "select-purpose-scroll": "Purpose (👇 for more)",
+    "delete-entry-confirm": "Are you sure you wish to delete this entry?",
+    "detected": "Detected:",
+    "labeled-mode": "Labeled Mode",
+    "detected-modes": "Detected Modes",
+    "today": "Today",
+    "no-more-travel": "No more travel to show",
+    "show-more-travel": "Show More Travel",
+    "show-older-travel": "Show Older Travel",
+    "no-travel": "No travel to show",
+    "no-travel-hint": "To see more, change the filters above or go record some travel!"
+  },
+
+  "multilabel": {
+    "walk": "Walk",
+    "e-bike": "E-bike",
+    "bike": "Regular Bike",
+    "bikeshare": "Bikeshare",
+    "scootershare": "Scooter share",
+    "drove_alone": "Gas Car Drove Alone",
+    "shared_ride": "Gas Car Shared Ride",
+    "hybrid_drove_alone": "Hybrid Drove Alone",
+    "hybrid_shared_ride": "Hybrid Shared Ride",
+    "e_car_drove_alone": "E-Car Drove Alone",
+    "e_car_shared_ride": "E-Car Shared Ride",
+    "taxi": "Taxi / Uber / Lyft",
+    "bus": "Bus",
+    "train": "Train",
+    "free_shuttle": "Free Shuttle",
+    "air": "Air",
+    "not_a_trip": "Not a trip",
+    "no_travel": "No travel",
+    "home": "Home",
+    "work": "To Work",
+    "at_work": "At Work",
+    "school": "School",
+    "transit_transfer": "Transit transfer",
+    "shopping": "Shopping",
+    "meal": "Meal",
+    "pick_drop_person": "Pick-up / Drop off Person",
+    "pick_drop_item": "Pick-up / Drop off Item",
+    "personal_med": "Personal / Medical",
+    "access_recreation": "Access Recreation",
+    "exercise": "Recreation / Exercise",
+    "entertainment": "Entertainment / Social",
+    "religious": "Religious",
+    "other": "Other"
+  },
+
+  "main-metrics": {
+    "summary": "My Summary",
+    "chart": "Chart",
+    "change-data": "Change dates:",
+    "distance": "Distance",
+    "trips": "Trips",
+    "duration": "Duration",
+    "fav-mode": "My Favorite Mode",
+    "speed": "My Speed",
+    "footprint": "My Footprint",
+    "estimated-emissions": "Estimated CO₂ emissions",
+    "how-it-compares": "Ballpark comparisons",
+    "optimal": "Optimal (perfect mode choice for all my trips)",
+    "average": "Group Avg.",
+    "worst-case": "Worse Case",
+    "label-to-squish": "Label trips to collapse the range into a single number",
+    "range-uncertain-footnote": "²Due to the uncertainty of unlabeled trips, estimates may fall anywhere within the shown range. Label more trips for richer estimates.",
+    "lastweek": "My last week value:",
+    "us-2030-goal": "2030 Guideline¹",
+    "us-2050-goal": "2050 Guideline¹",
+    "us-goals-footnote": "¹Guidelines based on US decarbonization goals, scaled to per-capita travel-related emissions.",
+    "past-week": "Past Week",
+    "prev-week": "Prev. Week",
+    "no-summary-data": "No summary data",
+    "mean-speed": "My Average Speed",
+    "user-totals": "My Totals",
+    "group-totals": "Group Totals",
+    "active-minutes": "Active Minutes",
+    "weekly-active-minutes": "Weekly minutes of active travel",
+    "daily-active-minutes": "Daily minutes of active travel",
+    "active-minutes-table": "Table of active minutes metrics",
+    "weekly-goal": "Weekly Goal³",
+    "weekly-goal-footnote": "³Weekly goal based on CDC recommendation of 150 minutes of moderate activity per week.",
+    "labeled": "Labeled",
+    "unlabeled": "Unlabeled²",
+    "footprint-label": "Footprint (kg CO₂)"
+  },
+
+  "details": {
+    "speed": "Speed",
+    "time": "Time"
+  },
+
+  "list-datepicker-today": "Today",
+  "list-datepicker-close": "Close",
+  "list-datepicker-set": "Set",
+
+  "service": {
+    "reading-server": "Reading from server...",
+    "reading-unprocessed-data": "Reading unprocessed data..."
+  },
+
+  "email-service": {
+    "email-account-not-configured": "Email account is not configured, cannot send email",
+    "email-account-mail-app": "You must have the mail app on your phone configured with an email address. Otherwise, this won't work",
+    "going-to-email": "Going to email database from {{parentDir}}",
+    "email-log": {
+      "subject-logs": "emission logs",
+      "body-please-fill-in-what-is-wrong": "please fill in what is wrong"
     },
+    "no-email-address-configured": "No email address configured.",
+    "email-data": {
+      "subject-data-dump-from-to": "Data dump from {{start}} to {{end}}",
+      "body-data-consists-of-list-of-entries": "Data consists of a list of entries.\nEntry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \nData can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data \n and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb"
+    }
+  },
 
-    "control":{
-        "profile-tab": "Profile",
-        "edit-demographics": "Edit Demographics",
-        "tracking": "Tracking",
-        "app-status": "App Status",
-        "incorrect-app-status": "Please update permissions",
-        "fix-app-status": "Click to view and fix app status",
-        "fix": "Fix",
-        "medium-accuracy": "Medium accuracy",
-        "force-sync": "Force sync",
-        "share": "Share",
-        "download-json-dump": "Download json dump",
-        "email-log": "Email log",
-        "upload-log": "Upload log",
-        "view-privacy": "View Privacy Policy",
-        "user-data": "User data",
-        "erase-data": "Erase data",
-        "dev-zone": "Developer zone",
-        "refresh": "Refresh",
-        "end-trip-sync": "End trip + sync",
-        "check-consent": "Check consent",
-        "invalidate-cached-docs": "Invalidate cached docs",
-        "nuke-all": "Nuke all buffers and cache",
-        "test-notification": "Test local notification",
-        "check-log": "Check log",
-        "log-title" : "Log",
-        "check-sensed-data": "Check sensed data",
-        "sensed-title": "Sensed Data: Transitions",
-        "collection": "Collection",
-        "sync": "Sync",
-        "button-accept": "I accept",
-        "view-qrc": "My OPcode",
-        "app-version": "App Version",
-        "reminders-time-of-day": "Time of Day for Reminders ({{time}})",
-        "upcoming-notifications": "Upcoming Notifications",
-        "dummy-notification" : "Dummy Notification in 5 Seconds",
-        "log-out": "Log Out"
-    },
+  "upload-service": {
+    "upload-database": "Uploading database {{db}}",
+    "upload-from-dir": "from directory {{parentDir}}",
+    "upload-to-server": "to servers {{serverURL}}",
+    "please-fill-in-what-is-wrong": "please fill in what is wrong",
+    "upload-success": "Upload successful",
+    "upload-progress": "Sending {{filesizemb | number}} MB to {{serverURL}}",
+    "upload-details": "Sent {{filesizemb | number}} MB to {{serverURL}}"
+  },
 
-    "general-settings":{
-        "choose-date" : "Choose date to download data",
-        "choose-dataset" : "Choose a dataset for carbon footprint calculations",
-        "carbon-dataset" : "Carbon dataset",
-        "nuke-ui-state-only" : "UI state only",
-        "nuke-native-cache-only" : "Native cache only",
-        "nuke-everything" : "Everything",
-        "clear-data": "Clear data",
-        "are-you-sure": "Are you sure?",
-        "log-out-warning": "You will be logged out and your credentials will not be saved. Unsynced data may be lost.",
-        "cancel": "Cancel",
-        "confirm": "Confirm",
-        "user-data-erased": "User data erased.",
-        "consent-not-found": "Consent for data collection not found, consent now?",
-        "no-consent-message": "OK! Note that you won't get any personalized stats until you do!",
-        "consent-found": "Consent found!",
-        "consented-to": "Consented to protocol {{protocol_id}}, {{approval_date}}",
-        "consented-ok": "OK",
-        "qrcode": "My OPcode",
-        "qrcode-share-title": "You can save your OPcode to login easily in the future!"
-    },
-
-    "metrics":{
-        "dashboard-tab": "Dashboard",
-        "cancel": "Cancel",
-        "confirm": "Confirm",
-        "get": "Get",
-        "range": "Range",
-        "filter": "Filter",
-        "from": "From:",
-        "to": "To:",
-        "last-week": "last week",
-        "frequency": "Frequency:",
-        "pandafreqoptions-daily": "DAILY",
-        "pandafreqoptions-weekly": "WEEKLY",
-        "pandafreqoptions-biweekly": "BIWEEKLY",
-        "pandafreqoptions-monthly": "MONTHLY",
-        "pandafreqoptions-yearly": "YEARLY",
-        "freqoptions-daily": "DAILY",
-        "freqoptions-monthly": "MONTHLY",
-        "freqoptions-yearly": "YEARLY",
-        "select-pandafrequency": "Select summary freqency",
-        "select-frequency": "Select summary freqency",
-        "chart-xaxis-date": "Date",
-        "chart-no-data": "No Data Available",
-        "trips-yaxis-number": "Number",
-        "calorie-data-change": " change",
-        "calorie-data-unknown": "Unknown...",
-        "greater-than": " greater than ",
-        "greater": " greater ",
-        "or": "or",
-        "less-than": " less than ",
-        "less": " less ",
-        "week-before": "vs. week before",
-        "this-week": "this week",
-        "pick-a-date": "Pick a date",
-        "trips": "trips",
-        "hours": "hours",
-        "minutes": "minutes",
-        "custom": "Custom"
-    },
-    
-    "diary": {
-        "label-tab": "Label",
-        "distance-in-time": "{{distance}} {{distsuffix}} in {{time}}",
-        "distance": "Distance",
-        "time": "Time",
-        "mode": "Mode",
-        "replaces": "Replaces",
-        "purpose": "Purpose",
-        "survey": "Details",
-        "untracked-time-range": "Untracked: {{start}} - {{end}}",
-        "unlabeled": "All Unlabeled",
-        "invalid-ebike": "Invalid",
-        "to-label": "To Label",
-        "show-all": "All Trips",
-        "no-trips-found": "No trips found",
-        "choose-mode": "Mode 📝 ",
-        "choose-replaced-mode": "Replaces 📝",
-        "choose-purpose": "Purpose 📝",
-        "choose-survey": "Add Trip Details 📝 ",
-        "select-mode-scroll": "Mode (👇 for more)",
-        "select-replaced-mode-scroll": "Replaces (👇 for more)",
-        "select-purpose-scroll": "Purpose (👇 for more)",
-        "delete-entry-confirm": "Are you sure you wish to delete this entry?",
-        "detected": "Detected:",
-        "labeled-mode": "Labeled Mode",
-        "detected-modes": "Detected Modes",
-        "today": "Today",
-        "no-more-travel": "No more travel to show",
-        "show-more-travel": "Show More Travel",
-        "show-older-travel": "Show Older Travel",
-        "no-travel": "No travel to show",
-        "no-travel-hint": "To see more, change the filters above or go record some travel!"
-    },
-
-    "multilabel":{
-        "walk": "Walk",
-        "e-bike": "E-bike",
-        "bike": "Regular Bike",
-        "bikeshare": "Bikeshare",
-        "scootershare": "Scooter share",
-        "drove_alone": "Gas Car Drove Alone",
-        "shared_ride": "Gas Car Shared Ride",
-        "hybrid_drove_alone": "Hybrid Drove Alone",
-        "hybrid_shared_ride": "Hybrid Shared Ride",
-        "e_car_drove_alone": "E-Car Drove Alone",
-        "e_car_shared_ride": "E-Car Shared Ride",
-        "taxi": "Taxi / Uber / Lyft",
-        "bus": "Bus",
-        "train": "Train",
-        "free_shuttle": "Free Shuttle",
-        "air": "Air",
-        "not_a_trip": "Not a trip",
-        "no_travel": "No travel",
-        "home": "Home",
-        "work": "To Work",
-        "at_work": "At Work",
-        "school": "School",
-        "transit_transfer": "Transit transfer",
-        "shopping": "Shopping",
-        "meal": "Meal",
-        "pick_drop_person": "Pick-up / Drop off Person",
-        "pick_drop_item": "Pick-up / Drop off Item",
-        "personal_med": "Personal / Medical",
-        "access_recreation": "Access Recreation",
-        "exercise": "Recreation / Exercise",
-        "entertainment": "Entertainment / Social",
-        "religious": "Religious",
-        "other": "Other"
-    },
-
-    "main-metrics":{
-        "summary": "My Summary",
-        "chart": "Chart",
-        "change-data": "Change dates:",
-        "distance": "Distance",
-        "trips": "Trips",
-        "duration": "Duration",
-        "fav-mode": "My Favorite Mode",
-        "speed": "My Speed",
-        "footprint": "My Footprint",
-        "estimated-emissions": "Estimated CO₂ emissions",
-        "how-it-compares": "Ballpark comparisons",
-        "optimal": "Optimal (perfect mode choice for all my trips)",
-        "average": "Group Avg.",
-        "worst-case": "Worse Case",
-        "label-to-squish": "Label trips to collapse the range into a single number",
-        "range-uncertain-footnote": "²Due to the uncertainty of unlabeled trips, estimates may fall anywhere within the shown range. Label more trips for richer estimates.",
-        "lastweek": "My last week value:",
-        "us-2030-goal": "2030 Guideline¹",
-        "us-2050-goal": "2050 Guideline¹",
-        "us-goals-footnote": "¹Guidelines based on US decarbonization goals, scaled to per-capita travel-related emissions.",
-        "past-week" : "Past Week",
-        "prev-week" : "Prev. Week",
-        "no-summary-data": "No summary data",
-        "mean-speed": "My Average Speed",
-        "user-totals": "My Totals",
-        "group-totals": "Group Totals",
-        "active-minutes": "Active Minutes",
-        "weekly-active-minutes": "Weekly minutes of active travel",
-        "daily-active-minutes": "Daily minutes of active travel",
-        "active-minutes-table": "Table of active minutes metrics",
-        "weekly-goal": "Weekly Goal³",
-        "weekly-goal-footnote": "³Weekly goal based on CDC recommendation of 150 minutes of moderate activity per week.",
-        "labeled": "Labeled",
-        "unlabeled": "Unlabeled²",
-        "footprint-label": "Footprint (kg CO₂)"
-    },
-
-    "details":{
-        "speed": "Speed",
-        "time": "Time"
-    },
-
-    "list-datepicker-today": "Today",
-    "list-datepicker-close": "Close",
-    "list-datepicker-set": "Set",
-
-    "service":{
-        "reading-server": "Reading from server...",
-        "reading-unprocessed-data": "Reading unprocessed data..."
-    },
-
-    "email-service":{
-        "email-account-not-configured": "Email account is not configured, cannot send email",
-        "email-account-mail-app": "You must have the mail app on your phone configured with an email address. Otherwise, this won't work",
-        "going-to-email": "Going to email database from {{parentDir}}",
-        "email-log":{
-            "subject-logs": "emission logs",
-            "body-please-fill-in-what-is-wrong": "please fill in what is wrong"
-        },
-        "no-email-address-configured": "No email address configured.",
-        "email-data":{
-            "subject-data-dump-from-to": "Data dump from {{start}} to {{end}}",
-            "body-data-consists-of-list-of-entries": "Data consists of a list of entries.\nEntry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \nData can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data \n and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb"
+  "intro": {
+    "proceed": "Proceed",
+    "appstatus": {
+      "fix": "Fix",
+      "refresh": "Refresh",
+      "overall-description": "This app works in the background to automatically build a travel diary for you.  Make sure that all the settings below are green so that the app can work properly!",
+      "explanation-title": "What are these used for?",
+      "overall-loc-name": "Location",
+      "overall-loc-description": "We use the background location permission to track your location in the background, even when the app is closed. Reading background locations removes the need to turn tracking on and off, making the app easier to use and preventing battery drain.",
+      "locsettings": {
+        "name": "Location Settings",
+        "description": {
+          "android-lt-9": "Location services should be enabled and set to High Accuracy. This allows us to accurately record the trajectory of the travel",
+          "android-gte-9": "Location services should be enabled. This allows us to access location data and generate the trip log",
+          "ios": "Location services should be enabled. This allows us to access location data and generate the trip log"
         }
-    },
-
-    "upload-service":{
-        "upload-database": "Uploading database {{db}}",
-        "upload-from-dir": "from directory {{parentDir}}",
-        "upload-to-server": "to servers {{serverURL}}",
-        "please-fill-in-what-is-wrong": "please fill in what is wrong",
-        "upload-success": "Upload successful",
-        "upload-progress": "Sending {{filesizemb | number}} MB to {{serverURL}}",
-        "upload-details": "Sent {{filesizemb | number}} MB to {{serverURL}}"
-    },
-
-    "intro": {
-        "proceed": "Proceed",
-        "appstatus": {
-            "fix": "Fix",
-            "refresh":"Refresh",
-            "overall-description": "This app works in the background to automatically build a travel diary for you.  Make sure that all the settings below are green so that the app can work properly!",
-            "explanation-title": "What are these used for?",
-            "overall-loc-name": "Location",
-            "overall-loc-description": "We use the background location permission to track your location in the background, even when the app is closed. Reading background locations removes the need to turn tracking on and off, making the app easier to use and preventing battery drain.",
-            "locsettings": {
-                "name": "Location Settings",
-                "description": {
-                    "android-lt-9": "Location services should be enabled and set to High Accuracy. This allows us to accurately record the trajectory of the travel",
-                    "android-gte-9": "Location services should be enabled. This allows us to access location data and generate the trip log",
-                    "ios": "Location services should be enabled. This allows us to access location data and generate the trip log"
-                }
-            },
-            "locperms": {
-                "name": "Location Permissions",
-                "description": {
-                    "android-lt-6": "Enabled during app installation.",
-                    "android-6-9": "Please select 'allow'",
-                    "android-10": "Please select 'Allow all the time'",
-                    "android-11": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time'",
-                    "android-gte-12": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time' and 'Precise'",
-                    "ios-lt-13": "Please select 'Always allow'",
-                    "ios-gte-13": "On the app settings page, please select 'Always' and 'Precise' and return here to continue"
-                }
-            },
-            "overall-fitness-name-android": "Physical activity",
-            "overall-fitness-name-ios": "Motion and Fitness",
-            "overall-fitness-description": "The fitness sensors distinguish between walking, bicycling and motorized modes.  We use this data in order to separate the parts of multi-modal travel such as transit. We also use it to as a cross-check potentially spurious trips - if the location sensor jumps across town but the fitness sensor is stationary, we can guess that the trip was invalid.",
-            "fitnessperms": {
-                "name": "Fitness Permission",
-                "description": {
-                    "android": "Please allow.",
-                    "ios": "Please allow."
-                }
-            },
-            "overall-notification-name": "Notifications",
-            "overall-notification-description": "We need to use notifications to inform you if the settings are incorrect. We also use hourly invisible push notifications to wake up the app and allow it to upload data and check app status. We also use notifications to remind you to label your trips.",
-            "notificationperms": {
-                "app-enabled-name": "App Notifications",
-                "description": {
-                    "android-enable": "On the app settings page, ensure that all notifications and channels are enabled.",
-                    "ios-enable": "Please allow, on the popup or the app settings page if necessary"
-                }
-            },
-            "overall-background-restrictions-name": "Background restrictions",
-            "overall-background-restrictions-description": "The app runs in the background most of the time to make your life easier. You only need to open it periodically to label trips. Android sometimes restricts apps from working in the background. This prevents us from generating an accurate trip diary. Please remove background restrictions on this app.",
-            "unusedapprestrict": {
-                "name": "Unused apps disabled",
-                "description": {
-                    "android-disable-lt-12": "On the app settings page, go to 'Permissions' and ensure that the app permissions will not be automatically reset.",
-                    "android-disable-12": "On the app settings page, turn off 'Remove permissions and free up space.'",
-                    "android-disable-gte-13": "On the app settings page, turn off 'Pause app activity if unused.'",
-                    "ios": "Please allow."
-                }
-            },
-            "ignorebatteryopt": {
-                "name": "Ignore battery optimizations",
-                "description": "Please allow."
-            }
-        },
-        "permissions": {
-            "locationPermExplanation-ios-lt-13": "please select 'Always allow'. This allows us to understand your travel even when you are not actively using the app",
-            "locationPermExplanation-ios-gte-13": "please select 'always' and 'precise' in the app settings page and return here to continue"
+      },
+      "locperms": {
+        "name": "Location Permissions",
+        "description": {
+          "android-lt-6": "Enabled during app installation.",
+          "android-6-9": "Please select 'allow'",
+          "android-10": "Please select 'Allow all the time'",
+          "android-11": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time'",
+          "android-gte-12": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time' and 'Precise'",
+          "ios-lt-13": "Please select 'Always allow'",
+          "ios-gte-13": "On the app settings page, please select 'Always' and 'Precise' and return here to continue"
         }
+      },
+      "overall-fitness-name-android": "Physical activity",
+      "overall-fitness-name-ios": "Motion and Fitness",
+      "overall-fitness-description": "The fitness sensors distinguish between walking, bicycling and motorized modes.  We use this data in order to separate the parts of multi-modal travel such as transit. We also use it to as a cross-check potentially spurious trips - if the location sensor jumps across town but the fitness sensor is stationary, we can guess that the trip was invalid.",
+      "fitnessperms": {
+        "name": "Fitness Permission",
+        "description": {
+          "android": "Please allow.",
+          "ios": "Please allow."
+        }
+      },
+      "overall-notification-name": "Notifications",
+      "overall-notification-description": "We need to use notifications to inform you if the settings are incorrect. We also use hourly invisible push notifications to wake up the app and allow it to upload data and check app status. We also use notifications to remind you to label your trips.",
+      "notificationperms": {
+        "app-enabled-name": "App Notifications",
+        "description": {
+          "android-enable": "On the app settings page, ensure that all notifications and channels are enabled.",
+          "ios-enable": "Please allow, on the popup or the app settings page if necessary"
+        }
+      },
+      "overall-background-restrictions-name": "Background restrictions",
+      "overall-background-restrictions-description": "The app runs in the background most of the time to make your life easier. You only need to open it periodically to label trips. Android sometimes restricts apps from working in the background. This prevents us from generating an accurate trip diary. Please remove background restrictions on this app.",
+      "unusedapprestrict": {
+        "name": "Unused apps disabled",
+        "description": {
+          "android-disable-lt-12": "On the app settings page, go to 'Permissions' and ensure that the app permissions will not be automatically reset.",
+          "android-disable-12": "On the app settings page, turn off 'Remove permissions and free up space.'",
+          "android-disable-gte-13": "On the app settings page, turn off 'Pause app activity if unused.'",
+          "ios": "Please allow."
+        }
+      },
+      "ignorebatteryopt": {
+        "name": "Ignore battery optimizations",
+        "description": "Please allow."
+      }
     },
-    "allow_background": {
-        "samsung": "Disable 'Medium power saving mode'"
+    "permissions": {
+      "locationPermExplanation-ios-lt-13": "please select 'Always allow'. This allows us to understand your travel even when you are not actively using the app",
+      "locationPermExplanation-ios-gte-13": "please select 'always' and 'precise' in the app settings page and return here to continue"
+    }
+  },
+  "allow_background": {
+    "samsung": "Disable 'Medium power saving mode'"
+  },
+  "consent": {
+    "permissions": "Permissions",
+    "button-accept": "I accept",
+    "button-decline": "I refuse"
+  },
+  "login": {
+    "make-sure-save-your-opcode": "Make sure to save your OPcode!",
+    "cannot-retrieve": "NREL cannot retrieve it for you later!",
+    "save": "Save",
+    "continue": "Continue",
+    "enter-existing-token": "Enter the existing token that you have",
+    "button-accept": "OK",
+    "button-decline": "Cancel"
+  },
+  "survey": {
+    "loading-prior-survey": "Loading prior survey responses...",
+    "prev-survey-found": "Found previous survey response",
+    "use-prior-response": "Use prior response",
+    "edit-response": "Edit response",
+    "move-on": "Move on",
+    "survey": "Survey",
+    "save": "Save",
+    "back": "Back",
+    "next": "Next",
+    "powered-by": "Powered by",
+    "dismiss": "Dismiss",
+    "return-to-beginning": "Return to beginning",
+    "go-to-end": "Go to End",
+    "enketo-form-errors": "Form contains errors. Please see fields marked in red.",
+    "enketo-timestamps-invalid": "The times you entered are invalid. Please ensure that the start time is before the end time."
+  },
+  "join": {
+    "welcome-to-app": "Welcome to <b>{{appName}}!</b>",
+    "app-name": "NREL OpenPATH",
+    "to-proceed-further": "To proceed further, please scan or paste an access code that has been provided by your program administrator through a website, email, text message, or printout.",
+    "code-hint": "The code begins with ‘nrelop’ and may be in barcode or text format.",
+    "scan-code": "Scan code",
+    "paste-code": "Paste code",
+    "scan-hint": "Scan the barcode with your phone camera",
+    "paste-hint": "Or, paste the code as text",
+    "about-app-title": "About {{appName}}",
+    "about-app-para-1": "The National Renewable Energy Laboratory’s Open Platform for Agile Trip Heuristics (NREL OpenPATH) enables people to track their travel modes—car, bus, bike, walking, etc.—and measure their associated energy use and carbon footprint.",
+    "about-app-para-2": "The app empowers communities to understand their travel mode choices and patterns, experiment with options to make them more sustainable, and evaluate the results. Such results can inform effective transportation policy and planning and be used to build more sustainable and accessible cities.",
+    "about-app-para-3": "It does so by building an automatic diary of all your trips, across all transportation modes. It reads multiple sensors, including location, in the background, and turns GPS tracking on and off automatically for minimal power consumption. The choice of the travel pattern information and the carbon footprint display style are study-specific.",
+    "tips-title": "Tip(s) for correct operation:",
+    "all-green-status": "Make sure that all status checks are green",
+    "dont-force-kill": "Do not force kill the app",
+    "background-restrictions": "On Samsung and Huwaei phones, make sure that background restrictions are turned off",
+    "close": "Close"
+  },
+  "config": {
+    "unable-read-saved-config": "Unable to read saved config",
+    "unable-to-store-config": "Unable to store downladed config",
+    "not-enough-parts-old-style": "OPcode {{token}} does not have at least two '_' characters",
+    "no-nrelop-start": "OPcode {{token}} does not start with 'nrelop'",
+    "not-enough-parts": "OPcode {{token}} does not have at least three '_' characters",
+    "invalid-subgroup": "Invalid OPcode {{token}}, subgroup {{subgroup}} not found in list {{config_subgroups}}",
+    "invalid-subgroup-no-default": "Invalid OPcode {{token}}, no subgroups, expected 'default' subgroup",
+    "unable-download-config": "Unable to download study config",
+    "invalid-opcode-format": "Invalid OPcode format",
+    "error-loading-config-app-start": "Error loading config on app start",
+    "survey-missing-formpath": "Error while fetching resources in config: survey_info.surveys has a survey without a formPath"
+  },
+  "errors": {
+    "registration-check-token": "User registration error. Please check your token and try again.",
+    "not-registered-cant-contact": "User is not registered, so the server cannot be contacted.",
+    "while-populating-composite": "Error while populating composite trips",
+    "while-loading-another-week": "Error while loading travel of {{when}} week",
+    "while-loading-specific-week": "Error while loading travel for the week of {{day}}",
+    "while-log-messages": "While getting messages from the log ",
+    "while-max-index": "While getting max index "
+  },
+  "consent-text": {
+    "title": "NREL OPENPATH PRIVACY POLICY/TERMS OF USE",
+    "introduction": {
+      "header": "Introduction and Purpose",
+      "what-is-openpath": "This data is being collected through OpenPATH, an NREL open-sourced platform. The smart phone application, NREL OpenPATH (“App”), combines data from smartphone sensors, semantic user labels and a short demographic survey.",
+      "what-is-NREL": "NREL is a national laboratory of the U.S. Department of Energy, Office of Energy Efficiency and Renewable Energy, operated by Alliance for Sustainable Energy, LLC under Prime Contract No. DE-AC36-08GO28308. This Privacy Policy applies to the App provided by Alliance for Sustainable Energy, LLC. This App is provided solely for the purposes of collecting travel behavior data for the {{program_or_study}} and for research to inform public policy. None of the data collected by the App will never be sold or used for any commercial purposes, including advertising.",
+      "if-disagree": "IF YOU DO NOT AGREE WITH THE TERMS OF THIS PRIVACY POLICY, PLEASE DELETE THE APP"
     },
-    "consent":{
-        "permissions" : "Permissions",
-        "button-accept": "I accept",
-        "button-decline": "I refuse"
+    "why": {
+      "header": "Why we collect this information"
     },
-    "login":{
-        "make-sure-save-your-opcode":"Make sure to save your OPcode!",
-        "cannot-retrieve":"NREL cannot retrieve it for you later!",
-        "save":"Save",
-        "continue": "Continue",
-        "enter-existing-token": "Enter the existing token that you have",
-        "button-accept": "OK",
-        "button-decline": "Cancel"
+    "what": {
+      "header": "What information we collect",
+      "no-pii": "The App will never ask for any Personally Identifying Information (PII) such as name, email, address, or phone number.",
+      "phone-sensor": "It collects phone sensor data pertaining to your location (including background location), accelerometer, device-generated activity and mode recognition, App usage time, and battery usage. The App will create a “travel diary” based on your background location data to determine your travel patterns and location history.",
+      "labeling": "It will also ask you to periodically annotate these sensed trips with semantic labels, such as the trip mode, purpose, and replaced mode.",
+      "demographics": "It will also request sociodemographic information such as your approximate age, gender, and household type. The sociodemographic factors can be used to understand the influence of lifestyle on travel behavior, as well as generalize the results to a broader population.",
+      "open-source-data": "For the greatest transparency, the App is based on an open source platform, NREL’s OpenPATH. you can inspect the data that OpenPATH collects in the background at",
+      "open-source-analysis": "the analysis pipeline at",
+      "open-source-dashboard": "and the dashboard metrics at",
+      "on-nrel-site": "For the greatest transparency, the App is based on an open source platform, NREL’s OpenPATH. you can inspect the data that OpenPATH collects in the background, the analysis pipeline, and the dashboard metrics through links on the NREL OpenPATH website."
     },
-    "survey": {
-        "loading-prior-survey": "Loading prior survey responses...",
-        "prev-survey-found": "Found previous survey response",
-        "use-prior-response": "Use prior response",
-        "edit-response": "Edit response",
-        "move-on": "Move on",
-        "survey": "Survey",
-        "save": "Save",
-        "back": "Back",
-        "next": "Next",
-        "powered-by": "Powered by",
-        "dismiss": "Dismiss",
-        "return-to-beginning": "Return to beginning",
-        "go-to-end": "Go to End",
-        "enketo-form-errors": "Form contains errors. Please see fields marked in red.",
-        "enketo-timestamps-invalid": "The times you entered are invalid. Please ensure that the start time is before the end time."
+    "opcode": {
+      "header": "How we associate information with you",
+      "not-autogen": "Program administrators will provide you with a 'opcode' that you will use to log in to the system. This long random string will be used for all further communication with the server. If you forget or lose your opcode, you may request it by providing your name and/or email address to the program administrator. Please do not contact NREL staff with opcode retrieval requests since we do not have access to the connection between your name/email and your opcode. The data that NREL automatically collects (phone sensor data, semidemographic data, etc.) will only be associated with your 'opcode'",
+      "autogen": "You are logging in with a randomly generated 'opcode' that has been generated by the platform. This long random string will used for all further communication with the server. Only you know the opcode that is associated with you. There is no “Forgot password” option, and NREL staff cannot retrieve your opcode, even if you provide your name or email address. This means that, unless you store your opcode in a safe place, you will not have access to your prior data if you switch phones or uninstall and reinstall the App."
     },
-    "join": {
-        "welcome-to-app": "Welcome to <b>{{appName}}!</b>",
-        "app-name": "NREL OpenPATH",
-        "to-proceed-further": "To proceed further, please scan or paste an access code that has been provided by your program administrator through a website, email, text message, or printout.",
-        "code-hint": "The code begins with ‘nrelop’ and may be in barcode or text format.",
-        "scan-code": "Scan code",
-        "paste-code": "Paste code",
-        "scan-hint": "Scan the barcode with your phone camera",
-        "paste-hint": "Or, paste the code as text",
-        "about-app-title": "About {{appName}}",
-        "about-app-para-1": "The National Renewable Energy Laboratory’s Open Platform for Agile Trip Heuristics (NREL OpenPATH) enables people to track their travel modes—car, bus, bike, walking, etc.—and measure their associated energy use and carbon footprint.",
-        "about-app-para-2": "The app empowers communities to understand their travel mode choices and patterns, experiment with options to make them more sustainable, and evaluate the results. Such results can inform effective transportation policy and planning and be used to build more sustainable and accessible cities.",
-        "about-app-para-3": "It does so by building an automatic diary of all your trips, across all transportation modes. It reads multiple sensors, including location, in the background, and turns GPS tracking on and off automatically for minimal power consumption. The choice of the travel pattern information and the carbon footprint display style are study-specific.",
-        "tips-title": "Tip(s) for correct operation:",
-        "all-green-status": "Make sure that all status checks are green",
-        "dont-force-kill": "Do not force kill the app",
-        "background-restrictions": "On Samsung and Huwaei phones, make sure that background restrictions are turned off",
-        "close": "Close"
+    "who-sees": {
+      "header": "Who gets to see the information",
+      "public-dash": "Aggregate metrics derived from the travel patterns will be made available on a public dashboard to provide transparency into the impact of the program. These metrics will focus on information summaries such as counts, distances and durations, and will not display individual travel locations or times.",
+      "individual-info": "Individual labeling rates and trip level information will only be made available to:",
+      "program-admins": "🧑 Program administrators from {{deployment_partner_name}} to {{raw_data_use}}, and",
+      "nrel-devs": "💻 NREL OpenPATH developers for debugging",
+      "TSDC-info": "The data will also be periodically archived in NREL’s Transportation Secure Data Center (TSDC) after a delay of 3 to 6 months. It will then be made available for legitimate research through existing, privacy-preserving TSDC operating procedures. Further information on the procedures is available",
+      "on-website": " on the website ",
+      "and-in": "and in",
+      "this-pub": " this publication ",
+      "and": "and",
+      "fact-sheet": " fact sheet",
+      "on-nrel-site": " through links on the NREL OpenPATH website."
     },
-    "config": {
-        "unable-read-saved-config": "Unable to read saved config",
-        "unable-to-store-config": "Unable to store downladed config",
-        "not-enough-parts-old-style": "OPcode {{token}} does not have at least two '_' characters",
-        "no-nrelop-start": "OPcode {{token}} does not start with 'nrelop'",
-        "not-enough-parts": "OPcode {{token}} does not have at least three '_' characters",
-        "invalid-subgroup": "Invalid OPcode {{token}}, subgroup {{subgroup}} not found in list {{config_subgroups}}",
-        "invalid-subgroup-no-default": "Invalid OPcode {{token}}, no subgroups, expected 'default' subgroup",
-        "unable-download-config": "Unable to download study config",
-        "invalid-opcode-format": "Invalid OPcode format",
-        "error-loading-config-app-start": "Error loading config on app start",
-        "survey-missing-formpath": "Error while fetching resources in config: survey_info.surveys has a survey without a formPath"
+    "rights": {
+      "header": "Your rights",
+      "app-required": "You are required to track your travel patterns using the App as a condition of participation in the Program. If you wish to withdraw from the Program, you should contact the program administrator, {{program_admin_contact}}  to discuss termination options. If you  wish to stay in the program but not use the app, please contact your program administrator to negotiate an alternative data collection procedure before uninstalling the app. If you uninstall the app without approval from the program administrator, you may not have access to the benefits provided by the program.",
+      "app-not-required": "Participation in the {{program_or_study}} is completely voluntary. You have the right to decline to participate or to withdraw at any point in the Study without providing notice to NREL or the point of contact. If you do not wish to participate in the Study or to discontinue your participation in the Study, please delete the App.",
+      "destroy-data-pt1": "If you would like to have your data destroyed, please contact K. Shankari ",
+      "destroy-data-pt2": " requesting deletion. You must include your token in the request for deletion. Because we do not connect your identity with your token, we cannot delete your information without obtaining the token as part of the deletion request. We will then destroy all data associated with that deletion request, both in the online and archived datasets."
     },
     "errors": {
       "registration-check-token": "User registration error. Please check your token and try again.",
@@ -404,61 +462,9 @@
       "while-log-messages": "While getting messages from the log ",
       "while-max-index" : "While getting max index "
     },
-    "consent-text": {
-        "title":"NREL OPENPATH PRIVACY POLICY/TERMS OF USE",
-        "introduction":{
-            "header":"Introduction and Purpose",
-            "what-is-openpath":"This data is being collected through OpenPATH, an NREL open-sourced platform. The smart phone application, NREL OpenPATH (“App”), combines data from smartphone sensors, semantic user labels and a short demographic survey.",
-            "what-is-NREL":"NREL is a national laboratory of the U.S. Department of Energy, Office of Energy Efficiency and Renewable Energy, operated by Alliance for Sustainable Energy, LLC under Prime Contract No. DE-AC36-08GO28308. This Privacy Policy applies to the App provided by Alliance for Sustainable Energy, LLC. This App is provided solely for the purposes of collecting travel behavior data for the {{program_or_study}} and for research to inform public policy. None of the data collected by the App will never be sold or used for any commercial purposes, including advertising.",
-            "if-disagree":"IF YOU DO NOT AGREE WITH THE TERMS OF THIS PRIVACY POLICY, PLEASE DELETE THE APP"
-        },
-        "why":{
-            "header":"Why we collect this information"
-        },
-        "what":{
-            "header":"What information we collect",
-            "no-pii":"The App will never ask for any Personally Identifying Information (PII) such as name, email, address, or phone number.",
-            "phone-sensor":"It collects phone sensor data pertaining to your location (including background location), accelerometer, device-generated activity and mode recognition, App usage time, and battery usage. The App will create a “travel diary” based on your background location data to determine your travel patterns and location history.",
-            "labeling":"It will also ask you to periodically annotate these sensed trips with semantic labels, such as the trip mode, purpose, and replaced mode.",
-            "demographics":"It will also request sociodemographic information such as your approximate age, gender, and household type. The sociodemographic factors can be used to understand the influence of lifestyle on travel behavior, as well as generalize the results to a broader population.",
-            "open-source-data":"For the greatest transparency, the App is based on an open source platform, NREL’s OpenPATH. you can inspect the data that OpenPATH collects in the background at",
-            "open-source-analysis":"the analysis pipeline at",
-            "open-source-dashboard":"and the dashboard metrics at",
-            "on-nrel-site": "For the greatest transparency, the App is based on an open source platform, NREL’s OpenPATH. you can inspect the data that OpenPATH collects in the background, the analysis pipeline, and the dashboard metrics through links on the NREL OpenPATH website."
-        },
-        "opcode":{
-            "header":"How we associate information with you",
-            "not-autogen":"Program administrators will provide you with a 'opcode' that you will use to log in to the system. This long random string will be used for all further communication with the server. If you forget or lose your opcode, you may request it by providing your name and/or email address to the program administrator. Please do not contact NREL staff with opcode retrieval requests since we do not have access to the connection between your name/email and your opcode. The data that NREL automatically collects (phone sensor data, semidemographic data, etc.) will only be associated with your 'opcode'",
-            "autogen":"You are logging in with a randomly generated 'opcode' that has been generated by the platform. This long random string will used for all further communication with the server. Only you know the opcode that is associated with you. There is no “Forgot password” option, and NREL staff cannot retrieve your opcode, even if you provide your name or email address. This means that, unless you store your opcode in a safe place, you will not have access to your prior data if you switch phones or uninstall and reinstall the App."
-        },
-        "who-sees":{
-            "header":"Who gets to see the information",
-            "public-dash":"Aggregate metrics derived from the travel patterns will be made available on a public dashboard to provide transparency into the impact of the program. These metrics will focus on information summaries such as counts, distances and durations, and will not display individual travel locations or times.",
-            "individual-info":"Individual labeling rates and trip level information will only be made available to:",
-            "program-admins":"🧑 Program administrators from {{deployment_partner_name}} to {{raw_data_use}}, and",
-            "nrel-devs":"💻 NREL OpenPATH developers for debugging",
-            "TSDC-info":"The data will also be periodically archived in NREL’s Transportation Secure Data Center (TSDC) after a delay of 3 to 6 months. It will then be made available for legitimate research through existing, privacy-preserving TSDC operating procedures. Further information on the procedures is available",
-            "on-website":" on the website ",
-            "and-in":"and in",
-            "this-pub":" this publication ",
-            "and":"and",
-            "fact-sheet":" fact sheet",
-            "on-nrel-site": " through links on the NREL OpenPATH website."
-        },
-        "rights":{
-            "header":"Your rights",
-            "app-required":"You are required to track your travel patterns using the App as a condition of participation in the Program. If you wish to withdraw from the Program, you should contact the program administrator, {{program_admin_contact}}  to discuss termination options. If you  wish to stay in the program but not use the app, please contact your program administrator to negotiate an alternative data collection procedure before uninstalling the app. If you uninstall the app without approval from the program administrator, you may not have access to the benefits provided by the program.",
-            "app-not-required":"Participation in the {{program_or_study}} is completely voluntary. You have the right to decline to participate or to withdraw at any point in the Study without providing notice to NREL or the point of contact. If you do not wish to participate in the Study or to discontinue your participation in the Study, please delete the App.",
-            "destroy-data-pt1":"If you would like to have your data destroyed, please contact K. Shankari ",
-            "destroy-data-pt2":" requesting deletion. You must include your token in the request for deletion. Because we do not connect your identity with your token, we cannot delete your information without obtaining the token as part of the deletion request. We will then destroy all data associated with that deletion request, both in the online and archived datasets."
-        },
-        "questions":{
-            "header":"Questions",
-            "for-questions":"If you have any questions about the data collection goals and results, please contact the primary point of contact for the study, {{program_admin_contact}}. If you have any technical questions about app operation, please contact NREL’s K. Shankari (k.shankari@nrel.gov)."
-        },
-        "consent":{
-            "header":"Consent",
-            "press-button-to-consent":"Please select the button below to indicate that you have read and agree to this Privacy Policy, consent to the collection of your information, and want to participate in the {{program_or_study}}."
-        }
+    "consent": {
+      "header": "Consent",
+      "press-button-to-consent": "Please select the button below to indicate that you have read and agree to this Privacy Policy, consent to the collection of your information, and want to participate in the {{program_or_study}}."
     }
+  }
 }

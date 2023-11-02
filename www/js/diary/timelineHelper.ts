@@ -18,29 +18,29 @@ export function useGeojsonForTrip(trip, labelOptions, labeledMode?) {
     return cachedGeojsons.get(gjKey);
   }
 
-  let trajectoryColor: string|null;
+  let trajectoryColor: string | null;
   if (labeledMode) {
     trajectoryColor = getBaseModeByValue(labeledMode, labelOptions)?.color;
   }
 
-  logDebug("Reading trip's " + trip.locations.length + " location points at " + (new Date()));
+  logDebug("Reading trip's " + trip.locations.length + ' location points at ' + new Date());
   var features = [
-    location2GeojsonPoint(trip.start_loc, "start_place"),
-    location2GeojsonPoint(trip.end_loc, "end_place"),
-    ...locations2GeojsonTrajectory(trip, trip.locations, trajectoryColor)
+    location2GeojsonPoint(trip.start_loc, 'start_place'),
+    location2GeojsonPoint(trip.end_loc, 'end_place'),
+    ...locations2GeojsonTrajectory(trip, trip.locations, trajectoryColor),
   ];
 
   const gj = {
     data: {
       id: gjKey,
-      type: "FeatureCollection",
+      type: 'FeatureCollection',
       features: features,
       properties: {
         start_ts: trip.start_ts,
-        end_ts: trip.end_ts
-      }
-    }
-  }
+        end_ts: trip.end_ts,
+      },
+    },
+  };
   cachedGeojsons.set(gjKey, gj);
   return gj;
 }
@@ -80,9 +80,9 @@ export let unprocessedLabels: { [key: string]: UserInputEntry[] } = {};
 export let unprocessedNotes: UserInputEntry[] = [];
 
 const getUnprocessedInputQuery = (pipelineRange) => ({
-  key: "write_ts",
+  key: 'write_ts',
   startTs: pipelineRange.end_ts - 10,
-  endTs: moment().unix() + 10
+  endTs: moment().unix() + 10,
 });
 
 function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
@@ -168,14 +168,14 @@ function keysForNotesInputs(appConfig) {
  * @returns a GeoJSON feature with type "Point", the given location's coordinates and the given feature type
  */
 const location2GeojsonPoint = (locationPoint: any, featureType: string) => ({
-  type: "Feature",
+  type: 'Feature',
   geometry: {
-    type: "Point",
+    type: 'Point',
     coordinates: locationPoint.coordinates,
   },
   properties: {
     feature_type: featureType,
-  }
+  },
 });
 
 /**
@@ -192,25 +192,23 @@ const locations2GeojsonTrajectory = (trip, locationList, trajectoryColor?) => {
   } else {
     // this is a multimodal trip so we sort the locations into sections by timestamp
     sectionsPoints = trip.sections.map((s) =>
-      trip.locations.filter((l) =>
-        l.ts >= s.start_ts && l.ts <= s.end_ts
-      )
+      trip.locations.filter((l) => l.ts >= s.start_ts && l.ts <= s.end_ts),
     );
   }
 
   return sectionsPoints.map((sectionPoints, i) => {
     const section = trip.sections?.[i];
     return {
-      type: "Feature",
+      type: 'Feature',
       geometry: {
-        type: "LineString",
+        type: 'LineString',
         coordinates: sectionPoints.map((pt) => pt.loc.coordinates),
       },
       style: {
         /* If a color was passed as arg, use it for the whole trajectory. Otherwise, use the
           color for the sensed mode of this section, and fall back to dark grey */
-        color: trajectoryColor || getBaseModeByKey(section?.sensed_mode_str)?.color || "#333",
+        color: trajectoryColor || getBaseModeByKey(section?.sensed_mode_str)?.color || '#333',
       },
-    }
+    };
   });
-}
+};

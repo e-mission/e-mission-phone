@@ -30,7 +30,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const trip = timelineMap.get(tripId);
   const { colors } = flavoredTheme || useTheme();
   const { displayDate, displayStartTime, displayEndTime } = useDerivedProperties(trip);
-  const [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
+  const [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
 
   const [ modesShown, setModesShown ] = useState<'labeled'|'detected'>('labeled');
   const tripGeojson = useGeojsonForTrip(trip, labelOptions, modesShown=='labeled' && timelineLabelMap[trip._id.$oid]?.MODE?.value);
@@ -38,19 +38,31 @@ const LabelScreenDetails = ({ route, navigation }) => {
 
   const modal = (
     <Modal visible={true}>
-      <SafeAreaView style={{flex: 1}}>
-        <Appbar.Header statusBarHeight={0} elevated={true} style={{ height: 46, backgroundColor: colors.surface, elevation: 3 }}>
-          <Appbar.BackAction onPress={() => { navigation.goBack() }} />
-          <Appbar.Content title={displayDate} titleStyle={{fontSize: 17}} />
+      <SafeAreaView style={{ flex: 1 }}>
+        <Appbar.Header
+          statusBarHeight={0}
+          elevated={true}
+          style={{ height: 46, backgroundColor: colors.surface, elevation: 3 }}>
+          <Appbar.BackAction
+            onPress={() => {
+              navigation.goBack();
+            }}
+          />
+          <Appbar.Content title={displayDate} titleStyle={{ fontSize: 17 }} />
         </Appbar.Header>
-        <Surface mode='elevated' style={{ paddingVertical: 4, paddingHorizontal: 10, zIndex: 1 }}>
-          <StartEndLocations fontSize={14}
-            displayStartTime={displayStartTime} displayEndTime={displayEndTime}
-            displayStartName={tripStartDisplayName} displayEndName={tripEndDisplayName} />
+        <Surface mode="elevated" style={{ paddingVertical: 4, paddingHorizontal: 10, zIndex: 1 }}>
+          <StartEndLocations
+            fontSize={14}
+            displayStartTime={displayStartTime}
+            displayEndTime={displayEndTime}
+            displayStartName={tripStartDisplayName}
+            displayEndName={tripEndDisplayName}
+          />
         </Surface>
         <ScrollView style={{ paddingBottom: 30, backgroundColor: colors.background }}>
-          <Surface mode='flat'
-            style={{margin: 10, paddingHorizontal: 10, rowGap: 12, borderRadius: 15 }}>
+          <Surface
+            mode="flat"
+            style={{ margin: 10, paddingHorizontal: 10, rowGap: 12, borderRadius: 15 }}>
             {/* MultiLabel or UserInput button, inline on one row */}
             <View style={{ paddingVertical: 10 }}>
               {appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL' && (
@@ -62,7 +74,11 @@ const LabelScreenDetails = ({ route, navigation }) => {
             </View>
 
             {/* Full-size Leaflet map, with zoom controls */}
-            <LeafletView geojson={tripGeojson} style={{width: '100%', height: windowHeight/2, marginBottom: 10}} opts={mapOpts} />
+            <LeafletView
+              geojson={tripGeojson}
+              style={{ width: '100%', height: windowHeight / 2, marginBottom: 10 }}
+              opts={mapOpts}
+            />
 
             {/* If trip is labeled, show a toggle to switch between "Labeled Mode" and "Detected Modes"
               otherwise, just show "Detected" */}
@@ -74,16 +90,16 @@ const LabelScreenDetails = ({ route, navigation }) => {
                 style={{height: 32}} contentStyle={{height:30}}>
                 { t('diary.detected-modes') }
               </Button>
-            }
+            )}
 
             {/* section-by-section breakdown of duration, distance, and mode */}
-            <TripSectionsDescriptives trip={trip} showLabeledMode={modesShown=='labeled'} />
+            <TripSectionsDescriptives trip={trip} showLabeledMode={modesShown == 'labeled'} />
             {/* Overall trip duration, distance, and modes.
               Only show this when multiple sections are shown, and we are showing detected modes.
               If we just showed the labeled mode or a single section, this would be redundant. */}
-            { modesShown == 'detected' && trip?.sections?.length > 1 &&
+            {modesShown == 'detected' && trip?.sections?.length > 1 && (
               <OverallTripDescriptives trip={trip} />
-            }
+            )}
             {/* TODO: show speed graph here */}
           </Surface>
         </ScrollView>
@@ -91,13 +107,9 @@ const LabelScreenDetails = ({ route, navigation }) => {
     </Modal>
   );
   if (route.params.flavoredTheme) {
-    return (
-      <PaperProvider theme={route.params.flavoredTheme}>
-        {modal}
-      </PaperProvider>
-    );
+    return <PaperProvider theme={route.params.flavoredTheme}>{modal}</PaperProvider>;
   }
   return modal;
-}
+};
 
 export default LabelScreenDetails;
