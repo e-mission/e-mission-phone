@@ -25,6 +25,8 @@ import { AppContext } from "../App";
 import { shareQR } from "../components/QrCode";
 import { storageClear } from "../plugin/storage";
 import { getAppVersion } from "../plugin/clientStats";
+import { getConsentDocument } from "../splash/startprefs";
+import { logDebug } from "../plugin/logger";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -39,10 +41,9 @@ const ProfileSettings = () => {
     const EmailHelper = getAngularService('EmailHelper');
     const NotificationScheduler = getAngularService('NotificationScheduler');
     const ControlHelper = getAngularService('ControlHelper');
-    const StartPrefs = getAngularService('StartPrefs');
 
     //functions that come directly from an Angular service
-    const editCollectionConfig = () => setEditCollection(true);
+    const editCollectionConfig = () => setEditCollectionVis(true);
     const editSyncConfig = () => setEditSync(true);
 
     //states and variables used to control/create the settings
@@ -314,8 +315,9 @@ const ProfileSettings = () => {
 
     //in ProfileSettings in DevZone (above two functions are helpers)
     async function checkConsent() {
-        StartPrefs.getConsentDocument().then(function(resultDoc){
+        getConsentDocument().then(function(resultDoc){
             setConsentDoc(resultDoc);
+            logDebug("In profile settings, consent doc found", resultDoc);
             if (resultDoc == null) {
                 setNoConsentVis(true);
             } else {
@@ -482,17 +484,13 @@ const ProfileSettings = () => {
                         onDismiss={()=>setNoConsentVis(false)} 
                         style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.consent-not-found')}</Dialog.Title>
+                    <Dialog.Content>
+                        <Text variant="">{t('general-settings.no-consent-logout')}</Text>
+                    </Dialog.Content>
                     <Dialog.Actions>
                         <Button onPress={()=>{
-                            setNoConsentVis(false);
-                            setNoConsentMessageVis(true)}}>
-                                {t('general-settings.cancel')}
-                        </Button>
-                        <Button onPress={()=>{
-                            setNoConsentVis(false);
-                            // $state.go("root.reconsent"); //don't know how to do this yet
-                            }}>
-                                {t('general-settings.confirm')}
+                            setNoConsentVis(false); }}>
+                                {t('general-settings.consented-ok')}
                         </Button>
                     </Dialog.Actions>
                 </Dialog>
@@ -503,7 +501,7 @@ const ProfileSettings = () => {
                 <Dialog visible={consentVis} 
                         onDismiss={()=>setConsentVis(false)} 
                         style={settingStyles.dialog(colors.elevation.level3)}>
-                    <Dialog.Title>{t('general-settings.consented-to', {protocol_id: consentDoc.protocol_id, approval_date: consentDoc.approval_date})}</Dialog.Title>
+                    <Dialog.Title>{t('general-settings.consented-to', {approval_date: consentDoc.approval_date})}</Dialog.Title>
                     <Dialog.Actions>
                         <Button onPress={()=>{
                             setConsentDoc({});

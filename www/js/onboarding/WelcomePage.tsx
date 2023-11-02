@@ -5,7 +5,7 @@ import { Button, Dialog, Divider, IconButton, Surface, Text, TextInput, Touchabl
 import color from 'color';
 import { initByUser } from '../config/dynamicConfig';
 import { AppContext } from '../App';
-import { displayError } from "../plugin/logger";
+import { displayError, logDebug } from "../plugin/logger";
 import { onboardingStyles } from './OnboardingStack';
 import { Icon } from '../components/Icon';
 
@@ -20,18 +20,34 @@ const WelcomePage = () => {
   const [infoPopupVis, setInfoPopupVis] = useState(false);
   const [existingToken, setExistingToken] = useState('');
 
-  const scanCode = function() {
-    window.cordova.plugins.barcodeScanner.scan(
+  const getCode = function (result) {
+    let url = new window.URL(result.text);
+    let notCancelled = result.cancelled == false;
+    let isQR = result.format == "QR_CODE";
+    let hasPrefix = url.protocol == "emission:";
+    let hasToken = url.searchParams.has("token");
+    let code = url.searchParams.get("token");
+
+    logDebug("QR code " + result.text + " checks: cancel, format, prefix, params, code " + notCancelled + isQR + hasPrefix + hasToken + code);
+
+    if (notCancelled && isQR && hasPrefix && hasToken) {
+      return code;
+    } else {
+      return false;
+    }
+  };  
+
+  const scanCode = function () {
+    window['cordova'].plugins.barcodeScanner.scan(
       function (result) {
         console.debug("scanned code", result);
-          if (result.format == "QR_CODE" && 
-              result.cancelled == false) {
-                let text = result.text.split("=")[1];
-                console.log("found code", text);
-              loginWithToken(text);
-          } else {
-            displayError(result.text, "invalid study reference") ;
-          }
+        let code = getCode(result);
+        if (code != false) {
+          console.log("found code", code);
+          loginWithToken(code);
+        } else {
+          displayError(result.text, "invalid study reference");
+        }
       },
       function (error) {
         displayError(error, "Scanning failed: ");
