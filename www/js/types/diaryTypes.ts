@@ -47,17 +47,17 @@ export type CompositeTrip = {
 /* These properties aren't received from the server, but are derived from the above properties.
   They are used in the UI to display trip/place details and are computed by the useDerivedProperties hook. */
 export type DerivedProperties = {
-  displayDate: string,
-  displayStartTime: string,
-  displayEndTime: string,
-  displayTime: string,
-  displayStartDateAbbr: string,
-  displayEndDateAbbr: string,
-  formattedDistance: string,
-  formattedSectionProperties: any[], // TODO
-  distanceSuffix: string,
-  detectedModes: { mode: string, icon: string, color: string, pct: number|string }[],
-}
+  displayDate: string;
+  displayStartTime: string;
+  displayEndTime: string;
+  displayTime: string;
+  displayStartDateAbbr: string;
+  displayEndDateAbbr: string;
+  formattedDistance: string;
+  formattedSectionProperties: any[]; // TODO
+  distanceSuffix: string;
+  detectedModes: { mode: string; icon: string; color: string; pct: number | string }[];
+};
 
 /* These are the properties that are still filled in by some kind of 'populate' mechanism.
   It would simplify the codebase to just compute them where they're needed
