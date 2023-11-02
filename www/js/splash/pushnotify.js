@@ -1,3 +1,7 @@
+//naming of this file can be a little confusing - "pushnotifysettings" for rewritten file
+//https://github.com/e-mission/e-mission-phone/pull/1072#discussion_r1375360832
+
+
 /*
  * This module deals with the interaction with the push plugin, the redirection
  * of silent push notifications and the re-parsing of iOS pushes. It then
@@ -15,12 +19,12 @@
 
 import angular from 'angular';
 import { updateUser } from '../commHelper';
+import { readConsentState, isConsented } from './startprefs';
 
 angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
-                                              'emission.services',
-                                              'emission.splash.startprefs'])
+                                              'emission.services'])
 .factory('PushNotify', function($window, $state, $rootScope, $ionicPlatform,
-    $ionicPopup, Logger, StartPrefs) {
+    $ionicPopup, Logger) {
 
     var pushnotify = {};
     var push = null;
@@ -159,8 +163,8 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
 
     $ionicPlatform.ready().then(function() {
       pushnotify.datacollect = $window.cordova.plugins.BEMDataCollection;
-      StartPrefs.readConsentState()
-        .then(StartPrefs.isConsented)
+      readConsentState()
+        .then(isConsented)
         .then(function(consentState) {
           if (consentState == true) {
               pushnotify.registerPush();
@@ -170,20 +174,6 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
         });
       pushnotify.registerNotificationHandler();
       Logger.log("pushnotify startup done");
-    });
-
-    $rootScope.$on(StartPrefs.CONSENTED_EVENT, function(event, data) {
-      console.log("got consented event "+JSON.stringify(event.name)
-                      +" with data "+ JSON.stringify(data));
-      if (StartPrefs.isIntroDone()) {
-          console.log("intro is done -> reconsent situation, we already have a token -> register");
-          pushnotify.registerPush();
-      }
-    });
-
-    $rootScope.$on(StartPrefs.INTRO_DONE_EVENT, function(event, data) {
-          console.log("intro is done -> original consent situation, we should have a token by now -> register");
-       pushnotify.registerPush();
     });
 
     return pushnotify;
