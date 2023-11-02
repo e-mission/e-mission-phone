@@ -4,7 +4,6 @@ import { storageGet, storageSet } from "../plugin/storage";
 import { logDebug } from "../plugin/logger";
 import { EVENT_NAMES, publish } from "../customEventHandler";
 import { readConsentState, isConsented } from "../splash/startprefs";
-import { getAngularService } from "../angular-react-helper";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
@@ -75,9 +74,7 @@ export async function markIntroDone() {
   return storageSet(INTRO_DONE_KEY, currDateTime)
     .then(() => {
       //handle "on intro" events
-      logDebug("intro done, calling registerPush and storeDeviceSettings");
-      const StoreSeviceSettings = getAngularService("StoreDeviceSettings");
+      logDebug("intro done, publishing event");
       publish(EVENT_NAMES.INTRO_DONE_EVENT, currDateTime);
-      StoreSeviceSettings.storeDeviceSettings();
     });
 }

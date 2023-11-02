@@ -41,16 +41,6 @@ export function markConsented() {
       // publish event
       publish(EVENT_NAMES.CONSENTED_EVENT, _req_consent);
     })
-    //check for reconsent
-    .then(readIntroDone)
-    .then((isIntroDone) => {
-      if (isIntroDone) {
-        logDebug("reconsent scenario - marked consent after intro done - registering pushnoify and storing device settings");
-        //pushnotify uses events now
-        const StoreSeviceSettings = getAngularService("StoreDeviceSettings");
-        StoreSeviceSettings.storeDeviceSettings();
-      }
-    })
     .catch((error) => {
       displayErrorMsg(error, "Error while while wrting consent to storage");
     });
