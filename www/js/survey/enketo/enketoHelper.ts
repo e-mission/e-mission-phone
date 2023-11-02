@@ -2,8 +2,8 @@ import { getAngularService } from '../../angular-react-helper';
 import { Form } from 'enketo-core';
 import { XMLParser } from 'fast-xml-parser';
 import i18next from 'i18next';
-import { logDebug } from "../../plugin/logger";
-import { getUnifiedDataForInterval} from "../../services/unifiedDataLoader";
+import { logDebug } from '../../plugin/logger';
+import { getUnifiedDataForInterval } from '../../services/unifiedDataLoader';
 
 export type PrefillFields = { [key: string]: string };
 
@@ -107,8 +107,9 @@ const _getMostRecent = (answers) => {
  */
 export function loadPreviousResponseForSurvey(dataKey: string) {
   const tq = window['cordova'].plugins.BEMUserCache.getAllTimeQuery();
-  logDebug("loadPreviousResponseForSurvey: dataKey = " + dataKey + "; tq = " + tq);
+  logDebug('loadPreviousResponseForSurvey: dataKey = ' + dataKey + '; tq = ' + tq);
   const getMethod = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
-  return getUnifiedDataForInterval(dataKey, tq, getMethod)
-    .then(answers => _getMostRecent(answers));
+  return getUnifiedDataForInterval(dataKey, tq, getMethod).then((answers) =>
+    _getMostRecent(answers),
+  );
 }
