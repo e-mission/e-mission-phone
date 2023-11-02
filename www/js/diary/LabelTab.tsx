@@ -48,7 +48,6 @@ const LabelTab = () => {
   const $state = getAngularService('$state');
   const $ionicPopup = getAngularService('$ionicPopup');
   const Logger = getAngularService('Logger');
-  const Timeline = getAngularService('Timeline');
   const enbs = getAngularService('EnketoNotesButtonService');
 
   // initialization, once the appConfig is loaded
