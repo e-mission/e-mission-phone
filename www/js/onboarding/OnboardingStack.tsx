@@ -1,16 +1,15 @@
-import React, { useContext } from "react";
-import { StyleSheet } from "react-native";
-import { AppContext } from "../App";
-import WelcomePage from "./WelcomePage";
-import ConsentPage from "./ConsentPage";
-import SurveyPage from "./SurveyPage";
-import SaveQrPage from "./SaveQrPage";
-import SummaryPage from "./SummaryPage";
-import { OnboardingRoute } from "./onboardingHelper";
-import { displayErrorMsg } from "../plugin/logger";
+import React, { useContext } from 'react';
+import { StyleSheet } from 'react-native';
+import { AppContext } from '../App';
+import WelcomePage from './WelcomePage';
+import ProtocolPage from './ProtocolPage';
+import SurveyPage from './SurveyPage';
+import SaveQrPage from './SaveQrPage';
+import SummaryPage from './SummaryPage';
+import { OnboardingRoute } from './onboardingHelper';
+import { displayErrorMsg } from '../plugin/logger';
 
 const OnboardingStack = () => {
-
   const { onboardingState } = useContext(AppContext);
 
   console.debug('onboardingState in OnboardingStack', onboardingState);
@@ -19,8 +18,8 @@ const OnboardingStack = () => {
     return <WelcomePage />;
   } else if (onboardingState.route == OnboardingRoute.SUMMARY) {
     return <SummaryPage />;
-  } else if (onboardingState.route == OnboardingRoute.CONSENT) {
-    return <ConsentPage />;
+  } else if (onboardingState.route == OnboardingRoute.PROTOCOL) {
+    return <ProtocolPage />;
   } else if (onboardingState.route == OnboardingRoute.SAVE_QR) {
     return <SaveQrPage />;
   } else if (onboardingState.route == OnboardingRoute.SURVEY) {
@@ -28,7 +27,7 @@ const OnboardingStack = () => {
   } else {
     displayErrorMsg('OnboardingStack: unknown route', onboardingState.route);
   }
-}
+};
 
 export const onboardingStyles = StyleSheet.create({
   page: {
@@ -50,4 +49,4 @@ export const onboardingStyles = StyleSheet.create({
   },
 });
 
-export default OnboardingStack
+export default OnboardingStack;

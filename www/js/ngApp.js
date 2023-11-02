@@ -31,70 +31,62 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import App from './App';
 import { getTheme } from './appTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { initByUser } from './config/dynamicConfig';
 
-angular.module('emission', ['ionic', 'jm.i18next',
-    'emission.controllers','emission.services', 'emission.plugin.logger',
-    'emission.splash.customURLScheme', 'emission.splash.referral',
+angular
+  .module('emission', [
+    'ionic',
+    'jm.i18next',
+    'emission.controllers',
+    'emission.services',
+    'emission.plugin.logger',
+    'emission.splash.referral',
     'emission.services.email',
-    'emission.main', 'pascalprecht.translate', 'LocalStorageModule'])
+    'emission.main',
+    'pascalprecht.translate',
+    'LocalStorageModule',
+  ])
 
-.run(function($ionicPlatform, $rootScope, $http, Logger,
-    CustomURLScheme, ReferralHandler, localStorageService) {
-  console.log("Starting run");
-  // ensure that plugin events are delivered after the ionicPlatform is ready
-  // https://github.com/katzer/cordova-plugin-local-notifications#launch-details
-  window.skipLocalNotificationReady = true;
-  // alert("Starting run");
-  // BEGIN: Global listeners, no need to wait for the platform
-  // TODO: Although the onLaunch call doesn't need to wait for the platform the
-  // handlers do. Can we rely on the fact that the event is generated from
-  // native code, so will only be launched after the platform is ready?
-  CustomURLScheme.onLaunch(function(event, url, urlComponents){
-    console.log("GOT URL:"+url);
-    // alert("GOT URL:"+url);
+  .run(function ($ionicPlatform, $rootScope, $http, Logger, localStorageService) {
+    console.log('Starting run');
+    // ensure that plugin events are delivered after the ionicPlatform is ready
+    // https://github.com/katzer/cordova-plugin-local-notifications#launch-details
+    window.skipLocalNotificationReady = true;
+    // alert("Starting run");
+    $ionicPlatform.ready(function () {
+      // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+      // for form inputs)
+      Logger.log('ionicPlatform is ready');
 
-    if (urlComponents.route == 'join') {
-      ReferralHandler.setupGroupReferral(urlComponents);
-    } else if (urlComponents.route == 'login_token') {
-      initByUser(urlComponents);
-    }
-  });
-  // END: Global listeners
-  $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
-    Logger.log("ionicPlatform is ready");
+      if (window.StatusBar) {
+        // org.apache.cordova.statusbar required
+        StatusBar.styleDefault();
+      }
+      cordova.plugin.http.setDataSerializer('json');
+      // backwards compat hack to be consistent with
+      // https://github.com/e-mission/e-mission-data-collection/commit/92f41145e58c49e3145a9222a78d1ccacd16d2a7#diff-962320754eba07107ecd413954411f725c98fd31cddbb5defd4a542d1607e5a3R160
+      // remove during migration to react native
+      localStorageService.remove('OP_GEOFENCE_CFG');
+      cordova.plugins.BEMUserCache.removeLocalStorage('OP_GEOFENCE_CFG');
 
-    if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      StatusBar.styleDefault();
-    }
-    cordova.plugin.http.setDataSerializer('json');
-    // backwards compat hack to be consistent with
-    // https://github.com/e-mission/e-mission-data-collection/commit/92f41145e58c49e3145a9222a78d1ccacd16d2a7#diff-962320754eba07107ecd413954411f725c98fd31cddbb5defd4a542d1607e5a3R160
-    // remove during migration to react native
-    localStorageService.remove("OP_GEOFENCE_CFG");
-    cordova.plugins.BEMUserCache.removeLocalStorage("OP_GEOFENCE_CFG");
+      const rootEl = document.getElementById('appRoot');
+      const reactRoot = createRoot(rootEl);
 
-    const rootEl = document.getElementById('appRoot');
-    const reactRoot = createRoot(rootEl);
+      const theme = getTheme();
 
-    const theme = getTheme();
-
-    reactRoot.render(
-      <PaperProvider theme={theme}>
-        <style type="text/css">{`
+      reactRoot.render(
+        <PaperProvider theme={theme}>
+          <style type="text/css">
+            {`
         @font-face {
           font-family: 'MaterialCommunityIcons';
           src: url(${require('react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf')}) format('truetype');
         }`}
-        </style>
-        <SafeAreaView style={{flex: 1}}>
-          <App />
-        </SafeAreaView>
-      </PaperProvider>
-    );
+          </style>
+          <SafeAreaView style={{ flex: 1 }}>
+            <App />
+          </SafeAreaView>
+        </PaperProvider>,
+      );
+    });
+    console.log('Ending run');
   });
-  console.log("Ending run");
-});
