@@ -6,6 +6,10 @@ import { displayError, logDebug } from '../plugin/logger';
 import { readIntroDone } from '../onboarding/onboardingHelper';
 import { subscribe, EVENT_NAMES } from '../customEventHandler';
 
+/**
+ * @function Gathers information about the user's device and stores it
+ * @returns promise to updateUser in comm settings with device info
+ */
 const storeDeviceSettings = function () {
   var lang = i18next.resolvedLanguage;
   var manufacturer = window['device'].manufacturer;
@@ -54,6 +58,10 @@ const onIntroEvent = function (event, data) {
   storeDeviceSettings();
 }
 
+/**
+ * @function initializes store device: subscribes to events
+ * stores settings if already consented
+ */
 export const initStoreDeviceSettings = function () {
   readConsentState()
     .then(isConsented)
