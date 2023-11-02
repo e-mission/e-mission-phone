@@ -12,6 +12,7 @@ import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './control/AppStatusModal';
 import usePermissionStatus from './usePermissionStatus';
 import { initPushNotify } from './splash/pushNotifySettings';
+import { initStoreDeviceSettings } from './splash/storeDeviceSettings';
 
 const defaultRoutes = (t) => [
   { key: 'label', title: t('diary.label-tab'), focusedIcon: 'check-bold', unfocusedIcon: 'check-outline' },
@@ -52,6 +53,7 @@ const App = () => {
       refreshOnboardingState();
     });
     initPushNotify();
+    initStoreDeviceSettings();
   }, [appConfig]);
 
   const appContextValue = {

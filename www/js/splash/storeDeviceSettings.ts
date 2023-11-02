@@ -54,7 +54,7 @@ const onIntroEvent = function (event, data) {
   storeDeviceSettings();
 }
 
-const initStoreDeviceSettings = function () {
+export const initStoreDeviceSettings = function () {
   readConsentState()
     .then(isConsented)
     .then(function (consentState) {
