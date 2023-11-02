@@ -63,6 +63,7 @@ export const mockBEMUserCache = () => {
       return new Promise<void>((rs, rj) =>
         setTimeout(() => {
           for (let p in _cache) delete _cache[p];
+          for (let doc in _storage) delete _storage[doc];
           rs();
         }, 100)
       );

@@ -4,7 +4,7 @@ import { isConsented, readConsentState } from "./startprefs";
 import i18next from 'i18next';
 import { displayError, logDebug } from '../plugin/logger';
 import { readIntroDone } from '../onboarding/onboardingHelper';
-import { subscribe, EVENT_NAMES } from '../customEventHandler';
+import { subscribe, EVENT_NAMES, unsubscribe } from '../customEventHandler';
 
 /**
  * @function Gathers information about the user's device and stores it
@@ -40,10 +40,10 @@ const storeDeviceSettings = function () {
   console.log("got consented event " + JSON.stringify(event['name'])
     + " with data " + JSON.stringify(data));
   readIntroDone()
-    .then((isIntroDone) => {
+    .then(async (isIntroDone) => {
       if (isIntroDone) {
         logDebug("intro is done -> reconsent situation, we already have a token -> store device settings");
-        storeDeviceSettings();
+        await storeDeviceSettings();
       }
     });
 }
@@ -53,9 +53,9 @@ const storeDeviceSettings = function () {
  * @param event that called this function
  * @param data from the event
  */
-const onIntroEvent = function (event, data) {
+const onIntroEvent = async function (event, data) {
   logDebug("intro is done -> original consent situation, we should have a token by now -> store device settings");
-  storeDeviceSettings();
+  await storeDeviceSettings();
 }
 
 /**
@@ -65,9 +65,10 @@ const onIntroEvent = function (event, data) {
 export const initStoreDeviceSettings = function () {
   readConsentState()
     .then(isConsented)
-    .then(function (consentState) {
+    .then(async function (consentState) {
+      console.log("found consent", consentState);
       if (consentState == true) {
-        storeDeviceSettings();
+        await storeDeviceSettings();
       } else {
         logDebug("no consent yet, waiting to store device settings in profile");
       }
@@ -75,4 +76,9 @@ export const initStoreDeviceSettings = function () {
       subscribe(EVENT_NAMES.INTRO_DONE_EVENT, (event) => onIntroEvent(event, event.detail));
     });
   logDebug("storedevicesettings startup done");
+}
+
+export const teardownDeviceSettings = function() {
+  unsubscribe(EVENT_NAMES.CONSENTED_EVENT, (event) => onConsentEvent(event, event.detail));
+  unsubscribe(EVENT_NAMES.INTRO_DONE_EVENT, (event) => onIntroEvent(event, event.detail));
 }
