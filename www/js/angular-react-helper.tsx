@@ -15,11 +15,11 @@ export function getAngularService(name: string) {
     throw new Error(`Couldn't find "${name}" angular service`);
   }
 
-  return (service as any); // casting to 'any' because not all Angular services are typed
+  return service as any; // casting to 'any' because not all Angular services are typed
 }
 
 export function createScopeWithVars(vars) {
-  const scope = getAngularService("$rootScope").$new();
+  const scope = getAngularService('$rootScope').$new();
   Object.assign(scope, vars);
   return scope;
 }
