@@ -131,8 +131,8 @@ const scheduleNotifs = (scheme, notifTimes) => {
     isScheduling = true;
     const localeCode = i18next.resolvedLanguage;
     const nots = notifTimes.map((n) => {
-      const nDate = n.toDate();
-      const seconds = nDate.getTime() / 1000;
+      const nDate = n.toISO();
+      const seconds = nDate.ts / 1000;
       return {
         id: seconds,
         title: scheme.title[localeCode],
