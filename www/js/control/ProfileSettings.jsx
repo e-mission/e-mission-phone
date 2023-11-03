@@ -33,7 +33,12 @@ import { storageClear } from '../plugin/storage';
 import { getAppVersion } from '../plugin/clientStats';
 import { getConsentDocument } from '../splash/startprefs';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
-import { updateScheduledNotifs, getScheduledNotifs, getReminderPrefs, setReminderPrefs } from "../splash/notifScheduler";
+import {
+  updateScheduledNotifs,
+  getScheduledNotifs,
+  getReminderPrefs,
+  setReminderPrefs,
+} from '../splash/notifScheduler';
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -142,12 +147,13 @@ const ProfileSettings = () => {
     }
 
     // Update the scheduled notifs
-    updateScheduledNotifs(tempUiConfig.reminderSchemes).then(() => {
-      logDebug("updated scheduled notifs");
-    })
-    .catch((err) => {
-      displayErrorMsg("Error while updating scheduled notifs", err);
-    });
+    updateScheduledNotifs(tempUiConfig.reminderSchemes)
+      .then(() => {
+        logDebug('updated scheduled notifs');
+      })
+      .catch((err) => {
+        displayErrorMsg('Error while updating scheduled notifs', err);
+      });
 
     // setTemplateText(tempUiConfig.intro.translated_text);
     // console.log("translated text is??", templateText);
