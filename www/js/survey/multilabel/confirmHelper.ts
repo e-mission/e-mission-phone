@@ -1,9 +1,9 @@
 // may refactor this into a React hook once it's no longer used by any Angular screens
 
-import { getAngularService } from "../../angular-react-helper";
-import { fetchUrlCached } from "../../services/commHelper";
-import i18next from "i18next";
-import { logDebug } from "../../plugin/logger";
+import { getAngularService } from '../../angular-react-helper';
+import { fetchUrlCached } from '../../services/commHelper';
+import i18next from 'i18next';
+import { logDebug } from '../../plugin/logger';
 
 type InputDetails<T extends string> = {
   [k in T]?: {

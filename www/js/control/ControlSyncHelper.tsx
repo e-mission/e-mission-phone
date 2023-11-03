@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, View } from 'react-native';
 import { Dialog, Button, Switch, Text, useTheme } from 'react-native-paper';
-import { useTranslation } from "react-i18next";
-import { settingStyles } from "./ProfileSettings";
-import { getAngularService } from "../angular-react-helper";
-import ActionMenu from "../components/ActionMenu";
-import SettingRow from "./SettingRow";
-import AlertBar from "./AlertBar";
-import moment from "moment";
-import { addStatEvent, statKeys } from "../plugin/clientStats";
-import { updateUser } from "../services/commHelper";
+import { useTranslation } from 'react-i18next';
+import { settingStyles } from './ProfileSettings';
+import { getAngularService } from '../angular-react-helper';
+import ActionMenu from '../components/ActionMenu';
+import SettingRow from './SettingRow';
+import AlertBar from './AlertBar';
+import moment from 'moment';
+import { addStatEvent, statKeys } from '../plugin/clientStats';
+import { updateUser } from '../services/commHelper';
 
 /*
  * BEGIN: Simple read/write wrappers

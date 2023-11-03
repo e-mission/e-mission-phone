@@ -87,4 +87,4 @@ angular
       );
       console.log('SplashCtrl invoke finished');
     },
-  )
+  );

@@ -3,30 +3,39 @@
 import angular from 'angular';
 import { getRawEntries } from './services/commHelper';
 
-angular.module('emission.services', ['emission.plugin.logger'])
+angular
+  .module('emission.services', ['emission.plugin.logger'])
 
-.service('ReferHelper', function($http) {
-
-    this.habiticaRegister = function(groupid, successCallback, errorCallback) {
-        window.cordova.plugins.BEMServerComm.getUserPersonalData("/join.group/"+groupid, successCallback, errorCallback);
+  .service('ReferHelper', function ($http) {
+    this.habiticaRegister = function (groupid, successCallback, errorCallback) {
+      window.cordova.plugins.BEMServerComm.getUserPersonalData(
+        '/join.group/' + groupid,
+        successCallback,
+        errorCallback,
+      );
     };
-    this.joinGroup = function(groupid, userid) {
+    this.joinGroup = function (groupid, userid) {
+      // TODO:
+      return new Promise(function (resolve, reject) {
+        window.cordova.plugins.BEMServerComm.postUserPersonalData(
+          '/join.group/' + groupid,
+          'inviter',
+          userid,
+          resolve,
+          reject,
+        );
+      });
 
-    // TODO:
-    return new Promise(function(resolve, reject) {
-        window.cordova.plugins.BEMServerComm.postUserPersonalData("/join.group/"+groupid, "inviter", userid, resolve, reject);
-      })
-
-    //function firstUpperCase(string) {
-    //  return string[0].toUpperCase() + string.slice(1);
-    //}*/
-    }
-})
-.service('UnifiedDataLoader', function($window, Logger) {
-    var combineWithDedup = function(list1, list2) {
+      //function firstUpperCase(string) {
+      //  return string[0].toUpperCase() + string.slice(1);
+      //}*/
+    };
+  })
+  .service('UnifiedDataLoader', function ($window, Logger) {
+    var combineWithDedup = function (list1, list2) {
       var combinedList = list1.concat(list2);
-      return combinedList.filter(function(value, i, array) {
-        var firstIndexOfValue = array.findIndex(function(element, index, array) {
+      return combinedList.filter(function (value, i, array) {
+        var firstIndexOfValue = array.findIndex(function (element, index, array) {
           return element.metadata.write_ts == value.metadata.write_ts;
         });
         return firstIndexOfValue == i;
@@ -34,79 +43,96 @@ angular.module('emission.services', ['emission.plugin.logger'])
     };
 
     // TODO: generalize to iterable of promises
-    var combinedPromise = function(localPromise, remotePromise, combiner) {
-        return new Promise(function(resolve, reject) {
-          var localResult = [];
-          var localError = null;
+    var combinedPromise = function (localPromise, remotePromise, combiner) {
+      return new Promise(function (resolve, reject) {
+        var localResult = [];
+        var localError = null;
 
-          var remoteResult = [];
-          var remoteError = null;
+        var remoteResult = [];
+        var remoteError = null;
 
-          var localPromiseDone = false;
-          var remotePromiseDone = false;
+        var localPromiseDone = false;
+        var remotePromiseDone = false;
 
-          var checkAndResolve = function() {
-            if (localPromiseDone && remotePromiseDone) {
-              // time to return from this promise
-              if (localError && remoteError) {
-                reject([localError, remoteError]);
-              } else {
-                Logger.log("About to dedup localResult = "+localResult.length
-                    +"remoteResult = "+remoteResult.length);
-                var dedupedList = combiner(localResult, remoteResult);
-                Logger.log("Deduped list = "+dedupedList.length);
-                resolve(dedupedList);
-              }
+        var checkAndResolve = function () {
+          if (localPromiseDone && remotePromiseDone) {
+            // time to return from this promise
+            if (localError && remoteError) {
+              reject([localError, remoteError]);
+            } else {
+              Logger.log(
+                'About to dedup localResult = ' +
+                  localResult.length +
+                  'remoteResult = ' +
+                  remoteResult.length,
+              );
+              var dedupedList = combiner(localResult, remoteResult);
+              Logger.log('Deduped list = ' + dedupedList.length);
+              resolve(dedupedList);
             }
-          };
+          }
+        };
 
-          localPromise.then(function(currentLocalResult) {
-            localResult = currentLocalResult;
-            localPromiseDone = true;
-          }, function(error) {
-            localResult = [];
-            localError = error;
-            localPromiseDone = true;
-          }).then(checkAndResolve);
+        localPromise
+          .then(
+            function (currentLocalResult) {
+              localResult = currentLocalResult;
+              localPromiseDone = true;
+            },
+            function (error) {
+              localResult = [];
+              localError = error;
+              localPromiseDone = true;
+            },
+          )
+          .then(checkAndResolve);
 
-          remotePromise.then(function(currentRemoteResult) {
-            remoteResult = currentRemoteResult;
-            remotePromiseDone = true;
-          }, function(error) {
-            remoteResult = [];
-            remoteError = error;
-            remotePromiseDone = true;
-          }).then(checkAndResolve);
-        })
-    }
+        remotePromise
+          .then(
+            function (currentRemoteResult) {
+              remoteResult = currentRemoteResult;
+              remotePromiseDone = true;
+            },
+            function (error) {
+              remoteResult = [];
+              remoteError = error;
+              remotePromiseDone = true;
+            },
+          )
+          .then(checkAndResolve);
+      });
+    };
 
     // TODO: Generalize this to work for both sensor data and messages
     // Do we even need to separate the two kinds of data?
     // Alternatively, we can maintain another mapping between key -> type
     // Probably in www/json...
-    this.getUnifiedSensorDataForInterval = function(key, tq) {
-        var localPromise = $window.cordova.plugins.BEMUserCache.getSensorDataForInterval(key, tq, true);
-        var remotePromise = getRawEntries([key], tq.startTs, tq.endTs)
-          .then(function(serverResponse) {
-            return serverResponse.phone_data;
-          });
-        return combinedPromise(localPromise, remotePromise, combineWithDedup);
+    this.getUnifiedSensorDataForInterval = function (key, tq) {
+      var localPromise = $window.cordova.plugins.BEMUserCache.getSensorDataForInterval(
+        key,
+        tq,
+        true,
+      );
+      var remotePromise = getRawEntries([key], tq.startTs, tq.endTs).then(
+        function (serverResponse) {
+          return serverResponse.phone_data;
+        },
+      );
+      return combinedPromise(localPromise, remotePromise, combineWithDedup);
     };
 
-    this.getUnifiedMessagesForInterval = function(key, tq, withMetadata) {
+    this.getUnifiedMessagesForInterval = function (key, tq, withMetadata) {
       var localPromise = $window.cordova.plugins.BEMUserCache.getMessagesForInterval(key, tq, true);
-      var remotePromise = getRawEntries([key], tq.startTs, tq.endTs)
-          .then(function(serverResponse) {
-            return serverResponse.phone_data;
-          });
+      var remotePromise = getRawEntries([key], tq.startTs, tq.endTs).then(
+        function (serverResponse) {
+          return serverResponse.phone_data;
+        },
+      );
       return combinedPromise(localPromise, remotePromise, combineWithDedup);
-    }
-})
-.service('ControlHelper', function($window,
-                                   $ionicPopup,
-                                   Logger) {
-
-    this.writeFile = function(fileEntry, resultList) {
+    };
+  })
+  .service('ControlHelper', function ($window, $ionicPopup, Logger) {
+    this.writeFile = function (fileEntry, resultList) {
       // Create a FileWriter object for our FileEntry (log.txt).
     };
 
@@ -224,5 +250,4 @@ angular.module('emission.services', ['emission.plugin.logger'])
     this.getSettings = function () {
       return window.cordova.plugins.BEMConnectionSettings.getSettings();
     };
-
-});
+  });

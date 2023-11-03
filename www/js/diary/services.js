@@ -4,7 +4,7 @@ import angular from 'angular';
 import { SurveyOptions } from '../survey/survey';
 import { getConfig } from '../config/dynamicConfig';
 import { getRawEntries } from '../services/commHelper';
-import { getUnifiedDataForInterval } from '../services/unifiedDataLoader'
+import { getUnifiedDataForInterval } from '../services/unifiedDataLoader';
 
 angular
   .module('emission.main.diary.services', ['emission.plugin.logger', 'emission.services'])

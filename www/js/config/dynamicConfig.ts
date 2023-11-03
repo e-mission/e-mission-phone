@@ -1,8 +1,7 @@
-import i18next from "i18next";
-import { displayError, logDebug, logWarn } from "../plugin/logger";
-import { getAngularService } from "../angular-react-helper";
-import { fetchUrlCached } from "../services/commHelper";
-import { storageClear, storageGet, storageSet } from "../plugin/storage";
+import i18next from 'i18next';
+import { displayError, logDebug, logWarn } from '../plugin/logger';
+import { fetchUrlCached } from '../services/commHelper';
+import { storageClear, storageGet, storageSet } from '../plugin/storage';
 
 export const CONFIG_PHONE_UI = 'config/app_ui_config';
 export const CONFIG_PHONE_UI_KVSTORE = 'CONFIG_PHONE_UI';
