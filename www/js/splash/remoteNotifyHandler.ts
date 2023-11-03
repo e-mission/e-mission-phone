@@ -15,7 +15,6 @@
  */
 'use strict';
 
-import angular from 'angular';
 import { EVENT_NAMES, subscribe } from '../customEventHandler';
 import { addStatEvent, statKeys } from '../plugin/clientStats';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
@@ -42,17 +41,13 @@ const onCloudNotifEvent = (event) => {
   });
   logDebug('data = ' + JSON.stringify(data));
   if (
-    angular.isDefined(data.additionalData) &&
-    angular.isDefined(data.additionalData.payload) &&
-    angular.isDefined(data.additionalData.payload.alert_type)
+    data.additionalData &&
+    data.additionalData.payload &&
+    data.additionalData.payload.alert_type
   ) {
     if (data.additionalData.payload.alert_type == 'website') {
       var webpage_spec = data.additionalData.payload.spec;
-      if (
-        angular.isDefined(webpage_spec) &&
-        angular.isDefined(webpage_spec.url) &&
-        webpage_spec.url.startsWith('https://')
-      ) {
+      if (webpage_spec && webpage_spec.url && webpage_spec.url.startsWith('https://')) {
         launchWebpage(webpage_spec.url);
       } else {
         displayErrorMsg(
@@ -63,11 +58,7 @@ const onCloudNotifEvent = (event) => {
     }
     if (data.additionalData.payload.alert_type == 'popup') {
       var popup_spec = data.additionalData.payload.spec;
-      if (
-        angular.isDefined(popup_spec) &&
-        angular.isDefined(popup_spec.title) &&
-        angular.isDefined(popup_spec.text)
-      ) {
+      if (popup_spec && popup_spec.title && popup_spec.text) {
         launchPopup(popup_spec.title, popup_spec.text);
       } else {
         displayErrorMsg(JSON.stringify(popup_spec), 'popup was not specified correctly. spec is ');

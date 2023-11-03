@@ -13,7 +13,6 @@
  * notification handling gets more complex, we should consider decoupling it as well.
  */
 
-import angular from 'angular';
 import { updateUser } from '../commHelper';
 import { logDebug, displayError } from '../plugin/logger';
 import { publish, subscribe, EVENT_NAMES } from '../customEventHandler';
@@ -43,14 +42,11 @@ const startupInit = function () {
   push.on('notification', function (data) {
     if (window['cordova'].platformId == 'ios') {
       // Parse the iOS values that are returned as strings
-      if (angular.isDefined(data) && angular.isDefined(data.additionalData)) {
-        if (angular.isDefined(data.additionalData.payload)) {
+      if (data && data.additionalData) {
+        if (data.additionalData.payload) {
           data.additionalData.payload = JSON.parse(data.additionalData.payload);
         }
-        if (
-          angular.isDefined(data.additionalData.data) &&
-          typeof data.additionalData.data == 'string'
-        ) {
+        if (data.additionalData.data && typeof data.additionalData.data == 'string') {
           data.additionalData.data = JSON.parse(data.additionalData.data);
         } else {
           console.log('additionalData is already an object, no need to parse it');
