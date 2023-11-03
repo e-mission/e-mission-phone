@@ -17,6 +17,7 @@ import AppStatusModal from './control/AppStatusModal';
 import usePermissionStatus from './usePermissionStatus';
 import { initPushNotify } from './splash/pushNotifySettings';
 import { initStoreDeviceSettings } from './splash/storeDeviceSettings';
+import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
 
 const defaultRoutes = (t) => [
   {
@@ -74,6 +75,7 @@ const App = () => {
     });
     initPushNotify();
     initStoreDeviceSettings();
+    initRemoteNotifyHandler();
   }, [appConfig]);
 
   const appContextValue = {

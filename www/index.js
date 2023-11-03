@@ -6,7 +6,6 @@ import 'leaflet/dist/leaflet.css';
 import './js/ngApp.js';
 import './js/splash/referral.js';
 import './js/splash/localnotify.js';
-import './js/splash/remotenotify.js';
 import './js/splash/notifScheduler.js';
 import './js/controllers.js';
 import './js/services.js';
