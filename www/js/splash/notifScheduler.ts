@@ -1,6 +1,5 @@
 import angular from 'angular';
 import React, { useEffect, useState } from 'react';
-import { getConfig } from '../config/dynamicConfig';
 import useAppConfig from '../useAppConfig';
 import { addStatReading, statKeys } from '../plugin/clientStats';
 import { getUser, updateUser } from '../commHelper';
@@ -79,7 +78,7 @@ function debugGetScheduled(prefix) {
 }
 
 //new method to fetch notifications
-const getScheduledNotifs = function () {
+export const getScheduledNotifs = function () {
   return new Promise((resolve, reject) => {
     /* if the notifications are still in active scheduling it causes problems
         anywhere from 0-n of the scheduled notifs are displayed 
@@ -161,10 +160,9 @@ const scheduleNotifs = (scheme, notifTimes) => {
 };
 
 // determines when notifications are needed, and schedules them if not already scheduled
-const update = async (reminderSchemes) => {
-  const { reminder_assignment, reminder_join_date, reminder_time_of_day } = await getReminderPrefs(
-    reminderSchemes,
-  );
+export const updateScheduledNotifs = async (reminderSchemes): Promise<any> => {
+  const { reminder_assignment, reminder_join_date, reminder_time_of_day } =
+    await getReminderPrefs(reminderSchemes);
   var scheme = {};
   try {
     scheme = reminderSchemes[reminder_assignment];
@@ -228,7 +226,7 @@ const initReminderPrefs = (reminderSchemes) => {
 //     reminder_time_of_day: string;
 // }
 
-const getReminderPrefs = async (reminderSchemes): Promise<any> => {
+export const getReminderPrefs = async (reminderSchemes): Promise<any> => {
   const user = (await getUser()) as any;
   if (user?.reminder_assignment && user?.reminder_join_date && user?.reminder_time_of_day) {
     console.log('User already has reminder prefs, returning them', user);
@@ -241,11 +239,11 @@ const getReminderPrefs = async (reminderSchemes): Promise<any> => {
   await setReminderPrefs(initPrefs, reminderSchemes);
   return { ...user, ...initPrefs }; // user profile + the new prefs
 };
-const setReminderPrefs = async (newPrefs, reminderSchemes) => {
+export const setReminderPrefs = async (newPrefs, reminderSchemes) => {
   await updateUser(newPrefs);
   const updatePromise = new Promise<void>((resolve, reject) => {
     //enforcing update before moving on
-    update(reminderSchemes).then(() => {
+    updateScheduledNotifs(reminderSchemes).then(() => {
       resolve();
     });
   });
@@ -262,25 +260,3 @@ const setReminderPrefs = async (newPrefs, reminderSchemes) => {
   });
   return updatePromise;
 };
-
-export function useSchedulerHelper() {
-  const appConfig = useAppConfig();
-  const [reminderSchemes, setReminderSchemes] = useState();
-
-  useEffect(() => {
-    if (!appConfig) {
-      logDebug('No reminder schemes found in config, not scheduling notifications');
-      return;
-    }
-    setReminderSchemes(appConfig.reminderSchemes);
-  }, [appConfig]);
-
-  //setUpActions();
-  update(reminderSchemes);
-
-  return {
-    setReminderPrefs: (newPrefs) => setReminderPrefs(newPrefs, reminderSchemes),
-    getReminderPrefs: () => getReminderPrefs(reminderSchemes),
-    getScheduledNotifs: () => getScheduledNotifs(),
-  };
-}
