@@ -12,6 +12,7 @@ import {
 } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 import { EVENT_NAMES, publish } from '../js/customEventHandler';
+import { markIntroDone } from '../js/onboarding/onboardingHelper';
 
 mockBEMUserCache();
 mockDevice();
@@ -59,6 +60,13 @@ it('stores device settings when intialized after consent', async () => {
   });
 });
 
+it('does not stores device settings when intialized before consent', async () => {
+  initStoreDeviceSettings();
+  await new Promise((r) => setTimeout(r, 500));
+  let user = await getUser();
+  expect(user).toBeUndefined();
+});
+
 it('verifies my subscrition clearing', async () => {
   initStoreDeviceSettings();
   await new Promise((r) => setTimeout(r, 500));
@@ -86,4 +94,27 @@ it('stores device settings after intro done', async () => {
     client_os_version: '14.0.0',
     client_app_version: '1.2.3',
   });
+});
+
+it('stores device settings after consent if intro done', async () => {
+  initStoreDeviceSettings();
+  await new Promise((r) => setTimeout(r, 500)); //time to check consent and subscribe
+  markIntroDone();
+  await new Promise((r) => setTimeout(r, 500));
+  publish(EVENT_NAMES.CONSENTED_EVENT, 'test data');
+  await new Promise((r) => setTimeout(r, 500)); //time to carry out event handling
+  let user = await getUser();
+  expect(user).toMatchObject({
+    client_os_version: '14.0.0',
+    client_app_version: '1.2.3',
+  });
+});
+
+it('does not store device settings after consent if intro not done', async () => {
+  initStoreDeviceSettings();
+  await new Promise((r) => setTimeout(r, 500)); //time to check consent and subscribe
+  publish(EVENT_NAMES.CONSENTED_EVENT, 'test data');
+  await new Promise((r) => setTimeout(r, 500)); //time to carry out event handling
+  let user = await getUser();
+  expect(user).toBeUndefined();
 });
