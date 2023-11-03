@@ -3,12 +3,10 @@
 import angular from 'angular';
 import { getRawEntries } from './commHelper';
 
-angular.module('emission.services', ['emission.plugin.logger'])
-.service('ControlHelper', function($window,
-                                   $ionicPopup,
-                                   Logger) {
-
-    this.writeFile = function(fileEntry, resultList) {
+angular
+  .module('emission.services', ['emission.plugin.logger'])
+  .service('ControlHelper', function ($window, $ionicPopup, Logger) {
+    this.writeFile = function (fileEntry, resultList) {
       // Create a FileWriter object for our FileEntry (log.txt).
     };
 
@@ -126,5 +124,4 @@ angular.module('emission.services', ['emission.plugin.logger'])
     this.getSettings = function () {
       return window.cordova.plugins.BEMConnectionSettings.getSettings();
     };
-
-});
+  });

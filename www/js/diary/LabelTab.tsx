@@ -241,11 +241,7 @@ const LabelTab = () => {
         [...timelineMap?.values()]
           .reverse()
           .find((trip) => trip.origin_key.includes('confirmed_trip'));
-      readUnprocessedPromise = readUnprocessedTrips(
-        pipelineRange.end_ts,
-        nowTs,
-        lastProcessedTrip,
-      );
+      readUnprocessedPromise = readUnprocessedTrips(pipelineRange.end_ts, nowTs, lastProcessedTrip);
       readUnprocessedPromise = readUnprocessedTrips(pipelineRange.end_ts, nowTs, lastProcessedTrip);
     } else {
       readUnprocessedPromise = Promise.resolve([]);
@@ -262,8 +258,7 @@ const LabelTab = () => {
 
   const timelineMapRef = useRef(timelineMap);
   async function repopulateTimelineEntry(oid: string) {
-    if (!timelineMap.has(oid))
-      return console.error(`Item with oid: ${oid} not found in timeline`);
+    if (!timelineMap.has(oid)) return console.error(`Item with oid: ${oid} not found in timeline`);
     const [newLabels, newNotes] = await getLocalUnprocessedInputs(
       pipelineRange,
       labelPopulateFactory,
