@@ -32,7 +32,8 @@ import { shareQR } from '../components/QrCode';
 import { storageClear } from '../plugin/storage';
 import { getAppVersion } from '../plugin/clientStats';
 import { getConsentDocument } from '../splash/startprefs';
-import { logDebug } from '../plugin/logger';
+import { displayErrorMsg, logDebug } from '../plugin/logger';
+import { updateScheduledNotifs, getScheduledNotifs, getReminderPrefs, setReminderPrefs } from "../splash/notifScheduler";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -45,7 +46,6 @@ const ProfileSettings = () => {
   //angular services needed
   const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
   const EmailHelper = getAngularService('EmailHelper');
-  const NotificationScheduler = getAngularService('NotificationScheduler');
   const ControlHelper = getAngularService('ControlHelper');
 
   //functions that come directly from an Angular service
@@ -141,6 +141,14 @@ const ProfileSettings = () => {
       tempUiConfig.opcode.autogen = tempUiConfig?.intro.program_or_study == 'study';
     }
 
+    // Update the scheduled notifs
+    updateScheduledNotifs(tempUiConfig.reminderSchemes).then(() => {
+      logDebug("updated scheduled notifs");
+    })
+    .catch((err) => {
+      displayErrorMsg("Error while updating scheduled notifs", err);
+    });
+
     // setTemplateText(tempUiConfig.intro.translated_text);
     // console.log("translated text is??", templateText);
     setUiConfig(tempUiConfig);
@@ -187,13 +195,13 @@ const ProfileSettings = () => {
     const newNotificationSettings = {};
 
     if (uiConfig?.reminderSchemes) {
-      const prefs = await NotificationScheduler.getReminderPrefs();
+      const prefs = await getReminderPrefs();
       const m = moment(prefs.reminder_time_of_day, 'HH:mm');
       newNotificationSettings.prefReminderTimeVal = m.toDate();
       const n = moment(newNotificationSettings.prefReminderTimeVal);
       newNotificationSettings.prefReminderTime = n.format('LT');
       newNotificationSettings.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
-      newNotificationSettings.scheduledNotifs = await NotificationScheduler.getScheduledNotifs();
+      newNotificationSettings.scheduledNotifs = await getScheduledNotifs();
       updatePrefReminderTime(false);
     }
 
@@ -264,7 +272,7 @@ const ProfileSettings = () => {
     if (storeNewVal) {
       const m = moment(newTime);
       // store in HH:mm
-      NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }).then(
+      setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }, uiConfig.reminderSchemes).then(
         () => {
           refreshNotificationSettings();
         },

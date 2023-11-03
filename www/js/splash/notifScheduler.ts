@@ -9,7 +9,6 @@ import { DateTime } from 'luxon';
 import i18next from 'i18next';
 
 let scheduledPromise = new Promise<void>((rs) => rs());
-let scheduledNotifs = [];
 let isScheduling = false;
 
 // like python range()
@@ -63,6 +62,7 @@ function debugGetScheduled(prefix) {
     if (!notifs?.length) return logDebug(`${prefix}, there are no scheduled notifications`);
     const time = DateTime.fromMillis(notifs?.[0].trigger.at).toFormat('HH:mm');
     //was in plugin, changed to scheduler
+    let scheduledNotifs = [];
     scheduledNotifs = notifs.map((n) => {
       const time = DateTime.fromMillis(n.trigger.at).toFormat('t');
       const date = DateTime.fromMillis(n.trigger.at).toFormat('DDD');
