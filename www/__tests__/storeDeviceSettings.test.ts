@@ -3,6 +3,7 @@ import { storageClear } from '../js/plugin/storage';
 import { getUser } from '../js/commHelper';
 import { initStoreDeviceSettings, teardownDeviceSettings } from '../js/splash/storeDeviceSettings';
 import {
+  mockBEMDataCollection,
   mockBEMServerCom,
   mockBEMUserCache,
   mockCordova,
@@ -10,7 +11,7 @@ import {
   mockGetAppVersion,
 } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
-import { EVENT_NAMES, publish, unsubscribe } from '../js/customEventHandler';
+import { EVENT_NAMES, publish } from '../js/customEventHandler';
 
 mockBEMUserCache();
 mockDevice();
@@ -18,6 +19,7 @@ mockCordova();
 mockLogger();
 mockGetAppVersion();
 mockBEMServerCom();
+mockBEMDataCollection();
 
 global.fetch = (url: string) =>
   new Promise((rs, rj) => {
@@ -37,15 +39,16 @@ global.fetch = (url: string) =>
     );
   }) as any;
 
-afterEach(async () => {
-  await storageClear({ local: true, native: true });
+beforeEach(async () => {
   teardownDeviceSettings();
+  await storageClear({ local: true, native: true });
+  let user = await getUser();
+  expect(user).toBeUndefined();
 });
 
 it('stores device settings when intialized after consent', async () => {
-  await storageClear({ local: true, native: true });
   await readConsentState();
-  await markConsented();
+  let marked = await markConsented();
   await new Promise((r) => setTimeout(r, 500));
   initStoreDeviceSettings();
   await new Promise((r) => setTimeout(r, 500));
@@ -54,6 +57,15 @@ it('stores device settings when intialized after consent', async () => {
     client_os_version: '14.0.0',
     client_app_version: '1.2.3',
   });
+});
+
+it('verifies my subscrition clearing', async () => {
+  initStoreDeviceSettings();
+  await new Promise((r) => setTimeout(r, 500));
+  teardownDeviceSettings();
+  publish(EVENT_NAMES.INTRO_DONE_EVENT, 'test data');
+  let user = await getUser();
+  expect(user).toBeUndefined();
 });
 
 it('does not store if not subscribed', async () => {

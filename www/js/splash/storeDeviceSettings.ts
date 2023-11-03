@@ -37,11 +37,13 @@ const storeDeviceSettings = function () {
 /**
  * @function stores device settings on reconsent
  * @param event that called this function
- * @param data data from the conesnt event
  */
-const onConsentEvent = function (event, data) {
+const onConsentEvent = (event) => {
   console.log(
-    'got consented event ' + JSON.stringify(event['name']) + ' with data ' + JSON.stringify(data),
+    'got consented event ' +
+      JSON.stringify(event['name']) +
+      ' with data ' +
+      JSON.stringify(event.detail),
   );
   readIntroDone().then(async (isIntroDone) => {
     if (isIntroDone) {
@@ -56,9 +58,8 @@ const onConsentEvent = function (event, data) {
 /**
  * @function stores device settings after intro received
  * @param event that called this function
- * @param data from the event
  */
-const onIntroEvent = async function (event, data) {
+const onIntroEvent = async (event) => {
   logDebug(
     'intro is done -> original consent situation, we should have a token by now -> store device settings',
   );
@@ -79,13 +80,13 @@ export const initStoreDeviceSettings = function () {
       } else {
         logDebug('no consent yet, waiting to store device settings in profile');
       }
-      subscribe(EVENT_NAMES.CONSENTED_EVENT, (event) => onConsentEvent(event, event.detail));
-      subscribe(EVENT_NAMES.INTRO_DONE_EVENT, (event) => onIntroEvent(event, event.detail));
+      subscribe(EVENT_NAMES.CONSENTED_EVENT, onConsentEvent);
+      subscribe(EVENT_NAMES.INTRO_DONE_EVENT, onIntroEvent);
     });
   logDebug('storedevicesettings startup done');
 };
 
 export const teardownDeviceSettings = function () {
-  unsubscribe(EVENT_NAMES.CONSENTED_EVENT, (event) => onConsentEvent(event, event.detail));
-  unsubscribe(EVENT_NAMES.INTRO_DONE_EVENT, (event) => onIntroEvent(event, event.detail));
+  unsubscribe(EVENT_NAMES.CONSENTED_EVENT, onConsentEvent);
+  unsubscribe(EVENT_NAMES.INTRO_DONE_EVENT, onIntroEvent);
 };
