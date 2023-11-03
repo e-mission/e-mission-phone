@@ -130,9 +130,7 @@ const scheduleNotifs = (scheme, notifTimes) => {
   return new Promise<void>((rs) => {
     isScheduling = true;
     const localeCode = i18next.resolvedLanguage;
-    console.error('notifTimes: ', notifTimes, ' - type: ', typeof notifTimes);
     const nots = notifTimes.map((n) => {
-      console.error('n: ', n, ' - type: ', typeof n);
       const nDate = n.toDate();
       const seconds = nDate.getTime() / 1000;
       return {
