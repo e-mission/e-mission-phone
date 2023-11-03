@@ -1,6 +1,3 @@
-//naming of this module can be confusing "remotenotifyhandler" for rewritten file
-//https://github.com/e-mission/e-mission-phone/pull/1072#discussion_r1375360832
-
 /*
  * This module deals with handling specific push messages that open web pages
  * or popups. It does not interface with the push plugin directly. Instead, it
@@ -13,8 +10,6 @@
  * it only supports redirection to a specific app page. If the local
  * notification handling gets more complex, we should consider decoupling it as well.
  */
-'use strict';
-
 import { EVENT_NAMES, subscribe } from '../customEventHandler';
 import { addStatEvent, statKeys } from '../plugin/clientStats';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
@@ -22,18 +17,35 @@ import { displayErrorMsg, logDebug } from '../plugin/logger';
 const options = 'location=yes,clearcache=no,toolbar=yes,hideurlbar=yes';
 
 /*
-     TODO: Potentially unify with the survey URL loading
-     */
+TODO: Potentially unify with the survey URL loading
+*/
+/**
+ * @function launches a webpage
+ * @param url to open in the browser
+ */
 const launchWebpage = function (url) {
   // THIS LINE FOR inAppBrowser
   let iab = window['cordova'].InAppBrowser.open(url, '_blank', options);
 };
 
+/*
+TODO: replace popup with something with better UI
+*/
+
+/**
+ * @function launches popup
+ * @param title string text for popup title
+ * @param text string text for popup bode
+ */
 const launchPopup = function (title, text) {
   // THIS LINE FOR inAppBrowser
   displayErrorMsg(text, title);
 };
 
+/**
+ * @callback for cloud notification event
+ * @param event that triggered this call
+ */
 const onCloudNotifEvent = (event) => {
   const data = event.detail;
   addStatEvent(statKeys.NOTIFICATION_OPEN).then(() => {
@@ -67,6 +79,10 @@ const onCloudNotifEvent = (event) => {
   }
 };
 
+/**
+ * @function initializes the remote notification handling
+ * subscribes to cloud notification event
+ */
 export const initRemoteNotifyHandler = function () {
   subscribe(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, onCloudNotifEvent);
 };
