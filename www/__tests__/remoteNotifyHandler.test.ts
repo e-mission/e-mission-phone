@@ -1,14 +1,28 @@
 import { EVENT_NAMES, publish } from '../js/customEventHandler';
 import { initRemoteNotifyHandler } from '../js/splash/remoteNotifyHandler';
-import { mockBEMUserCache, mockDevice, mockGetAppVersion } from '../__mocks__/cordovaMocks';
-import { mockLogger } from '../__mocks__/globalMocks';
+import {
+  clearURL,
+  getURL,
+  mockBEMUserCache,
+  mockDevice,
+  mockGetAppVersion,
+  mockInAppBrowser,
+} from '../__mocks__/cordovaMocks';
+import { clearAlerts, getAlerts, mockAlert, mockLogger } from '../__mocks__/globalMocks';
 
 mockLogger();
 mockDevice();
 mockBEMUserCache();
 mockGetAppVersion();
+mockInAppBrowser();
+mockAlert();
 
 const db = window['cordova']?.plugins?.BEMUserCache;
+
+beforeEach(() => {
+  clearURL();
+  clearAlerts();
+});
 
 it('does not adds a statEvent if not subscribed', async () => {
   publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, 'test data');
@@ -31,3 +45,32 @@ it('adds a statEvent if subscribed', async () => {
   });
 });
 
+it('handles the url if subscribed', () => {
+  initRemoteNotifyHandler();
+  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {
+    additionalData: {
+      payload: { alert_type: 'website', spec: { url: 'https://this_is_a_test.com' } },
+    },
+  });
+  expect(getURL()).toBe('https://this_is_a_test.com');
+});
+
+it('handles the popup if subscribed', () => {
+  initRemoteNotifyHandler();
+  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {
+    additionalData: {
+      payload: {
+        alert_type: 'popup',
+        spec: { title: 'Hello', text: 'World' },
+      },
+    },
+  });
+  expect(getAlerts()).toEqual(expect.arrayContaining(['━━━━\nHello\n━━━━\nWorld']));
+});
+
+it('does nothing if subscribed and no data', () => {
+  initRemoteNotifyHandler();
+  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {});
+  expect(getURL()).toEqual('');
+  expect(getAlerts()).toEqual([]);
+});

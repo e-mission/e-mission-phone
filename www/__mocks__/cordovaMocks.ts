@@ -167,3 +167,22 @@ export const mockBEMServerCom = () => {
   };
   window['cordova'].plugins.BEMServerComm = mockBEMServerCom;
 };
+
+let _url_stash = '';
+
+export const mockInAppBrowser = () => {
+  const mockInAppBrowser = {
+    open: (url: string, mode: string, options: {}) => {
+      _url_stash = url;
+    },
+  };
+  window['cordova'].InAppBrowser = mockInAppBrowser;
+};
+
+export const getURL = () => {
+  return _url_stash;
+};
+
+export const clearURL = () => {
+  _url_stash = '';
+};
