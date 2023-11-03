@@ -69,6 +69,9 @@ export async function getLabelOptions(appConfigParam?) {
   return labelOptions;
 }
 
+export const labelOptionByValue = (value: string, labelType: string): LabelOption | undefined =>
+  labelOptions[labelType]?.find((o) => o.value == value) || getFakeEntry(value);
+
 export const baseLabelInputDetails = {
   MODE: {
     name: 'MODE',
@@ -144,13 +147,16 @@ export const labelKeyToReadable = (otherValue: string) => {
 export const readableLabelToKey = (otherText: string) =>
   otherText.trim().replace(/ /g, '_').toLowerCase();
 
-export const getFakeEntry = (otherValue) => ({
-  text: labelKeyToReadable(otherValue),
-  value: otherValue,
-});
+export const getFakeEntry = (otherValue): Partial<LabelOption> => {
+  if (!otherValue) return undefined;
+  return {
+    text: labelKeyToReadable(otherValue),
+    value: otherValue,
+  };
+};
 
 export const labelKeyToRichMode = (labelKey: string) =>
-  labelOptions?.MODE?.find((m) => m.value == labelKey)?.text || labelKeyToReadable(labelKey);
+  labelOptionByValue(labelKey, 'MODE')?.text || labelKeyToReadable(labelKey);
 
 /* manual/mode_confirm becomes mode_confirm */
 export const inputType2retKey = (inputType) => getLabelInputDetails()[inputType].key.split('/')[1];
@@ -160,9 +166,10 @@ export function verifiabilityForTrip(trip, userInputForTrip) {
   let someInferred = false;
   const inputsForTrip = Object.keys(labelInputDetailsForTrip(userInputForTrip));
   for (const inputType of inputsForTrip) {
+    const finalInference = inferFinalLabels(trip, userInputForTrip)[inputType];
     const confirmed = userInputForTrip[inputType];
-    const inferred = inferFinalLabels(trip, userInputForTrip)[inputType] && !confirmed;
-    if (inferred) someInferred = true;
+    const inferred = finalInference && Object.values(finalInference).some((o) => o);
+    if (inferred && !confirmed) someInferred = true;
     if (!confirmed) allConfirmed = false;
   }
   return someInferred ? 'can-verify' : allConfirmed ? 'already-verified' : 'cannot-verify';
@@ -187,13 +194,10 @@ export function inferFinalLabels(trip, userInputForTrip) {
     }
   }
 
-  const finalInference = {};
+  const finalInference: { [k in MultilabelKey]?: LabelOption } = {};
 
-  // Red labels if we have no possibilities left
+  // Return early with (empty obj) if there are no possibilities left
   if (labelsList.length == 0) {
-    for (const inputType of getLabelInputs()) {
-      finalInference[inputType] = undefined;
-    }
     return finalInference;
   } else {
     // Normalize probabilities to previous level of certainty
@@ -220,9 +224,9 @@ export function inferFinalLabels(trip, userInputForTrip) {
       // Fails safe if confidence_threshold doesn't exist
       if (max.p <= trip.confidence_threshold) max.labelValue = undefined;
 
-      finalInference[inputType] = labelOptions[inputType].find(
-        (opt) => opt.value == max.labelValue,
-      );
+      if (max.labelValue) {
+        finalInference[inputType] = labelOptionByValue(max.labelValue, inputType);
+      }
     }
     return finalInference;
   }

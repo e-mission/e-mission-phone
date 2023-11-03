@@ -6,11 +6,8 @@ import {
   LabelOption,
   MultilabelKey,
   getLabelInputDetails,
-  getLabelInputs,
-  getLabelOptions,
   inputType2retKey,
-  labelKeyToRichMode,
-  labelOptions,
+  labelOptionByValue,
 } from './multilabel/confirmHelper';
 import { TimelineLabelMap, TimelineNotesMap } from '../diary/LabelTabContext';
 
@@ -307,14 +304,10 @@ export function mapInputsToTimelineEntries(
           unprocessedLabels[label],
         );
         if (userInputForTrip) {
-          labelsForTrip[label] = labelOptions[label].find(
-            (opt: LabelOption) => opt.value == userInputForTrip.data.label,
-          );
+          labelsForTrip[label] = labelOptionByValue(userInputForTrip.data.label, label);
         } else {
           const processedLabelValue = tlEntry.user_input?.[inputType2retKey(label)];
-          labelsForTrip[label] = labelOptions[label].find(
-            (opt: LabelOption) => opt.value == processedLabelValue,
-          );
+          labelsForTrip[label] = labelOptionByValue(processedLabelValue, label);
         }
       });
       if (Object.keys(labelsForTrip).length) {
