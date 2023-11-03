@@ -31,8 +31,3 @@ export const getOnList = function () {
 export const getCalled = function () {
   return called;
 };
-
-export const fakeEvent = function (eventName: string) {
-  //fake the event by executing whatever we have stored for it
-  onList[eventName]();
-};
