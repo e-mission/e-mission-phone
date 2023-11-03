@@ -2,16 +2,32 @@
   In the default configuration, these are the "Mode" and "Purpose" buttons.
   Next to the buttons is a small checkmark icon, which marks inferrel labels as confirmed */
 
-import React, { useContext, useEffect, useState, useMemo } from "react";
-import { getAngularService } from "../../angular-react-helper";
-import { View, Modal, ScrollView, Pressable, useWindowDimensions } from "react-native";
-import { IconButton, Text, Dialog, useTheme, RadioButton, Button, TextInput } from "react-native-paper";
-import DiaryButton from "../../components/DiaryButton";
-import { useTranslation } from "react-i18next";
-import LabelTabContext from "../../diary/LabelTabContext";
-import { displayErrorMsg, logDebug } from "../../plugin/logger";
-import { getLabelInputDetails, getLabelInputs, inferFinalLabels, labelInputDetailsForTrip, labelKeyToRichMode, readableLabelToKey, verifiabilityForTrip } from "./confirmHelper";
-import useAppConfig from "../../useAppConfig";
+import React, { useContext, useEffect, useState, useMemo } from 'react';
+import { getAngularService } from '../../angular-react-helper';
+import { View, Modal, ScrollView, Pressable, useWindowDimensions } from 'react-native';
+import {
+  IconButton,
+  Text,
+  Dialog,
+  useTheme,
+  RadioButton,
+  Button,
+  TextInput,
+} from 'react-native-paper';
+import DiaryButton from '../../components/DiaryButton';
+import { useTranslation } from 'react-i18next';
+import LabelTabContext from '../../diary/LabelTabContext';
+import { displayErrorMsg, logDebug } from '../../plugin/logger';
+import {
+  getLabelInputDetails,
+  getLabelInputs,
+  inferFinalLabels,
+  labelInputDetailsForTrip,
+  labelKeyToRichMode,
+  readableLabelToKey,
+  verifiabilityForTrip,
+} from './confirmHelper';
+import useAppConfig from '../../useAppConfig';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
@@ -78,40 +94,52 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   }
 
   const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap[trip._id.$oid], appConfig);
-  return (<>
-    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-      <View style={{flex: 1, flexDirection: buttonsInline ? 'row' : 'column', columnGap: 8}}>
-        {Object.keys(tripInputDetails).map((key, i) => {
-          const input = tripInputDetails[key];
-          const inputIsConfirmed = timelineLabelMap[trip._id.$oid]?.[input.name];
-          const inputIsInferred = inferFinalLabels(trip, timelineLabelMap[trip._id.$oid])[input.name];
-          let fillColor, textColor, borderColor;
-          if (inputIsConfirmed) {
-            fillColor = colors.primary;
-          } else if (inputIsInferred) {
-            fillColor = colors.secondaryContainer;
-            borderColor = colors.secondary;
-            textColor = colors.onSecondaryContainer;
-          }
-          const btnText = inputIsConfirmed?.text || inputIsInferred?.text || input.choosetext;
+  return (
+    <>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flex: 1, flexDirection: buttonsInline ? 'row' : 'column', columnGap: 8 }}>
+          {Object.keys(tripInputDetails).map((key, i) => {
+            const input = tripInputDetails[key];
+            const inputIsConfirmed = timelineLabelMap[trip._id.$oid]?.[input.name];
+            const inputIsInferred = inferFinalLabels(trip, timelineLabelMap[trip._id.$oid])[
+              input.name
+            ];
+            let fillColor, textColor, borderColor;
+            if (inputIsConfirmed) {
+              fillColor = colors.primary;
+            } else if (inputIsInferred) {
+              fillColor = colors.secondaryContainer;
+              borderColor = colors.secondary;
+              textColor = colors.onSecondaryContainer;
+            }
+            const btnText = inputIsConfirmed?.text || inputIsInferred?.text || input.choosetext;
 
-          return (
-            <View key={i} style={{flex: 1}}>
-              <Text>{t(input.labeltext)}</Text>
-              <DiaryButton fillColor={fillColor} borderColor={borderColor}
-                textColor={textColor} onPress={(e) => setModalVisibleFor(input.name)}>
-                { t(btnText) }
-              </DiaryButton>
-            </View>
-          )
-        })}
-      </View>
-      {verifiabilityForTrip(trip, timelineLabelMap[trip._id.$oid]) == 'can-verify' && (
-        <View style={{marginTop: 16}}>
-          <IconButton icon='check-bold' mode='outlined' size={18} onPress={verifyTrip}
-                      containerColor={colors.secondaryContainer}
-                      style={{width: 24, height: 24, margin: 3, borderColor: colors.secondary}} />
+            return (
+              <View key={i} style={{ flex: 1 }}>
+                <Text>{t(input.labeltext)}</Text>
+                <DiaryButton
+                  fillColor={fillColor}
+                  borderColor={borderColor}
+                  textColor={textColor}
+                  onPress={(e) => setModalVisibleFor(input.name)}>
+                  {t(btnText)}
+                </DiaryButton>
+              </View>
+            );
+          })}
         </View>
+        {verifiabilityForTrip(trip, timelineLabelMap[trip._id.$oid]) == 'can-verify' && (
+          <View style={{ marginTop: 16 }}>
+            <IconButton
+              icon="check-bold"
+              mode="outlined"
+              size={18}
+              onPress={verifyTrip}
+              containerColor={colors.secondaryContainer}
+              style={{ width: 24, height: 24, margin: 3, borderColor: colors.secondary }}
+            />
+          </View>
+        )}
         {trip.verifiability === 'can-verify' && (
           <View style={{ marginTop: 16 }}>
             <IconButton

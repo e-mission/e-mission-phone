@@ -7,22 +7,22 @@
 import React, { useContext } from 'react';
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
 import { Text, IconButton } from 'react-native-paper';
-import LeafletView from "../../components/LeafletView";
-import { useTranslation } from "react-i18next";
-import MultilabelButtonGroup from "../../survey/multilabel/MultiLabelButtonGroup";
-import UserInputButton from "../../survey/enketo/UserInputButton";
-import useAppConfig from "../../useAppConfig";
-import AddNoteButton from "../../survey/enketo/AddNoteButton";
-import AddedNotesList from "../../survey/enketo/AddedNotesList";
-import { getTheme } from "../../appTheme";
-import { DiaryCard, cardStyles } from "./DiaryCard";
-import { useNavigation } from "@react-navigation/native";
-import { useAddressNames } from "../addressNamesHelper";
+import LeafletView from '../../components/LeafletView';
+import { useTranslation } from 'react-i18next';
+import MultilabelButtonGroup from '../../survey/multilabel/MultiLabelButtonGroup';
+import UserInputButton from '../../survey/enketo/UserInputButton';
+import useAppConfig from '../../useAppConfig';
+import AddNoteButton from '../../survey/enketo/AddNoteButton';
+import AddedNotesList from '../../survey/enketo/AddedNotesList';
+import { getTheme } from '../../appTheme';
+import { DiaryCard, cardStyles } from './DiaryCard';
+import { useNavigation } from '@react-navigation/native';
+import { useAddressNames } from '../addressNamesHelper';
 import LabelTabContext from '../LabelTabContext';
-import useDerivedProperties from "../useDerivedProperties";
-import StartEndLocations from "../components/StartEndLocations";
-import ModesIndicator from "./ModesIndicator";
-import { useGeojsonForTrip } from "../timelineHelper";
+import useDerivedProperties from '../useDerivedProperties';
+import StartEndLocations from '../components/StartEndLocations';
+import ModesIndicator from './ModesIndicator';
+import { useGeojsonForTrip } from '../timelineHelper';
 
 type Props = { trip: { [key: string]: any } };
 const TripCard = ({ trip }: Props) => {
@@ -41,7 +41,11 @@ const TripCard = ({ trip }: Props) => {
   let [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
   const navigation = useNavigation<any>();
   const { labelOptions, timelineLabelMap, timelineNotesMap } = useContext(LabelTabContext);
-  const tripGeojson = useGeojsonForTrip(trip, labelOptions, timelineLabelMap[trip._id.$oid]?.MODE?.value);
+  const tripGeojson = useGeojsonForTrip(
+    trip,
+    labelOptions,
+    timelineLabelMap[trip._id.$oid]?.MODE?.value,
+  );
 
   const isDraft = trip.key.includes('UNPROCESSED');
   const flavoredTheme = getTheme(isDraft ? 'draft' : undefined);
@@ -98,7 +102,8 @@ const TripCard = ({ trip }: Props) => {
               displayEndName={tripEndDisplayName}
             />
           </View>
-          <View style={[cardStyles.panelSection, {marginBottom: 0}]}>{/* mode and purpose buttons / survey button */}
+          <View style={[cardStyles.panelSection, { marginBottom: 0 }]}>
+            {/* mode and purpose buttons / survey button */}
             {appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL' && (
               <MultilabelButtonGroup trip={trip} />
             )}
@@ -128,7 +133,7 @@ const TripCard = ({ trip }: Props) => {
           )}
         </View>
       </View>
-      {timelineNotesMap[trip._id.$oid]?.length &&
+      {timelineNotesMap[trip._id.$oid]?.length && (
         <View style={cardStyles.cardFooter}>
           <AddedNotesList timelineEntry={trip} additionEntries={timelineNotesMap[trip._id.$oid]} />
         </View>

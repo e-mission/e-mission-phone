@@ -2,26 +2,33 @@
     listed sections of the trip, and a graph of speed during the trip.
   Navigated to from the main LabelListScreen by clicking a trip card. */
 
-import React, { useContext, useState } from "react";
-import { View, Modal, ScrollView, useWindowDimensions } from "react-native";
-import { PaperProvider, Appbar, SegmentedButtons, Button, Surface, Text, useTheme } from "react-native-paper";
+import React, { useContext, useState } from 'react';
+import { View, Modal, ScrollView, useWindowDimensions } from 'react-native';
+import {
+  PaperProvider,
+  Appbar,
+  SegmentedButtons,
+  Button,
+  Surface,
+  Text,
+  useTheme,
+} from 'react-native-paper';
 import LabelTabContext from '../LabelTabContext';
-import LeafletView from "../../components/LeafletView";
-import { useTranslation } from "react-i18next";
-import MultilabelButtonGroup from "../../survey/multilabel/MultiLabelButtonGroup";
-import UserInputButton from "../../survey/enketo/UserInputButton";
-import { useAddressNames } from "../addressNamesHelper";
-import { SafeAreaView } from "react-native-safe-area-context";
-import useDerivedProperties from "../useDerivedProperties";
-import StartEndLocations from "../components/StartEndLocations";
-import { useGeojsonForTrip } from "../timelineHelper";
-import TripSectionsDescriptives from "./TripSectionsDescriptives";
-import OverallTripDescriptives from "./OverallTripDescriptives";
-import ToggleSwitch from "../../components/ToggleSwitch";
-import useAppConfig from "../../useAppConfig";
+import LeafletView from '../../components/LeafletView';
+import { useTranslation } from 'react-i18next';
+import MultilabelButtonGroup from '../../survey/multilabel/MultiLabelButtonGroup';
+import UserInputButton from '../../survey/enketo/UserInputButton';
+import { useAddressNames } from '../addressNamesHelper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import useDerivedProperties from '../useDerivedProperties';
+import StartEndLocations from '../components/StartEndLocations';
+import { useGeojsonForTrip } from '../timelineHelper';
+import TripSectionsDescriptives from './TripSectionsDescriptives';
+import OverallTripDescriptives from './OverallTripDescriptives';
+import ToggleSwitch from '../../components/ToggleSwitch';
+import useAppConfig from '../../useAppConfig';
 
 const LabelScreenDetails = ({ route, navigation }) => {
-
   const { timelineMap, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
@@ -32,9 +39,13 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const { displayDate, displayStartTime, displayEndTime } = useDerivedProperties(trip);
   const [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
 
-  const [ modesShown, setModesShown ] = useState<'labeled'|'detected'>('labeled');
-  const tripGeojson = useGeojsonForTrip(trip, labelOptions, modesShown=='labeled' && timelineLabelMap[trip._id.$oid]?.MODE?.value);
-  const mapOpts = {minZoom: 3, maxZoom: 17};
+  const [modesShown, setModesShown] = useState<'labeled' | 'detected'>('labeled');
+  const tripGeojson = useGeojsonForTrip(
+    trip,
+    labelOptions,
+    modesShown == 'labeled' && timelineLabelMap[trip._id.$oid]?.MODE?.value,
+  );
+  const mapOpts = { minZoom: 3, maxZoom: 17 };
 
   const modal = (
     <Modal visible={true}>
@@ -82,13 +93,24 @@ const LabelScreenDetails = ({ route, navigation }) => {
 
             {/* If trip is labeled, show a toggle to switch between "Labeled Mode" and "Detected Modes"
               otherwise, just show "Detected" */}
-            {timelineLabelMap[trip._id.$oid]?.MODE?.value ?
-              <ToggleSwitch onValueChange={v => setModesShown(v)} value={modesShown} density='medium'
-                buttons={[{label: t('diary.labeled-mode'), value: 'labeled'}, {label: t('diary.detected-modes'), value: 'detected'}]} />
-            :
-              <Button mode='outlined' compact={true} textColor={colors.onBackground}
-                style={{height: 32}} contentStyle={{height:30}}>
-                { t('diary.detected-modes') }
+            {timelineLabelMap[trip._id.$oid]?.MODE?.value ? (
+              <ToggleSwitch
+                onValueChange={(v) => setModesShown(v)}
+                value={modesShown}
+                density="medium"
+                buttons={[
+                  { label: t('diary.labeled-mode'), value: 'labeled' },
+                  { label: t('diary.detected-modes'), value: 'detected' },
+                ]}
+              />
+            ) : (
+              <Button
+                mode="outlined"
+                compact={true}
+                textColor={colors.onBackground}
+                style={{ height: 32 }}
+                contentStyle={{ height: 30 }}>
+                {t('diary.detected-modes')}
               </Button>
             )}
 

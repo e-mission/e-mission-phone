@@ -4,30 +4,35 @@ import angular from 'angular';
 import { getConfig } from '../config/dynamicConfig';
 import { getRawEntries } from '../commHelper';
 
-angular.module('emission.main.diary.services', ['emission.plugin.logger',
-                                                'emission.services'])
-.factory('Timeline', function($http, $ionicLoading, $ionicPlatform, $window,
-    $rootScope, UnifiedDataLoader, Logger, $injector) {
-    var timeline = {};
-    // corresponds to the old $scope.data. Contains all state for the current
-    // day, including the indication of the current day
-    timeline.data = {};
-    timeline.data.unifiedConfirmsResults = null;
-    timeline.UPDATE_DONE = "TIMELINE_UPDATE_DONE";
+angular
+  .module('emission.main.diary.services', ['emission.plugin.logger', 'emission.services'])
+  .factory(
+    'Timeline',
+    function (
+      $http,
+      $ionicLoading,
+      $ionicPlatform,
+      $window,
+      $rootScope,
+      UnifiedDataLoader,
+      Logger,
+      $injector,
+    ) {
+      var timeline = {};
+      // corresponds to the old $scope.data. Contains all state for the current
+      // day, including the indication of the current day
+      timeline.data = {};
+      timeline.data.unifiedConfirmsResults = null;
+      timeline.UPDATE_DONE = 'TIMELINE_UPDATE_DONE';
 
-    // DB entries retrieved from the server have '_id', 'metadata', and 'data' fields.
-    // This function returns a shallow copy of the obj, which flattens the
-    // 'data' field into the top level, while also including '_id' and 'metadata.key'
-    const unpack = (obj) => ({
-      ...obj.data,
-      _id: obj._id,
-      key: obj.metadata.key,
-      origin_key: obj.metadata.origin_key || obj.metadata.key,
-    });
-
-    timeline.readAllCompositeTrips = function(startTs, endTs) {
-      $ionicLoading.show({
-        template: i18next.t('service.reading-server')
+      // DB entries retrieved from the server have '_id', 'metadata', and 'data' fields.
+      // This function returns a shallow copy of the obj, which flattens the
+      // 'data' field into the top level, while also including '_id' and 'metadata.key'
+      const unpack = (obj) => ({
+        ...obj.data,
+        _id: obj._id,
+        key: obj.metadata.key,
+        origin_key: obj.metadata.origin_key || obj.metadata.key,
       });
 
       timeline.readAllCompositeTrips = function (startTs, endTs) {
