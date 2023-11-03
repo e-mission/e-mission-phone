@@ -1,0 +1,11 @@
+name: prettier
+on: 
+  pull_request:
+
+jobs:
+  run-prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npx prettier --check www
+      
