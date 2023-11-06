@@ -120,6 +120,6 @@ export const getUnifiedDataForInterval = function (
   ) {
     return serverResponse.phone_data;
   });
-  var promiseList = [getPromise, remotePromise];
+  const promiseList = [getPromise, remotePromise];
   return combinedPromises(promiseList, combineWithDedup);
 };
