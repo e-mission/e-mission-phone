@@ -10,15 +10,7 @@ angular
   .module('emission.main.diary.services', ['emission.plugin.logger', 'emission.services'])
   .factory(
     'Timeline',
-    function (
-      $http,
-      $ionicLoading,
-      $ionicPlatform,
-      $window,
-      $rootScope,
-      Logger,
-      $injector,
-    ) {
+    function ($http, $ionicLoading, $ionicPlatform, $window, $rootScope, Logger, $injector) {
       var timeline = {};
       // corresponds to the old $scope.data. Contains all state for the current
       // day, including the indication of the current day
