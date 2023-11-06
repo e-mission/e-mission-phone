@@ -160,7 +160,7 @@ const redirectSilentPush = function (event, data) {
  * @function shows debug notifications if simulating user interaction
  * @param message string to display in the degug notif
  */
-var showDebugLocalNotification = function (message) {
+const showDebugLocalNotification = function (message) {
   window['cordova'].plugins.BEMDataCollection.getConfig().then(function (config) {
     if (config.simulate_user_interaction) {
       window['cordova'].plugins.notification.local.schedule({
