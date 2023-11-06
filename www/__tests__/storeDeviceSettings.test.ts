@@ -11,7 +11,7 @@ import {
   mockGetAppVersion,
 } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
-import { EVENT_NAMES, publish } from '../js/customEventHandler';
+import { EVENTS, publish } from '../js/customEventHandler';
 import { markIntroDone } from '../js/onboarding/onboardingHelper';
 
 mockBEMUserCache();
@@ -71,14 +71,14 @@ it('verifies my subscrition clearing', async () => {
   initStoreDeviceSettings();
   await new Promise((r) => setTimeout(r, 500));
   teardownDeviceSettings();
-  publish(EVENT_NAMES.INTRO_DONE_EVENT, 'test data');
+  publish(EVENTS.INTRO_DONE_EVENT, 'test data');
   let user = await getUser();
   expect(user).toBeUndefined();
 });
 
 it('does not store if not subscribed', async () => {
-  publish(EVENT_NAMES.INTRO_DONE_EVENT, 'test data');
-  publish(EVENT_NAMES.CONSENTED_EVENT, 'test data');
+  publish(EVENTS.INTRO_DONE_EVENT, 'test data');
+  publish(EVENTS.CONSENTED_EVENT, 'test data');
   await new Promise((r) => setTimeout(r, 500)); //time to carry out event handling
   let user = await getUser();
   expect(user).toBeUndefined();
@@ -87,7 +87,7 @@ it('does not store if not subscribed', async () => {
 it('stores device settings after intro done', async () => {
   initStoreDeviceSettings();
   await new Promise((r) => setTimeout(r, 500)); //time to check consent and subscribe
-  publish(EVENT_NAMES.INTRO_DONE_EVENT, 'test data');
+  publish(EVENTS.INTRO_DONE_EVENT, 'test data');
   await new Promise((r) => setTimeout(r, 500)); //time to carry out event handling
   let user = await getUser();
   expect(user).toMatchObject({
@@ -101,7 +101,7 @@ it('stores device settings after consent if intro done', async () => {
   await new Promise((r) => setTimeout(r, 500)); //time to check consent and subscribe
   markIntroDone();
   await new Promise((r) => setTimeout(r, 500));
-  publish(EVENT_NAMES.CONSENTED_EVENT, 'test data');
+  publish(EVENTS.CONSENTED_EVENT, 'test data');
   await new Promise((r) => setTimeout(r, 500)); //time to carry out event handling
   let user = await getUser();
   expect(user).toMatchObject({
@@ -113,7 +113,7 @@ it('stores device settings after consent if intro done', async () => {
 it('does not store device settings after consent if intro not done', async () => {
   initStoreDeviceSettings();
   await new Promise((r) => setTimeout(r, 500)); //time to check consent and subscribe
-  publish(EVENT_NAMES.CONSENTED_EVENT, 'test data');
+  publish(EVENTS.CONSENTED_EVENT, 'test data');
   await new Promise((r) => setTimeout(r, 500)); //time to carry out event handling
   let user = await getUser();
   expect(user).toBeUndefined();

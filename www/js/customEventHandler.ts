@@ -16,7 +16,7 @@ import { logDebug } from './plugin/logger';
 /**
  * central source for event names
  */
-export const EVENT_NAMES = {
+export const EVENTS = {
   CLOUD_NOTIFICATION_EVENT: 'cloud:push:notification',
   CONSENTED_EVENT: 'data_collection_consented',
   INTRO_DONE_EVENT: 'intro_done',

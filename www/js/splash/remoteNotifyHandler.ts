@@ -10,7 +10,7 @@
  * it only supports redirection to a specific app page. If the local
  * notification handling gets more complex, we should consider decoupling it as well.
  */
-import { EVENT_NAMES, subscribe } from '../customEventHandler';
+import { EVENTS, subscribe } from '../customEventHandler';
 import { addStatEvent, statKeys } from '../plugin/clientStats';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
 
@@ -84,5 +84,5 @@ const onCloudNotifEvent = (event) => {
  * subscribes to cloud notification event
  */
 export const initRemoteNotifyHandler = function () {
-  subscribe(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, onCloudNotifEvent);
+  subscribe(EVENTS.CLOUD_NOTIFICATION_EVENT, onCloudNotifEvent);
 };

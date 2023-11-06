@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { EVENT_NAMES, publish } from '../js/customEventHandler';
+import { EVENTS, publish } from '../js/customEventHandler';
 import { INTRO_DONE_KEY, readIntroDone } from '../js/onboarding/onboardingHelper';
 import { storageSet } from '../js/plugin/storage';
 import { initPushNotify } from '../js/splash/pushNotifySettings';
@@ -42,7 +42,7 @@ afterEach(() => {
 
 it('intro done does nothing if not registered', () => {
   expect(getOnList()).toStrictEqual({});
-  publish(EVENT_NAMES.INTRO_DONE_EVENT, 'test data');
+  publish(EVENTS.INTRO_DONE_EVENT, 'test data');
   expect(getOnList()).toStrictEqual({});
 });
 
@@ -50,7 +50,7 @@ it('intro done initializes the push notifications', () => {
   expect(getOnList()).toStrictEqual({});
 
   initPushNotify();
-  publish(EVENT_NAMES.INTRO_DONE_EVENT, 'test data');
+  publish(EVENTS.INTRO_DONE_EVENT, 'test data');
   expect(getOnList()).toStrictEqual(
     expect.objectContaining({
       notification: expect.any(Function),
@@ -62,7 +62,7 @@ it('intro done initializes the push notifications', () => {
 
 it('cloud event does nothing if not registered', () => {
   expect(window['cordova'].platformId).toEqual('ios');
-  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {
+  publish(EVENTS.CLOUD_NOTIFICATION_EVENT, {
     additionalData: { 'content-available': 1, payload: { notId: 3 } },
   });
   expect(getCalled()).toBeNull();
@@ -71,8 +71,8 @@ it('cloud event does nothing if not registered', () => {
 it('cloud event handles notification if registered', async () => {
   expect(window['cordova'].platformId).toEqual('ios');
   initPushNotify();
-  publish(EVENT_NAMES.INTRO_DONE_EVENT, 'intro done');
-  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {
+  publish(EVENTS.INTRO_DONE_EVENT, 'intro done');
+  publish(EVENTS.CLOUD_NOTIFICATION_EVENT, {
     additionalData: { 'content-available': 1, payload: { notId: 3 } },
   });
   await new Promise((r) => setTimeout(r, 1000));
@@ -81,7 +81,7 @@ it('cloud event handles notification if registered', async () => {
 
 it('consent event does nothing if not registered', () => {
   expect(getOnList()).toStrictEqual({});
-  publish(EVENT_NAMES.CONSENTED_EVENT, 'test data');
+  publish(EVENTS.CONSENTED_EVENT, 'test data');
   expect(getOnList()).toStrictEqual({});
 });
 
@@ -99,7 +99,7 @@ it('consent event registers if intro done', async () => {
   expect(introDone).toBeTruthy();
 
   //publish consent event and check results
-  publish(EVENT_NAMES.CONSENTED_EVENT, 'test data');
+  publish(EVENTS.CONSENTED_EVENT, 'test data');
   //have to wait a beat since event response is async
   await new Promise((r) => setTimeout(r, 1000));
   expect(getOnList()).toStrictEqual(
@@ -114,6 +114,6 @@ it('consent event registers if intro done', async () => {
 it('consent event does not register if intro not done', () => {
   expect(getOnList()).toStrictEqual({});
   initPushNotify();
-  publish(EVENT_NAMES.CONSENTED_EVENT, 'test data');
+  publish(EVENTS.CONSENTED_EVENT, 'test data');
   expect(getOnList()).toStrictEqual({}); //nothing, intro not done
 });

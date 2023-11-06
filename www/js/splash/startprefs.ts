@@ -1,6 +1,6 @@
 import { storageGet, storageSet } from '../plugin/storage';
 import { logInfo, logDebug, displayErrorMsg } from '../plugin/logger';
-import { EVENT_NAMES, publish } from '../customEventHandler';
+import { EVENTS, publish } from '../customEventHandler';
 
 // data collection consented protocol: string, represents the date on
 // which the consented protocol was approved by the IRB
@@ -35,7 +35,7 @@ export function markConsented() {
       // mark in local variable as well
       _curr_consented = { ..._req_consent };
       // publish event
-      publish(EVENT_NAMES.CONSENTED_EVENT, _req_consent);
+      publish(EVENTS.CONSENTED_EVENT, _req_consent);
     })
     .catch((error) => {
       displayErrorMsg(error, 'Error while while wrting consent to storage');

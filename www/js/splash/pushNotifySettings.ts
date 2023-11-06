@@ -15,7 +15,7 @@
 
 import { updateUser } from '../commHelper';
 import { logDebug, displayError } from '../plugin/logger';
-import { publish, subscribe, EVENT_NAMES } from '../customEventHandler';
+import { publish, subscribe, EVENTS } from '../customEventHandler';
 import { isConsented, readConsentState } from './startprefs';
 import { readIntroDone } from '../onboarding/onboardingHelper';
 
@@ -55,7 +55,7 @@ const startupInit = function () {
         logDebug('No additional data defined, nothing to parse');
       }
     }
-    publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, data);
+    publish(EVENTS.CLOUD_NOTIFICATION_EVENT, data);
   });
 };
 
@@ -233,9 +233,9 @@ export const initPushNotify = function () {
       }
     });
 
-  subscribe(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, (event) => onCloudEvent(event, event.detail));
-  subscribe(EVENT_NAMES.CONSENTED_EVENT, (event) => onConsentEvent(event, event.detail));
-  subscribe(EVENT_NAMES.INTRO_DONE_EVENT, (event) => onIntroEvent(event, event.detail));
+  subscribe(EVENTS.CLOUD_NOTIFICATION_EVENT, (event) => onCloudEvent(event, event.detail));
+  subscribe(EVENTS.CONSENTED_EVENT, (event) => onConsentEvent(event, event.detail));
+  subscribe(EVENTS.INTRO_DONE_EVENT, (event) => onIntroEvent(event, event.detail));
 
   logDebug('pushnotify startup done');
 };

@@ -3,7 +3,7 @@ import { isConsented, readConsentState } from './startprefs';
 import i18next from 'i18next';
 import { displayError, logDebug } from '../plugin/logger';
 import { readIntroDone } from '../onboarding/onboardingHelper';
-import { subscribe, EVENT_NAMES, unsubscribe } from '../customEventHandler';
+import { subscribe, EVENTS, unsubscribe } from '../customEventHandler';
 
 /**
  * @function Gathers information about the user's device and stores it
@@ -80,13 +80,13 @@ export const initStoreDeviceSettings = function () {
       } else {
         logDebug('no consent yet, waiting to store device settings in profile');
       }
-      subscribe(EVENT_NAMES.CONSENTED_EVENT, onConsentEvent);
-      subscribe(EVENT_NAMES.INTRO_DONE_EVENT, onIntroEvent);
+      subscribe(EVENTS.CONSENTED_EVENT, onConsentEvent);
+      subscribe(EVENTS.INTRO_DONE_EVENT, onIntroEvent);
     });
   logDebug('storedevicesettings startup done');
 };
 
 export const teardownDeviceSettings = function () {
-  unsubscribe(EVENT_NAMES.CONSENTED_EVENT, onConsentEvent);
-  unsubscribe(EVENT_NAMES.INTRO_DONE_EVENT, onIntroEvent);
+  unsubscribe(EVENTS.CONSENTED_EVENT, onConsentEvent);
+  unsubscribe(EVENTS.INTRO_DONE_EVENT, onIntroEvent);
 };

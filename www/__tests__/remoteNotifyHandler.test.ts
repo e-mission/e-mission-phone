@@ -1,4 +1,4 @@
-import { EVENT_NAMES, publish } from '../js/customEventHandler';
+import { EVENTS, publish } from '../js/customEventHandler';
 import { initRemoteNotifyHandler } from '../js/splash/remoteNotifyHandler';
 import {
   clearURL,
@@ -25,7 +25,7 @@ beforeEach(() => {
 });
 
 it('does not adds a statEvent if not subscribed', async () => {
-  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, 'test data');
+  publish(EVENTS.CLOUD_NOTIFICATION_EVENT, 'test data');
   const storedMessages = await db.getAllMessages('stats/client_nav_event', false);
   expect(storedMessages).toEqual([]);
 });
@@ -33,7 +33,7 @@ it('does not adds a statEvent if not subscribed', async () => {
 it('adds a statEvent if subscribed', async () => {
   initRemoteNotifyHandler();
   await new Promise((r) => setTimeout(r, 500)); //wait for subscription
-  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, 'test data');
+  publish(EVENTS.CLOUD_NOTIFICATION_EVENT, 'test data');
   await new Promise((r) => setTimeout(r, 500)); //wait for event handling
   const storedMessages = await db.getAllMessages('stats/client_nav_event', false);
   expect(storedMessages).toContainEqual({
@@ -47,7 +47,7 @@ it('adds a statEvent if subscribed', async () => {
 
 it('handles the url if subscribed', () => {
   initRemoteNotifyHandler();
-  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {
+  publish(EVENTS.CLOUD_NOTIFICATION_EVENT, {
     additionalData: {
       payload: { alert_type: 'website', spec: { url: 'https://this_is_a_test.com' } },
     },
@@ -57,7 +57,7 @@ it('handles the url if subscribed', () => {
 
 it('handles the popup if subscribed', () => {
   initRemoteNotifyHandler();
-  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {
+  publish(EVENTS.CLOUD_NOTIFICATION_EVENT, {
     additionalData: {
       payload: {
         alert_type: 'popup',
@@ -70,7 +70,7 @@ it('handles the popup if subscribed', () => {
 
 it('does nothing if subscribed and no data', () => {
   initRemoteNotifyHandler();
-  publish(EVENT_NAMES.CLOUD_NOTIFICATION_EVENT, {});
+  publish(EVENTS.CLOUD_NOTIFICATION_EVENT, {});
   expect(getURL()).toEqual('');
   expect(getAlerts()).toEqual([]);
 });
