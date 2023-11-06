@@ -7,12 +7,15 @@ import { ServerResponse, ServerData } from '../types/serverData';
 import L from 'leaflet';
 import i18next from 'i18next';
 import { DateTime } from 'luxon';
+import { CompositeTrip } from '../types/diaryTypes';
+import { LabelOptions } from '../types/labelTypes';
 
 const cachedGeojsons = new Map();
+
 /**
  * @description Gets a formatted GeoJSON object for a trip, including the start and end places and the trajectory.
  */
-export function useGeojsonForTrip(trip, labelOptions, labeledMode?) {
+export function useGeojsonForTrip(trip: CompositeTrip, labelOptions: LabelOptions, labeledMode?) {
   if (!trip) return;
   const gjKey = `trip-${trip._id.$oid}-${labeledMode || 'detected'}`;
   if (cachedGeojsons.has(gjKey)) {
@@ -230,14 +233,9 @@ const unpackServerData = (obj: ServerData<any>) => ({
 });
 
 export const readAllCompositeTrips = function (startTs: number, endTs: number) {
-  const $ionicLoading = getAngularService('$ionicLoading');
-  $ionicLoading.show({
-    template: i18next.t('service.reading-server'),
-  });
   const readPromises = [getRawEntries(['analysis/composite_trip'], startTs, endTs, 'data.end_ts')];
   return Promise.all(readPromises)
     .then(([ctList]: [ServerResponse<any>]) => {
-      $ionicLoading.hide();
       return ctList.phone_data.map((ct) => {
         const unpackedCt = unpackServerData(ct);
         return {
@@ -251,7 +249,6 @@ export const readAllCompositeTrips = function (startTs: number, endTs: number) {
     })
     .catch((err) => {
       displayError(err, 'while reading confirmed trips');
-      $ionicLoading.hide();
       return [];
     });
 };
@@ -271,14 +268,7 @@ const dateTime2localdate = function (currtime: DateTime, tz: string) {
     second: currtime.get('second'),
   };
 };
-/* locationPoints are of form:
- * ServerData<Point>
- * Point = {
- *   currentState: string,
- *   transition: string,
- *   ts: number, // 1698433683.712
- * }
- */
+
 const points2TripProps = function (locationPoints) {
   const startPoint = locationPoints[0];
   const endPoint = locationPoints[locationPoints.length - 1];
@@ -520,11 +510,6 @@ const linkTrips = function (trip1, trip2) {
 };
 
 export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip) {
-  const $ionicLoading = getAngularService('$ionicLoading');
-  $ionicLoading.show({
-    template: i18next.t('service.reading-unprocessed-data'),
-  });
-
   var tq = { key: 'write_ts', startTs, endTs };
   logDebug(
     'about to query for unprocessed trips from ' +
@@ -538,14 +523,13 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
   ) {
     if (transitionList.length == 0) {
       logDebug('No unprocessed trips. yay!');
-      $ionicLoading.hide();
       return [];
     } else {
       logDebug(`Found ${transitionList.length} transitions. yay!`);
       const tripsList = transitions2Trips(transitionList);
       logDebug(`Mapped into ${tripsList.length} trips. yay!`);
       tripsList.forEach(function (trip) {
-        console.log(JSON.stringify(trip));
+        logDebug(JSON.stringify(trip));
       });
       var tripFillPromises = tripsList.map(transitionTrip2TripObj);
       return Promise.all(tripFillPromises).then(function (raw_trip_gj_list) {
@@ -577,7 +561,6 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
           logDebug('linking unprocessed and processed trip chains');
           linkTrips(lastProcessedTrip, trip_gj_list[0]);
         }
-        $ionicLoading.hide();
         logDebug(`Returning final list of size ${trip_gj_list.length}`);
         return trip_gj_list;
       });
