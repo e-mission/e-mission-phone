@@ -28,20 +28,6 @@ const launchWebpage = function (url) {
   let iab = window['cordova'].InAppBrowser.open(url, '_blank', options);
 };
 
-/*
-TODO: replace popup with something with better UI
-*/
-
-/**
- * @function launches popup
- * @param title string text for popup title
- * @param text string text for popup bode
- */
-const launchPopup = function (title, text) {
-  // THIS LINE FOR inAppBrowser
-  displayErrorMsg(text, title);
-};
-
 /**
  * @callback for cloud notification event
  * @param event that triggered this call
@@ -71,7 +57,8 @@ const onCloudNotifEvent = (event) => {
     if (data.additionalData.payload.alert_type == 'popup') {
       var popup_spec = data.additionalData.payload.spec;
       if (popup_spec && popup_spec.title && popup_spec.text) {
-        launchPopup(popup_spec.title, popup_spec.text);
+        /* TODO: replace popup with something with better UI */
+        window.alert(popup_spec.title + popup_spec.text);
       } else {
         displayErrorMsg(JSON.stringify(popup_spec), 'popup was not specified correctly. spec is ');
       }
