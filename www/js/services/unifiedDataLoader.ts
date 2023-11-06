@@ -1,16 +1,13 @@
-import { logDebug } from '../plugin/logger';
 import { getRawEntries } from './commHelper';
 import { ServerResponse, ServerData, TimeQuery } from '../types/serverData';
 
 /**
- * combineWithDedup is a helper function for combinedPromises
- * @param list1 values evaluated from a BEMUserCache promise
- * @param list2 same as list1
- * @returns a dedup array generated from the input lists
+ * removeDup is a helper function for combinedPromises
+ * @param list An array of values from a BEMUserCache promise
+ * @returns an array with duplicate values removed
  */
-export const combineWithDedup = function (list1: Array<ServerData<any>>, list2: Array<any>) {
-  const combinedList = list1.concat(list2);
-  return combinedList.filter(function (value, i, array) {
+export const removeDup = function (list: Array<ServerData<any>>) {
+  return list.filter(function (value, i, array) {
     const firstIndexOfValue = array.findIndex(function (element) {
       return element.metadata.write_ts == value.metadata.write_ts;
     });
@@ -18,86 +15,32 @@ export const combineWithDedup = function (list1: Array<ServerData<any>>, list2: 
   });
 };
 
-/**
- * combinedPromises is a recursive function that joins multiple promises
- * @param promiseList 1 or more promises
- * @param combiner a function that takes two arrays and joins them
- * @returns A promise which evaluates to a combined list of values or errors
- */
 export const combinedPromises = function (
   promiseList: Array<Promise<any>>,
-  combiner: (list1: Array<any>, list2: Array<any>) => Array<any>,
+  filter: (list: Array<any>) => Array<any>,
 ) {
   if (promiseList.length === 0) {
     throw new RangeError('combinedPromises needs input array.length >= 1');
   }
   return new Promise(function (resolve, reject) {
-    var firstResult = [];
-    var firstError = null;
-
-    var nextResult = [];
-    var nextError = null;
-
-    var firstPromiseDone = false;
-    var nextPromiseDone = false;
-
-    const checkAndResolve = function () {
-      if (firstPromiseDone && nextPromiseDone) {
-        if (firstError && nextError) {
-          reject([firstError].concat(nextError));
-        } else {
-          logDebug(
-            `About to dedup firstResult = ${firstResult.length}` +
-              ` nextResult = ${nextResult.length}`,
-          );
-          const dedupedList = combiner(firstResult, nextResult);
-          logDebug(`Deduped list = ${dedupedList.length}`);
-          resolve(dedupedList);
-        }
-      }
-    };
-
-    if (promiseList.length === 1) {
-      return promiseList[0].then(
-        function (result: Array<any>) {
-          resolve(result);
-        },
-        function (err) {
-          reject([err]);
-        },
-      );
-    }
-
-    const firstPromise = promiseList[0];
-    const nextPromise = combinedPromises(promiseList.slice(1), combiner);
-
-    firstPromise
-      .then(
-        function (currentFirstResult: Array<any>) {
-          firstResult = currentFirstResult;
-          firstPromiseDone = true;
-        },
-        function (error) {
-          firstResult = [];
-          firstError = error;
-          firstPromiseDone = true;
-        },
-      )
-      .then(checkAndResolve);
-
-    nextPromise
-      .then(
-        function (currentNextResult: Array<any>) {
-          nextResult = currentNextResult;
-          nextPromiseDone = true;
-        },
-        function (error) {
-          nextResult = [];
-          nextError = error;
-          nextPromiseDone = true;
-        },
-      )
-      .then(checkAndResolve);
+    Promise.allSettled(promiseList).then(
+      (results) => {
+        var allRej = true;
+        var values = [];
+        var rejections = [];
+        results.forEach((item) => {
+          if (item.status === 'fulfilled') {
+            if (allRej) allRej = false;
+            if (item.value.length != 0) values.push(item.value);
+          } else rejections.push(item.reason);
+        });
+        if (allRej) reject(rejections);
+        else resolve(filter(values.flat(1)));
+      },
+      (err) => {
+        reject(err);
+      },
+    );
   });
 };
 
@@ -121,5 +64,5 @@ export const getUnifiedDataForInterval = function (
     return serverResponse.phone_data;
   });
   const promiseList = [getPromise, remotePromise];
-  return combinedPromises(promiseList, combineWithDedup);
+  return combinedPromises(promiseList, removeDup);
 };
