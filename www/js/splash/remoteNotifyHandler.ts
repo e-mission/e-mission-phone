@@ -58,7 +58,7 @@ const onCloudNotifEvent = (event) => {
       var popup_spec = data.additionalData.payload.spec;
       if (popup_spec && popup_spec.title && popup_spec.text) {
         /* TODO: replace popup with something with better UI */
-        window.alert(popup_spec.title + popup_spec.text);
+        window.alert(popup_spec.title + ' ' + popup_spec.text);
       } else {
         displayErrorMsg(JSON.stringify(popup_spec), 'popup was not specified correctly. spec is ');
       }

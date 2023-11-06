@@ -65,7 +65,7 @@ it('handles the popup if subscribed', () => {
       },
     },
   });
-  expect(getAlerts()).toEqual(expect.arrayContaining(['━━━━\nHello\n━━━━\nWorld']));
+  expect(getAlerts()).toEqual(expect.arrayContaining(['Hello World']));
 });
 
 it('does nothing if subscribed and no data', () => {
