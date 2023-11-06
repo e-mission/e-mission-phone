@@ -90,7 +90,6 @@ const registerPromise = function () {
 const registerPush = function () {
   registerPromise()
     .then(function (t) {
-      // alert("Token = "+JSON.stringify(t));
       logDebug('Token = ' + JSON.stringify(t));
       return window['cordova'].plugins.BEMServerSync.getConfig()
         .then(
@@ -112,7 +111,6 @@ const registerPush = function () {
         });
     })
     .then(function (t) {
-      // alert("Finished saving token = "+JSON.stringify(t.token));
       logDebug('Finished saving token = ' + JSON.stringify(t.token));
     })
     .catch(function (error) {
