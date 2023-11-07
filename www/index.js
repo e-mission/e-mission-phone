@@ -9,7 +9,6 @@ import './js/splash/pushnotify.js';
 import './js/splash/storedevicesettings.js';
 import './js/splash/localnotify.js';
 import './js/splash/remotenotify.js';
-import './js/splash/notifScheduler.js';
 import './js/controllers.js';
 import './js/services.js';
 import './js/i18n-utils.js';
