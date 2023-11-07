@@ -39,6 +39,7 @@ import {
   getReminderPrefs,
   setReminderPrefs,
 } from '../splash/notifScheduler';
+import { DateTime } from 'luxon';
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -201,13 +202,20 @@ const ProfileSettings = () => {
     const newNotificationSettings = {};
 
     if (uiConfig?.reminderSchemes) {
-      const prefs = await getReminderPrefs(uiConfig.reminderSchemes);
-      const m = moment(prefs.reminder_time_of_day, 'HH:mm');
-      newNotificationSettings.prefReminderTimeVal = m.toDate();
-      const n = moment(newNotificationSettings.prefReminderTimeVal);
-      newNotificationSettings.prefReminderTime = n.format('LT');
+      let promiseList = [];
+      promiseList.push(getReminderPrefs(uiConfig.reminderSchemes));
+      promiseList.push(getScheduledNotifs());
+      let resultList = await Promise.all(promiseList);
+      const prefs = resultList[0];
+      const scheduledNotifs = resultList[1];
+      console.log('prefs and scheduled notifs', resultList[0], resultList[1]);
+
+      const m = DateTime.fromFormat(prefs.reminder_time_of_day, 'HH:mm');
+      newNotificationSettings.prefReminderTimeVal = m.toJSDate();
+      newNotificationSettings.prefReminderTime = m.toFormat('t');
       newNotificationSettings.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
-      newNotificationSettings.scheduledNotifs = await getScheduledNotifs();
+      newNotificationSettings.scheduledNotifs = scheduledNotifs;
+
       updatePrefReminderTime(false);
     }
 
@@ -276,13 +284,14 @@ const ProfileSettings = () => {
   async function updatePrefReminderTime(storeNewVal = true, newTime) {
     console.log(newTime);
     if (storeNewVal) {
-      const m = moment(newTime);
+      const m = DateTime.fromISO(newTime);
       // store in HH:mm
-      setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }, uiConfig.reminderSchemes).then(
-        () => {
-          refreshNotificationSettings();
-        },
-      );
+      setReminderPrefs(
+        { reminder_time_of_day: m.toFormat('HH:mm') },
+        uiConfig.reminderSchemes,
+      ).then(() => {
+        refreshNotificationSettings();
+      });
     }
   }
 
