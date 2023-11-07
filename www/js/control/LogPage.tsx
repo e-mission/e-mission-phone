@@ -12,7 +12,7 @@ type loadStats = { currentStart: number; gotMaxIndex: boolean; reachedEnd: boole
 const LogPage = ({ pageVis, setPageVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const EmailHelper = getAngularService('EmailHelper');
+  //const EmailHelper = getAngularService('EmailHelper');
 
   const [loadStats, setLoadStats] = useState<loadStats>();
   const [entries, setEntries] = useState([]);

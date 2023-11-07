@@ -5,11 +5,12 @@ import { getAngularService } from '../angular-react-helper';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import moment from 'moment';
+import EmailHelper from './emailService';
 
 const SensedPage = ({ pageVis, setPageVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const EmailHelper = getAngularService('EmailHelper');
+  //const EmailHelper = getAngularService('EmailHelper');
 
   /* Let's keep a reference to the database for convenience */
   const [DB, setDB] = useState();
