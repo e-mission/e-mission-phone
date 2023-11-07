@@ -201,7 +201,7 @@ const ProfileSettings = () => {
     const newNotificationSettings = {};
 
     if (uiConfig?.reminderSchemes) {
-      const prefs = await getReminderPrefs();
+      const prefs = await getReminderPrefs(uiConfig.reminderSchemes);
       const m = moment(prefs.reminder_time_of_day, 'HH:mm');
       newNotificationSettings.prefReminderTimeVal = m.toDate();
       const n = moment(newNotificationSettings.prefReminderTimeVal);
