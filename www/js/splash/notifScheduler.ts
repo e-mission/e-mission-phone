@@ -226,8 +226,15 @@ const initReminderPrefs = (reminderSchemes) => {
 //     reminder_time_of_day: string;
 // }
 
-export const getReminderPrefs = async (reminderSchemes): Promise<any> => {
-  const user = (await getUser()) as any;
+interface User {
+  reminder_assignment: string;
+  reminder_join_date: string;
+  reminder_time_of_day: string;
+}
+
+export const getReminderPrefs = async (reminderSchemes): Promise<User> => {
+  const userPromise = getUser();
+  const user = (await userPromise) as User;
   if (user?.reminder_assignment && user?.reminder_join_date && user?.reminder_time_of_day) {
     console.log('User already has reminder prefs, returning them', user);
     return user;
