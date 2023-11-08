@@ -5,6 +5,11 @@ import { MetricsData } from './metricsTypes';
 import { cardStyles } from './MetricsTab';
 import { useTranslation } from 'react-i18next';
 import {
+  getFootprintForMetrics,
+  getHighestFootprint,
+  getHighestFootprintForDistance,
+} from './footprintHelper';
+import {
   formatDateRangeOfDays,
   parseDataFromMetrics,
   generateSummaryFromData,
@@ -17,7 +22,6 @@ type Props = { userMetrics: MetricsData; aggMetrics: MetricsData };
 const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
-  const FootprintHelper = getAngularService('FootprintHelper');
 
   const userText = useMemo(() => {
     if (userMetrics?.distance?.length > 0) {
@@ -46,11 +50,8 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
       //calculate low-high and format range for prev week, if exists (14 days ago -> 8 days ago)
       if (userLastWeekSummaryMap[0]) {
         let userPrevWeek = {
-          low: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, 0),
-          high: FootprintHelper.getFootprintForMetrics(
-            userLastWeekSummaryMap,
-            FootprintHelper.getHighestFootprint(),
-          ),
+          low: getFootprintForMetrics(userLastWeekSummaryMap, 0),
+          high: getFootprintForMetrics(userLastWeekSummaryMap, getHighestFootprint()),
         };
         const label = `${t('main-metrics.prev-week')} (${formatDateRangeOfDays(lastWeekDistance)})`;
         if (userPrevWeek.low == userPrevWeek.high)
@@ -64,11 +65,8 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
 
       //calculate low-high and format range for past week (7 days ago -> yesterday)
       let userPastWeek = {
-        low: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, 0),
-        high: FootprintHelper.getFootprintForMetrics(
-          userThisWeekSummaryMap,
-          FootprintHelper.getHighestFootprint(),
-        ),
+        low: getFootprintForMetrics(userThisWeekSummaryMap, 0),
+        high: getFootprintForMetrics(userThisWeekSummaryMap, getHighestFootprint()),
       };
       const label = `${t('main-metrics.past-week')} (${formatDateRangeOfDays(thisWeekDistance)})`;
       if (userPastWeek.low == userPastWeek.high)
@@ -80,7 +78,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
         });
 
       //calculate worst-case carbon footprint
-      let worstCarbon = FootprintHelper.getHighestFootprintForDistance(worstDistance);
+      let worstCarbon = getHighestFootprintForDistance(worstDistance);
       textList.push({ label: t('main-metrics.worst-case'), value: Math.round(worstCarbon) });
 
       return textList;
@@ -113,11 +111,8 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
       let groupText = [];
 
       let aggCarbon = {
-        low: FootprintHelper.getFootprintForMetrics(aggCarbonData, 0),
-        high: FootprintHelper.getFootprintForMetrics(
-          aggCarbonData,
-          FootprintHelper.getHighestFootprint(),
-        ),
+        low: getFootprintForMetrics(aggCarbonData, 0),
+        high: getFootprintForMetrics(aggCarbonData, getHighestFootprint()),
       };
       console.log('testing group past week', aggCarbon);
       const label = t('main-metrics.average');

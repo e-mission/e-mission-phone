@@ -4,6 +4,12 @@ import { Card, Text, useTheme } from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardStyles } from './MetricsTab';
 import {
+  getFootprintForMetrics,
+  setUseCustomFootprint,
+  getHighestFootprint,
+  getHighestFootprintForDistance,
+} from './footprintHelper';
+import {
   formatDateRangeOfDays,
   parseDataFromMetrics,
   generateSummaryFromData,
@@ -13,13 +19,11 @@ import {
 } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
-import { getAngularService } from '../angular-react-helper';
 import ChangeIndicator from './ChangeIndicator';
 import color from 'color';
 
 type Props = { userMetrics: MetricsData; aggMetrics: MetricsData };
 const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
-  const FootprintHelper = getAngularService('FootprintHelper');
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -51,18 +55,15 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
 
       //set custon dataset, if the labels are custom
       if (isCustomLabels(userThisWeekModeMap)) {
-        FootprintHelper.setUseCustomFootprint();
+        setUseCustomFootprint();
       }
 
       //calculate low-high and format range for prev week, if exists (14 days ago -> 8 days ago)
       let userPrevWeek;
       if (userLastWeekSummaryMap[0]) {
         userPrevWeek = {
-          low: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, 0),
-          high: FootprintHelper.getFootprintForMetrics(
-            userLastWeekSummaryMap,
-            FootprintHelper.getHighestFootprint(),
-          ),
+          low: getFootprintForMetrics(userLastWeekSummaryMap, 0),
+          high: getFootprintForMetrics(userLastWeekSummaryMap, getHighestFootprint()),
         };
         graphRecords.push({
           label: t('main-metrics.unlabeled'),
@@ -78,11 +79,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
 
       //calculate low-high and format range for past week (7 days ago -> yesterday)
       let userPastWeek = {
-        low: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, 0),
-        high: FootprintHelper.getFootprintForMetrics(
-          userThisWeekSummaryMap,
-          FootprintHelper.getHighestFootprint(),
-        ),
+        low: getFootprintForMetrics(userThisWeekSummaryMap, 0),
+        high: getFootprintForMetrics(userThisWeekSummaryMap, getHighestFootprint()),
       };
       graphRecords.push({
         label: t('main-metrics.unlabeled'),
@@ -100,7 +98,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
       }
 
       //calculate worst-case carbon footprint
-      let worstCarbon = FootprintHelper.getHighestFootprintForDistance(worstDistance);
+      let worstCarbon = getHighestFootprintForDistance(worstDistance);
       graphRecords.push({
         label: t('main-metrics.labeled'),
         x: worstCarbon,
@@ -138,11 +136,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
       let groupRecords = [];
 
       let aggCarbon = {
-        low: FootprintHelper.getFootprintForMetrics(aggCarbonData, 0),
-        high: FootprintHelper.getFootprintForMetrics(
-          aggCarbonData,
-          FootprintHelper.getHighestFootprint(),
-        ),
+        low: getFootprintForMetrics(aggCarbonData, 0),
+        high: getFootprintForMetrics(aggCarbonData, getHighestFootprint()),
       };
       console.log('testing group past week', aggCarbon);
       groupRecords.push({

@@ -26,6 +26,11 @@ import ControlCollectionHelper, {
   helperToggleLowAccuracy,
   forceTransition,
 } from './ControlCollectionHelper';
+import {
+  getCarbonDatasetOptions,
+  getCurrentCarbonDatasetCode,
+  saveCurrentCarbonDatasetLocale,
+} from '../metrics/customMetricsHelper';
 import { resetDataAndRefresh } from '../config/dynamicConfig';
 import { AppContext } from '../App';
 import { shareQR } from '../components/QrCode';
@@ -43,7 +48,6 @@ const ProfileSettings = () => {
   const { setPermissionsPopupVis } = useContext(AppContext);
 
   //angular services needed
-  const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
   const EmailHelper = getAngularService('EmailHelper');
   const NotificationScheduler = getAngularService('NotificationScheduler');
   const ControlHelper = getAngularService('ControlHelper');
@@ -84,8 +88,8 @@ const ProfileSettings = () => {
   const appVersion = useRef();
 
   let carbonDatasetString =
-    t('general-settings.carbon-dataset') + ': ' + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
-  const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
+    t('general-settings.carbon-dataset') + ': ' + getCurrentCarbonDatasetCode();
+  const carbonOptions = getCarbonDatasetOptions();
   const stateActions = [
     { text: 'Initialize', transition: 'INITIALIZE' },
     { text: 'Start trip', transition: 'EXITED_GEOFENCE' },
@@ -361,12 +365,10 @@ const ProfileSettings = () => {
 
   const onSelectCarbon = function (carbonObject) {
     console.log('changeCarbonDataset(): chose locale ' + carbonObject.value);
-    CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(carbonObject.value); //there's some sort of error here
+    saveCurrentCarbonDatasetLocale(carbonObject.value); //there's some sort of error here
     //Unhandled Promise Rejection: While logging, error -[NSNull UTF8String]: unrecognized selector sent to instance 0x7fff8a625fb0
     carbonDatasetString =
-      i18next.t('general-settings.carbon-dataset') +
-      ': ' +
-      CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+      i18next.t('general-settings.carbon-dataset') + ': ' + getCurrentCarbonDatasetCode();
   };
 
   //conditional creation of setting sections
