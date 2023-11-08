@@ -6,8 +6,8 @@ import useAppConfig from '../../useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { SurveyOptions, getInstanceStr, saveResponse } from './enketoHelper';
 import { fetchUrlCached } from '../../commHelper';
-import { displayError, displayErrorMsg } from '../../plugin/logger';
-// import { transform } from 'enketo-transformer/web';
+import { displayError, displayErrorMsg, logDebug } from '../../plugin/logger';
+import { transform } from 'enketo-transformer/web';
 
 type Props = Omit<ModalProps, 'children'> & {
   surveyName: string;
@@ -26,15 +26,9 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
     const responseText = await fetchUrlCached(url);
     try {
       return JSON.parse(responseText);
-    } catch ({ name, message }) {
-      // not JSON, so it must be XML
-      return Promise.reject(
-        'downloaded survey was not JSON; enketo-transformer is not available yet',
-      );
-      /* uncomment once enketo-transformer is available */
-      // if `response` is not JSON, it is an XML string and needs transformation to JSON
-      // const xmlText = await res.text();
-      // return await transform({xform: xmlText});
+    } catch (e) {
+      logDebug(`${e.name}: Survey was not in JSON format. Attempting to transform XML -> JSON...`);
+      return await transform({ xform: responseText });
     }
   }
 
