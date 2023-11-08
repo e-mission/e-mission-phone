@@ -1,11 +1,13 @@
 import { getAngularService } from '../../angular-react-helper';
 import { Form } from 'enketo-core';
+import { transform } from 'enketo-transformer/web';
 import { XMLParser } from 'fast-xml-parser';
 import i18next from 'i18next';
 import MessageFormat from '@messageformat/core';
 import { logDebug, logInfo } from '../../plugin/logger';
 import { getConfig } from '../../config/dynamicConfig';
 import { DateTime } from 'luxon';
+import { fetchUrlCached } from '../../commHelper';
 
 export type PrefillFields = { [key: string]: string };
 
@@ -286,4 +288,14 @@ export function loadPreviousResponseForSurvey(dataKey: string) {
   return UnifiedDataLoader.getUnifiedMessagesForInterval(dataKey, tq).then((answers) =>
     _getMostRecent(answers),
   );
+}
+
+export async function fetchSurvey(url: string) {
+  const responseText = await fetchUrlCached(url);
+  try {
+    return JSON.parse(responseText);
+  } catch (e) {
+    logDebug(`${e.name}: Survey was not in JSON format. Attempting to transform XML -> JSON...`);
+    return await transform({ xform: responseText });
+  }
 }

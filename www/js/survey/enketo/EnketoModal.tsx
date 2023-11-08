@@ -4,10 +4,8 @@ import { StyleSheet, Modal, ScrollView, SafeAreaView, Pressable } from 'react-na
 import { ModalProps } from 'react-native-paper';
 import useAppConfig from '../../useAppConfig';
 import { useTranslation } from 'react-i18next';
-import { SurveyOptions, getInstanceStr, saveResponse } from './enketoHelper';
-import { fetchUrlCached } from '../../commHelper';
+import { SurveyOptions, fetchSurvey, getInstanceStr, saveResponse } from './enketoHelper';
 import { displayError, displayErrorMsg, logDebug } from '../../plugin/logger';
-import { transform } from 'enketo-transformer/web';
 
 type Props = Omit<ModalProps, 'children'> & {
   surveyName: string;
@@ -21,16 +19,6 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
   const surveyJson = useRef(null);
   const enketoForm = useRef<Form | null>(null);
   const appConfig = useAppConfig();
-
-  async function fetchSurveyJson(url) {
-    const responseText = await fetchUrlCached(url);
-    try {
-      return JSON.parse(responseText);
-    } catch (e) {
-      logDebug(`${e.name}: Survey was not in JSON format. Attempting to transform XML -> JSON...`);
-      return await transform({ xform: responseText });
-    }
-  }
 
   async function validateAndSave() {
     const valid = await enketoForm.current.validate();
@@ -56,7 +44,7 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
     const formPath = appConfig.survey_info?.surveys?.[surveyName]?.formPath;
     if (!formPath) return console.error('No form path found for survey', surveyName);
 
-    fetchSurveyJson(formPath).then(({ form, model }) => {
+    fetchSurvey(formPath).then(({ form, model }) => {
       surveyJson.current = { form, model };
       headerEl?.current.insertAdjacentHTML('afterend', form); // inject form into DOM
       const formEl = document.querySelector('form.or');
