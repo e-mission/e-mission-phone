@@ -2,7 +2,7 @@ import angular from 'angular';
 import { getLabelOptions } from '../survey/multilabel/confirmHelper';
 import { getConfig } from '../config/dynamicConfig';
 import { storageGet, storageSet } from '../plugin/storage';
-import { displayError, logDebug } from '../plugin/logger';
+import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import { standardMETs } from './metDataset';
 import { carbonDatasets } from './carbonDatasets';
 
@@ -112,8 +112,8 @@ const populateCustomFootprints = function () {
     .map((opt) => {
       if (opt.range_limit_km) {
         if (_range_limited_motorized) {
-          displayError(
-            { first: _range_limited_motorized, second: opt },
+          displayErrorMsg(
+            JSON.stringify({ first: _range_limited_motorized, second: opt }),
             'Found two range limited motorized options',
           );
         }
