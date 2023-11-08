@@ -1,4 +1,3 @@
-import { getAngularService } from '../angular-react-helper';
 import { displayError, logDebug } from '../plugin/logger';
 import { getBaseModeByKey, getBaseModeOfLabeledTrip } from './diaryHelper';
 import { getUnifiedDataForInterval } from '../unifiedDataLoader';
@@ -7,7 +6,7 @@ import { ServerResponse, ServerData } from '../types/serverData';
 import L from 'leaflet';
 import i18next from 'i18next';
 import { DateTime } from 'luxon';
-import { CompositeTrip } from '../types/diaryTypes';
+import { CompositeTrip, TripTransition, SectionData, Trip } from '../types/diaryTypes';
 import { LabelOptions } from '../types/labelTypes';
 
 const cachedGeojsons = new Map();
@@ -235,7 +234,7 @@ const unpackServerData = (obj: ServerData<any>) => ({
 export const readAllCompositeTrips = function (startTs: number, endTs: number) {
   const readPromises = [getRawEntries(['analysis/composite_trip'], startTs, endTs, 'data.end_ts')];
   return Promise.all(readPromises)
-    .then(([ctList]: [ServerResponse<any>]) => {
+    .then(([ctList]: [ServerResponse<CompositeTrip>]) => {
       return ctList.phone_data.map((ct) => {
         const unpackedCt = unpackServerData(ct);
         return {
@@ -439,7 +438,7 @@ const isEndingTransition = function (transWrapper) {
  *
  * Let's abstract this out into our own minor state machine.
  */
-const transitions2Trips = function (transitionList) {
+const transitions2Trips = function (transitionList: Array<TripTransition>) {
   var inTrip = false;
   var tripList = [];
   var currStartTransitionIndex = -1;
@@ -517,9 +516,11 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
       DateTime.fromSeconds(tq.endTs).toLocaleString(DateTime.DATETIME_MED),
   );
 
+  console.log('Testing...');
   const getMessageMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
+  console.log('Entering...');
   return getUnifiedDataForInterval('statemachine/transition', tq, getMessageMethod).then(function (
-    transitionList: Array<any>,
+    transitionList: Array<TripTransition>,
   ) {
     if (transitionList.length == 0) {
       logDebug('No unprocessed trips. yay!');
@@ -529,7 +530,7 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
       const tripsList = transitions2Trips(transitionList);
       logDebug(`Mapped into ${tripsList.length} trips. yay!`);
       tripsList.forEach(function (trip) {
-        logDebug(JSON.stringify(trip));
+        logDebug(JSON.stringify(trip, null, 2));
       });
       var tripFillPromises = tripsList.map(transitionTrip2TripObj);
       return Promise.all(tripFillPromises).then(function (raw_trip_gj_list) {

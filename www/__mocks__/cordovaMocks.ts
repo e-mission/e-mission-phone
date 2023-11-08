@@ -1,5 +1,4 @@
 import packageJsonBuild from '../../package.cordovabuild.json';
-
 export const mockCordova = () => {
   window['cordova'] ||= {};
   window['cordova'].platformId ||= 'ios';
@@ -115,6 +114,9 @@ export const mockBEMUserCache = () => {
       } else {
         return false;
       }
+    },
+    getMessagesForInterval: () => {
+      // Used for getUnifiedDataForInterval
     },
   };
   window['cordova'] ||= {};
