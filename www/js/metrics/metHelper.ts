@@ -6,7 +6,7 @@ var highestMET = 0;
 var USER_DATA_KEY = 'user-data';
 let useCustom = false;
 
-const setUseCustomFootprint = function () {
+const setUseCustomMET = function () {
   useCustom = true;
 };
 
