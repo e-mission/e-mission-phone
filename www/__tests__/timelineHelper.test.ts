@@ -7,6 +7,11 @@ import { CompositeTrip } from '../js/types/diaryTypes';
 
 mockLogger();
 mockBEMUserCache();
+
+afterAll(() => {
+  jest.restoreAllMocks();
+});
+
 const mockMetaData: MetaData = {
   write_ts: -13885091,
   key: 'test/value',
@@ -16,6 +21,7 @@ const mockMetaData: MetaData = {
   write_local_dt: null,
   origin_key: '12345',
 };
+
 const mockData: ServerResponse<CompositeTrip> = {
   phone_data: [
     {
@@ -93,17 +99,35 @@ const mockData: ServerResponse<CompositeTrip> = {
   ],
 };
 
-const testStart = -14576291;
-const testEnd = -13885091;
+// When called by mocks, pair 1 returns 1 value, Pair two 2, pair 3 returns none.
+const fakeStartTsOne = -14576291;
+const fakeEndTsOne = -13885091;
+const fakeStartTsTwo = 1092844665;
+const fakeEndTsTwo = 1277049465;
 
+// Once we have end-to-end testing, we could utilize getRawEnteries.
 jest.mock('../js/commHelper', () => ({
-  getRawEntries: jest.fn(() => mockData),
+  getRawEntries: jest.fn((val, startTs, endTs, valTwo) => {
+    if (startTs === fakeStartTsOne && endTs === fakeEndTsOne) return mockData;
+    if (startTs == fakeStartTsTwo && endTs === fakeEndTsTwo) {
+      console.log('Twoy!');
+      let dataCopy = JSON.parse(JSON.stringify(mockData));
+      let temp = [dataCopy.phone_data[0], dataCopy.phone_data[0]];
+      dataCopy.phone_data = temp;
+      console.log(`This is phoneData: ${JSON.stringify(dataCopy.phone_data.length)}`);
+      return dataCopy;
+    }
+    return {};
+  }),
 }));
 
+it('works when there are no composite trip objects fetched', async () => {
+  expect(readAllCompositeTrips(-1, -1)).resolves.not.toThrow();
+});
+
 it('fetches a composite trip object and collapses it', async () => {
-  // When we have End-to-End testing, we can properly test with getRawEnteries
-  console.log(JSON.stringify(mockData, null, 2));
-  expect(readAllCompositeTrips(testStart, testEnd)).resolves.not.toThrow();
+  expect(readAllCompositeTrips(fakeStartTsOne, fakeEndTsOne)).resolves.not.toThrow();
+  expect(readAllCompositeTrips(fakeStartTsTwo, fakeEndTsTwo)).resolves.not.toThrow();
 });
 
 jest.mock('../js/unifiedDataLoader', () => ({
@@ -113,9 +137,9 @@ jest.mock('../js/unifiedDataLoader', () => ({
 }));
 
 it('works when there are no unprocessed trips...', async () => {
-  expect(readUnprocessedTrips(testStart, testEnd, null)).resolves.not.toThrow();
+  expect(readUnprocessedTrips(fakeStartTsOne, fakeEndTsOne, null)).resolves.not.toThrow();
 });
 
 it('works when there are no unprocessed trips...', async () => {
-  expect(readUnprocessedTrips(testStart, testEnd, null)).resolves.not.toThrow();
+  expect(readUnprocessedTrips(fakeStartTsOne, fakeEndTsOne, null)).resolves.not.toThrow();
 });
