@@ -223,7 +223,9 @@ const locations2GeojsonTrajectory = (trip, locationList, trajectoryColor?) => {
   });
 };
 
-// Remaining functions from /diary/services.js
+// DB entries retrieved from the server have '_id', 'metadata', and 'data' fields.
+// This function returns a shallow copy of the obj, which flattens the
+// 'data' field into the top level, while also including '_id' and 'metadata.key'
 const unpackServerData = (obj: ServerData<any>) => ({
   ...obj.data,
   _id: obj._id,
@@ -251,7 +253,6 @@ export const readAllCompositeTrips = function (startTs: number, endTs: number) {
       return [];
     });
 };
-
 const dateTime2localdate = function (currtime: DateTime, tz: string) {
   return {
     timezone: tz,
@@ -298,8 +299,6 @@ const points2TripProps = function (locationPoints) {
     speed: speeds[i],
   }));
 
-  // used to mimic old momentJS moment.format()
-  const formatString = "yyyy-MM-dd'T'HH:mm:ssZZ";
   return {
     _id: { $oid: tripAndSectionId },
     key: 'UNPROCESSED_trip',
@@ -308,14 +307,14 @@ const points2TripProps = function (locationPoints) {
     confidence_threshold: 0,
     distance: dists.reduce((a, b) => a + b, 0),
     duration: endPoint.data.ts - startPoint.data.ts,
-    end_fmt_time: endTime.toFormat(formatString),
+    end_fmt_time: endTime.toISO(),
     end_local_dt: dateTime2localdate(endTime, endPoint.metadata.time_zone),
     end_ts: endPoint.data.ts,
     expectation: { to_label: true },
     inferred_labels: [],
     locations: locations,
     source: 'unprocessed',
-    start_fmt_time: startTime.toFormat(formatString),
+    start_fmt_time: startTime.toISO,
     start_local_dt: dateTime2localdate(startTime, startPoint.metadata.time_zone),
     start_ts: startPoint.data.ts,
     user_input: {},
