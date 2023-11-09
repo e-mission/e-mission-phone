@@ -3,8 +3,8 @@ import { standardMETs } from './metDataset';
 
 let useCustom = false;
 
-export const setUseCustomMET = function () {
-  useCustom = true;
+export const setUseCustomMET = function (val: boolean) {
+  useCustom = val;
 };
 
 const getMETs = function () {
