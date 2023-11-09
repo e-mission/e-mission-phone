@@ -2,8 +2,8 @@ import { mockLogger } from '../__mocks__/globalMocks';
 import { readAllCompositeTrips, readUnprocessedTrips } from '../js/diary/timelineHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 
-import { MetaData, ServerResponse } from '../js/types/serverData';
-import { CompositeTrip } from '../js/types/diaryTypes';
+import { MetaData, ServerData, ServerResponse } from '../js/types/serverData';
+import { CompositeTrip, TripTransition } from '../js/types/diaryTypes';
 
 mockLogger();
 mockBEMUserCache();
@@ -99,6 +99,22 @@ const mockData: ServerResponse<CompositeTrip> = {
   ],
 };
 
+let mockDataTwo = mockData;
+mockDataTwo.phone_data = [mockData.phone_data[0], mockData.phone_data[0]];
+
+const mockTransition: Array<ServerData<TripTransition>> = [
+  {
+    data: {
+      currstate: 'STATE_WAITING_FOR_TRIP_TO_START',
+      transition: 'T_NOP',
+      ts: 12345.6789,
+    },
+    metadata: mockMetaData,
+  },
+];
+
+const mockTransitionTwo = mockTransition.push(mockTransition[0]);
+
 // When called by mocks, pair 1 returns 1 value, Pair two 2, pair 3 returns none.
 const fakeStartTsOne = -14576291;
 const fakeEndTsOne = -13885091;
@@ -107,16 +123,9 @@ const fakeEndTsTwo = 1277049465;
 
 // Once we have end-to-end testing, we could utilize getRawEnteries.
 jest.mock('../js/commHelper', () => ({
-  getRawEntries: jest.fn((val, startTs, endTs, valTwo) => {
-    if (startTs === fakeStartTsOne && endTs === fakeEndTsOne) return mockData;
-    if (startTs == fakeStartTsTwo && endTs === fakeEndTsTwo) {
-      console.log('Twoy!');
-      let dataCopy = JSON.parse(JSON.stringify(mockData));
-      let temp = [dataCopy.phone_data[0], dataCopy.phone_data[0]];
-      dataCopy.phone_data = temp;
-      console.log(`This is phoneData: ${JSON.stringify(dataCopy.phone_data.length)}`);
-      return dataCopy;
-    }
+  getRawEntries: jest.fn((key, startTs, endTs, valTwo) => {
+    if (startTs === fakeStartTsOne) return mockData;
+    if (startTs == fakeStartTsTwo) return mockDataTwo;
     return {};
   }),
 }));
@@ -131,15 +140,18 @@ it('fetches a composite trip object and collapses it', async () => {
 });
 
 jest.mock('../js/unifiedDataLoader', () => ({
-  getUnifiedDataForInterval: jest.fn(() => {
+  getUnifiedDataForInterval: jest.fn((key, tq, combiner) => {
+    if (tq.startTs === fakeStartTsOne) return Promise.resolve(mockTransition);
+    if (tq.startTs === fakeStartTsTwo) return Promise.resolve(mockTransitionTwo);
     return Promise.resolve([]);
   }),
 }));
 
 it('works when there are no unprocessed trips...', async () => {
-  expect(readUnprocessedTrips(fakeStartTsOne, fakeEndTsOne, null)).resolves.not.toThrow();
+  expect(readUnprocessedTrips(-1, -1, null)).resolves.not.toThrow();
 });
 
-it('works when there are no unprocessed trips...', async () => {
+it('works when there are one or more unprocessed trips...', async () => {
   expect(readUnprocessedTrips(fakeStartTsOne, fakeEndTsOne, null)).resolves.not.toThrow();
+  expect(readUnprocessedTrips(fakeStartTsTwo, fakeEndTsTwo, null)).resolves.not.toThrow();
 });

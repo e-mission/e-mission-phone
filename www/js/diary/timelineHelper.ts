@@ -6,7 +6,7 @@ import { ServerResponse, ServerData } from '../types/serverData';
 import L from 'leaflet';
 import i18next from 'i18next';
 import { DateTime } from 'luxon';
-import { CompositeTrip, TripTransition, SectionData, Trip } from '../types/diaryTypes';
+import { CompositeTrip, TripTransition, SectionData } from '../types/diaryTypes';
 import { LabelOptions } from '../types/labelTypes';
 
 const cachedGeojsons = new Map();
@@ -438,7 +438,7 @@ const isEndingTransition = function (transWrapper) {
  *
  * Let's abstract this out into our own minor state machine.
  */
-const transitions2Trips = function (transitionList: Array<TripTransition>) {
+const transitions2Trips = function (transitionList: Array<ServerData<TripTransition>>) {
   var inTrip = false;
   var tripList = [];
   var currStartTransitionIndex = -1;
@@ -520,7 +520,7 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
   const getMessageMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
   console.log('Entering...');
   return getUnifiedDataForInterval('statemachine/transition', tq, getMessageMethod).then(function (
-    transitionList: Array<TripTransition>,
+    transitionList: Array<ServerData<TripTransition>>,
   ) {
     if (transitionList.length == 0) {
       logDebug('No unprocessed trips. yay!');

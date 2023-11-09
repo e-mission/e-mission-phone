@@ -3,7 +3,7 @@
  As much as possible, these types parallel the types used in the server code. */
 
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
-import { LocalDt } from './serverData';
+import { ServerData, LocalDt } from './serverData';
 
 type ObjectId = { $oid: string };
 type ConfirmedPlace = {
