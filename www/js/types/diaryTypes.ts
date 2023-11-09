@@ -3,7 +3,7 @@
  As much as possible, these types parallel the types used in the server code. */
 
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
-import { LocalDt } from './serverData';
+import { ServerData, LocalDt } from './serverData';
 
 type ObjectId = { $oid: string };
 type ConfirmedPlace = {
@@ -51,7 +51,7 @@ export type CompositeTrip = {
   confirmed_trip: ObjectId;
   distance: number;
   duration: number;
-  end_confirmed_place: ConfirmedPlace;
+  end_confirmed_place: ServerData<ConfirmedPlace>;
   end_fmt_time: string;
   end_loc: { type: string; coordinates: number[] };
   end_local_dt: LocalDt;
@@ -68,7 +68,7 @@ export type CompositeTrip = {
   raw_trip: ObjectId;
   sections: any[]; // TODO
   source: string;
-  start_confirmed_place: ConfirmedPlace;
+  start_confirmed_place: ServerData<ConfirmedPlace>;
   start_fmt_time: string;
   start_loc: { type: string; coordinates: number[] };
   start_local_dt: LocalDt;
