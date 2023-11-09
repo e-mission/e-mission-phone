@@ -23,7 +23,7 @@ type BaseMode = {
 };
 
 // parallels the server-side MotionTypes enum: https://github.com/e-mission/e-mission-server/blob/94e7478e627fa8c171323662f951c611c0993031/emission/core/wrapper/motionactivity.py#L12
-type MotionTypeKey =
+export type MotionTypeKey =
   | 'IN_VEHICLE'
   | 'BICYCLING'
   | 'ON_FOOT'
@@ -63,7 +63,7 @@ const BaseModes: { [k: string]: BaseMode } = {
   OTHER: { name: 'OTHER', icon: 'pencil-circle', color: modeColors.taupe },
 };
 
-type BaseModeKey = keyof typeof BaseModes;
+export type BaseModeKey = keyof typeof BaseModes;
 /**
  * @param motionName A string like "WALKING" or "MotionTypes.WALKING"
  * @returns A BaseMode object containing the name, icon, and color of the motion type
