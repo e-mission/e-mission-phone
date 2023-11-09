@@ -15,6 +15,7 @@ import {
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './control/AppStatusModal';
 import usePermissionStatus from './usePermissionStatus';
+import { withErrorBoundary } from './plugin/ErrorBoundary';
 
 const defaultRoutes = (t) => [
   {
@@ -55,9 +56,9 @@ const App = () => {
   }, [appConfig, t]);
 
   const renderScene = BottomNavigation.SceneMap({
-    label: LabelTab,
-    metrics: MetricsTab,
-    control: ProfileSettings,
+    label: withErrorBoundary(LabelTab),
+    metrics: withErrorBoundary(MetricsTab),
+    control: withErrorBoundary(ProfileSettings),
   });
 
   const refreshOnboardingState = () => getPendingOnboardingState().then(setOnboardingState);
