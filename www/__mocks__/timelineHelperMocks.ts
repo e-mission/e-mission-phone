@@ -25,7 +25,7 @@ export const mockData: ServerResponse<CompositeTrip> = {
         duration: 777,
         end_confirmed_place: {
           data: null,
-          metadata: JSON.parse(JSON.stringify(mockMetaData)),
+          metadata: mockMetaData,
         },
         end_fmt_time: '2023-11-01T17:55:20.999397-07:00',
         end_loc: {
@@ -56,7 +56,7 @@ export const mockData: ServerResponse<CompositeTrip> = {
         key: '12345',
         locations: [
           {
-            metadata: JSON.parse(JSON.stringify(mockMetaData)),
+            metadata: mockMetaData,
             data: null,
           },
         ],
@@ -64,14 +64,14 @@ export const mockData: ServerResponse<CompositeTrip> = {
         raw_trip: null,
         sections: [
           {
-            metadata: JSON.parse(JSON.stringify(mockMetaData)),
+            metadata: mockMetaData,
             data: null,
           },
         ],
         source: 'DwellSegmentationDistFilter',
         start_confirmed_place: {
           data: null,
-          metadata: JSON.parse(JSON.stringify(mockMetaData)),
+          metadata: mockMetaData,
         },
         start_fmt_time: '2023-11-01T17:55:20.999397-07:00',
         start_loc: {
@@ -83,7 +83,7 @@ export const mockData: ServerResponse<CompositeTrip> = {
         start_ts: null,
         user_input: null,
       },
-      metadata: JSON.parse(JSON.stringify(mockMetaData)),
+      metadata: mockMetaData,
     },
   ],
 };
