@@ -1,5 +1,5 @@
-import { getCustomFootprint } from './CustomMetricsHelper';
-import { getCurrentCarbonDatasetFootprint } from './CustomMetricsHelper';
+import { displayErrorMsg } from '../plugin/logger';
+import { getCustomFootprint, getFallbackFootprint } from './CustomMetricsHelper';
 
 var highestFootprint = 0;
 let useCustom = false;
@@ -16,12 +16,10 @@ const getFootprint = function () {
   if (useCustom == true) {
     return getCustomFootprint();
   } else {
-    return getCurrentCarbonDatasetFootprint();
+    //TODO: check through configs and ensure they all have custom lables
+    displayErrorMsg('Error in Footprint Calculatons', 'issue with data or default labels');
+    return getFallbackFootprint();
   }
-};
-
-const readableFormat = function (v) {
-  return v > 999 ? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
 };
 
 export const getFootprintForMetrics = function (userMetrics, defaultIfMissing = 0) {

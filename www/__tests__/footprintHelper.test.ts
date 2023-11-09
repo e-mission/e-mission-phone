@@ -29,11 +29,11 @@ const metrics = [
   { key: 'Unicycle', values: 5000 },
 ];
 
-it('gets footprint for metrics (not custom, fallback 0', () => {
+it('gets footprint for metrics (not custom, fallback 0)', () => {
   expect(getFootprintForMetrics(metrics, 0)).toBe(10.534493474207583);
 });
 
-it('gets footprint for metrics (not custom, fallback 0.1', () => {
+it('gets footprint for metrics (not custom, fallback 0.1)', () => {
   expect(getFootprintForMetrics(metrics, 0.1)).toBe(10.534493474207583 + 0.5);
 });
 
