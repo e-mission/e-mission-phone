@@ -11,10 +11,7 @@
       "baseMode": "E_BIKE",
       "met": {
         "ALL": {
-          "range": [
-            0,
-            -1
-          ],
+          "range": [0, -1],
           "mets": 4.9
         }
       },
