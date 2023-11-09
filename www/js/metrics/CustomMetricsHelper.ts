@@ -131,7 +131,7 @@ const populateCustomFootprints = function () {
   console.log('After populating, custom perKmFootprint', _customPerKmFootprint);
 };
 
-const initCustomDatasetHelper = async function (newConfig) {
+export const initCustomDatasetHelper = async function (newConfig) {
   newConfig = await getConfig();
   try {
     getLabelOptions(newConfig).then((inputParams) => {

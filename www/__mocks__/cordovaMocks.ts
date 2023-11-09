@@ -1,4 +1,5 @@
 import packageJsonBuild from '../../package.cordovabuild.json';
+import fakeConfig from './fakeConfig.json';
 
 export const mockCordova = () => {
   window['cordova'] ||= {};
@@ -99,11 +100,22 @@ export const mockBEMUserCache = () => {
       );
     },
     getDocument: (key: string, withMetadata?: boolean) => {
-      return new Promise<any[]>((rs, rj) =>
-        setTimeout(() => {
-          rs(_storage[key]);
-        }, 100),
-      );
+      // this was mocked specifically for enketoHelper's use, could be expanded if needed
+      const fakeSurveyConfig = fakeConfig;
+
+      if (key == 'config/app_ui_config') {
+        return new Promise<any>((rs, rj) =>
+          setTimeout(() => {
+            rs(fakeSurveyConfig);
+          }, 100),
+        );
+      } else {
+        return new Promise<any[]>((rs, rj) =>
+          setTimeout(() => {
+            rs(_storage[key]);
+          }, 100),
+        );
+      }
     },
     isEmptyDoc: (doc) => {
       if (doc == undefined) {

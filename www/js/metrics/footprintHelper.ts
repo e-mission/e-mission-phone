@@ -2,11 +2,11 @@ import { getCustomFootprint } from './CustomMetricsHelper';
 import { getCurrentCarbonDatasetFootprint } from './CustomMetricsHelper';
 
 var highestFootprint = 0;
+let useCustom = false;
 
-var mtokm = function (v) {
+const mtokm = function (v) {
   return v / 1000;
 };
-let useCustom = false;
 
 export const setUseCustomFootprint = function () {
   useCustom = true;
