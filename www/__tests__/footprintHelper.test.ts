@@ -1,9 +1,5 @@
 import { initCustomDatasetHelper } from '../js/metrics/CustomMetricsHelper';
-import {
-  getFootprintForMetrics,
-  mtokm,
-  setUseCustomFootprint,
-} from '../js/metrics/footprintHelper';
+import { getFootprintForMetrics, setUseCustomFootprint } from '../js/metrics/footprintHelper';
 import { getConfig } from '../js/config/dynamicConfig';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
