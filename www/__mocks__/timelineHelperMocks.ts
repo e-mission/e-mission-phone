@@ -110,13 +110,7 @@ export const fakeEndTsOne = -13885091;
 export const fakeStartTsTwo = 1092844665;
 export const fakeEndTsTwo = 1277049465;
 
-export const readAllCheck = [
-  {
-    ...mockData.phone_data[0].data,
-  },
-];
-
-export const readAllCompositeCheck = [
+export const readAllCheckOne = [
   {
     additions: [],
     cleaned_section_summary: null,

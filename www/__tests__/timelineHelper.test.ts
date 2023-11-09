@@ -31,7 +31,7 @@ it('works when there are no composite trip objects fetched', async () => {
 
 it('fetches a composite trip object and collapses it', async () => {
   expect(readAllCompositeTrips(mockTLH.fakeStartTsOne, mockTLH.fakeEndTsOne)).resolves.toEqual(
-    mockTLH.readAllCompositeCheck,
+    mockTLH.readAllCheckOne,
   );
   expect(
     readAllCompositeTrips(mockTLH.fakeStartTsTwo, mockTLH.fakeEndTsTwo),
@@ -47,7 +47,7 @@ jest.mock('../js/unifiedDataLoader', () => ({
 }));
 
 it('works when there are no unprocessed trips...', async () => {
-  expect(readUnprocessedTrips(-1, -1, null)).resolves.not.toThrow();
+  expect(readUnprocessedTrips(-1, -1, null)).resolves.toEqual([]);
 });
 
 it('works when there are one or more unprocessed trips...', async () => {
