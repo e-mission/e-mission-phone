@@ -109,3 +109,80 @@ export const fakeStartTsOne = -14576291;
 export const fakeEndTsOne = -13885091;
 export const fakeStartTsTwo = 1092844665;
 export const fakeEndTsTwo = 1277049465;
+
+export const readAllCheck = [
+  {
+    ...mockData.phone_data[0].data,
+  },
+];
+
+export const readAllCompositeCheck = [
+  {
+    additions: [],
+    cleaned_section_summary: null,
+    cleaned_trip: null,
+    confidence_threshold: -1,
+    confirmed_trip: null,
+    distance: 777,
+    duration: 777,
+    end_confirmed_place: {
+      key: 'test/value',
+      origin_key: '12345',
+    },
+    end_fmt_time: '2023-11-01T17:55:20.999397-07:00',
+    end_loc: {
+      type: 'Point',
+      coordinates: [-1, -1],
+    },
+    end_local_dt: null,
+    end_place: null,
+    end_ts: -1,
+    expectation: null,
+    expected_trip: null,
+    inferred_labels: [],
+    inferred_section_summary: {
+      count: {
+        CAR: 1,
+        WALKING: 1,
+      },
+      distance: {
+        CAR: 222,
+        WALKING: 222,
+      },
+      duration: {
+        CAR: 333,
+        WALKING: 333,
+      },
+    },
+    inferred_trip: null,
+    key: 'test/value',
+    locations: [
+      {
+        key: 'test/value',
+        origin_key: '12345',
+      },
+    ],
+    origin_key: '12345',
+    raw_trip: null,
+    sections: [
+      {
+        key: 'test/value',
+        origin_key: '12345',
+      },
+    ],
+    source: 'DwellSegmentationDistFilter',
+    start_confirmed_place: {
+      key: 'test/value',
+      origin_key: '12345',
+    },
+    start_fmt_time: '2023-11-01T17:55:20.999397-07:00',
+    start_loc: {
+      type: 'Point',
+      coordinates: [-1, -1],
+    },
+    start_local_dt: null,
+    start_place: null,
+    start_ts: null,
+    user_input: null,
+  },
+];

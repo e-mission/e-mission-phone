@@ -1,11 +1,16 @@
-import { mockLogger } from '../__mocks__/globalMocks';
+import { clearAlerts, mockAlert, mockLogger } from '../__mocks__/globalMocks';
 import { readAllCompositeTrips, readUnprocessedTrips } from '../js/diary/timelineHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 
 import * as mockTLH from '../__mocks__/timelineHelperMocks';
 
 mockLogger();
+mockAlert();
 mockBEMUserCache();
+
+beforeEach(() => {
+  clearAlerts();
+});
 
 afterAll(() => {
   jest.restoreAllMocks();
@@ -21,13 +26,13 @@ jest.mock('../js/commHelper', () => ({
 }));
 
 it('works when there are no composite trip objects fetched', async () => {
-  expect(readAllCompositeTrips(-1, -1)).resolves.not.toThrow();
+  expect(readAllCompositeTrips(-1, -1)).resolves.toEqual([]);
 });
 
 it('fetches a composite trip object and collapses it', async () => {
-  expect(
-    readAllCompositeTrips(mockTLH.fakeStartTsOne, mockTLH.fakeEndTsOne),
-  ).resolves.not.toThrow();
+  expect(readAllCompositeTrips(mockTLH.fakeStartTsOne, mockTLH.fakeEndTsOne)).resolves.toEqual(
+    mockTLH.readAllCompositeCheck,
+  );
   expect(
     readAllCompositeTrips(mockTLH.fakeStartTsTwo, mockTLH.fakeEndTsTwo),
   ).resolves.not.toThrow();
