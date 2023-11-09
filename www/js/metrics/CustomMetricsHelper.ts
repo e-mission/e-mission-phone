@@ -11,17 +11,17 @@ let _range_limited_motorized;
 let _inputParams;
 
 export const getCustomMETs = function () {
-  logDebug('Getting custom METs' + JSON.stringify(_customMETs));
+  logDebug('Getting custom METs ' + JSON.stringify(_customMETs));
   return _customMETs;
 };
 
 export const getCustomFootprint = function () {
-  logDebug('Getting custom footprint' + JSON.stringify(_customPerKmFootprint));
+  logDebug('Getting custom footprint ' + JSON.stringify(_customPerKmFootprint));
   return _customPerKmFootprint;
 };
 
 export const getRangeLimitedMotorixe = function () {
-  logDebug('Getting range limited motorized' + JSON.stringify(_range_limited_motorized));
+  logDebug('Getting range limited motorized ' + JSON.stringify(_range_limited_motorized));
   return _range_limited_motorized;
 };
 
