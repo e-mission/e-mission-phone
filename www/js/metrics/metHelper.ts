@@ -42,19 +42,3 @@ export const getMet = function (mode, speed, defaultIfMissing) {
     }
   }
 };
-
-// var highestMET = 0;
-// const getHighestMET = function () {
-//   if (!highestMET) {
-//     var met = getMETs();
-//     let metList = [];
-//     for (var mode in met) {
-//       var rangeList = met[mode];
-//       for (var range in rangeList) {
-//         metList.push(rangeList[range].mets);
-//       }
-//     }
-//     highestMET = Math.max(...metList);
-//   }
-//   return highestMET;
-// };
