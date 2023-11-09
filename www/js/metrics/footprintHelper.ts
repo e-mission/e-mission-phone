@@ -1,5 +1,5 @@
 import { displayErrorMsg } from '../plugin/logger';
-import { getCustomFootprint, getFallbackFootprint } from './CustomMetricsHelper';
+import { getCustomFootprint } from './CustomMetricsHelper';
 
 var highestFootprint = 0;
 let useCustom = false;
@@ -22,7 +22,7 @@ const getFootprint = function () {
   } else {
     //TODO: check through configs and ensure they all have custom lables
     displayErrorMsg('Error in Footprint Calculatons', 'issue with data or default labels');
-    return getFallbackFootprint();
+    return;
   }
 };
 

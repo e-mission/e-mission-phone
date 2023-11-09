@@ -3,7 +3,6 @@ import { getLabelOptions } from '../survey/multilabel/confirmHelper';
 import { getConfig } from '../config/dynamicConfig';
 import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import { standardMETs } from './metDataset';
-import { fallbackCarbon } from './carbonDatasetFallback';
 
 let _customMETs;
 let _customPerKmFootprint;
@@ -20,14 +19,9 @@ export const getCustomFootprint = function () {
   return _customPerKmFootprint;
 };
 
-export const getRangeLimitedMotorixe = function () {
+export const getRangeLimitedMotorized = function () {
   logDebug('Getting range limited motorized ' + JSON.stringify(_range_limited_motorized));
   return _range_limited_motorized;
-};
-
-export const getFallbackFootprint = function () {
-  console.log('getting fallback carbon');
-  return fallbackCarbon.footprintData;
 };
 
 const populateCustomMETs = function () {

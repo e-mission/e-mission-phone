@@ -32,30 +32,6 @@ beforeEach(() => {
   clearHighestFootprint();
 });
 
-const metrics = [
-  { key: 'WALKING', values: 3000 },
-  { key: 'BICYCLING', values: 6500 },
-  { key: 'CAR', values: 50000 },
-  { key: 'LIGHT_RAIL', values: 30000 },
-  { key: 'Unicycle', values: 5000 },
-];
-
-it('gets footprint for metrics (not custom, fallback 0)', () => {
-  expect(getFootprintForMetrics(metrics, 0)).toBe(10.534493474207583);
-});
-
-it('gets footprint for metrics (not custom, fallback 0.1)', () => {
-  expect(getFootprintForMetrics(metrics, 0.1)).toBe(10.534493474207583 + 0.5);
-});
-
-it('gets the highest footprint from the dataset, not custom', () => {
-  expect(getHighestFootprint()).toBe(278 / 1609);
-});
-
-it('gets the highest footprint for distance, not custom', () => {
-  expect(getHighestFootprintForDistance(12345)).toBe((278 / 1609) * (12345 / 1000));
-});
-
 const custom_metrics = [
   { key: 'walk', values: 3000 },
   { key: 'bike', values: 6500 },
