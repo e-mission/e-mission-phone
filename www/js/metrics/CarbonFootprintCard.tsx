@@ -55,7 +55,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
 
       //set custon dataset, if the labels are custom
       if (isCustomLabels(userThisWeekModeMap)) {
-        setUseCustomFootprint();
+        setUseCustomFootprint(true);
       }
 
       //calculate low-high and format range for prev week, if exists (14 days ago -> 8 days ago)

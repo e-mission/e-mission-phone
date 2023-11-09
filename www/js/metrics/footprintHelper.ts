@@ -7,9 +7,13 @@ let useCustom = false;
 const mtokm = function (v) {
   return v / 1000;
 };
+export const setUseCustomFootprint = function (val: boolean) {
+  useCustom = val;
+};
 
-export const setUseCustomFootprint = function () {
-  useCustom = true;
+export const clearHighestFootprint = function () {
+  //need to clear for testing
+  highestFootprint = undefined;
 };
 
 const getFootprint = function () {
