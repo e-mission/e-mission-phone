@@ -17,6 +17,8 @@ import DailyActiveMinutesCard from './DailyActiveMinutesCard';
 import CarbonTextCard from './CarbonTextCard';
 import ActiveMinutesTableCard from './ActiveMinutesTableCard';
 import { getAggregateData, getMetrics } from '../commHelper';
+import useAppConfig from '../useAppConfig';
+import { initCustomDatasetHelper } from './CustomMetricsHelper';
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
@@ -41,6 +43,7 @@ function getLastTwoWeeksDtRange() {
 
 const MetricsTab = () => {
   const { t } = useTranslation();
+  const appConfig = useAppConfig();
   const { getFormattedSpeed, speedSuffix, getFormattedDistance, distanceSuffix } =
     useImperialConfig();
 
@@ -52,6 +55,12 @@ const MetricsTab = () => {
     loadMetricsForPopulation('user', dateRange);
     loadMetricsForPopulation('aggregate', dateRange);
   }, [dateRange]);
+
+  //initialize once config is populated
+  useEffect(() => {
+    if (!appConfig) return;
+    initCustomDatasetHelper(appConfig);
+  }, [appConfig]);
 
   async function loadMetricsForPopulation(population: 'user' | 'aggregate', dateRange: DateTime[]) {
     const serverResponse = await fetchMetricsFromServer(population, dateRange);
