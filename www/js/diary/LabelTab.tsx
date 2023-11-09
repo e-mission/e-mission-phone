@@ -250,7 +250,6 @@ const LabelTab = () => {
   }
 
   async function fetchTripsInRange(startTs: number, endTs: number) {
-
     if (!pipelineRange.start_ts) return logWarn('No pipelineRange yet - early return');
     logDebug('LabelTab: fetchTripsInRange from ' + startTs + ' to ' + endTs);
     const readCompositePromise = Timeline.readAllCompositeTrips(startTs, endTs);
