@@ -11,7 +11,6 @@ import './js/controllers.js';
 import './js/services.js';
 import './js/i18n-utils.js';
 import './js/main.js';
-import './js/survey/input-matcher.js';
 import './js/survey/multilabel/multi-label-ui.js';
 import './js/diary.js';
 import './js/diary/services.js';
