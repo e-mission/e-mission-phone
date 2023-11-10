@@ -5,7 +5,7 @@
 const getDeviceName = (platform) => {
   const deviceNameIndex = process.argv.indexOf('--deviceName');
   const deviceName = deviceNameIndex !== -1 ? process.argv[deviceNameIndex + 1] : null;
-  const defaultDeviceName = platform === 'iOS' ? 'iPhone13' : 'Pixel 3a API 33';
+  const defaultDeviceName = platform === 'iOS' ? 'iPhone 13' : 'Pixel 3a API 33';
   return deviceName ?? defaultDeviceName;
 };
 
@@ -14,7 +14,7 @@ const getDeviceName = (platform) => {
  * @param platform iOS or Android
  */
 const getPlatformVersion = (platform) => {
-  const platformVersionIndex = process.argv.inydexOf('--platformVersion');
+  const platformVersionIndex = process.argv.indexOf('--platformVersion');
   const platformVersion =
     platformVersionIndex !== -1 ? process.argv[platformVersionIndex + 1] : null;
   const defaultPlatformVersion = platform === 'iOS' ? '15.0' : '13';
