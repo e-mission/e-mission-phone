@@ -1,4 +1,4 @@
-import { displayErrorMsg } from '../plugin/logger';
+import { displayErrorMsg, logDebug } from '../plugin/logger';
 import { getCustomFootprint } from './CustomMetricsHelper';
 
 //variables for the highest footprint in the set and if using custom
@@ -54,6 +54,7 @@ const getFootprint = function () {
  */
 export const getFootprintForMetrics = function (userMetrics, defaultIfMissing = 0) {
   var footprint = getFootprint();
+  logDebug('getting footprint for ' + userMetrics + ' with ' + footprint);
   var result = 0;
   for (var i in userMetrics) {
     var mode = userMetrics[i].key;

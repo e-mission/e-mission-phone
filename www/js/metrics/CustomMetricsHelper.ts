@@ -99,8 +99,8 @@ const populateCustomFootprints = function () {
  * @param newConfig the app config file
  */
 export const initCustomDatasetHelper = async function (newConfig) {
-  newConfig = await getConfig();
   try {
+    logDebug('initializing custom datasets with config' + newConfig);
     getLabelOptions(newConfig).then((inputParams) => {
       console.log('Input params = ', inputParams);
       _inputParams = inputParams;
