@@ -5,7 +5,6 @@ angular
   .module('emission.main.diary', [
     'emission.main.diary.services',
     'emission.plugin.logger',
-    'emission.survey.enketo.answer',
   ])
 
   .config(function ($stateProvider) {
