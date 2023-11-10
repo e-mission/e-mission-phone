@@ -16,7 +16,8 @@ import Carousel from '../components/Carousel';
 import DailyActiveMinutesCard from './DailyActiveMinutesCard';
 import CarbonTextCard from './CarbonTextCard';
 import ActiveMinutesTableCard from './ActiveMinutesTableCard';
-import { getAggregateData, getMetrics } from '../services/commHelper';
+import { getAggregateData, getMetrics } from '../service/commHelper';
+import { displayError, logDebug } from '../plugin/logger';
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
@@ -54,17 +55,24 @@ const MetricsTab = () => {
   }, [dateRange]);
 
   async function loadMetricsForPopulation(population: 'user' | 'aggregate', dateRange: DateTime[]) {
-    const serverResponse = await fetchMetricsFromServer(population, dateRange);
-    console.debug('Got metrics = ', serverResponse);
-    const metrics = {};
-    const dataKey = population == 'user' ? 'user_metrics' : 'aggregate_metrics';
-    METRIC_LIST.forEach((metricName, i) => {
-      metrics[metricName] = serverResponse[dataKey][i];
-    });
-    if (population == 'user') {
-      setUserMetrics(metrics as MetricsData);
-    } else {
-      setAggMetrics(metrics as MetricsData);
+    try {
+      logDebug(`MetricsTab: fetching metrics for population ${population}'
+        in date range ${JSON.stringify(dateRange)}`);
+      const serverResponse = await fetchMetricsFromServer(population, dateRange);
+      logDebug('MetricsTab: received metrics: ' + JSON.stringify(serverResponse));
+      const metrics = {};
+      const dataKey = population == 'user' ? 'user_metrics' : 'aggregate_metrics';
+      METRIC_LIST.forEach((metricName, i) => {
+        metrics[metricName] = serverResponse[dataKey][i];
+      });
+      logDebug('MetricsTab: parsed metrics: ' + JSON.stringify(metrics));
+      if (population == 'user') {
+        setUserMetrics(metrics as MetricsData);
+      } else {
+        setAggMetrics(metrics as MetricsData);
+      }
+    } catch (e) {
+      displayError(e, t('errors.while-loading-metrics'));
     }
   }
 
