@@ -1,6 +1,3 @@
-import angular from 'angular';
-import React, { useEffect, useState } from 'react';
-import useAppConfig from '../useAppConfig';
 import { addStatReading, statKeys } from '../plugin/clientStats';
 import { getUser, updateUser } from '../commHelper';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
