@@ -22,7 +22,7 @@ describe('input-matcher', () => {
         For some test cases, I need to generate fake data, such as labels, keys, and origin_keys. 
         In such cases, I referred to 'TestUserInputFakeData.py' on the server.
         */
-    (userTrip = {
+    userTrip = {
       data: {
         end_ts: 1437604764,
         start_ts: 1437601247,
@@ -38,27 +38,27 @@ describe('input-matcher', () => {
         key: 'manual/mode_confirm',
       },
       key: 'manual/place',
-    }),
-      (trip = {
-        key: 'FOO',
-        origin_key: 'FOO',
-        start_ts: 1437601000,
-        end_ts: 1437605000,
-        enter_ts: 1437605000,
-        exit_ts: 1437605000,
-        duration: 100,
-      }),
-      (nextTrip = {
-        key: 'BAR',
-        origin_key: 'BAR',
-        start_ts: 1437606000,
-        end_ts: 1437607000,
-        enter_ts: 1437607000,
-        exit_ts: 1437607000,
-        duration: 100,
-      }),
-      // mock Logger
-      (window['Logger'] = { log: console.log });
+    };
+    trip = {
+      key: 'FOO',
+      origin_key: 'FOO',
+      start_ts: 1437601000,
+      end_ts: 1437605000,
+      enter_ts: 1437605000,
+      exit_ts: 1437605000,
+      duration: 100,
+    };
+    nextTrip = {
+      key: 'BAR',
+      origin_key: 'BAR',
+      start_ts: 1437606000,
+      end_ts: 1437607000,
+      enter_ts: 1437607000,
+      exit_ts: 1437607000,
+      duration: 100,
+    };
+    // mock Logger
+    window['Logger'] = { log: console.log };
   });
 
   it('tests fmtTs with valid input', () => {
