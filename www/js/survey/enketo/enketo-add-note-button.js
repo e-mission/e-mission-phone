@@ -7,8 +7,8 @@ import { filterByNameAndVersion } from './enketoHelper';
 import { getAdditionsForTimelineEntry, getUniqueEntries } from '../inputMatcher';
 
 angular
-  .module('emission.survey.enketo.add-note-button', ['emission.services',])
-  .factory('EnketoNotesButtonService', function ( Logger, $timeout) {
+  .module('emission.survey.enketo.add-note-button', ['emission.services'])
+  .factory('EnketoNotesButtonService', function (Logger, $timeout) {
     var enbs = {};
     console.log('Creating EnketoNotesButtonService');
     enbs.SINGLE_KEY = 'NOTES';
@@ -33,13 +33,9 @@ angular
      * Embed 'inputType' to the timelineEntry.
      */
     enbs.extractResult = function (results) {
-      const resultsPromises = [
-        filterByNameAndVersion(enbs.timelineEntrySurveyName, results),
-      ];
+      const resultsPromises = [filterByNameAndVersion(enbs.timelineEntrySurveyName, results)];
       if (enbs.timelineEntrySurveyName != enbs.placeSurveyName) {
-        resultsPromises.push(
-          filterByNameAndVersion(enbs.placeSurveyName, results),
-        );
+        resultsPromises.push(filterByNameAndVersion(enbs.placeSurveyName, results));
       }
       return Promise.all(resultsPromises);
     };
