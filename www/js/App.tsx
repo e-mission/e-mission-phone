@@ -15,6 +15,10 @@ import {
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './control/AppStatusModal';
 import usePermissionStatus from './usePermissionStatus';
+import { initPushNotify } from './splash/pushNotifySettings';
+import { initStoreDeviceSettings } from './splash/storeDeviceSettings';
+import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
+import { withErrorBoundary } from './plugin/ErrorBoundary';
 
 const defaultRoutes = (t) => [
   {
@@ -55,9 +59,9 @@ const App = () => {
   }, [appConfig, t]);
 
   const renderScene = BottomNavigation.SceneMap({
-    label: LabelTab,
-    metrics: MetricsTab,
-    control: ProfileSettings,
+    label: withErrorBoundary(LabelTab),
+    metrics: withErrorBoundary(MetricsTab),
+    control: withErrorBoundary(ProfileSettings),
   });
 
   const refreshOnboardingState = () => getPendingOnboardingState().then(setOnboardingState);
@@ -70,6 +74,9 @@ const App = () => {
     setServerConnSettings(appConfig).then(() => {
       refreshOnboardingState();
     });
+    initPushNotify();
+    initStoreDeviceSettings();
+    initRemoteNotifyHandler();
   }, [appConfig]);
 
   const appContextValue = {

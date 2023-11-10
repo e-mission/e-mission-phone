@@ -3,6 +3,9 @@ www/dist
 www/manual_lib
 www/json
 
+# Ignore all HTML files:
+**/*.html
+
 # This is the pattern to check only www directory
 # Ignore all
 /*
