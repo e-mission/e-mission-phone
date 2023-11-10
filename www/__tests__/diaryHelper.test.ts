@@ -58,18 +58,29 @@ it('returns true/false is multi day', () => {
   expect(isMultiDay('', '2023-09-18T00:00:00-09:00')).toBeFalsy();
 });
 
-//created a fake trip with relevant sections by examining log statements
+/* fake trips with 'distance' in their section summaries
+  ('count' and 'duration' are not used bygetDetectedModes) */
 let myFakeTrip = {
-  sections: [
-    { sensed_mode_str: 'BICYCLING', distance: 6013.73657416706 },
-    { sensed_mode_str: 'WALKING', distance: 715.3078629361006 },
-  ],
-};
+  distance: 6729.0444371031606,
+  cleaned_section_summary: {
+    // count: {...}
+    // duration: {...}
+    distance: {
+      BICYCLING: 6013.73657416706,
+      WALKING: 715.3078629361006,
+    },
+  },
+} as any;
+
 let myFakeTrip2 = {
-  sections: [
-    { sensed_mode_str: 'BICYCLING', distance: 6013.73657416706 },
-    { sensed_mode_str: 'BICYCLING', distance: 715.3078629361006 },
-  ],
+  ...myFakeTrip,
+  inferred_section_summary: {
+    // count: {...}
+    // duration: {...}
+    distance: {
+      BICYCLING: 6729.0444371031606,
+    },
+  },
 };
 
 let myFakeDetectedModes = [
@@ -82,5 +93,5 @@ let myFakeDetectedModes2 = [{ mode: 'BICYCLING', icon: 'bike', color: modeColors
 it('returns the detected modes, with percentages, for a trip', () => {
   expect(getDetectedModes(myFakeTrip)).toEqual(myFakeDetectedModes);
   expect(getDetectedModes(myFakeTrip2)).toEqual(myFakeDetectedModes2);
-  expect(getDetectedModes({})).toEqual([]); // empty trip, no sections, no modes
+  expect(getDetectedModes({} as any)).toEqual([]); // empty trip, no sections, no modes
 });

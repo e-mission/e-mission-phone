@@ -399,6 +399,7 @@
     "registration-check-token": "User registration error. Please check your token and try again.",
     "not-registered-cant-contact": "User is not registered, so the server cannot be contacted.",
     "while-initializing-label": "While initializing Label tab: ",
+    "while-loading-pipeline-range": "Error while loading pipeline range",
     "while-populating-composite": "Error while populating composite trips",
     "while-loading-another-week": "Error while loading travel of {{when}} week",
     "while-loading-specific-week": "Error while loading travel for the week of {{day}}",
