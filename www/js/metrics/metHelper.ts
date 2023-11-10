@@ -3,10 +3,18 @@ import { standardMETs } from './metDataset';
 
 let useCustom = false;
 
+/**
+ * @function sets boolean to use custom mets
+ * @param {boolean} val
+ */
 export const setUseCustomMET = function (val: boolean) {
   useCustom = val;
 };
 
+/**
+ * @function gets the METs object
+ * @returns {object} mets either custom or standard
+ */
 const getMETs = function () {
   if (useCustom == true) {
     return getCustomMETs();
@@ -15,14 +23,33 @@ const getMETs = function () {
   }
 };
 
+/**
+ * @function checks number agains bounds
+ * @param num the number to check
+ * @param min lower bound
+ * @param max upper bound
+ * @returns {boolean} if number is within given bounds
+ */
 const between = function (num, min, max) {
   return num >= min && num <= max;
 };
 
+/**
+ * @function converts meters per second to miles per hour
+ * @param mps meters per second speed
+ * @returns speed in miles per hour
+ */
 const mpstomph = function (mps) {
   return 2.23694 * mps;
 };
 
+/**
+ * @function gets met for a given mode and speed
+ * @param {string} mode of travel
+ * @param {number} speed of travel in meters per second
+ * @param {number} defaultIfMissing default MET if mode not in METs
+ * @returns
+ */
 export const getMet = function (mode, speed, defaultIfMissing) {
   if (mode == 'ON_FOOT') {
     console.log("getMet() converted 'ON_FOOT' to 'WALKING'");

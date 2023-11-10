@@ -4,26 +4,34 @@ import { getConfig } from '../config/dynamicConfig';
 import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import { standardMETs } from './metDataset';
 
+//variables to store values locally
 let _customMETs;
 let _customPerKmFootprint;
 let _range_limited_motorized;
 let _inputParams;
 
+/**
+ * @function gets custom mets, must be initialized
+ * @returns the custom mets stored locally
+ */
 export const getCustomMETs = function () {
   logDebug('Getting custom METs ' + JSON.stringify(_customMETs));
   return _customMETs;
 };
 
+/**
+ * @function gets the custom footprint, must be initialized
+ * @returns custom footprint
+ */
 export const getCustomFootprint = function () {
   logDebug('Getting custom footprint ' + JSON.stringify(_customPerKmFootprint));
   return _customPerKmFootprint;
 };
 
-export const getRangeLimitedMotorized = function () {
-  logDebug('Getting range limited motorized ' + JSON.stringify(_range_limited_motorized));
-  return _range_limited_motorized;
-};
-
+/**
+ * @function stores custom mets in local var
+ * needs _inputParams, label options stored after gotten from config
+ */
 const populateCustomMETs = function () {
   let modeOptions = _inputParams['MODE'];
   let modeMETEntries = modeOptions.map((opt) => {
@@ -56,6 +64,10 @@ const populateCustomMETs = function () {
   logDebug('After populating, custom METs = ' + JSON.stringify(_customMETs));
 };
 
+/**
+ * @function stores custom footprint in local var
+ * needs _inputParams which is stored after gotten from config
+ */
 const populateCustomFootprints = function () {
   let modeOptions = _inputParams['MODE'];
   let modeCO2PerKm = modeOptions
@@ -81,6 +93,11 @@ const populateCustomFootprints = function () {
   logDebug('After populating, custom perKmFootprint' + JSON.stringify(_customPerKmFootprint));
 };
 
+/**
+ * @function initializes the datasets based on configured label options
+ * calls popuplateCustomMETs and populateCustomFootprint
+ * @param newConfig the app config file
+ */
 export const initCustomDatasetHelper = async function (newConfig) {
   newConfig = await getConfig();
   try {
