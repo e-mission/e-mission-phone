@@ -13,7 +13,7 @@
  * notification handling gets more complex, we should consider decoupling it as well.
  */
 
-import { updateUser } from '../commHelper';
+import { updateUser } from '../services/commHelper';
 import { logDebug, displayError } from '../plugin/logger';
 import { publish, subscribe, EVENTS } from '../customEventHandler';
 import { isConsented, readConsentState } from './startprefs';
