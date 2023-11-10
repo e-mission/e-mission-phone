@@ -1,4 +1,3 @@
-
 import { LocalDt, ServerData } from './serverData';
 
 export type UserInput = ServerData<UserInputData>;
