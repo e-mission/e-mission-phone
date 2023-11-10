@@ -13,10 +13,11 @@
 
 import angular from 'angular';
 import { filterByNameAndVersion } from './enketoHelper';
+import { getUserInputForTrip } from '../inputMatcher';
 
 angular
-  .module('emission.survey.enketo.trip.button', ['emission.survey.inputmatcher'])
-  .factory('EnketoTripButtonService', function (InputMatcher, Logger, $timeout) {
+  .module('emission.survey.enketo.trip.button', [])
+  .factory('EnketoTripButtonService', function (Logger, $timeout) {
     var etbs = {};
     console.log('Creating EnketoTripButtonService');
     etbs.key = 'manual/trip_user_input';
@@ -65,7 +66,7 @@ angular
      */
     etbs.populateManualInputs = function (trip, nextTrip, inputType, inputList) {
       // Check unprocessed labels first since they are more recent
-      const unprocessedLabelEntry = InputMatcher.getUserInputForTrip(trip, nextTrip, inputList);
+      const unprocessedLabelEntry = getUserInputForTrip(trip, nextTrip, inputList);
       var userInputEntry = unprocessedLabelEntry;
       if (!angular.isDefined(userInputEntry)) {
         userInputEntry = trip.user_input?.[etbs.inputType2retKey(inputType)];

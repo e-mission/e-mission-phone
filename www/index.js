@@ -5,16 +5,12 @@ import 'leaflet/dist/leaflet.css';
 
 import './js/ngApp.js';
 import './js/splash/referral.js';
-import './js/splash/pushnotify.js';
-import './js/splash/storedevicesettings.js';
 import './js/splash/localnotify.js';
-import './js/splash/remotenotify.js';
 import './js/splash/notifScheduler.js';
 import './js/controllers.js';
 import './js/services.js';
 import './js/i18n-utils.js';
 import './js/main.js';
-import './js/survey/input-matcher.js';
 import './js/survey/multilabel/multi-label-ui.js';
 import './js/diary.js';
 import './js/diary/services.js';
