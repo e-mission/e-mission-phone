@@ -458,15 +458,9 @@
       "destroy-data-pt1": "If you would like to have your data destroyed, please contact K. Shankari ",
       "destroy-data-pt2": " requesting deletion. You must include your token in the request for deletion. Because we do not connect your identity with your token, we cannot delete your information without obtaining the token as part of the deletion request. We will then destroy all data associated with that deletion request, both in the online and archived datasets."
     },
-    "errors": {
-      "registration-check-token": "User registration error. Please check your token and try again.",
-      "not-registered-cant-contact": "User is not registered, so the server cannot be contacted.",
-      "while-loading-pipeline-range": "Error while loading pipeline range",
-      "while-populating-composite": "Error while populating composite trips",
-      "while-loading-another-week": "Error while loading travel of {{when}} week",
-      "while-loading-specific-week": "Error while loading travel for the week of {{day}}",
-      "while-log-messages": "While getting messages from the log ",
-      "while-max-index": "While getting max index "
+    "questions": {
+      "header": "Questions",
+      "for-questions": "If you have any questions about the data collection goals and results, please contact the primary point of contact for the study, {{program_admin_contact}}. If you have any technical questions about app operation, please contact NREL’s K. Shankari (k.shankari@nrel.gov)."
     },
     "consent": {
       "header": "Consent",
