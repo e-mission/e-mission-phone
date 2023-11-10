@@ -1,3 +1,4 @@
+const { getDeviceName, getPlatformVersion } = require('./common');
 const { config } = require('./wdio.conf');
 
 // Appium capabilities
@@ -9,8 +10,8 @@ config.capabilities = [
     // For W3C the appium capabilities need to have an extension prefix
     // This is `appium:` for all Appium Capabilities which can be found here
     // http://appium.io/docs/en/writing-running-appium/caps/
-    'appium:deviceName': 'iPhone 13',
-    'appium:platformVersion': '15.0',
+    'appium:deviceName': getDeviceName('iOS'),
+    'appium:platformVersion': getPlatformVersion('iOS'),
     'appium:automationName': 'XCUITest',
     'appium:app': 'edu.berkeley.eecs.emission.devapp',
   },
