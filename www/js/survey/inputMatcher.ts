@@ -1,13 +1,22 @@
 import { logDebug, displayErrorMsg } from '../plugin/logger';
 import { DateTime } from 'luxon';
-import { UserInput, Trip, TlEntry } from '../types/diaryTypes';
+import { CompositeTrip, TimelineEntry, UserInputEntry } from '../types/diaryTypes';
+import { keysForLabelInputs, unprocessedLabels, unprocessedNotes } from '../diary/timelineHelper';
+import {
+  LabelOption,
+  MultilabelKey,
+  getLabelInputDetails,
+  inputType2retKey,
+  labelOptionByValue,
+} from './multilabel/confirmHelper';
+import { TimelineLabelMap, TimelineNotesMap } from '../diary/LabelTabContext';
 
 const EPOCH_MAXIMUM = 2 ** 31 - 1;
 
 export const fmtTs = (ts_in_secs: number, tz: string): string | null =>
   DateTime.fromSeconds(ts_in_secs, { zone: tz }).toISO();
 
-export const printUserInput = (ui: UserInput): string => `${fmtTs(
+export const printUserInput = (ui: UserInputEntry): string => `${fmtTs(
   ui.data.start_ts,
   ui.metadata.time_zone,
 )} (${ui.data.start_ts}) -> 
@@ -16,8 +25,8 @@ ${fmtTs(ui.data.end_ts, ui.metadata.time_zone)} (${ui.data.end_ts}) ${ui.data.la
 }`;
 
 export const validUserInputForDraftTrip = (
-  trip: Trip,
-  userInput: UserInput,
+  trip: CompositeTrip,
+  userInput: UserInputEntry,
   logsEnabled: boolean,
 ): boolean => {
   if (logsEnabled) {
@@ -41,8 +50,9 @@ export const validUserInputForDraftTrip = (
 };
 
 export const validUserInputForTimelineEntry = (
-  tlEntry: TlEntry,
-  userInput: UserInput,
+  tlEntry: TimelineEntry,
+  nextEntry: TimelineEntry | null,
+  userInput: UserInputEntry,
   logsEnabled: boolean,
 ): boolean => {
   if (!tlEntry.origin_key) return false;
@@ -93,9 +103,8 @@ export const validUserInputForTimelineEntry = (
   let endChecks = userInput.data.end_ts <= entryEnd || userInput.data.end_ts - entryEnd <= 15 * 60;
 
   if (startChecks && !endChecks) {
-    const nextEntryObj = tlEntry.getNextEntry();
-    if (nextEntryObj) {
-      const nextEntryEnd = nextEntryObj.end_ts || nextEntryObj.exit_ts;
+    if (nextEntry) {
+      const nextEntryEnd = nextEntry.end_ts || nextEntry.exit_ts;
       if (!nextEntryEnd) {
         // the last place will not have an exit_ts
         endChecks = true; // so we will just skip the end check
@@ -127,7 +136,7 @@ export const validUserInputForTimelineEntry = (
 };
 
 // parallels get_not_deleted_candidates() in trip_queries.py
-export const getNotDeletedCandidates = (candidates: UserInput[]): UserInput[] => {
+export const getNotDeletedCandidates = (candidates: UserInputEntry[]): UserInputEntry[] => {
   console.log('getNotDeletedCandidates called with ' + candidates.length + ' candidates');
 
   // We want to retain all ACTIVE entries that have not been DELETED
@@ -143,14 +152,14 @@ export const getNotDeletedCandidates = (candidates: UserInput[]): UserInput[] =>
   return notDeletedActive;
 };
 
-export const getUserInputForTrip = (
-  trip: TlEntry,
-  nextTrip: any,
-  userInputList: UserInput[],
-): undefined | UserInput => {
+export const getUserInputForTimelineEntry = (
+  entry: TimelineEntry,
+  nextEntry: TimelineEntry | null,
+  userInputList: UserInputEntry[],
+): undefined | UserInputEntry => {
   const logsEnabled = userInputList?.length < 20;
   if (userInputList === undefined) {
-    logDebug('In getUserInputForTrip, no user input, returning undefined');
+    logDebug('In getUserInputForTimelineEntry, no user input, returning undefined');
     return undefined;
   }
 
@@ -158,18 +167,18 @@ export const getUserInputForTrip = (
 
   // undefined !== true, so this covers the label view case as well
   const potentialCandidates = userInputList.filter((ui) =>
-    validUserInputForTimelineEntry(trip, ui, logsEnabled),
+    validUserInputForTimelineEntry(entry, nextEntry, ui, logsEnabled),
   );
 
   if (potentialCandidates.length === 0) {
     if (logsEnabled)
-      logDebug('In getUserInputForTripStartEnd, no potential candidates, returning []');
+      logDebug('In getUserInputForTimelineEntry, no potential candidates, returning []');
     return undefined;
   }
 
   if (potentialCandidates.length === 1) {
     logDebug(
-      `In getUserInputForTripStartEnd, one potential candidate, returning  ${printUserInput(
+      `In getUserInputForTimelineEntry, one potential candidate, returning  ${printUserInput(
         potentialCandidates[0],
       )}`,
     );
@@ -189,9 +198,10 @@ export const getUserInputForTrip = (
 
 // return array of matching additions for a trip or place
 export const getAdditionsForTimelineEntry = (
-  entry: TlEntry,
-  additionsList: UserInput[],
-): UserInput[] => {
+  entry: TimelineEntry,
+  nextEntry: TimelineEntry | null,
+  additionsList: UserInputEntry[],
+): UserInputEntry[] => {
   const logsEnabled = additionsList?.length < 20;
 
   if (additionsList === undefined) {
@@ -202,7 +212,7 @@ export const getAdditionsForTimelineEntry = (
   // get additions that have not been deleted and filter out additions that do not start within the bounds of the timeline entry
   const notDeleted = getNotDeletedCandidates(additionsList);
   const matchingAdditions = notDeleted.filter((ui) =>
-    validUserInputForTimelineEntry(entry, ui, logsEnabled),
+    validUserInputForTimelineEntry(entry, nextEntry, ui, logsEnabled),
   );
 
   if (logsEnabled) console.log(`Matching Addition list ${matchingAdditions.map(printUserInput)}`);
@@ -248,3 +258,89 @@ export const getUniqueEntries = (combinedList) => {
   });
   return Array.from(uniqueMap.values());
 };
+
+/**
+ * @param allEntries the array of timeline entries to map inputs to
+ * @returns an array containing: (i) an object mapping timeline entry IDs to label inputs,
+ * and (ii) an object mapping timeline entry IDs to note inputs
+ */
+export function mapInputsToTimelineEntries(
+  allEntries: TimelineEntry[],
+  appConfig,
+): [TimelineLabelMap, TimelineNotesMap] {
+  const timelineLabelMap: TimelineLabelMap = {};
+  const timelineNotesMap: TimelineNotesMap = {};
+
+  allEntries.forEach((tlEntry, i) => {
+    const nextEntry = i + 1 < allEntries.length ? allEntries[i + 1] : null;
+    if (appConfig?.survey_info?.['trip-labels'] == 'ENKETO') {
+      // ENKETO configuration: just look for the 'SURVEY' key in the unprocessedInputs
+      const userInputForTrip = getUserInputForTimelineEntry(
+        tlEntry,
+        nextEntry,
+        unprocessedLabels['SURVEY'],
+      );
+      if (userInputForTrip) {
+        timelineLabelMap[tlEntry._id.$oid] = { SURVEY: userInputForTrip };
+      } else {
+        let processedSurveyResponse;
+        for (const key of keysForLabelInputs(appConfig)) {
+          if (tlEntry.user_input?.[key]) {
+            processedSurveyResponse = tlEntry.user_input[key];
+            break;
+          }
+        }
+        timelineLabelMap[tlEntry._id.$oid] = { SURVEY: processedSurveyResponse };
+      }
+    } else {
+      // MULTILABEL configuration: use the label inputs from the labelOptions to determine which
+      // keys to look for in the unprocessedInputs
+      const labelsForTrip: { [k: string]: LabelOption } = {};
+      Object.keys(getLabelInputDetails()).forEach((label: MultilabelKey) => {
+        // Check unprocessed labels first since they are more recent
+        const userInputForTrip = getUserInputForTimelineEntry(
+          tlEntry,
+          nextEntry,
+          unprocessedLabels[label],
+        );
+        if (userInputForTrip) {
+          labelsForTrip[label] = labelOptionByValue(userInputForTrip.data.label, label);
+        } else {
+          const processedLabelValue = tlEntry.user_input?.[inputType2retKey(label)];
+          labelsForTrip[label] = labelOptionByValue(processedLabelValue, label);
+        }
+      });
+      if (Object.keys(labelsForTrip).length) {
+        timelineLabelMap[tlEntry._id.$oid] = labelsForTrip;
+      }
+    }
+  });
+
+  if (
+    appConfig?.survey_info?.buttons?.['trip-notes'] ||
+    appConfig?.survey_info?.buttons?.['place-notes']
+  ) {
+    // trip-level or place-level notes are configured, so we need to match additions too
+    allEntries.forEach((tlEntry, i) => {
+      /* With additions/notes, we can have multiple entries for a single trip or place.
+        So, we will read both the processed additions and unprocessed additions
+        and merge them together, removing duplicates. */
+      const nextEntry = i + 1 < allEntries.length ? allEntries[i + 1] : null;
+      const unprocessedAdditions = getAdditionsForTimelineEntry(
+        tlEntry,
+        nextEntry,
+        unprocessedNotes,
+      );
+      const processedAdditions = tlEntry.additions || [];
+
+      const mergedAdditions = getUniqueEntries(
+        getNotDeletedCandidates([...unprocessedAdditions, ...processedAdditions]),
+      );
+      if (mergedAdditions?.length) {
+        timelineNotesMap[tlEntry._id.$oid] = mergedAdditions;
+      }
+    });
+  }
+
+  return [timelineLabelMap, timelineNotesMap];
+}
