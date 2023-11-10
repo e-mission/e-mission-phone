@@ -1,48 +1,80 @@
-/* These type definitions are a work in progress. The goal is to have a single source of truth for
-    the types of the trip / place / untracked objects and all properties they contain.
-  Since we are using TypeScript now, we should strive to enforce type safety and also benefit from
-    IntelliSense and other IDE features. */
+/* This file provides typings for use in '/diary', including timeline objects (trips and places)
+ and user input objects.
+ As much as possible, these types parallel the types used in the server code. */
 
-// Since it is WIP, these types are not used anywhere yet.
+import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
 
-type ConfirmedPlace = any; // TODO
+type ObjectId = { $oid: string };
+type ConfirmedPlace = {
+  _id: ObjectId;
+  additions: UserInputEntry[];
+  cleaned_place: ObjectId;
+  ending_trip: ObjectId;
+  enter_fmt_time: string; // ISO string 2023-10-31T12:00:00.000-04:00
+  enter_local_dt: LocalDt;
+  enter_ts: number; // Unix timestamp
+  key: string;
+  location: { type: string; coordinates: number[] };
+  origin_key: string;
+  raw_places: ObjectId[];
+  source: string;
+  user_input: {
+    /* for keys ending in 'user_input' (e.g. 'trip_user_input'), the server gives us the raw user
+      input object with 'data' and 'metadata' */
+    [k: `${string}user_input`]: UserInputEntry;
+    /* for keys ending in 'confirm' (e.g. 'mode_confirm'), the server just gives us the user input value
+      as a string (e.g. 'walk', 'drove_alone') */
+    [k: `${string}confirm`]: string;
+  };
+};
 
 /* These are the properties received from the server (basically matches Python code)
   This should match what Timeline.readAllCompositeTrips returns (an array of these objects) */
 export type CompositeTrip = {
-  _id: { $oid: string };
-  additions: any[]; // TODO
-  cleaned_section_summary: any; // TODO
-  cleaned_trip: { $oid: string };
+  _id: ObjectId;
+  additions: UserInputEntry[];
+  cleaned_section_summary: SectionSummary;
+  cleaned_trip: ObjectId;
   confidence_threshold: number;
-  confirmed_trip: { $oid: string };
+  confirmed_trip: ObjectId;
   distance: number;
   duration: number;
   end_confirmed_place: ConfirmedPlace;
   end_fmt_time: string;
   end_loc: { type: string; coordinates: number[] };
   end_local_dt: LocalDt;
-  end_place: { $oid: string };
+  end_place: ObjectId;
   end_ts: number;
   expectation: any; // TODO "{to_label: boolean}"
-  expected_trip: { $oid: string };
+  expected_trip: ObjectId;
   inferred_labels: any[]; // TODO
-  inferred_section_summary: any; // TODO
-  inferred_trip: { $oid: string };
+  inferred_section_summary: SectionSummary;
+  inferred_trip: ObjectId;
   key: string;
   locations: any[]; // TODO
   origin_key: string;
-  raw_trip: { $oid: string };
+  raw_trip: ObjectId;
   sections: any[]; // TODO
   source: string;
   start_confirmed_place: ConfirmedPlace;
   start_fmt_time: string;
   start_loc: { type: string; coordinates: number[] };
   start_local_dt: LocalDt;
-  start_place: { $oid: string };
+  start_place: ObjectId;
   start_ts: number;
-  user_input: UserInput;
+  user_input: {
+    /* for keys ending in 'user_input' (e.g. 'trip_user_input'), the server gives us the raw user
+      input object with 'data' and 'metadata' */
+    [k: `${string}user_input`]: UserInputEntry;
+    /* for keys ending in 'confirm' (e.g. 'mode_confirm'), the server just gives us the user input value
+      as a string (e.g. 'walk', 'drove_alone') */
+    [k: `${string}confirm`]: string;
+  };
 };
+
+/* The 'timeline' for a user is a list of their trips and places,
+ so a 'timeline entry' is either a trip or a place. */
+export type TimelineEntry = ConfirmedPlace | CompositeTrip;
 
 /* These properties aren't received from the server, but are derived from the above properties.
   They are used in the UI to display trip/place details and are computed by the useDerivedProperties hook. */
@@ -59,19 +91,13 @@ export type DerivedProperties = {
   detectedModes: { mode: string; icon: string; color: string; pct: number | string }[];
 };
 
-/* These are the properties that are still filled in by some kind of 'populate' mechanism.
-  It would simplify the codebase to just compute them where they're needed
-  (using memoization when apt so performance is not impacted). */
-export type PopulatedTrip = CompositeTrip & {
-  additionsList?: any[]; // TODO
-  finalInference?: any; // TODO
-  geojson?: any; // TODO
-  getNextEntry?: () => PopulatedTrip | ConfirmedPlace;
-  userInput?: UserInput;
-  verifiability?: string;
+export type SectionSummary = {
+  count: { [k: MotionTypeKey | BaseModeKey]: number };
+  distance: { [k: MotionTypeKey | BaseModeKey]: number };
+  duration: { [k: MotionTypeKey | BaseModeKey]: number };
 };
 
-export type UserInput = {
+export type UserInputEntry = {
   data: {
     end_ts: number;
     start_ts: number;
@@ -101,20 +127,4 @@ export type LocalDt = {
   month: number;
   year: number;
   timezone: string;
-};
-
-export type Trip = {
-  end_ts: number;
-  start_ts: number;
-};
-
-export type TlEntry = {
-  key: string;
-  origin_key: string;
-  start_ts: number;
-  end_ts: number;
-  enter_ts: number;
-  exit_ts: number;
-  duration: number;
-  getNextEntry?: () => PopulatedTrip | ConfirmedPlace;
 };

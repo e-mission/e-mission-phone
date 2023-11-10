@@ -4,15 +4,16 @@ import {
   validUserInputForDraftTrip,
   validUserInputForTimelineEntry,
   getNotDeletedCandidates,
-  getUserInputForTrip,
+  getUserInputForTimelineEntry,
   getAdditionsForTimelineEntry,
   getUniqueEntries,
 } from '../js/survey/inputMatcher';
-import { TlEntry, UserInput } from '../js/types/diaryTypes';
+import { CompositeTrip, TimelineEntry, UserInputEntry } from '../js/types/diaryTypes';
 
 describe('input-matcher', () => {
-  let userTrip: UserInput;
-  let trip: TlEntry;
+  let userTrip: UserInputEntry;
+  let trip: TimelineEntry;
+  let nextTrip: TimelineEntry;
 
   beforeEach(() => {
     /* 
@@ -46,9 +47,16 @@ describe('input-matcher', () => {
       enter_ts: 1437605000,
       exit_ts: 1437605000,
       duration: 100,
-      getNextEntry: jest.fn(),
     };
-
+    nextTrip = {
+      key: 'BAR',
+      origin_key: 'BAR',
+      start_ts: 1437606000,
+      end_ts: 1437607000,
+      enter_ts: 1437607000,
+      exit_ts: 1437607000,
+      duration: 100,
+    };
     // mock Logger
     window['Logger'] = { log: console.log };
   });
@@ -78,7 +86,7 @@ describe('input-matcher', () => {
     const validTrp = {
       end_ts: 1437604764,
       start_ts: 1437601247,
-    };
+    } as CompositeTrip;
     const validUserInput = validUserInputForDraftTrip(validTrp, userTrip, false);
     expect(validUserInput).toBeTruthy();
   });
@@ -87,7 +95,7 @@ describe('input-matcher', () => {
     const invalidTrip = {
       end_ts: 0,
       start_ts: 0,
-    };
+    } as CompositeTrip;
     const invalidUserInput = validUserInputForDraftTrip(invalidTrip, userTrip, false);
     expect(invalidUserInput).toBeFalsy();
   });
@@ -96,18 +104,23 @@ describe('input-matcher', () => {
     // we need valid key and origin_key for validUserInputForTimelineEntry test
     trip['key'] = 'analysis/confirmed_place';
     trip['origin_key'] = 'analysis/confirmed_place';
-    const validTimelineEntry = validUserInputForTimelineEntry(trip, userTrip, false);
+    const validTimelineEntry = validUserInputForTimelineEntry(trip, nextTrip, userTrip, false);
     expect(validTimelineEntry).toBeTruthy();
   });
 
   it('tests validUserInputForTimelineEntry with tlEntry with invalid key and origin_key', () => {
     const invalidTlEntry = trip;
-    const invalidTimelineEntry = validUserInputForTimelineEntry(invalidTlEntry, userTrip, false);
+    const invalidTimelineEntry = validUserInputForTimelineEntry(
+      invalidTlEntry,
+      null,
+      userTrip,
+      false,
+    );
     expect(invalidTimelineEntry).toBeFalsy();
   });
 
   it('tests validUserInputForTimelineEntry with tlEntry with invalie start & end time', () => {
-    const invalidTlEntry: TlEntry = {
+    const invalidTlEntry: TimelineEntry = {
       key: 'analysis/confirmed_place',
       origin_key: 'analysis/confirmed_place',
       start_ts: 1,
@@ -115,9 +128,13 @@ describe('input-matcher', () => {
       enter_ts: 1,
       exit_ts: 1,
       duration: 1,
-      getNextEntry: jest.fn(),
     };
-    const invalidTimelineEntry = validUserInputForTimelineEntry(invalidTlEntry, userTrip, false);
+    const invalidTimelineEntry = validUserInputForTimelineEntry(
+      invalidTlEntry,
+      null,
+      userTrip,
+      false,
+    );
     expect(invalidTimelineEntry).toBeFalsy();
   });
 
@@ -210,13 +227,13 @@ describe('input-matcher', () => {
 
     // make the linst unsorted and then check if userInputWriteThird(latest one) is return output
     const userInputList = [userInputWriteSecond, userInputWriteThird, userInputWriteFirst];
-    const mostRecentEntry = getUserInputForTrip(trip, {}, userInputList);
+    const mostRecentEntry = getUserInputForTimelineEntry(trip, nextTrip, userInputList);
     expect(mostRecentEntry).toMatchObject(userInputWriteThird);
   });
 
   it('tests getUserInputForTrip with invalid userInputList', () => {
     const userInputList = undefined;
-    const mostRecentEntry = getUserInputForTrip(trip, {}, userInputList);
+    const mostRecentEntry = getUserInputForTimelineEntry(trip, nextTrip, userInputList);
     expect(mostRecentEntry).toBe(undefined);
   });
 
@@ -226,13 +243,13 @@ describe('input-matcher', () => {
     trip['origin_key'] = 'analysis/confirmed_place';
 
     // check if the result keep the all valid userTrip items
-    const matchingAdditions = getAdditionsForTimelineEntry(trip, additionsList);
+    const matchingAdditions = getAdditionsForTimelineEntry(trip, nextTrip, additionsList);
     expect(matchingAdditions).toHaveLength(5);
   });
 
   it('tests getAdditionsForTimelineEntry with invalid additionsList', () => {
     const additionsList = undefined;
-    const matchingAdditions = getAdditionsForTimelineEntry(trip, additionsList);
+    const matchingAdditions = getAdditionsForTimelineEntry(trip, nextTrip, additionsList);
     expect(matchingAdditions).toMatchObject([]);
   });
 
