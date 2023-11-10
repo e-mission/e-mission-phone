@@ -140,18 +140,6 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
             />
           </View>
         )}
-        {trip.verifiability === 'can-verify' && (
-          <View style={{ marginTop: 16 }}>
-            <IconButton
-              icon="check-bold"
-              mode="outlined"
-              size={18}
-              onPress={verifyTrip}
-              containerColor={colors.secondaryContainer}
-              style={{ width: 24, height: 24, margin: 3, borderColor: colors.secondary }}
-            />
-          </View>
-        )}
       </View>
       <Modal visible={modalVisibleFor != null} transparent={true} onDismiss={() => dismiss()}>
         <Dialog visible={modalVisibleFor != null} onDismiss={() => dismiss()}>
