@@ -4,7 +4,7 @@ import { Appbar, useTheme } from 'react-native-paper';
 import DateSelect from './DateSelect';
 import FilterSelect from './FilterSelect';
 import TimelineScrollList from './TimelineScrollList';
-import { LabelTabContext } from '../LabelTab';
+import LabelTabContext from '../LabelTabContext';
 
 const LabelListScreen = () => {
   const {
