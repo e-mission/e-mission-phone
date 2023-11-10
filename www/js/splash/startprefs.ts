@@ -1,7 +1,6 @@
-import { getAngularService } from '../angular-react-helper';
 import { storageGet, storageSet } from '../plugin/storage';
 import { logInfo, logDebug, displayErrorMsg } from '../plugin/logger';
-import { readIntroDone } from '../onboarding/onboardingHelper';
+import { EVENTS, publish } from '../customEventHandler';
 
 // data collection consented protocol: string, represents the date on
 // which the consented protocol was approved by the IRB
@@ -28,32 +27,19 @@ function writeConsentToNative() {
 export function markConsented() {
   logInfo('changing consent from ' + _curr_consented + ' -> ' + JSON.stringify(_req_consent));
   // mark in native storage
-  return (
-    readConsentState()
-      .then(writeConsentToNative)
-      .then(function (response) {
-        // mark in local storage
-        storageSet(DATA_COLLECTION_CONSENTED_PROTOCOL, _req_consent);
-        // mark in local variable as well
-        _curr_consented = { ..._req_consent };
-      })
-      //check for reconsent
-      .then(readIntroDone)
-      .then((isIntroDone) => {
-        if (isIntroDone) {
-          logDebug(
-            'reconsent scenario - marked consent after intro done - registering pushnoify and storing device settings',
-          );
-          const PushNotify = getAngularService('PushNotify');
-          const StoreSeviceSettings = getAngularService('StoreDeviceSettings');
-          PushNotify.registerPush();
-          StoreSeviceSettings.storeDeviceSettings();
-        }
-      })
-      .catch((error) => {
-        displayErrorMsg(error, 'Error while while wrting consent to storage');
-      })
-  );
+  return readConsentState()
+    .then(writeConsentToNative)
+    .then(function (response) {
+      // mark in local storage
+      storageSet(DATA_COLLECTION_CONSENTED_PROTOCOL, _req_consent);
+      // mark in local variable as well
+      _curr_consented = { ..._req_consent };
+      // publish event
+      publish(EVENTS.CONSENTED_EVENT, _req_consent);
+    })
+    .catch((error) => {
+      displayErrorMsg(error, 'Error while while wrting consent to storage');
+    });
 }
 
 /**

@@ -15,6 +15,9 @@ import {
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './control/AppStatusModal';
 import usePermissionStatus from './usePermissionStatus';
+import { initPushNotify } from './splash/pushNotifySettings';
+import { initStoreDeviceSettings } from './splash/storeDeviceSettings';
+import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
 import { withErrorBoundary } from './plugin/ErrorBoundary';
 
 const defaultRoutes = (t) => [
@@ -71,6 +74,9 @@ const App = () => {
     setServerConnSettings(appConfig).then(() => {
       refreshOnboardingState();
     });
+    initPushNotify();
+    initStoreDeviceSettings();
+    initRemoteNotifyHandler();
   }, [appConfig]);
 
   const appContextValue = {
