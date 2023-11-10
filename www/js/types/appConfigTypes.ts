@@ -1,0 +1,12 @@
+// WIP: type definitions for the 'dynamic config' spec
+// examples of configs: https://github.com/e-mission/nrel-openpath-deploy-configs/tree/main/configs
+
+export type AppConfig = {
+  server: ServerConnConfig;
+  [k: string]: any; // TODO fill in all the other fields
+};
+
+export type ServerConnConfig = {
+  connectUrl: `https://${string}`;
+  aggregate_call_auth: 'no_auth' | 'user_only' | 'never';
+};
