@@ -9,5 +9,6 @@ www/json
 # This is the pattern to check only www directory
 # Ignore all
 /*
-# but don't ignore all the files in www directory
+# but don't ignore all the files in www and e2e-tests directory
 !/www
+!/e2e-tests
