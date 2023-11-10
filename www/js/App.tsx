@@ -19,6 +19,7 @@ import { initPushNotify } from './splash/pushNotifySettings';
 import { initStoreDeviceSettings } from './splash/storeDeviceSettings';
 import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
 import { withErrorBoundary } from './plugin/ErrorBoundary';
+import { initCustomDatasetHelper } from './metrics/CustomMetricsHelper';
 
 const defaultRoutes = (t) => [
   {
@@ -77,6 +78,7 @@ const App = () => {
     initPushNotify();
     initStoreDeviceSettings();
     initRemoteNotifyHandler();
+    initCustomDatasetHelper(appConfig);
   }, [appConfig]);
 
   const appContextValue = {

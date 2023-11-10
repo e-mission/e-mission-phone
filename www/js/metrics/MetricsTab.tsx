@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { getAngularService } from '../angular-react-helper';
 import { View, ScrollView, useWindowDimensions } from 'react-native';
 import { Appbar } from 'react-native-paper';
 import NavBarButton from '../components/NavBarButton';
@@ -17,8 +16,6 @@ import DailyActiveMinutesCard from './DailyActiveMinutesCard';
 import CarbonTextCard from './CarbonTextCard';
 import ActiveMinutesTableCard from './ActiveMinutesTableCard';
 import { getAggregateData, getMetrics } from '../commHelper';
-import useAppConfig from '../useAppConfig';
-import { initCustomDatasetHelper } from './CustomMetricsHelper';
 import { displayError, logDebug } from '../plugin/logger';
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
@@ -44,7 +41,6 @@ function getLastTwoWeeksDtRange() {
 
 const MetricsTab = () => {
   const { t } = useTranslation();
-  const appConfig = useAppConfig();
   const { getFormattedSpeed, speedSuffix, getFormattedDistance, distanceSuffix } =
     useImperialConfig();
 
@@ -56,12 +52,6 @@ const MetricsTab = () => {
     loadMetricsForPopulation('user', dateRange);
     loadMetricsForPopulation('aggregate', dateRange);
   }, [dateRange]);
-
-  //initialize once config is populated
-  useEffect(() => {
-    if (!appConfig) return;
-    initCustomDatasetHelper(appConfig);
-  }, [appConfig]);
 
   async function loadMetricsForPopulation(population: 'user' | 'aggregate', dateRange: DateTime[]) {
     try {
