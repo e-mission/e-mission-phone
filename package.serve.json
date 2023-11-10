@@ -57,7 +57,8 @@
     "@wdio/mocha-framework": "^8.22.0",
     "@wdio/spec-reporter": "^8.21.0",
     "appium": "^2.2.1",
-    "appium-xcuitest-driver": "^5.8.2"
+    "appium-xcuitest-driver": "^5.8.2",
+    "appium-uiautomator2-driver": "^2.34.1"
   },
   "dependencies": {
     "@react-navigation/native": "^6.1.7",
