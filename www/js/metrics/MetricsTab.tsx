@@ -16,8 +16,8 @@ import Carousel from '../components/Carousel';
 import DailyActiveMinutesCard from './DailyActiveMinutesCard';
 import CarbonTextCard from './CarbonTextCard';
 import ActiveMinutesTableCard from './ActiveMinutesTableCard';
-import { getAggregateData, getMetrics } from '../commHelper';
-import { displayError, logDebug } from '../plugin/logger';
+import { getAggregateData, getMetrics } from '../services/commHelper';
+import { displayError, logDebug, logWarn } from '../plugin/logger';
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
@@ -72,7 +72,7 @@ const MetricsTab = () => {
         setAggMetrics(metrics as MetricsData);
       }
     } catch (e) {
-      displayError(e, t('errors.while-loading-metrics'));
+      logWarn(e + t('errors.while-loading-metrics')); // replace with displayErr
     }
   }
 

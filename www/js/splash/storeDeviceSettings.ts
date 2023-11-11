@@ -1,4 +1,4 @@
-import { updateUser } from '../commHelper';
+import { updateUser } from '../services/commHelper';
 import { isConsented, readConsentState } from './startprefs';
 import i18next from 'i18next';
 import { displayError, logDebug } from '../plugin/logger';

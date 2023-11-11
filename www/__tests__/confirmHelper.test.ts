@@ -1,5 +1,5 @@
 import { mockLogger } from '../__mocks__/globalMocks';
-import * as CommHelper from '../js/commHelper';
+import * as CommHelper from '../js/services/commHelper';
 import {
   baseLabelInputDetails,
   getLabelInputDetails,
