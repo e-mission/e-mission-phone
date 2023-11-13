@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
-import { logDebug } from './plugin/logger';
-import { ServerConnConfig } from './types/appConfigTypes';
+import { logDebug } from '../plugin/logger';
+import { ServerConnConfig } from '../types/appConfigTypes';
 
 /**
  * @param url URL endpoint for the request

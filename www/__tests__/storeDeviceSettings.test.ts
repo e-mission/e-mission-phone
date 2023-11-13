@@ -1,6 +1,6 @@
 import { readConsentState, markConsented } from '../js/splash/startprefs';
 import { storageClear } from '../js/plugin/storage';
-import { getUser } from '../js/commHelper';
+import { getUser } from '../js/services/commHelper';
 import { initStoreDeviceSettings, teardownDeviceSettings } from '../js/splash/storeDeviceSettings';
 import {
   mockBEMDataCollection,
