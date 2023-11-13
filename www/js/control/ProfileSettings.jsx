@@ -44,7 +44,6 @@ const ProfileSettings = () => {
 
   //angular services needed
   const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
-  //const EmailHelper = getAngularService('EmailHelper');
   const NotificationScheduler = getAngularService('NotificationScheduler');
   const ControlHelper = getAngularService('ControlHelper');
 
