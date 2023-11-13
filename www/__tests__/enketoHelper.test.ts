@@ -180,7 +180,10 @@ it('gets the saved result or throws an error', () => {
  * with incremental updates, we may want to revisit this.
  */
 it('loads the previous response to a given survey', () => {
-  expect(loadPreviousResponseForSurvey("manual/demographic_survey")).resolves.toMatchObject({data: "completed", time: "01/01/2001"});
+  expect(loadPreviousResponseForSurvey('manual/demographic_survey')).resolves.toMatchObject({
+    data: 'completed',
+    time: '01/01/2001',
+  });
 });
 
 /**
