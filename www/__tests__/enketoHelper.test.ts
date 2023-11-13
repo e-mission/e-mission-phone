@@ -179,10 +179,8 @@ it('gets the saved result or throws an error', () => {
  * Loading it on demand seems like the way to go. If we choose to experiment
  * with incremental updates, we may want to revisit this.
  */
-//   export function loadPreviousResponseForSurvey(dataKey: string) {
 it('loads the previous response to a given survey', () => {
-  //not really sure if I can test this yet given that it relies on an angular service...
-  // loadPreviousResponseForSurvey("manual/demographic_survey");
+  expect(loadPreviousResponseForSurvey("manual/demographic_survey")).resolves.toMatchObject({data: "completed", time: "01/01/2001"});
 });
 
 /**

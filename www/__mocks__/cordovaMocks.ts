@@ -129,6 +129,16 @@ export const mockBEMUserCache = () => {
         return false;
       }
     },
+    getAllTimeQuery: () => {
+      return {key: "write_ts", startTs: 0, endTs: Date.now()/1000};
+    },
+    getSensorDataForInterval: (key, tq, withMetadata) => {
+      return new Promise<any>((rs, rj) =>
+          setTimeout(() => {
+            rs({metadata: {write_ts: "1699897723"}, data: "completed", time: "01/01/2001"});
+          }, 100),
+        );
+    },
   };
   window['cordova'] ||= {};
   window['cordova'].plugins ||= {};
