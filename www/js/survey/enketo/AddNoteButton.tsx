@@ -11,7 +11,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import DiaryButton from '../../components/DiaryButton';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
-import { LabelTabContext } from '../../diary/LabelTab';
+import LabelTabContext from '../../diary/LabelTabContext';
 import EnketoModal from './EnketoModal';
 import { displayErrorMsg, logDebug } from '../../plugin/logger';
 
@@ -23,12 +23,12 @@ type Props = {
 const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
   const { t, i18n } = useTranslation();
   const [displayLabel, setDisplayLabel] = useState('');
-  const { repopulateTimelineEntry } = useContext(LabelTabContext);
+  const { repopulateTimelineEntry, timelineNotesMap } = useContext(LabelTabContext);
 
   useEffect(() => {
     let newLabel: string;
     const localeCode = i18n.resolvedLanguage;
-    if (notesConfig?.['filled-in-label'] && timelineEntry.additionsList?.length > 0) {
+    if (notesConfig?.['filled-in-label'] && timelineNotesMap[timelineEntry._id.$oid]?.length > 0) {
       newLabel = notesConfig?.['filled-in-label']?.[localeCode];
       setDisplayLabel(newLabel);
     } else {
@@ -43,7 +43,7 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
     let stop = timelineEntry.end_ts || timelineEntry.exit_ts;
 
     // if addition(s) already present on this timeline entry, `begin` where the last one left off
-    timelineEntry.additionsList.forEach((a) => {
+    timelineNotesMap[timelineEntry._id.$oid]?.forEach((a) => {
       if (a.data.end_ts > (begin || 0) && a.data.end_ts != stop) begin = a.data.end_ts;
     });
 

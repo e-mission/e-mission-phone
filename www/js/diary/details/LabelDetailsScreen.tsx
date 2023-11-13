@@ -13,7 +13,7 @@ import {
   Text,
   useTheme,
 } from 'react-native-paper';
-import { LabelTabContext } from '../LabelTab';
+import LabelTabContext from '../LabelTabContext';
 import LeafletView from '../../components/LeafletView';
 import { useTranslation } from 'react-i18next';
 import MultilabelButtonGroup from '../../survey/multilabel/MultiLabelButtonGroup';
@@ -26,11 +26,13 @@ import { useGeojsonForTrip } from '../timelineHelper';
 import TripSectionsDescriptives from './TripSectionsDescriptives';
 import OverallTripDescriptives from './OverallTripDescriptives';
 import ToggleSwitch from '../../components/ToggleSwitch';
+import useAppConfig from '../../useAppConfig';
 
 const LabelScreenDetails = ({ route, navigation }) => {
-  const { surveyOpt, timelineMap, labelOptions } = useContext(LabelTabContext);
+  const { timelineMap, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
+  const appConfig = useAppConfig();
   const { tripId, flavoredTheme } = route.params;
   const trip = timelineMap.get(tripId);
   const { colors } = flavoredTheme || useTheme();
@@ -41,7 +43,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const tripGeojson = useGeojsonForTrip(
     trip,
     labelOptions,
-    modesShown == 'labeled' && trip?.userInput?.MODE?.value,
+    modesShown == 'labeled' && timelineLabelMap[trip._id.$oid]?.MODE?.value,
   );
   const mapOpts = { minZoom: 3, maxZoom: 17 };
 
@@ -74,10 +76,10 @@ const LabelScreenDetails = ({ route, navigation }) => {
             style={{ margin: 10, paddingHorizontal: 10, rowGap: 12, borderRadius: 15 }}>
             {/* MultiLabel or UserInput button, inline on one row */}
             <View style={{ paddingVertical: 10 }}>
-              {surveyOpt?.elementTag == 'multilabel' && (
-                <MultilabelButtonGroup trip={trip} buttonsInline={true} />
+              {appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL' && (
+                <MultilabelButtonGroup trip={trip} />
               )}
-              {surveyOpt?.elementTag == 'enketo-trip-button' && (
+              {appConfig?.survey_info?.['trip-labels'] == 'ENKETO' && (
                 <UserInputButton timelineEntry={trip} />
               )}
             </View>
@@ -91,7 +93,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
 
             {/* If trip is labeled, show a toggle to switch between "Labeled Mode" and "Detected Modes"
               otherwise, just show "Detected" */}
-            {trip?.userInput?.MODE?.value ? (
+            {timelineLabelMap[trip._id.$oid]?.MODE?.value ? (
               <ToggleSwitch
                 onValueChange={(v) => setModesShown(v)}
                 value={modesShown}

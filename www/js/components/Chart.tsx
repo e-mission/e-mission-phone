@@ -5,6 +5,7 @@ import { Chart as ChartJS, registerables } from 'chart.js';
 import { Chart as ChartJSChart } from 'react-chartjs-2';
 import Annotation, { AnnotationOptions, LabelPosition } from 'chartjs-plugin-annotation';
 import { dedupColors, getChartHeight, darkenOrLighten } from './charting';
+import { logDebug } from '../plugin/logger';
 
 ChartJS.register(...registerables, Annotation);
 
@@ -134,6 +135,9 @@ const Chart = ({
                       ? {}
                       : {
                           callback: (value, i) => {
+                            logDebug(`Horizontal axis callback: i = ${i};
+                              chartDatasets = ${JSON.stringify(chartDatasets)};
+                              chartDatasets[0].data = ${JSON.stringify(chartDatasets[0].data)}`);
                             const label = chartDatasets[0].data[i].y;
                             if (typeof label == 'string' && label.includes('\n'))
                               return label.split('\n');
@@ -168,7 +172,9 @@ const Chart = ({
                       ? {}
                       : {
                           callback: (value, i) => {
-                            console.log('testing vertical', chartData, i);
+                            logDebug(`Vertical axis callback: i = ${i}; 
+                              chartDatasets = ${JSON.stringify(chartDatasets)}; 
+                              chartDatasets[0].data = ${JSON.stringify(chartDatasets[0].data)}`);
                             const label = chartDatasets[0].data[i].x;
                             if (typeof label == 'string' && label.includes('\n'))
                               return label.split('\n');
