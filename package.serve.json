@@ -12,7 +12,9 @@
     "serve": "webpack --config webpack.dev.js && concurrently -k \"phonegap --verbose serve\" \"webpack --config webpack.dev.js --watch\"",
     "serve-prod": "webpack --config webpack.prod.js && concurrently -k \"phonegap --verbose serve\" \"webpack --config webpack.prod.js --watch\"",
     "serve-only": "phonegap --verbose serve",
-    "test": "npx jest"
+    "test": "npx jest",
+    "appium-ios": "npx wdio ./e2e-tests/config/ios.config.js --",
+    "appium-android": "npx wdio ./e2e-tests/config/android.config.js --"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
