@@ -1,36 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import i18next from "i18next";
 import { logInfo, logDebug, displayError } from "../plugin/logger";
-//import 'cordova-plugin-email-composer';
-
-
-// Separated functions here
-
-/*
-function getEmailConfig() {
-  return new Promise(async (resolve, reject) => {
-    try {
-      logInfo("About to get email config");
-      let url = "json/emailConfig.json";
-      let response = await fetch(url);
-      let emailConfigData = await response.json();
-      logDebug("emailConfigString = " + JSON.stringify(emailConfigData.address));
-      resolve(emailConfigData.address);
-    } catch (err) {
-      try {
-        let url = "json/emailConfig.json.sample";
-        let response = await fetch(url);
-        let emailConfigData = await response.json();
-        logDebug("default emailConfigString = " + JSON.stringify(emailConfigData.address));
-        resolve(emailConfigData.address);
-      } catch (err) {
-        displayError(err, "Error while reading default email config");
-        reject(err);
-      }
-    }
-  });
-}
-*/
 
 async function hasAccount(): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
@@ -80,26 +50,3 @@ export async function sendEmail(database: string) {
     logInfo('Email app closed while sending, ' + JSON.stringify(emailData) + ' not sure if we should do anything');
   });
 }
-
-/*
-function EmailHelper() {
-  const [emailConfig, setEmailConfig];
-
-  useEffect(() => {
-  }, [emailConfig]);
-
-
-
-// My export component here
-  return (
-    <div>
-      <button onClick={() => sendEmail}>
-        Send Email //make sure this is from the translate thingy
-      </button>
-    </div>
-  );
-
-}
-
-export default EmailHelper; //maybe this is a good option qmark - I think so?
-*/
