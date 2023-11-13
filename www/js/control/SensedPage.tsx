@@ -10,7 +10,6 @@ import { sendEmail } from './emailService';
 const SensedPage = ({ pageVis, setPageVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  //const EmailHelper = getAngularService('EmailHelper');
 
   /* Let's keep a reference to the database for convenience */
   const [DB, setDB] = useState();
