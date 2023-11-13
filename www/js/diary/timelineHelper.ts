@@ -1,11 +1,10 @@
 import moment from 'moment';
-import { displayError, logDebug } from '../plugin/logger';
+import { logDebug } from '../plugin/logger';
 import { getBaseModeByKey, getBaseModeByValue } from './diaryHelper';
 import { getUnifiedDataForInterval } from '../services/unifiedDataLoader';
-import i18next from 'i18next';
 import { UserInputEntry } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
-import { getNotDeletedCandidates, getUniqueEntries } from '../survey/inputMatcher';
+import { filterByNameAndVersion } from '../survey/enketo/enketoHelper';
 
 const cachedGeojsons = new Map();
 /**
@@ -92,7 +91,7 @@ function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
     // fill in the unprocessedLabels object with the labels we just read
     labelResults.forEach((r, i) => {
       if (appConfig.survey_info?.['trip-labels'] == 'ENKETO') {
-        unprocessedLabels['SURVEY'] = r;
+        unprocessedLabels['SURVEY'] = filterByNameAndVersion('TripConfirmSurvey', r);
       } else {
         unprocessedLabels[getLabelInputs()[i]] = r;
       }

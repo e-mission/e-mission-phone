@@ -1,4 +1,3 @@
-import { getAngularService } from '../../angular-react-helper';
 import { Form } from 'enketo-core';
 import { transform } from 'enketo-transformer/web';
 import { XMLParser } from 'fast-xml-parser';
@@ -7,7 +6,7 @@ import MessageFormat from '@messageformat/core';
 import { logDebug, logInfo } from '../../plugin/logger';
 import { getConfig } from '../../config/dynamicConfig';
 import { DateTime } from 'luxon';
-import { fetchUrlCached } from '../../commHelper';
+import { fetchUrlCached } from '../../services/commHelper';
 import { getUnifiedDataForInterval } from '../../services/unifiedDataLoader';
 
 export type PrefillFields = { [key: string]: string };
@@ -20,18 +19,18 @@ export type SurveyOptions = {
   dataKey?: string;
 };
 
-type EnketoAnswerData = {
+type EnketoResponseData = {
   label: string; //display label (this value is use for displaying on the button)
   ts: string; //the timestamp at which the survey was filled out (in seconds)
   fmt_time: string; //the formatted timestamp at which the survey was filled out
   name: string; //survey name
   version: string; //survey version
-  xmlResponse: string; //survey answer XML string
-  jsonDocResponse: string; //survey answer JSON object
+  xmlResponse: string; //survey response as XML string
+  jsonDocResponse: string; //survey response as JSON object
 };
 
-type EnketoAnswer = {
-  data: EnketoAnswerData; //answer data
+type EnketoResponse = {
+  data: EnketoResponseData; //survey response data
   metadata: any;
 };
 
@@ -79,9 +78,10 @@ const LABEL_FUNCTIONS = {
 };
 
 /**
- * _getAnswerByTagName lookup for the survey answer by tag name form the given XML document.
- * @param {XMLDocument} xmlDoc survey answer object
- * @param {string} tagName tag name
+ * _getAnswerByTagName look up how a question was answered, given the survey response
+ *   and the tag name of the question
+ * @param {XMLDocument} xmlDoc survey response as XML object
+ * @param {string} tagName tag name of the question
  * @returns {string} answer string. If not found, return "\<null\>"
  */
 function _getAnswerByTagName(xmlDoc: XMLDocument, tagName: string) {
@@ -110,26 +110,24 @@ export function _lazyLoadConfig() {
 }
 
 /**
- * filterByNameAndVersion filter the survey answers by survey name and their version.
+ * filterByNameAndVersion filter the survey responses by survey name and their version.
  * The version for filtering is specified in enketo survey `compatibleWith` config.
- * The stored survey answer version must be greater than or equal to `compatibleWith` to be included.
+ * The survey version of the response must be greater than or equal to `compatibleWith` to be included.
  * @param {string} name survey name (defined in enketo survey config)
- * @param {EnketoAnswer[]} answers survey answers
- *  (usually retrieved by calling UnifiedDataLoader.getUnifiedMessagesForInterval('manual/survey_response', tq)) method.
- * @return {Promise<EnketoAnswer[]>} filtered survey answers
+ * @param {EnketoResponse[]} responses An array of previously recorded responses to Enketo surveys
+ *  (presumably having been retrieved from unifiedDataLoader)
+ * @return {Promise<EnketoResponse[]>} filtered survey responses
  */
-export function filterByNameAndVersion(name: string, answers: EnketoAnswer[]) {
+export function filterByNameAndVersion(name: string, responses: EnketoResponse[]) {
   return _lazyLoadConfig().then((config) =>
-    answers.filter(
-      (answer) => answer.data.name === name && answer.data.version >= config[name].compatibleWith,
-    ),
+    responses.filter((r) => r.data.name === name && r.data.version >= config[name].compatibleWith),
   );
 }
 
 /**
- * resolve answer label for the survey
+ * resolve a label for the survey response
  * @param {string} name survey name
- * @param {XMLDocument} xmlDoc survey answer object
+ * @param {XMLDocument} xmlDoc survey response as XML object
  * @returns {Promise<string>} label string Promise
  */
 export async function resolveLabel(name: string, xmlDoc: XMLDocument) {
@@ -172,7 +170,7 @@ export function getInstanceStr(xmlModel: string, opts: SurveyOptions): string | 
 
 /**
  * resolve timestamps label from the survey response
- * @param {XMLDocument} xmlDoc survey answer object
+ * @param {XMLDocument} xmlDoc survey response as XML object
  * @param {object} trip trip object
  * @returns {object} object with `start_ts` and `end_ts`
  *    - null if no timestamps are resolved
@@ -269,10 +267,11 @@ export function saveResponse(surveyName: string, enketoForm: Form, appConfig, op
     .then((data) => data);
 }
 
-const _getMostRecent = (answers) => {
-  answers.sort((a, b) => a.metadata.write_ts < b.metadata.write_ts);
-  console.log('first answer is ', answers[0], ' last answer is ', answers[answers.length - 1]);
-  return answers[0];
+const _getMostRecent = (responses) => {
+  responses.sort((a, b) => a.metadata.write_ts < b.metadata.write_ts);
+  logDebug(`_getMostRecent: first response is ${responses[0]}; 
+                            last response is ${responses.slice(-1)[0]}`);
+  return responses[0];
 };
 
 /*
@@ -286,8 +285,8 @@ export function loadPreviousResponseForSurvey(dataKey: string) {
   const tq = window['cordova'].plugins.BEMUserCache.getAllTimeQuery();
   logDebug('loadPreviousResponseForSurvey: dataKey = ' + dataKey + '; tq = ' + tq);
   const getMethod = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
-  return getUnifiedDataForInterval(dataKey, tq, getMethod).then((answers) =>
-    _getMostRecent(answers),
+  return getUnifiedDataForInterval(dataKey, tq, getMethod).then((responses) =>
+    _getMostRecent(responses),
   );
 }
 

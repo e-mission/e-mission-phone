@@ -5,7 +5,7 @@ import { ModalProps } from 'react-native-paper';
 import useAppConfig from '../../useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { SurveyOptions, fetchSurvey, getInstanceStr, saveResponse } from './enketoHelper';
-import { displayError, displayErrorMsg, logDebug } from '../../plugin/logger';
+import { displayError, displayErrorMsg } from '../../plugin/logger';
 
 type Props = Omit<ModalProps, 'children'> & {
   surveyName: string;

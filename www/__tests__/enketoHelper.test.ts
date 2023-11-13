@@ -186,15 +186,15 @@ it('loads the previous response to a given survey', () => {
 });
 
 /**
- * filterByNameAndVersion filter the survey answers by survey name and their version.
+ * filterByNameAndVersion filter the survey responses by survey name and their version.
  * The version for filtering is specified in enketo survey `compatibleWith` config.
- * The stored survey answer version must be greater than or equal to `compatibleWith` to be included.
+ * The stored survey response version must be greater than or equal to `compatibleWith` to be included.
  */
-it('filters the survey answers by their name and version', () => {
-  //no answers -> no filtered answers
+it('filters the survey responses by their name and version', () => {
+  //no response -> no filtered responses
   expect(filterByNameAndVersion('TimeUseSurvey', [])).resolves.toStrictEqual([]);
 
-  const answer = [
+  const response = [
     {
       data: {
         label: 'Activity', //display label (this value is use for displaying on the button)
@@ -202,17 +202,17 @@ it('filters the survey answers by their name and version', () => {
         fmt_time: '12:36', //the formatted timestamp at which the survey was filled out
         name: 'TimeUseSurvey', //survey name
         version: '1', //survey version
-        xmlResponse: '<this is my xml>', //survey answer XML string
-        jsonDocResponse: 'this is my json object', //survey answer JSON object
+        xmlResponse: '<this is my xml>', //survey response XML string
+        jsonDocResponse: 'this is my json object', //survey response JSON object
       },
       metadata: {},
     },
   ];
 
-  //one answer -> that answer
-  expect(filterByNameAndVersion('TimeUseSurvey', answer)).resolves.toStrictEqual(answer);
+  //one response -> that response
+  expect(filterByNameAndVersion('TimeUseSurvey', response)).resolves.toStrictEqual(response);
 
-  const answers = [
+  const responses = [
     {
       data: {
         label: 'Activity', //display label (this value is use for displaying on the button)
@@ -220,8 +220,8 @@ it('filters the survey answers by their name and version', () => {
         fmt_time: '12:36', //the formatted timestamp at which the survey was filled out
         name: 'TimeUseSurvey', //survey name
         version: '1', //survey version
-        xmlResponse: '<this is my xml>', //survey answer XML string
-        jsonDocResponse: 'this is my json object', //survey answer JSON object
+        xmlResponse: '<this is my xml>', //survey response XML string
+        jsonDocResponse: 'this is my json object', //survey response JSON object
       },
       metadata: {},
     },
@@ -232,13 +232,13 @@ it('filters the survey answers by their name and version', () => {
         fmt_time: '12:36', //the formatted timestamp at which the survey was filled out
         name: 'OtherSurvey', //survey name
         version: '1', //survey version
-        xmlResponse: '<this is my xml>', //survey answer XML string
-        jsonDocResponse: 'this is my json object', //survey answer JSON object
+        xmlResponse: '<this is my xml>', //survey response XML string
+        jsonDocResponse: 'this is my json object', //survey response JSON object
       },
       metadata: {},
     },
   ];
 
-  //several answers -> only the one that has a name match
-  expect(filterByNameAndVersion('TimeUseSurvey', answers)).resolves.toStrictEqual(answer);
+  //several responses -> only the one that has a name match
+  expect(filterByNameAndVersion('TimeUseSurvey', responses)).resolves.toStrictEqual(response);
 });
