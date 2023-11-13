@@ -13,7 +13,7 @@ import useAppConfig from '../useAppConfig';
 import AlertBar from './AlertBar';
 import DataDatePicker from './DataDatePicker';
 import PrivacyPolicyModal from './PrivacyPolicyModal';
-
+import { sendEmail } from './emailService';
 import { uploadFile } from './uploadService';
 import ActionMenu from '../components/ActionMenu';
 import SensedPage from './SensedPage';
@@ -44,7 +44,7 @@ const ProfileSettings = () => {
 
   //angular services needed
   const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
-  const EmailHelper = getAngularService('EmailHelper');
+  //const EmailHelper = getAngularService('EmailHelper');
   const NotificationScheduler = getAngularService('NotificationScheduler');
   const ControlHelper = getAngularService('ControlHelper');
 
@@ -256,7 +256,7 @@ const ProfileSettings = () => {
 
   const emailLog = function () {
     // Passing true, we want to send logs
-    EmailHelper.sendEmail('loggerDB');
+    sendEmail('loggerDB');
   };
 
   async function updatePrefReminderTime(storeNewVal = true, newTime) {

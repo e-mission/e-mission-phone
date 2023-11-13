@@ -5,7 +5,7 @@ import { getAngularService } from '../angular-react-helper';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import moment from 'moment';
-import EmailHelper from './emailService';
+import { sendEmail } from './emailService';
 
 const SensedPage = ({ pageVis, setPageVis }) => {
   const { t } = useTranslation();
@@ -17,7 +17,7 @@ const SensedPage = ({ pageVis, setPageVis }) => {
   const [entries, setEntries] = useState([]);
 
   const emailCache = function () {
-    EmailHelper.sendEmail('userCacheDB');
+    sendEmail('userCacheDB');
   };
 
   async function updateEntries() {
