@@ -1,7 +1,7 @@
 import moment from 'moment';
-import { getAngularService } from '../angular-react-helper';
 import { displayError, logDebug } from '../plugin/logger';
 import { getBaseModeByKey, getBaseModeByValue } from './diaryHelper';
+import { getUnifiedDataForInterval } from '../services/unifiedDataLoader';
 import i18next from 'i18next';
 import { UserInputEntry } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
@@ -134,13 +134,13 @@ export async function updateLocalUnprocessedInputs(pipelineRange, appConfig) {
  * @returns Promise an array with 1) results for labels and 2) results for notes
  */
 export async function updateAllUnprocessedInputs(pipelineRange, appConfig) {
-  const UnifiedDataLoader = getAngularService('UnifiedDataLoader');
   const tq = getUnprocessedInputQuery(pipelineRange);
+  const getMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
   const labelsPromises = keysForLabelInputs(appConfig).map((key) =>
-    UnifiedDataLoader.getUnifiedMessagesForInterval(key, tq, true),
+    getUnifiedDataForInterval(key, tq, getMethod),
   );
   const notesPromises = keysForNotesInputs(appConfig).map((key) =>
-    UnifiedDataLoader.getUnifiedMessagesForInterval(key, tq, true),
+    getUnifiedDataForInterval(key, tq, getMethod),
   );
   await updateUnprocessedInputs(labelsPromises, notesPromises, appConfig);
 }

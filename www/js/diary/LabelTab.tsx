@@ -27,7 +27,7 @@ import { fillLocationNamesOfTrip, resetNominatimLimiter } from './addressNamesHe
 import { getLabelOptions } from '../survey/multilabel/confirmHelper';
 import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { useTheme } from 'react-native-paper';
-import { getPipelineRangeTs } from '../commHelper';
+import { getPipelineRangeTs } from '../services/commHelper';
 import { mapInputsToTimelineEntries } from '../survey/inputMatcher';
 import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
