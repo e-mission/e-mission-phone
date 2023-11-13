@@ -43,7 +43,7 @@ async function hasAccount(): Promise<boolean> {
 export async function sendEmail(database: string) {
   let parentDir = "unknown";
 
-  if (window['ionic'].Platform.isIOS() && !(await hasAccount())) { //check in iOS for configuration of email thingy
+  if (window['ionic'].Platform.isIOS() && !(await hasAccount())) { 
     alert(i18next.t('email-service.email-account-not-configured'));
     return;
   }
@@ -67,7 +67,7 @@ export async function sendEmail(database: string) {
 
   alert(i18next.t('email-service.going-to-email', { parentDir: parentDir }));
 
-  let emailConfig = `nseptank@nrel.gov`; //remember to change it to Shankari's
+  let emailConfig = `k.shankari@nrel.gov`;
 
   let emailData = {
     to: emailConfig,
