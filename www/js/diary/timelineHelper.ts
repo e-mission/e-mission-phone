@@ -91,7 +91,9 @@ function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
     // fill in the unprocessedLabels object with the labels we just read
     labelResults.forEach((r, i) => {
       if (appConfig.survey_info?.['trip-labels'] == 'ENKETO') {
-        unprocessedLabels['SURVEY'] = filterByNameAndVersion('TripConfirmSurvey', r);
+        filterByNameAndVersion('TripConfirmSurvey', r).then((filtered) => {
+          unprocessedLabels['SURVEY'] = filtered;
+        });
       } else {
         unprocessedLabels[getLabelInputs()[i]] = r;
       }
