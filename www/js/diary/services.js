@@ -1,41 +1,21 @@
 'use strict';
 
 import angular from 'angular';
-import { getBaseModeByKey, getBaseModeOfLabeledTrip } from './diaryHelper';
-import { SurveyOptions } from '../survey/survey';
 import { getConfig } from '../config/dynamicConfig';
 import { getRawEntries } from '../services/commHelper';
+import { getUnifiedDataForInterval } from '../services/unifiedDataLoader';
 
 angular
   .module('emission.main.diary.services', ['emission.plugin.logger', 'emission.services'])
   .factory(
     'Timeline',
-    function (
-      $http,
-      $ionicLoading,
-      $ionicPlatform,
-      $window,
-      $rootScope,
-      UnifiedDataLoader,
-      Logger,
-      $injector,
-    ) {
+    function ($http, $ionicLoading, $ionicPlatform, $window, $rootScope, Logger, $injector) {
       var timeline = {};
       // corresponds to the old $scope.data. Contains all state for the current
       // day, including the indication of the current day
       timeline.data = {};
       timeline.data.unifiedConfirmsResults = null;
       timeline.UPDATE_DONE = 'TIMELINE_UPDATE_DONE';
-
-      let manualInputFactory;
-      $ionicPlatform.ready(function () {
-        getConfig().then((configObj) => {
-          const surveyOptKey = configObj.survey_info['trip-labels'];
-          const surveyOpt = SurveyOptions[surveyOptKey];
-          console.log('surveyOpt in services.js is', surveyOpt);
-          manualInputFactory = $injector.get(surveyOpt.service);
-        });
-      });
 
       // DB entries retrieved from the server have '_id', 'metadata', and 'data' fields.
       // This function returns a shallow copy of the obj, which flattens the
@@ -268,64 +248,65 @@ angular
             ' -> ' +
             moment.unix(tripEndTransition.data.ts).toString(),
         );
-        return UnifiedDataLoader.getUnifiedSensorDataForInterval(
-          'background/filtered_location',
-          tq,
-        ).then(function (locationList) {
-          if (locationList.length == 0) {
-            return undefined;
-          }
-          var sortedLocationList = locationList.sort(tsEntrySort);
-          var retainInRange = function (loc) {
-            return (
-              tripStartTransition.data.ts <= loc.data.ts && loc.data.ts <= tripEndTransition.data.ts
-            );
-          };
+        const getMethod = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
+        return getUnifiedDataForInterval('background/filtered_location', tq, getMethod).then(
+          function (locationList) {
+            if (locationList.length == 0) {
+              return undefined;
+            }
+            var sortedLocationList = locationList.sort(tsEntrySort);
+            var retainInRange = function (loc) {
+              return (
+                tripStartTransition.data.ts <= loc.data.ts &&
+                loc.data.ts <= tripEndTransition.data.ts
+              );
+            };
 
-          var filteredLocationList = sortedLocationList.filter(retainInRange);
+            var filteredLocationList = sortedLocationList.filter(retainInRange);
 
-          // Fix for https://github.com/e-mission/e-mission-docs/issues/417
-          if (filteredLocationList.length == 0) {
-            return undefined;
-          }
+            // Fix for https://github.com/e-mission/e-mission-docs/issues/417
+            if (filteredLocationList.length == 0) {
+              return undefined;
+            }
 
-          var tripStartPoint = filteredLocationList[0];
-          var tripEndPoint = filteredLocationList[filteredLocationList.length - 1];
-          Logger.log(
-            'tripStartPoint = ' +
-              JSON.stringify(tripStartPoint) +
-              'tripEndPoint = ' +
-              JSON.stringify(tripEndPoint),
-          );
-          // if we get a list but our start and end are undefined
-          // let's print out the complete original list to get a clue
-          // this should help with debugging
-          // https://github.com/e-mission/e-mission-docs/issues/417
-          // if it ever occurs again
-          if (angular.isUndefined(tripStartPoint) || angular.isUndefined(tripEndPoint)) {
-            Logger.log('BUG 417 check: locationList = ' + JSON.stringify(locationList));
+            var tripStartPoint = filteredLocationList[0];
+            var tripEndPoint = filteredLocationList[filteredLocationList.length - 1];
             Logger.log(
-              'transitions: start = ' +
-                JSON.stringify(tripStartTransition.data) +
-                ' end = ' +
-                JSON.stringify(tripEndTransition.data.ts),
+              'tripStartPoint = ' +
+                JSON.stringify(tripStartPoint) +
+                'tripEndPoint = ' +
+                JSON.stringify(tripEndPoint),
             );
-          }
+            // if we get a list but our start and end are undefined
+            // let's print out the complete original list to get a clue
+            // this should help with debugging
+            // https://github.com/e-mission/e-mission-docs/issues/417
+            // if it ever occurs again
+            if (angular.isUndefined(tripStartPoint) || angular.isUndefined(tripEndPoint)) {
+              Logger.log('BUG 417 check: locationList = ' + JSON.stringify(locationList));
+              Logger.log(
+                'transitions: start = ' +
+                  JSON.stringify(tripStartTransition.data) +
+                  ' end = ' +
+                  JSON.stringify(tripEndTransition.data.ts),
+              );
+            }
 
-          const tripProps = points2TripProps(filteredLocationList);
+            const tripProps = points2TripProps(filteredLocationList);
 
-          return {
-            ...tripProps,
-            start_loc: {
-              type: 'Point',
-              coordinates: [tripStartPoint.data.longitude, tripStartPoint.data.latitude],
-            },
-            end_loc: {
-              type: 'Point',
-              coordinates: [tripEndPoint.data.longitude, tripEndPoint.data.latitude],
-            },
-          };
-        });
+            return {
+              ...tripProps,
+              start_loc: {
+                type: 'Point',
+                coordinates: [tripStartPoint.data.longitude, tripStartPoint.data.latitude],
+              },
+              end_loc: {
+                type: 'Point',
+                coordinates: [tripEndPoint.data.longitude, tripEndPoint.data.latitude],
+              },
+            };
+          },
+        );
       };
 
       var linkTrips = function (trip1, trip2) {
@@ -354,7 +335,8 @@ angular
             ' -> ' +
             moment.unix(tq.endTs).toString(),
         );
-        return UnifiedDataLoader.getUnifiedMessagesForInterval('statemachine/transition', tq).then(
+        const getMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
+        return getUnifiedDataForInterval('statemachine/transition', tq, getMethod).then(
           function (transitionList) {
             if (transitionList.length == 0) {
               Logger.log('No unprocessed trips. yay!');

@@ -3,7 +3,6 @@
  As much as possible, these types parallel the types used in the server code. */
 
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
-import { ServerData, LocalDt } from './serverData';
 
 type ObjectId = { $oid: string };
 type ConfirmedPlace = {
@@ -27,17 +26,6 @@ type ConfirmedPlace = {
       as a string (e.g. 'walk', 'drove_alone') */
     [k: `${string}confirm`]: string;
   };
-};
-
-export type TripTransition = {
-  currstate: string;
-  transition: string;
-  ts: number;
-};
-
-export type LocationCoord = {
-  type: string; // e.x., "Point"
-  coordinates: [number, number];
 };
 
 /* These are the properties received from the server (basically matches Python code)
@@ -130,37 +118,13 @@ export type UserInputEntry = {
   key?: string;
 };
 
-export type Location = {
-  speed: number;
-  heading: number;
-  local_dt: LocalDt;
-  idx: number;
-  section: ObjectId;
-  longitude: number;
-  latitude: number;
-  fmt_time: string; // ISO
-  mode: number;
-  loc: LocationCoord;
-  ts: number; // Unix
-  altitude: number;
-  distance: number;
-};
-
-// used in readAllCompositeTrips
-export type SectionData = {
-  end_ts: number; // Unix time, e.x. 1696352498.804
-  end_loc: LocationCoord;
-  start_fmt_time: string; // ISO time
-  end_fmt_time: string;
-  trip_id: ObjectId;
-  sensed_mode: number;
-  source: string; // e.x., "SmoothedHighConfidenceMotion"
-  start_ts: number; // Unix
-  start_loc: LocationCoord;
-  cleaned_section: ObjectId;
-  start_local_dt: LocalDt;
-  end_local_dt: LocalDt;
-  sensed_mode_str: string; //e.x., "CAR"
-  duration: number;
-  distance: number;
+export type LocalDt = {
+  minute: number;
+  hour: number;
+  second: number;
+  day: number;
+  weekday: number;
+  month: number;
+  year: number;
+  timezone: string;
 };

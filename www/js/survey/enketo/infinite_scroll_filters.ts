@@ -7,22 +7,9 @@
  */
 
 import i18next from 'i18next';
-import { getAngularService } from '../../angular-react-helper';
 
-const unlabeledCheck = (t) => {
-  try {
-    const EnketoTripButtonService = getAngularService('EnketoTripButtonService');
-    const etbsSingleKey = EnketoTripButtonService.SINGLE_KEY;
-    return typeof t.userInput[etbsSingleKey] === 'undefined';
-  } catch (e) {
-    console.log('Error in retrieving EnketoTripButtonService: ', e);
-  }
-};
-
-const UNLABELED = {
-  key: 'unlabeled',
-  text: i18next.t('diary.unlabeled'),
-  filter: unlabeledCheck,
+const unlabeledCheck = (trip, userInputForTrip) => {
+  return !userInputForTrip?.['SURVEY'];
 };
 
 const TO_LABEL = {
@@ -31,4 +18,4 @@ const TO_LABEL = {
   filter: unlabeledCheck,
 };
 
-export const configuredFilters = [TO_LABEL, UNLABELED];
+export const configuredFilters = [TO_LABEL];

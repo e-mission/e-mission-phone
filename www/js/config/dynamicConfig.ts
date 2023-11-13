@@ -1,6 +1,5 @@
 import i18next from 'i18next';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
-import { getAngularService } from '../angular-react-helper';
 import { fetchUrlCached } from '../services/commHelper';
 import { storageClear, storageGet, storageSet } from '../plugin/storage';
 

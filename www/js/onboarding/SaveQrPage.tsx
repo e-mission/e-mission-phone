@@ -3,7 +3,6 @@ import { View, StyleSheet } from 'react-native';
 import { ActivityIndicator, Button, Surface, Text } from 'react-native-paper';
 import { registerUserDone, setRegisterUserDone, setSaveQrDone } from './onboardingHelper';
 import { AppContext } from '../App';
-import { getAngularService } from '../angular-react-helper';
 import { displayError, logDebug } from '../plugin/logger';
 import { useTranslation } from 'react-i18next';
 import QrCode, { shareQR } from '../components/QrCode';
