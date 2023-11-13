@@ -3,10 +3,9 @@
  * @param platform iOS or Android
  */
 const getDeviceName = (platform) => {
-  const deviceNameIndex = process.argv.indexOf('--deviceName');
-  const deviceName = deviceNameIndex !== -1 ? process.argv[deviceNameIndex + 1] : null;
+  const deviceName = process.argv.find((arg) => arg.includes('--deviceName'));
   const defaultDeviceName = platform === 'iOS' ? 'iPhone 13' : 'Pixel 3a API 33';
-  return deviceName ?? defaultDeviceName;
+  return deviceName ? deviceName.split('=')[1] : defaultDeviceName;
 };
 
 /**
@@ -14,11 +13,9 @@ const getDeviceName = (platform) => {
  * @param platform iOS or Android
  */
 const getPlatformVersion = (platform) => {
-  const platformVersionIndex = process.argv.indexOf('--platformVersion');
-  const platformVersion =
-    platformVersionIndex !== -1 ? process.argv[platformVersionIndex + 1] : null;
+  const platformVersion = process.argv.find((arg) => arg.includes('--platformVersion'));
   const defaultPlatformVersion = platform === 'iOS' ? '15.0' : '13';
-  return platformVersion ?? defaultPlatformVersion;
+  return platformVersion ? platformVersion.split('=')[1] : defaultPlatformVersion;
 };
 
 module.exports = { getDeviceName, getPlatformVersion };
