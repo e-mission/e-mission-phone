@@ -101,6 +101,10 @@ const ProfileSettings = () => {
     { text: 'Remote push', transition: 'RECEIVED_SILENT_PUSH' },
   ];
 
+  // used for scheduling notifs
+  let scheduledPromise = new Promise((rs) => rs());
+  let isScheduling = false;
+
   useEffect(() => {
     //added appConfig.name needed to be defined because appConfig was defined but empty
     if (appConfig && appConfig.name) {
@@ -148,7 +152,7 @@ const ProfileSettings = () => {
     }
 
     // Update the scheduled notifs
-    updateScheduledNotifs(tempUiConfig.reminderSchemes)
+    updateScheduledNotifs(tempUiConfig.reminderSchemes, isScheduling, scheduledPromise)
       .then(() => {
         logDebug('updated scheduled notifs');
       })
@@ -203,8 +207,8 @@ const ProfileSettings = () => {
 
     if (uiConfig?.reminderSchemes) {
       let promiseList = [];
-      promiseList.push(getReminderPrefs(uiConfig.reminderSchemes));
-      promiseList.push(getScheduledNotifs());
+      promiseList.push(getReminderPrefs(uiConfig.reminderSchemes, isScheduling, scheduledPromise));
+      promiseList.push(getScheduledNotifs(isScheduling, scheduledPromise));
       let resultList = await Promise.all(promiseList);
       const prefs = resultList[0];
       const scheduledNotifs = resultList[1];
@@ -289,6 +293,8 @@ const ProfileSettings = () => {
       setReminderPrefs(
         { reminder_time_of_day: m.toFormat('HH:mm') },
         uiConfig.reminderSchemes,
+        isScheduling,
+        scheduledPromise,
       ).then(() => {
         refreshNotificationSettings();
       });
