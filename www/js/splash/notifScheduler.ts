@@ -101,6 +101,9 @@ const getNotifs = function () {
       if (!notifs?.length) {
         console.log('there are no notifications');
         resolve([]); //if none, return empty array
+      } else {
+        // some empty objects slip through, remove them from notifs
+        notifs = removeEmptyObjects(notifs);
       }
 
       const notifSubset = notifs.slice(0, 5); //prevent near-infinite listing
