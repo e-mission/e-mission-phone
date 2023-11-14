@@ -12,9 +12,9 @@ function range(start, stop, step) {
   return a;
 }
 
-// returns an array of moment objects, for all times that notifications should be sent
-const calcNotifTimes = (scheme, dayZeroDate, timeOfDay) => {
-  const notifTimes = [];
+// returns an array of DateTime objects, for all times that notifications should be sent
+const calcNotifTimes = (scheme, dayZeroDate, timeOfDay): DateTime[] => {
+  const notifTimes: DateTime[] = [];
   for (const s of scheme.schedule) {
     // the days to send notifications, as integers, relative to day zero
     const notifDays = range(s.start, s.end, s.intervalInDays);
@@ -119,7 +119,7 @@ const getNotifs = function () {
 };
 
 // schedules the notifications using the cordova plugin
-const scheduleNotifs = (scheme, notifTimes: [DateTime], isScheduling: boolean) => {
+const scheduleNotifs = (scheme, notifTimes: DateTime[], isScheduling: boolean) => {
   return new Promise<void>((rs) => {
     isScheduling = true;
     const localeCode = i18next.resolvedLanguage;
@@ -153,6 +153,10 @@ const scheduleNotifs = (scheme, notifTimes: [DateTime], isScheduling: boolean) =
   });
 };
 
+const removeEmptyObjects = (list: any[]): any[] => {
+  return list.filter((n) => Object.keys(n).length !== 0);
+};
+
 // determines when notifications are needed, and schedules them if not already scheduled
 export const updateScheduledNotifs = async (
   reminderSchemes,
@@ -175,9 +179,11 @@ export const updateScheduledNotifs = async (
         reminder_assignment,
     );
   }
-  const notifTimes = calcNotifTimes(scheme, reminder_join_date, reminder_time_of_day) as [DateTime];
+  const notifTimes = calcNotifTimes(scheme, reminder_join_date, reminder_time_of_day) as DateTime[];
   return new Promise<void>((resolve, reject) => {
     window['cordova'].plugins.notification.local.getScheduled((notifs) => {
+      // some empty objects slip through, remove them from notifs
+      notifs = removeEmptyObjects(notifs);
       if (areAlreadyScheduled(notifs, notifTimes)) {
         logDebug('Already scheduled, not scheduling again');
       } else {
