@@ -1,7 +1,7 @@
 'use strict';
 
 import angular from 'angular';
-import { getRawEntries } from './commHelper';
+import { getRawEntries } from './services/commHelper';
 
 angular
   .module('emission.services', ['emission.plugin.logger'])

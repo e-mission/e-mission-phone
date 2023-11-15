@@ -3,10 +3,9 @@ import LabelTab from './diary/LabelTab';
 
 angular
   .module('emission.main.diary', [
-    'emission.survey.multilabel.buttons',
-    'emission.survey.enketo.add-note-button',
-    'emission.survey.enketo.trip.button',
+    'emission.main.diary.services',
     'emission.plugin.logger',
+    'emission.survey.enketo.answer',
   ])
 
   .config(function ($stateProvider) {

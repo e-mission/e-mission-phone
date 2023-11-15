@@ -64,6 +64,7 @@ export const mockBEMUserCache = () => {
       return new Promise<void>((rs, rj) =>
         setTimeout(() => {
           for (let p in _cache) delete _cache[p];
+          for (let doc in _storage) delete _storage[doc];
           rs();
         }, 100),
       );
@@ -131,7 +132,59 @@ export const mockBEMDataCollection = () => {
         _storage['config/consent'] = consentDoc;
       }, 100);
     },
+    getConfig: () => {
+      return new Promise<any>((rs, rj) => {
+        setTimeout(() => {
+          rs({ ios_use_remote_push_for_sync: true });
+        }, 100);
+      });
+    },
+    handleSilentPush: () => {
+      return new Promise<void>((rs, rj) =>
+        setTimeout(() => {
+          rs();
+        }, 100),
+      );
+    },
   };
   window['cordova'] ||= {};
   window['cordova'].plugins.BEMDataCollection = mockBEMDataCollection;
+};
+
+export const mockBEMServerCom = () => {
+  const mockBEMServerCom = {
+    postUserPersonalData: (actionString, typeString, updateDoc, rs, rj) => {
+      setTimeout(() => {
+        console.log('set in mock', updateDoc);
+        _storage['user_data'] = updateDoc;
+        rs();
+      }, 100);
+    },
+
+    getUserPersonalData: (actionString, rs, rj) => {
+      setTimeout(() => {
+        rs(_storage['user_data']);
+      }, 100);
+    },
+  };
+  window['cordova'].plugins.BEMServerComm = mockBEMServerCom;
+};
+
+let _url_stash = '';
+
+export const mockInAppBrowser = () => {
+  const mockInAppBrowser = {
+    open: (url: string, mode: string, options: {}) => {
+      _url_stash = url;
+    },
+  };
+  window['cordova'].InAppBrowser = mockInAppBrowser;
+};
+
+export const getURL = () => {
+  return _url_stash;
+};
+
+export const clearURL = () => {
+  _url_stash = '';
 };

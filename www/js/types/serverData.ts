@@ -32,6 +32,14 @@ export type LocalDt = {
   timezone: string;
 };
 
+/*
+ * The server also supports queries via TimeQueryComponents, which can be split into multiple
+ * dates. The TimeQuery type was designed for UserCache calls, which only query via the
+ * `write_ts` time.  For more details,  please see the following files in /e-mission-server/:
+ *   - /emission/storage/timeseries/tcquery.py : additional timeQueryComponent
+ *   - /emission/storage/timeseries/timeQuery.py : timeQuery object used for `write_ts` queries
+ *   - /emission/net/api/cfc_webapp.py : implementation of `/datastreams/find_enteries/<time_type>`
+ */
 export type TimeQuery = {
   key: string;
   startTs: number;

@@ -1,5 +1,5 @@
 import { mockLogger } from '../__mocks__/globalMocks';
-import { combineWithDedup, combinedPromises } from '../js/unifiedDataLoader';
+import { removeDup, combinedPromises } from '../js/services/unifiedDataLoader';
 import { ServerData } from '../js/types/serverData';
 
 mockLogger();
@@ -9,7 +9,7 @@ const testOne: ServerData<any> = {
   metadata: {
     key: '',
     platform: '',
-    write_ts: 1, // the only value checked by combineWithDedup
+    write_ts: 1, // the only value checked by removeDup
     time_zone: '',
     write_fmt_time: '',
     write_local_dt: null,
@@ -23,25 +23,21 @@ testThree.metadata.write_ts = 3;
 const testFour = JSON.parse(JSON.stringify(testOne));
 testFour.metadata.write_ts = 4;
 
-describe('combineWithDedup can', () => {
-  it('work with empty arrays', () => {
-    expect(combineWithDedup([], [])).toEqual([]);
-    expect(combineWithDedup([], [testOne])).toEqual([testOne]);
-    expect(combineWithDedup([testOne, testTwo], [])).toEqual([testOne, testTwo]);
+describe('removeDup can', () => {
+  it('work with an empty array', () => {
+    expect(removeDup([])).toEqual([]);
   });
-  it('work with arrays of len 1', () => {
-    expect(combineWithDedup([testOne], [testOne])).toEqual([testOne]);
-    expect(combineWithDedup([testOne], [testTwo])).toEqual([testOne, testTwo]);
+
+  it('work with an array of len 1', () => {
+    expect(removeDup([testOne])).toEqual([testOne]);
   });
-  it('work with arrays of len > 1', () => {
-    expect(combineWithDedup([testOne], [testOne, testTwo])).toEqual([testOne, testTwo]);
-    expect(combineWithDedup([testOne], [testTwo, testTwo])).toEqual([testOne, testTwo]);
-    expect(combineWithDedup([testOne, testTwo], [testTwo, testTwo])).toEqual([testOne, testTwo]);
-    expect(combineWithDedup([testOne, testTwo, testThree], [testOne, testTwo])).toEqual([
-      testOne,
-      testTwo,
-      testThree,
-    ]);
+
+  it('work with an array of len >=1', () => {
+    expect(removeDup([testOne, testTwo])).toEqual([testOne, testTwo]);
+    expect(removeDup([testOne, testOne])).toEqual([testOne]);
+    expect(removeDup([testOne, testTwo, testThree])).toEqual([testOne, testTwo, testThree]);
+    expect(removeDup([testOne, testOne, testThree])).toEqual([testOne, testThree]);
+    expect(removeDup([testOne, testOne, testOne])).toEqual([testOne]);
   });
 });
 
@@ -49,18 +45,41 @@ describe('combineWithDedup can', () => {
 const promiseGenerator = (values: Array<ServerData<any>>) => {
   return Promise.resolve(values);
 };
+const badPromiseGenerator = (input: string) => {
+  return Promise.reject(input);
+};
 
 it('throws an error on an empty input', async () => {
   expect(() => {
-    combinedPromises([], combineWithDedup);
+    combinedPromises([], removeDup);
   }).toThrow();
+});
+
+it('catches when all promises fails', async () => {
+  expect(combinedPromises([badPromiseGenerator('')], removeDup)).rejects.toEqual(['']);
+  expect(
+    combinedPromises([badPromiseGenerator('bad'), badPromiseGenerator('promise')], removeDup),
+  ).rejects.toEqual(['bad', 'promise']);
+  expect(
+    combinedPromises(
+      [badPromiseGenerator('very'), badPromiseGenerator('bad'), badPromiseGenerator('promise')],
+      removeDup,
+    ),
+  ).rejects.toEqual(['very', 'bad', 'promise']);
+
+  expect(
+    combinedPromises([badPromiseGenerator('bad'), promiseGenerator([testOne])], removeDup),
+  ).resolves.toEqual([testOne]);
+  expect(
+    combinedPromises([promiseGenerator([testOne]), badPromiseGenerator('bad')], removeDup),
+  ).resolves.toEqual([testOne]);
 });
 
 it('work with arrays of len 1', async () => {
   const promiseArrayOne = [promiseGenerator([testOne])];
   const promiseArrayTwo = [promiseGenerator([testOne, testTwo])];
-  const testResultOne = await combinedPromises(promiseArrayOne, combineWithDedup);
-  const testResultTwo = await combinedPromises(promiseArrayTwo, combineWithDedup);
+  const testResultOne = await combinedPromises(promiseArrayOne, removeDup);
+  const testResultTwo = await combinedPromises(promiseArrayTwo, removeDup);
 
   expect(testResultOne).toEqual([testOne]);
   expect(testResultTwo).toEqual([testOne, testTwo]);
@@ -79,11 +98,11 @@ it('works with arrays of len 2', async () => {
     promiseGenerator([testTwo, testThree]),
   ];
 
-  const testResultOne = await combinedPromises(promiseArrayOne, combineWithDedup);
-  const testResultTwo = await combinedPromises(promiseArrayTwo, combineWithDedup);
-  const testResultThree = await combinedPromises(promiseArrayThree, combineWithDedup);
-  const testResultFour = await combinedPromises(promiseArrayFour, combineWithDedup);
-  const testResultFive = await combinedPromises(promiseArrayFive, combineWithDedup);
+  const testResultOne = await combinedPromises(promiseArrayOne, removeDup);
+  const testResultTwo = await combinedPromises(promiseArrayTwo, removeDup);
+  const testResultThree = await combinedPromises(promiseArrayThree, removeDup);
+  const testResultFour = await combinedPromises(promiseArrayFour, removeDup);
+  const testResultFive = await combinedPromises(promiseArrayFive, removeDup);
 
   expect(testResultOne).toEqual([testOne, testTwo]);
   expect(testResultTwo).toEqual([testOne, testTwo, testThree]);
@@ -114,10 +133,10 @@ it('works with arrays of len >= 2', async () => {
     promiseGenerator([testFour]),
   ];
 
-  const testResultOne = await combinedPromises(promiseArrayOne, combineWithDedup);
-  const testResultTwo = await combinedPromises(promiseArrayTwo, combineWithDedup);
-  const testResultThree = await combinedPromises(promiseArrayThree, combineWithDedup);
-  const testResultFour = await combinedPromises(promiseArrayFour, combineWithDedup);
+  const testResultOne = await combinedPromises(promiseArrayOne, removeDup);
+  const testResultTwo = await combinedPromises(promiseArrayTwo, removeDup);
+  const testResultThree = await combinedPromises(promiseArrayThree, removeDup);
+  const testResultFour = await combinedPromises(promiseArrayFour, removeDup);
 
   expect(testResultOne).toEqual([testOne, testTwo, testThree]);
   expect(testResultTwo).toEqual([testOne, testTwo]);

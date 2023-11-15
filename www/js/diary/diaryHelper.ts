@@ -3,6 +3,7 @@
 
 import { DateTime } from 'luxon';
 import { LabelOptions } from '../survey/multilabel/confirmHelper';
+import { CompositeTrip } from '../types/diaryTypes';
 
 export const modeColors = {
   pink: '#c32e85', // oklch(56% 0.2 350)     // e-car
@@ -74,13 +75,6 @@ export function getBaseModeByKey(
   let key = ('' + motionName).toUpperCase();
   key = key.split('.').pop(); // if "MotionTypes.WALKING", then just take "WALKING"
   return BaseModes[key] || BaseModes.UNKNOWN;
-}
-
-export function getBaseModeOfLabeledTrip(trip, labelOptions) {
-  const modeKey = trip?.userInput?.MODE?.value;
-  if (!modeKey) return null; // trip has no MODE label
-  const modeOption = labelOptions?.MODE?.find((opt) => opt.value == modeKey);
-  return getBaseModeByKey(modeOption?.baseMode || 'OTHER');
 }
 
 export function getBaseModeByValue(value, labelOptions: LabelOptions) {
@@ -161,36 +155,23 @@ export function getFormattedTimeRange(beginFmtTime: string, endFmtTime: string) 
   return formattedRange;
 }
 
-// Temporary function to avoid repear in getDetectedModes ret val.
-const filterRunning = (mode) => (mode == 'MotionTypes.RUNNING' ? 'MotionTypes.WALKING' : mode);
+/**
+ * @param trip A composite trip object
+ * @returns An array of objects containing the mode key, icon, color, and percentage for each mode
+ * detected in the trip
+ */
+export function getDetectedModes(trip: CompositeTrip) {
+  const sectionSummary = trip?.inferred_section_summary || trip?.cleaned_section_summary;
+  if (!sectionSummary?.distance) return [];
 
-export function getDetectedModes(trip) {
-  if (!trip.sections?.length) return [];
-
-  // sum up the distances for each mode, as well as the total distance
-  let totalDist = 0;
-  const dists: Record<string, number> = {};
-  trip.sections.forEach((section) => {
-    const filteredMode = filterRunning(section.sensed_mode_str);
-    dists[filteredMode] = (dists[filteredMode] || 0) + section.distance;
-    totalDist += section.distance;
-  });
-
-  // sort modes by the distance traveled (descending)
-  const sortedKeys = Object.entries(dists)
-    .sort((a, b) => b[1] - a[1])
-    .map((e) => e[0]);
-  let sectionPcts = sortedKeys.map(function (mode) {
-    const fract = dists[mode] / totalDist;
-    return {
-      mode: mode,
+  return Object.entries(sectionSummary.distance)
+    .sort(([modeA, distA], [modeB, distB]) => distB - distA) // sort by distance (highest first)
+    .map(([mode, dist]: [MotionTypeKey, number]) => ({
+      mode,
       icon: getBaseModeByKey(mode)?.icon,
       color: getBaseModeByKey(mode)?.color || 'black',
-      pct: Math.round(fract * 100) || '<1', // if rounds to 0%, show <1%
-    };
-  });
-
-  return sectionPcts;
+      pct: Math.round((dist / trip.distance) * 100) || '<1', // if rounds to 0%, show <1%
+    }));
 }
 
 export function getFormattedSectionProperties(trip, ImperialConfig) {
