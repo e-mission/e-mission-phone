@@ -6,7 +6,6 @@ import { resetDataAndRefresh } from '../config/dynamicConfig';
 import { AppContext } from '../App';
 import PrivacyPolicy from './PrivacyPolicy';
 import { onboardingStyles } from './OnboardingStack';
-import { markConsented } from '../splash/startprefs';
 import { setProtocolDone } from './onboardingHelper';
 
 const ProtocolPage = () => {
