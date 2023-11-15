@@ -1,5 +1,9 @@
 import { clearAlerts, mockAlert, mockLogger } from '../__mocks__/globalMocks';
-import { readAllCompositeTrips, readUnprocessedTrips } from '../js/diary/timelineHelper';
+import {
+  useGeojsonForTrip,
+  readAllCompositeTrips,
+  readUnprocessedTrips,
+} from '../js/diary/timelineHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import * as mockTLH from '../__mocks__/timelineHelperMocks';
 
@@ -15,6 +19,7 @@ afterAll(() => {
   jest.restoreAllMocks();
 });
 
+// Tests for readAllCompositeTrips
 // Once we have end-to-end testing, we could utilize getRawEnteries.
 jest.mock('../js/services/commHelper', () => ({
   getRawEntries: jest.fn((key, startTs, endTs, valTwo) => {
@@ -28,7 +33,7 @@ it('works when there are no composite trip objects fetched', async () => {
   expect(readAllCompositeTrips(-1, -1)).resolves.toEqual([]);
 });
 
-// Checks that `readAllCOmpositeTrips` properly unpacks & flattens the confirmedPlaces
+// Checks that `readAllCompositeTrips` properly unpacks & flattens the confirmedPlaces
 const checkTripIsUnpacked = (obj) => {
   expect(obj.metadata).toBeUndefined();
   expect(obj).toEqual(
@@ -61,7 +66,8 @@ it('Works with multiple trips', async () => {
   expect(testValue[0].origin_key).toBe('1');
   expect(testValue[1].origin_key).toBe('2');
 });
-/*
+
+// Tests for `readUnprocessedTrips`
 jest.mock('../js/services/unifiedDataLoader', () => ({
   getUnifiedDataForInterval: jest.fn((key, tq, combiner) => {
     if (tq.startTs === mockTLH.fakeStartTsOne) return Promise.resolve(mockTLH.mockTransition);
@@ -74,12 +80,13 @@ it('works when there are no unprocessed trips...', async () => {
   expect(readUnprocessedTrips(-1, -1, null)).resolves.toEqual([]);
 });
 
+// In manual testing, it seems that `trip_gj_list` always returns
+// as an empty array - should find data where this is different...
 it('works when there are one or more unprocessed trips...', async () => {
-  expect(
-    readUnprocessedTrips(mockTLH.fakeStartTsOne, mockTLH.fakeEndTsOne, null),
-  ).resolves.not.toThrow();
-  expect(
-    readUnprocessedTrips(mockTLH.fakeStartTsTwo, mockTLH.fakeEndTsTwo, null),
-  ).resolves.not.toThrow();
+  const testValueOne = await readUnprocessedTrips(
+    mockTLH.fakeStartTsOne,
+    mockTLH.fakeEndTsOne,
+    null,
+  );
+  expect(testValueOne).toEqual([]);
 });
-*/
