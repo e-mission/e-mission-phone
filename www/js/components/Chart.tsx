@@ -174,8 +174,8 @@ const Chart = ({
                           callback: (value, i) => {
                             logDebug(`Vertical axis callback: i = ${i}; 
                               chartDatasets = ${JSON.stringify(chartDatasets)}; 
-                              chartDatasets[0].data = ${JSON.stringify(chartDatasets[0].data)}`);
-                            const label = chartDatasets[0].data[i].x;
+                              chartDatasets[i].data = ${JSON.stringify(chartDatasets[i].data)}`);
+                            const label = chartDatasets[i].data[0].x;
                             if (typeof label == 'string' && label.includes('\n'))
                               return label.split('\n');
                             return label;
