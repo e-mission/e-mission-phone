@@ -1,24 +1,24 @@
-export type LabelOptions = {
-  MODE: Array<ModeLabel>;
-  PURPOSE: Array<PurposeReplaceLabel>;
-  REPLACE_MODE: Array<PurposeReplaceLabel>;
+export type InputDetails<T extends string> = {
+  [k in T]?: {
+    name: string;
+    labeltext: string;
+    choosetext: string;
+    key: string;
+  };
 };
-
-export type ModeLabel = {
+export type LabelOption = {
   value: string;
   baseMode: string;
+  met?: { range: any[]; mets: number };
   met_equivalent?: string;
-  met?: {
-    ALL: {
-      range: Array<number>;
-      mets: number;
-    };
-  };
   kgCo2PerKm: number;
-  test: string;
+  text?: string;
 };
-
-export type PurposeReplaceLabel = {
-  value: string;
-  test: string;
+export type MultilabelKey = 'MODE' | 'PURPOSE' | 'REPLACED_MODE';
+export type LabelOptions<T extends string = MultilabelKey> = {
+  [k in T]: LabelOption[];
+} & {
+  translations: {
+    [lang: string]: { [translationKey: string]: string };
+  };
 };
