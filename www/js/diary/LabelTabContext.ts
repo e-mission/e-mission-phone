@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 import { TimelineEntry, UserInputEntry } from '../types/diaryTypes';
-import { LabelOption } from '../survey/multilabel/confirmHelper';
+import { LabelOption } from '../types/labelTypes';
 
 export type TimelineMap = Map<string, TimelineEntry>;
 export type TimelineLabelMap = {

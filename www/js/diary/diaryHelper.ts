@@ -3,8 +3,9 @@
 
 import moment from 'moment';
 import { DateTime } from 'luxon';
-import { LabelOptions, readableLabelToKey } from '../survey/multilabel/confirmHelper';
+import { readableLabelToKey } from '../survey/multilabel/confirmHelper';
 import { CompositeTrip } from '../types/diaryTypes';
+import { LabelOptions } from '../types/labelTypes';
 
 export const modeColors = {
   pink: '#c32e85', // oklch(56% 0.2 350)     // e-car
