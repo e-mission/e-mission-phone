@@ -6,6 +6,7 @@ import {
 } from '../js/diary/timelineHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import * as mockTLH from '../__mocks__/timelineHelperMocks';
+import { GeoJSON, GjFeature } from '../js/types/diaryTypes';
 
 mockLogger();
 mockAlert();
@@ -17,6 +18,32 @@ beforeEach(() => {
 
 afterAll(() => {
   jest.restoreAllMocks();
+});
+
+describe('useGeojsonForTrip', () => {
+  it('work with an empty input', () => {
+    const testVal = useGeojsonForTrip(null, null, null);
+    expect(testVal).toBeFalsy;
+  });
+
+  const checkGeojson = (geoObj: GeoJSON) => {
+    expect(geoObj.data).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        type: 'FeatureCollection',
+        features: expect.any(Array<GjFeature>),
+      }),
+    );
+  };
+
+  it('works without labelMode flag', () => {
+    const testValue = useGeojsonForTrip(
+      mockTLH.mockDataTwo.phone_data[1].data,
+      mockTLH.mockLabelOptions,
+    );
+    checkGeojson(testValue);
+    expect(testValue.data.features.length).toBe(3);
+  });
 });
 
 // Tests for readAllCompositeTrips

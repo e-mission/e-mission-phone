@@ -5,17 +5,17 @@ import { getRawEntries } from '../services/commHelper';
 import { ServerResponse, ServerData } from '../types/serverData';
 import L from 'leaflet';
 import { DateTime } from 'luxon';
-import { UserInputEntry, CompositeTrip, TripTransition, SectionData } from '../types/diaryTypes';
+import { UserInputEntry, TripTransition, TimelineEntry, GeoJSON } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
-import { LabelOptions } from '../survey/multilabel/confirmHelper';
+import { LabelOptions } from '../types/labelTypes';
 import { getNotDeletedCandidates, getUniqueEntries } from '../survey/inputMatcher';
 
-const cachedGeojsons = new Map();
+const cachedGeojsons: Map<string, GeoJSON> = new Map();
 
 /**
  * @description Gets a formatted GeoJSON object for a trip, including the start and end places and the trajectory.
  */
-export function useGeojsonForTrip(trip: CompositeTrip, labelOptions: LabelOptions, labeledMode?) {
+export function useGeojsonForTrip(trip, labelOptions: LabelOptions, labeledMode?: Boolean) {
   if (!trip) return;
   const gjKey = `trip-${trip._id.$oid}-${labeledMode || 'detected'}`;
   if (cachedGeojsons.has(gjKey)) {
@@ -229,7 +229,7 @@ const unpackServerData = (obj: ServerData<any>) => ({
 export const readAllCompositeTrips = function (startTs: number, endTs: number) {
   const readPromises = [getRawEntries(['analysis/composite_trip'], startTs, endTs, 'data.end_ts')];
   return Promise.all(readPromises)
-    .then(([ctList]: [ServerResponse<CompositeTrip>]) => {
+    .then(([ctList]: [ServerResponse<TimelineEntry>]) => {
       return ctList.phone_data.map((ct) => {
         const unpackedCt = unpackServerData(ct);
         return {

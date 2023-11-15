@@ -2,7 +2,7 @@ import { createContext } from 'react';
 import { TimelineEntry, UserInputEntry } from '../types/diaryTypes';
 import { LabelOption } from '../types/labelTypes';
 
-export type TimelineMap = Map<string, TimelineEntry>;
+export type TimelineMap = Map<string, TimelineEntry>; // Todo: update to reflect unpacked trips (origin_Key, etc)
 export type TimelineLabelMap = {
   [k: string]: {
     /* if the key here is 'SURVEY', we are in the ENKETO configuration, meaning the user input

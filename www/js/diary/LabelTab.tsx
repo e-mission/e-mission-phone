@@ -255,7 +255,6 @@ const LabelTab = () => {
           .reverse()
           .find((trip) => trip.origin_key.includes('confirmed_trip'));
       readUnprocessedPromise = readUnprocessedTrips(pipelineRange.end_ts, nowTs, lastProcessedTrip);
-      readUnprocessedPromise = readUnprocessedTrips(pipelineRange.end_ts, nowTs, lastProcessedTrip);
     } else {
       readUnprocessedPromise = Promise.resolve([]);
     }

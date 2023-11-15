@@ -1,5 +1,6 @@
 import { MetaData, ServerData, ServerResponse } from '../js/types/serverData';
 import { CompositeTrip, ConfirmedPlace, TripTransition } from '../js/types/diaryTypes';
+import { LabelOptions } from '../js/types/labelTypes';
 
 const mockMetaData: MetaData = {
   write_ts: 1,
@@ -11,8 +12,11 @@ const mockMetaData: MetaData = {
   origin_key: '1',
 };
 
-const mockObjId = {
-  $oid: 'objID',
+export const mockLabelOptions: LabelOptions = {
+  MODE: null,
+  PURPOSE: null,
+  REPLACED_MODE: null,
+  translations: null,
 };
 
 const mockConfirmedPlaceData: ConfirmedPlace = {
@@ -58,7 +62,7 @@ export const mockData: ServerResponse<CompositeTrip> = {
   phone_data: [
     {
       data: {
-        _id: null,
+        _id: { $oid: 'mockDataOne' },
         additions: [],
         cleaned_section_summary: null,
         cleaned_trip: null,
@@ -125,7 +129,7 @@ export const mockData: ServerResponse<CompositeTrip> = {
         },
         start_local_dt: null,
         start_place: null,
-        start_ts: null,
+        start_ts: 1,
         user_input: null,
       },
       metadata: mockMetaData,

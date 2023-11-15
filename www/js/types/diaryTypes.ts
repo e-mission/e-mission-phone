@@ -38,7 +38,7 @@ export type TripTransition = {
 
 export type LocationCoord = {
   type: string; // e.x., "Point"
-  coordinates: [number, number];
+  coordinates: [number, number] | Array<[number, number]>;
 };
 
 /* These are the properties received from the server (basically matches Python code)
@@ -164,4 +164,23 @@ export type SectionData = {
   sensed_mode_str: string; //e.x., "CAR"
   duration: number;
   distance: number;
+};
+
+export type GjFeature = {
+  type: string;
+  geometry: LocationCoord;
+  properties?: { featureType: string }; // if geometry.coordinates.length == 1, property
+  style?: { color: string }; // otherwise, style (which is a hexcode)
+};
+
+export type GeoJSON = {
+  data: {
+    id: string;
+    type: string;
+    features: GjFeature[];
+    properties: {
+      start_ts: number;
+      end_ts: number;
+    };
+  };
 };
