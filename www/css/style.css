@@ -6,10 +6,10 @@
   .question.non-select {
     display: inline-block;
   }
-  .question input[name$="Start_date"],
-  .question input[name$="Start_time"],
-  .question input[name$="End_date"],
-  .question input[name$="End_time"] {
+  .question input[name$='Start_date'],
+  .question input[name$='Start_time'],
+  .question input[name$='End_date'],
+  .question input[name$='End_time'] {
     width: calc(40vw - 10px);
     margin-right: 5px;
     display: flex;
