@@ -3,7 +3,6 @@ import LabelTab from './diary/LabelTab';
 
 angular
   .module('emission.main.diary', [
-    'emission.main.diary.services',
     'emission.plugin.logger',
     'emission.survey.enketo.answer',
   ])

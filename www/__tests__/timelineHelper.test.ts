@@ -1,7 +1,6 @@
 import { clearAlerts, mockAlert, mockLogger } from '../__mocks__/globalMocks';
 import { readAllCompositeTrips, readUnprocessedTrips } from '../js/diary/timelineHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
-
 import * as mockTLH from '../__mocks__/timelineHelperMocks';
 
 mockLogger();
@@ -38,7 +37,7 @@ it('fetches a composite trip object and collapses it', async () => {
   ).resolves.not.toThrow();
 });
 
-jest.mock('../js/unifiedDataLoader', () => ({
+jest.mock('../js/services/unifiedDataLoader', () => ({
   getUnifiedDataForInterval: jest.fn((key, tq, combiner) => {
     if (tq.startTs === mockTLH.fakeStartTsOne) return Promise.resolve(mockTLH.mockTransition);
     if (tq.startTs === mockTLH.fakeStartTsTwo) return Promise.resolve(mockTLH.mockTransitionTwo);
