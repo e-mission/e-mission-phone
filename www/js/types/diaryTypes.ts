@@ -6,17 +6,14 @@ import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
 import { ServerData, LocalDt } from './serverData';
 
 type ObjectId = { $oid: string };
-type ConfirmedPlace = {
-  _id: ObjectId;
+export type ConfirmedPlace = {
   additions: UserInputEntry[];
   cleaned_place: ObjectId;
   ending_trip: ObjectId;
   enter_fmt_time: string; // ISO string 2023-10-31T12:00:00.000-04:00
   enter_local_dt: LocalDt;
   enter_ts: number; // Unix timestamp
-  key: string;
   location: { type: string; coordinates: number[] };
-  origin_key: string;
   raw_places: ObjectId[];
   source: string;
   user_input: {
@@ -27,6 +24,10 @@ type ConfirmedPlace = {
       as a string (e.g. 'walk', 'drove_alone') */
     [k: `${string}confirm`]: string;
   };
+  exit_fmt_time: string;
+  exit_ts: number;
+  exit_local_dt: LocalDt;
+  starting_trip: ObjectId;
 };
 
 export type TripTransition = {

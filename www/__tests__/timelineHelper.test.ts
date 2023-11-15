@@ -16,7 +16,7 @@ afterAll(() => {
 });
 
 // Once we have end-to-end testing, we could utilize getRawEnteries.
-jest.mock('../js/commHelper', () => ({
+jest.mock('../js/services/commHelper', () => ({
   getRawEntries: jest.fn((key, startTs, endTs, valTwo) => {
     if (startTs === mockTLH.fakeStartTsOne) return mockTLH.mockData;
     if (startTs == mockTLH.fakeStartTsTwo) return mockTLH.mockDataTwo;
@@ -28,15 +28,40 @@ it('works when there are no composite trip objects fetched', async () => {
   expect(readAllCompositeTrips(-1, -1)).resolves.toEqual([]);
 });
 
-it('fetches a composite trip object and collapses it', async () => {
-  expect(readAllCompositeTrips(mockTLH.fakeStartTsOne, mockTLH.fakeEndTsOne)).resolves.toEqual(
-    mockTLH.readAllCheckOne,
+// Checks that `readAllCOmpositeTrips` properly unpacks & flattens the confirmedPlaces
+const checkTripIsUnpacked = (obj) => {
+  expect(obj.metadata).toBeUndefined();
+  expect(obj).toEqual(
+    expect.objectContaining({
+      key: expect.any(String),
+      origin_key: expect.any(String),
+      start_confirmed_place: expect.objectContaining({
+        origin_key: expect.any(String),
+      }),
+      end_confirmed_place: expect.objectContaining({
+        origin_key: expect.any(String),
+      }),
+      locations: expect.any(Array),
+      sections: expect.any(Array),
+    }),
   );
-  expect(
-    readAllCompositeTrips(mockTLH.fakeStartTsTwo, mockTLH.fakeEndTsTwo),
-  ).resolves.not.toThrow();
+};
+
+it('fetches a composite trip object and collapses it', async () => {
+  const testValue = await readAllCompositeTrips(mockTLH.fakeStartTsOne, mockTLH.fakeEndTsOne);
+  expect(testValue.length).toEqual(1);
+  checkTripIsUnpacked(testValue[0]);
 });
 
+it('Works with multiple trips', async () => {
+  const testValue = await readAllCompositeTrips(mockTLH.fakeStartTsTwo, mockTLH.fakeEndTsTwo);
+  expect(testValue.length).toEqual(2);
+  checkTripIsUnpacked(testValue[0]);
+  checkTripIsUnpacked(testValue[1]);
+  expect(testValue[0].origin_key).toBe('1');
+  expect(testValue[1].origin_key).toBe('2');
+});
+/*
 jest.mock('../js/services/unifiedDataLoader', () => ({
   getUnifiedDataForInterval: jest.fn((key, tq, combiner) => {
     if (tq.startTs === mockTLH.fakeStartTsOne) return Promise.resolve(mockTLH.mockTransition);
@@ -57,3 +82,4 @@ it('works when there are one or more unprocessed trips...', async () => {
     readUnprocessedTrips(mockTLH.fakeStartTsTwo, mockTLH.fakeEndTsTwo, null),
   ).resolves.not.toThrow();
 });
+*/

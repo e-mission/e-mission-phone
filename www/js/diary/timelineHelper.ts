@@ -4,7 +4,6 @@ import { getUnifiedDataForInterval } from '../services/unifiedDataLoader';
 import { getRawEntries } from '../services/commHelper';
 import { ServerResponse, ServerData } from '../types/serverData';
 import L from 'leaflet';
-import i18next from 'i18next';
 import { DateTime } from 'luxon';
 import { UserInputEntry, CompositeTrip, TripTransition, SectionData } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
