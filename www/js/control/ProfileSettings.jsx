@@ -204,9 +204,9 @@ const ProfileSettings = () => {
   }, [editCollectionVis]);
 
   async function refreshNotificationSettings() {
-    console.debug(
-      'about to refreshNotificationSettings, notificationSettings = ',
-      notificationSettings,
+    logDebug(
+      'about to refreshNotificationSettings, notificationSettings = ' +
+        JSON.stringify(notificationSettings),
     );
     const newNotificationSettings = {};
 
@@ -219,7 +219,12 @@ const ProfileSettings = () => {
       let resultList = await Promise.all(promiseList);
       const prefs = resultList[0];
       const scheduledNotifs = resultList[1];
-      console.log('prefs and scheduled notifs', resultList[0], resultList[1]);
+      logDebug(
+        'prefs and scheduled notifs\n' +
+          JSON.stringify(prefs) +
+          '\n-\n' +
+          JSON.stringify(scheduledNotifs),
+      );
 
       const m = DateTime.fromFormat(prefs.reminder_time_of_day, 'HH:mm');
       newNotificationSettings.prefReminderTimeVal = m.toJSDate();
@@ -230,10 +235,11 @@ const ProfileSettings = () => {
       updatePrefReminderTime(false);
     }
 
-    console.log(
-      'notification settings before and after',
-      notificationSettings,
-      newNotificationSettings,
+    logDebug(
+      'notification settings before and after\n' +
+        JSON.stringify(notificationSettings) +
+        '\n-\n' +
+        JSON.stringify(newNotificationSettings),
     );
     setNotificationSettings(newNotificationSettings);
   }

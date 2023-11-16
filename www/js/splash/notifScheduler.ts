@@ -79,10 +79,9 @@ export const getScheduledNotifs = function (isScheduling: boolean, scheduledProm
         if actively scheduling, wait for the scheduledPromise to resolve before fetching prevents such errors
         */
     if (isScheduling) {
-      console.log('requesting fetch while still actively scheduling, waiting on scheduledPromise');
+      logDebug('requesting fetch while still actively scheduling, waiting on scheduledPromise');
       scheduledPromise.then(() => {
         getNotifs().then((notifs) => {
-          console.log('done scheduling notifs', notifs);
           resolve(notifs);
         });
       });
@@ -99,7 +98,7 @@ const getNotifs = function () {
   return new Promise((resolve, reject) => {
     window['cordova'].plugins.notification.local.getScheduled((notifs) => {
       if (!notifs?.length) {
-        console.log('there are no notifications');
+        logDebug('there are no notifications');
         resolve([]); //if none, return empty array
       } else {
         // some empty objects slip through, remove them from notifs
@@ -197,7 +196,7 @@ export const updateScheduledNotifs = async (
         // we'll wait for the previous one to finish before scheduling again
         scheduledPromise.then(() => {
           if (isScheduling) {
-            console.log('ERROR: Already scheduling notifications, not scheduling again');
+            logDebug('ERROR: Already scheduling notifications, not scheduling again');
           } else {
             scheduledPromise = scheduleNotifs(scheme, notifTimes, setIsScheduling);
             //enforcing end of scheduling to conisder update through
@@ -233,11 +232,6 @@ const initReminderPrefs = (reminderSchemes) => {
     reminder_join_date: '2023-05-09',
     reminder_time_of_day: '21:00',
 */
-// interface ReminderPrefs {
-//     reminder_assignment: string;
-//     reminder_join_date: string;
-//     reminder_time_of_day: string;
-// }
 
 interface User {
   reminder_assignment: string;
@@ -254,13 +248,13 @@ export const getReminderPrefs = async (
   const userPromise = getUser();
   const user = (await userPromise) as User;
   if (user?.reminder_assignment && user?.reminder_join_date && user?.reminder_time_of_day) {
-    console.log('User already has reminder prefs, returning them', user);
+    logDebug('User already has reminder prefs, returning them: ' + JSON.stringify(user));
     return user;
   }
   // if no prefs, user just joined, so initialize them
-  console.log('User just joined, Initializing reminder prefs');
+  logDebug('User just joined, Initializing reminder prefs');
   const initPrefs = initReminderPrefs(reminderSchemes);
-  console.log('Initialized reminder prefs: ', initPrefs);
+  logDebug('Initialized reminder prefs: ' + JSON.stringify(initPrefs));
   await setReminderPrefs(
     initPrefs,
     reminderSchemes,
