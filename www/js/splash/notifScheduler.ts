@@ -128,7 +128,7 @@ const scheduleNotifs = (scheme, notifTimes: DateTime[], isScheduling: boolean) =
     const localeCode = i18next.resolvedLanguage;
     const nots = notifTimes.map((n) => {
       const nDate = n.toJSDate();
-      const seconds = nDate.getTime() / 1000;
+      const seconds = nDate.getTime() / 1000; // the id must be in seconds, otherwise the sorting won't work
       return {
         id: seconds,
         title: scheme.title[localeCode],
@@ -145,6 +145,7 @@ const scheduleNotifs = (scheme, notifTimes: DateTime[], isScheduling: boolean) =
         // }
       };
     });
+    nots.sort((a, b) => b.id - a.id); // sort notifications by id (time)
     window['cordova'].plugins.notification.local.cancelAll(() => {
       debugGetScheduled('After cancelling');
       window['cordova'].plugins.notification.local.schedule(nots, () => {
