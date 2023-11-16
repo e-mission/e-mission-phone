@@ -137,10 +137,14 @@ export const mockData: ServerResponse<CompositeTrip> = {
   ],
 };
 
+// Setup for second mockData
 let newPhoneData = JSON.parse(JSON.stringify(mockData.phone_data[0]));
+newPhoneData.data._id.$oid = 'mockDataTwo';
 newPhoneData.metadata = mockMetaDataTwo;
 newPhoneData.data.start_confirmed_place.metadata = mockMetaDataTwo;
+newPhoneData.data.start_confirmed_place._id.$oid = 'startConfirmedPlaceTwo';
 newPhoneData.data.end_confirmed_place.metadata = mockMetaDataTwo;
+newPhoneData.data.end_confirmed_place._id.$oid = 'endConfirmedPlaceTwo';
 
 export const mockDataTwo = {
   phone_data: [mockData.phone_data[0], newPhoneData],

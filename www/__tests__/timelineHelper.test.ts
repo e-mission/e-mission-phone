@@ -3,6 +3,7 @@ import {
   useGeojsonForTrip,
   readAllCompositeTrips,
   readUnprocessedTrips,
+  compositeTrips2TimelineMap,
 } from '../js/diary/timelineHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import * as mockTLH from '../__mocks__/timelineHelperMocks';
@@ -43,6 +44,49 @@ describe('useGeojsonForTrip', () => {
     );
     checkGeojson(testValue);
     expect(testValue.data.features.length).toBe(3);
+  });
+});
+
+describe('compositeTrips2TimelineMap', () => {
+  const firstTripList = [mockTLH.mockData.phone_data[0].data];
+  const secondTripList = [
+    mockTLH.mockDataTwo.phone_data[0].data,
+    mockTLH.mockDataTwo.phone_data[1].data,
+  ];
+  const firstKey = mockTLH.mockData.phone_data[0].data._id.$oid;
+  const secondKey = mockTLH.mockDataTwo.phone_data[1].data._id.$oid;
+  const thirdKey = mockTLH.mockData.phone_data[0].data._id.$oid;
+  let testValue;
+
+  it('Works with an empty list', () => {
+    expect(Object.keys(compositeTrips2TimelineMap([])).length).toBe(0);
+  });
+
+  it('Works with a list of len = 1, no flag', () => {
+    testValue = compositeTrips2TimelineMap(firstTripList);
+    expect(testValue.size).toBe(1);
+    expect(testValue.get(firstKey)).toEqual(firstTripList[0]);
+  });
+
+  it('Works with a list of len = 1, with flag', () => {
+    testValue = compositeTrips2TimelineMap(firstTripList, true);
+    expect(testValue.size).toBe(3);
+    expect(testValue.get(firstKey)).toEqual(firstTripList[0]);
+    expect(testValue.get('startConfirmedPlace')).toEqual(firstTripList[0].start_confirmed_place);
+    expect(testValue.get('endConfirmedPlace')).toEqual(firstTripList[0].end_confirmed_place);
+  });
+
+  it('Works with a list of len >= 1, no flag', () => {
+    testValue = compositeTrips2TimelineMap(secondTripList);
+    expect(testValue.size).toBe(2);
+    expect(testValue.get(secondKey)).toEqual(secondTripList[1]);
+    expect(testValue.get(thirdKey)).toEqual(secondTripList[0]);
+  });
+
+  it('Works with a list of len >= 1, with flag', () => {
+    testValue = compositeTrips2TimelineMap(secondTripList, true);
+    console.log(`Len: ${testValue.size}`);
+    expect(testValue.size).toBe(6);
   });
 });
 

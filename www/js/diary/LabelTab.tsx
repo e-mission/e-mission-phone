@@ -230,7 +230,7 @@ const LabelTab = () => {
       });
     const readTimelineMap = compositeTrips2TimelineMap(tripsRead, showPlaces);
     logDebug(`LabelTab: after composite trips converted, 
-      readTimelineMap = ${JSON.stringify(readTimelineMap)}`);
+      readTimelineMap = ${[...readTimelineMap.entries()]}`);
     if (mode == 'append') {
       setTimelineMap(new Map([...timelineMap, ...readTimelineMap]));
     } else if (mode == 'prepend') {
