@@ -4,6 +4,7 @@ import {
   readAllCompositeTrips,
   readUnprocessedTrips,
   compositeTrips2TimelineMap,
+  keysForLabelInputs,
 } from '../js/diary/timelineHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import * as mockTLH from '../__mocks__/timelineHelperMocks';
@@ -48,14 +49,14 @@ describe('useGeojsonForTrip', () => {
 });
 
 describe('compositeTrips2TimelineMap', () => {
-  const firstTripList = [mockTLH.mockData.phone_data[0].data];
-  const secondTripList = [
+  const tripListOne = [mockTLH.mockData.phone_data[0].data];
+  const tripListTwo = [
     mockTLH.mockDataTwo.phone_data[0].data,
     mockTLH.mockDataTwo.phone_data[1].data,
   ];
-  const firstKey = mockTLH.mockData.phone_data[0].data._id.$oid;
-  const secondKey = mockTLH.mockDataTwo.phone_data[1].data._id.$oid;
-  const thirdKey = mockTLH.mockData.phone_data[0].data._id.$oid;
+  const keyOne = mockTLH.mockData.phone_data[0].data._id.$oid;
+  const keyTwo = mockTLH.mockDataTwo.phone_data[1].data._id.$oid;
+  const keyThree = mockTLH.mockData.phone_data[0].data._id.$oid;
   let testValue;
 
   it('Works with an empty list', () => {
@@ -63,31 +64,51 @@ describe('compositeTrips2TimelineMap', () => {
   });
 
   it('Works with a list of len = 1, no flag', () => {
-    testValue = compositeTrips2TimelineMap(firstTripList);
+    testValue = compositeTrips2TimelineMap(tripListOne);
     expect(testValue.size).toBe(1);
-    expect(testValue.get(firstKey)).toEqual(firstTripList[0]);
+    expect(testValue.get(keyOne)).toEqual(tripListOne[0]);
   });
 
   it('Works with a list of len = 1, with flag', () => {
-    testValue = compositeTrips2TimelineMap(firstTripList, true);
+    testValue = compositeTrips2TimelineMap(tripListOne, true);
     expect(testValue.size).toBe(3);
-    expect(testValue.get(firstKey)).toEqual(firstTripList[0]);
-    expect(testValue.get('startConfirmedPlace')).toEqual(firstTripList[0].start_confirmed_place);
-    expect(testValue.get('endConfirmedPlace')).toEqual(firstTripList[0].end_confirmed_place);
+    expect(testValue.get(keyOne)).toEqual(tripListOne[0]);
+    expect(testValue.get('startConfirmedPlace')).toEqual(tripListOne[0].start_confirmed_place);
+    expect(testValue.get('endConfirmedPlace')).toEqual(tripListOne[0].end_confirmed_place);
   });
 
   it('Works with a list of len >= 1, no flag', () => {
-    testValue = compositeTrips2TimelineMap(secondTripList);
+    testValue = compositeTrips2TimelineMap(tripListTwo);
     expect(testValue.size).toBe(2);
-    expect(testValue.get(secondKey)).toEqual(secondTripList[1]);
-    expect(testValue.get(thirdKey)).toEqual(secondTripList[0]);
+    expect(testValue.get(keyTwo)).toEqual(tripListTwo[1]);
+    expect(testValue.get(keyThree)).toEqual(tripListTwo[0]);
   });
 
   it('Works with a list of len >= 1, with flag', () => {
-    testValue = compositeTrips2TimelineMap(secondTripList, true);
+    testValue = compositeTrips2TimelineMap(tripListTwo, true);
     console.log(`Len: ${testValue.size}`);
     expect(testValue.size).toBe(6);
   });
+});
+
+// updateAllUnprocessedinputs tests
+it('can use an appConfig to get labelInputKeys', () => {
+  const mockAppConfigOne = {
+    survey_info: {
+      'trip-labels': 'ENKETO',
+    },
+  };
+  const mockAppConfigTwo = {
+    survey_info: {
+      'trip-labels': 'Other',
+    },
+    intro: {
+      mode_studied: 'sample',
+    },
+  };
+  expect(keysForLabelInputs(mockAppConfigOne)).rejects;
+  expect(keysForLabelInputs(mockAppConfigOne)).toEqual(['manual/trip_user_input']);
+  expect(keysForLabelInputs(mockAppConfigTwo).length).toEqual(3);
 });
 
 // Tests for readAllCompositeTrips
