@@ -7,6 +7,14 @@ export const mockCordova = () => {
   window['cordova'].plugins ||= {};
 };
 
+export const mockReminders = () => {
+  window['cordova'] ||= {};
+  window['cordova'].plugins ||= {};
+  window['cordova'].plugins.notification ||= {};
+  window['cordova'].plugins.notification.local ||= {};
+  window['cordova'].plugins.notification.local.getScheduled ||= () => [];
+};
+
 export const mockDevice = () => {
   window['device'] ||= {};
   window['device'].platform ||= 'ios';
