@@ -103,7 +103,7 @@ const ProfileSettings = () => {
 
   // used for scheduling notifs
   let scheduledPromise = new Promise((rs) => rs());
-  let isScheduling = false;
+  const [isScheduling, setIsScheduling] = useState(false);
 
   useEffect(() => {
     //added appConfig.name needed to be defined because appConfig was defined but empty
@@ -152,7 +152,12 @@ const ProfileSettings = () => {
     }
 
     // Update the scheduled notifs
-    updateScheduledNotifs(tempUiConfig.reminderSchemes, isScheduling, scheduledPromise)
+    updateScheduledNotifs(
+      tempUiConfig.reminderSchemes,
+      isScheduling,
+      setIsScheduling,
+      scheduledPromise,
+    )
       .then(() => {
         logDebug('updated scheduled notifs');
       })
@@ -207,7 +212,9 @@ const ProfileSettings = () => {
 
     if (uiConfig?.reminderSchemes) {
       let promiseList = [];
-      promiseList.push(getReminderPrefs(uiConfig.reminderSchemes, isScheduling, scheduledPromise));
+      promiseList.push(
+        getReminderPrefs(uiConfig.reminderSchemes, isScheduling, setIsScheduling, scheduledPromise),
+      );
       promiseList.push(getScheduledNotifs(isScheduling, scheduledPromise));
       let resultList = await Promise.all(promiseList);
       const prefs = resultList[0];
@@ -294,6 +301,7 @@ const ProfileSettings = () => {
         { reminder_time_of_day: m.toFormat('HH:mm') },
         uiConfig.reminderSchemes,
         isScheduling,
+        setIsScheduling,
         scheduledPromise,
       ).then(() => {
         refreshNotificationSettings();
