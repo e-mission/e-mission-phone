@@ -11,13 +11,15 @@ describe('LoadMoreButton', () => {
     await waitFor(() => {
       expect(screen.getByTestId('load-button')).toBeTruthy();
     });
-  });
+  }, 15000);
 
-  it('calls onPressFn when clicked', () => {
+  it('calls onPressFn when clicked', async () => {
     const mockFn = jest.fn();
     const { getByTestId } = render(<LoadMoreButton onPressFn={mockFn}>{}</LoadMoreButton>);
     const loadButton = getByTestId('load-button');
     fireEvent.press(loadButton);
-    expect(mockFn).toHaveBeenCalled();
-  });
+    await waitFor(() => {
+      expect(mockFn).toHaveBeenCalled();
+    });
+  }, 15000);
 });

@@ -1,8 +1,11 @@
 import moment from 'moment';
-import { getAngularService } from '../angular-react-helper';
 import { displayError, logDebug } from '../plugin/logger';
-import { getBaseModeByKey, getBaseModeOfLabeledTrip } from './diaryHelper';
+import { getBaseModeByKey, getBaseModeByValue } from './diaryHelper';
+import { getUnifiedDataForInterval } from '../services/unifiedDataLoader';
 import i18next from 'i18next';
+import { UserInputEntry } from '../types/diaryTypes';
+import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
+import { getNotDeletedCandidates, getUniqueEntries } from '../survey/inputMatcher';
 
 const cachedGeojsons = new Map();
 /**
@@ -17,7 +20,7 @@ export function useGeojsonForTrip(trip, labelOptions, labeledMode?) {
 
   let trajectoryColor: string | null;
   if (labeledMode) {
-    trajectoryColor = getBaseModeOfLabeledTrip(trip, labelOptions)?.color;
+    trajectoryColor = getBaseModeByValue(labeledMode, labelOptions)?.color;
   }
 
   logDebug("Reading trip's " + trip.locations.length + ' location points at ' + new Date());
@@ -70,38 +73,11 @@ export function compositeTrips2TimelineMap(ctList: any[], unpackPlaces?: boolean
   return timelineEntriesMap;
 }
 
-export function populateCompositeTrips(
-  ctList,
-  showPlaces,
-  labelsFactory,
-  labelsResultMap,
-  notesFactory,
-  notesResultMap,
-) {
-  try {
-    ctList.forEach((ct, i) => {
-      if (showPlaces && ct.start_confirmed_place) {
-        const cp = ct.start_confirmed_place;
-        cp.getNextEntry = () => ctList[i];
-        labelsFactory.populateInputsAndInferences(cp, labelsResultMap);
-        notesFactory.populateInputsAndInferences(cp, notesResultMap);
-      }
-      if (showPlaces && ct.end_confirmed_place) {
-        const cp = ct.end_confirmed_place;
-        cp.getNextEntry = () => ctList[i + 1];
-        labelsFactory.populateInputsAndInferences(cp, labelsResultMap);
-        notesFactory.populateInputsAndInferences(cp, notesResultMap);
-        ct.getNextEntry = () => cp;
-      } else {
-        ct.getNextEntry = () => ctList[i + 1];
-      }
-      labelsFactory.populateInputsAndInferences(ct, labelsResultMap);
-      notesFactory.populateInputsAndInferences(ct, notesResultMap);
-    });
-  } catch (e) {
-    displayError(e, i18next.t('errors.while-populating-composite'));
-  }
-}
+/* 'LABELS' are 1:1 - each trip or place has a single label for each label type
+  (e.g. 'MODE' and 'PURPOSE' for MULTILABEL configuration, or 'SURVEY' for ENKETO configuration) */
+export let unprocessedLabels: { [key: string]: UserInputEntry[] } = {};
+/* 'NOTES' are 1:n - each trip or place can have any number of notes */
+export let unprocessedNotes: UserInputEntry[] = [];
 
 const getUnprocessedInputQuery = (pipelineRange) => ({
   key: 'write_ts',
@@ -109,15 +85,23 @@ const getUnprocessedInputQuery = (pipelineRange) => ({
   endTs: moment().unix() + 10,
 });
 
-function getUnprocessedResults(labelsFactory, notesFactory, labelsPromises, notesPromises) {
-  return Promise.all([...labelsPromises, ...notesPromises]).then((comboResults) => {
-    const labelsConfirmResults = {};
-    const notesConfirmResults = {};
+function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
+  Promise.all([...labelsPromises, ...notesPromises]).then((comboResults) => {
     const labelResults = comboResults.slice(0, labelsPromises.length);
-    const notesResults = comboResults.slice(labelsPromises.length);
-    labelsFactory.processManualInputs(labelResults, labelsConfirmResults);
-    notesFactory.processManualInputs(notesResults, notesConfirmResults);
-    return [labelsConfirmResults, notesConfirmResults];
+    const notesResults = comboResults.slice(labelsPromises.length).flat(2);
+    // fill in the unprocessedLabels object with the labels we just read
+    labelResults.forEach((r, i) => {
+      if (appConfig.survey_info?.['trip-labels'] == 'ENKETO') {
+        unprocessedLabels['SURVEY'] = r;
+      } else {
+        unprocessedLabels[getLabelInputs()[i]] = r;
+      }
+    });
+    // merge the notes we just read into the existing unprocessedNotes, removing duplicates
+    const combinedNotes = [...unprocessedNotes, ...notesResults];
+    unprocessedNotes = combinedNotes.filter(
+      (note, i, self) => self.findIndex((n) => n.metadata.write_ts == note.metadata.write_ts) == i,
+    );
   });
 }
 
@@ -126,21 +110,19 @@ function getUnprocessedResults(labelsFactory, notesFactory, labelsPromises, note
  * pipeline range and have not yet been pushed to the server.
  * @param pipelineRange an object with start_ts and end_ts representing the range of time
  *     for which travel data has been processed through the pipeline on the server
- * @param labelsFactory the Angular factory for processing labels (MultilabelService or
- *     EnketoTripButtonService)
- * @param notesFactory the Angular factory for processing notes (EnketoNotesButtonService)
+ *  @param appConfig the app configuration
  * @returns Promise an array with 1) results for labels and 2) results for notes
  */
-export function getLocalUnprocessedInputs(pipelineRange, labelsFactory, notesFactory) {
+export async function updateLocalUnprocessedInputs(pipelineRange, appConfig) {
   const BEMUserCache = window['cordova'].plugins.BEMUserCache;
   const tq = getUnprocessedInputQuery(pipelineRange);
-  const labelsPromises = labelsFactory.MANUAL_KEYS.map((key) =>
-    BEMUserCache.getMessagesForInterval(key, tq, true).then(labelsFactory.extractResult),
+  const labelsPromises = keysForLabelInputs(appConfig).map((key) =>
+    BEMUserCache.getMessagesForInterval(key, tq, true),
   );
-  const notesPromises = notesFactory.MANUAL_KEYS.map((key) =>
-    BEMUserCache.getMessagesForInterval(key, tq, true).then(notesFactory.extractResult),
+  const notesPromises = keysForNotesInputs(appConfig).map((key) =>
+    BEMUserCache.getMessagesForInterval(key, tq, true),
   );
-  return getUnprocessedResults(labelsFactory, notesFactory, labelsPromises, notesPromises);
+  await updateUnprocessedInputs(labelsPromises, notesPromises, appConfig);
 }
 
 /**
@@ -148,23 +130,35 @@ export function getLocalUnprocessedInputs(pipelineRange, labelsFactory, notesFac
  * pipeline range, including those on the phone and that and have been pushed to the server but not yet processed.
  * @param pipelineRange an object with start_ts and end_ts representing the range of time
  *     for which travel data has been processed through the pipeline on the server
- * @param labelsFactory the Angular factory for processing labels (MultilabelService or
- *     EnketoTripButtonService)
- * @param notesFactory the Angular factory for processing notes (EnketoNotesButtonService)
+ * @param appConfig the app configuration
  * @returns Promise an array with 1) results for labels and 2) results for notes
  */
-export function getAllUnprocessedInputs(pipelineRange, labelsFactory, notesFactory) {
-  const UnifiedDataLoader = getAngularService('UnifiedDataLoader');
+export async function updateAllUnprocessedInputs(pipelineRange, appConfig) {
   const tq = getUnprocessedInputQuery(pipelineRange);
-  const labelsPromises = labelsFactory.MANUAL_KEYS.map((key) =>
-    UnifiedDataLoader.getUnifiedMessagesForInterval(key, tq, true).then(
-      labelsFactory.extractResult,
-    ),
+  const getMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
+  const labelsPromises = keysForLabelInputs(appConfig).map((key) =>
+    getUnifiedDataForInterval(key, tq, getMethod),
   );
-  const notesPromises = notesFactory.MANUAL_KEYS.map((key) =>
-    UnifiedDataLoader.getUnifiedMessagesForInterval(key, tq, true).then(notesFactory.extractResult),
+  const notesPromises = keysForNotesInputs(appConfig).map((key) =>
+    getUnifiedDataForInterval(key, tq, getMethod),
   );
-  return getUnprocessedResults(labelsFactory, notesFactory, labelsPromises, notesPromises);
+  await updateUnprocessedInputs(labelsPromises, notesPromises, appConfig);
+}
+
+export function keysForLabelInputs(appConfig) {
+  if (appConfig.survey_info?.['trip-labels'] == 'ENKETO') {
+    return ['manual/trip_user_input'];
+  } else {
+    return Object.values(getLabelInputDetails(appConfig)).map((inp) => inp.key);
+  }
+}
+
+function keysForNotesInputs(appConfig) {
+  const notesKeys = [];
+  if (appConfig.survey_info?.buttons?.['trip-notes']) notesKeys.push('manual/trip_addition_input');
+  if (appConfig.survey_info?.buttons?.['place-notes'])
+    notesKeys.push('manual/place_addition_input');
+  return notesKeys;
 }
 
 /**

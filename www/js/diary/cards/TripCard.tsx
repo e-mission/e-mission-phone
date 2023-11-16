@@ -18,7 +18,7 @@ import { getTheme } from '../../appTheme';
 import { DiaryCard, cardStyles } from './DiaryCard';
 import { useNavigation } from '@react-navigation/native';
 import { useAddressNames } from '../addressNamesHelper';
-import { LabelTabContext } from '../LabelTab';
+import LabelTabContext from '../LabelTabContext';
 import useDerivedProperties from '../useDerivedProperties';
 import StartEndLocations from '../components/StartEndLocations';
 import ModesIndicator from './ModesIndicator';
@@ -40,8 +40,12 @@ const TripCard = ({ trip }: Props) => {
   } = useDerivedProperties(trip);
   let [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
   const navigation = useNavigation<any>();
-  const { surveyOpt, labelOptions } = useContext(LabelTabContext);
-  const tripGeojson = useGeojsonForTrip(trip, labelOptions, trip?.userInput?.MODE?.value);
+  const { labelOptions, timelineLabelMap, timelineNotesMap } = useContext(LabelTabContext);
+  const tripGeojson = useGeojsonForTrip(
+    trip,
+    labelOptions,
+    timelineLabelMap[trip._id.$oid]?.MODE?.value,
+  );
 
   const isDraft = trip.key.includes('UNPROCESSED');
   const flavoredTheme = getTheme(isDraft ? 'draft' : undefined);
@@ -100,8 +104,10 @@ const TripCard = ({ trip }: Props) => {
           </View>
           <View style={[cardStyles.panelSection, { marginBottom: 0 }]}>
             {/* mode and purpose buttons / survey button */}
-            {surveyOpt?.elementTag == 'multilabel' && <MultilabelButtonGroup trip={trip} />}
-            {surveyOpt?.elementTag == 'enketo-trip-button' && (
+            {appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL' && (
+              <MultilabelButtonGroup trip={trip} />
+            )}
+            {appConfig?.survey_info?.['trip-labels'] == 'ENKETO' && (
               <UserInputButton timelineEntry={trip} />
             )}
           </View>
@@ -127,9 +133,9 @@ const TripCard = ({ trip }: Props) => {
           )}
         </View>
       </View>
-      {trip.additionsList?.length != 0 && (
+      {timelineNotesMap[trip._id.$oid]?.length && (
         <View style={cardStyles.cardFooter}>
-          <AddedNotesList timelineEntry={trip} additionEntries={trip.additionsList} />
+          <AddedNotesList timelineEntry={trip} additionEntries={timelineNotesMap[trip._id.$oid]} />
         </View>
       )}
     </DiaryCard>

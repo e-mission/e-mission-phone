@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from 'react-native-paper';
 import { displayErrorMsg, logDebug } from '../../plugin/logger';
 import EnketoModal from './EnketoModal';
-import { LabelTabContext } from '../../diary/LabelTab';
+import LabelTabContext from '../../diary/LabelTabContext';
 
 type Props = {
   timelineEntry: any;
@@ -26,20 +26,17 @@ const UserInputButton = ({ timelineEntry }: Props) => {
 
   const [prevSurveyResponse, setPrevSurveyResponse] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const { repopulateTimelineEntry } = useContext(LabelTabContext);
-
-  const EnketoTripButtonService = getAngularService('EnketoTripButtonService');
-  const etbsSingleKey = EnketoTripButtonService.SINGLE_KEY;
+  const { repopulateTimelineEntry, timelineLabelMap } = useContext(LabelTabContext);
 
   // the label resolved from the survey response, or null if there is no response yet
   const responseLabel = useMemo<string | null>(
-    () => timelineEntry.userInput?.[etbsSingleKey]?.data?.label || null,
+    () => timelineLabelMap[timelineEntry._id.$oid]?.['SURVEY']?.data?.label || null,
     [timelineEntry],
   );
 
   function launchUserInputSurvey() {
     logDebug('UserInputButton: About to launch survey');
-    const prevResponse = timelineEntry.userInput?.[etbsSingleKey];
+    const prevResponse = timelineLabelMap[timelineEntry._id.$oid]?.['SURVEY'];
     setPrevSurveyResponse(prevResponse?.data?.xmlResponse);
     setModalVisible(true);
   }
