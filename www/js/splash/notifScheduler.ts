@@ -30,7 +30,7 @@ const calcNotifTimes = (scheme, dayZeroDate, timeOfDay): DateTime[] => {
 };
 
 // returns true if all expected times are already scheduled
-const areAlreadyScheduled = (notifs, expectedTimes) => {
+const areAlreadyScheduled = (notifs: any[], expectedTimes: DateTime[]) => {
   for (const t of expectedTimes) {
     if (!notifs.some((n) => DateTime.fromMillis(n.trigger.at).equals(t))) {
       return false;
@@ -81,12 +81,12 @@ export const getScheduledNotifs = function (isScheduling: boolean, scheduledProm
     if (isScheduling) {
       logDebug('requesting fetch while still actively scheduling, waiting on scheduledPromise');
       scheduledPromise.then(() => {
-        getNotifs().then((notifs) => {
+        getNotifs().then((notifs: object[]) => {
           resolve(notifs);
         });
       });
     } else {
-      getNotifs().then((notifs) => {
+      getNotifs().then((notifs: object[]) => {
         resolve(notifs);
       });
     }
@@ -96,7 +96,7 @@ export const getScheduledNotifs = function (isScheduling: boolean, scheduledProm
 //get scheduled notifications from cordova plugin and format them
 const getNotifs = function () {
   return new Promise((resolve, reject) => {
-    window['cordova'].plugins.notification.local.getScheduled((notifs) => {
+    window['cordova'].plugins.notification.local.getScheduled((notifs: any[]) => {
       if (!notifs?.length) {
         logDebug('there are no notifications');
         resolve([]); //if none, return empty array
@@ -108,8 +108,8 @@ const getNotifs = function () {
       const notifSubset = notifs.slice(0, 5); //prevent near-infinite listing
       let scheduledNotifs = [];
       scheduledNotifs = notifSubset.map((n) => {
-        const time = DateTime.fromMillis(n.trigger.at).toFormat('t');
-        const date = DateTime.fromMillis(n.trigger.at).toFormat('DDD');
+        const time: string = DateTime.fromMillis(n.trigger.at).toFormat('t');
+        const date: string = DateTime.fromMillis(n.trigger.at).toFormat('DDD');
         return {
           key: date,
           val: time,
@@ -184,9 +184,9 @@ export const updateScheduledNotifs = async (
         reminder_assignment,
     );
   }
-  const notifTimes = calcNotifTimes(scheme, reminder_join_date, reminder_time_of_day) as DateTime[];
+  const notifTimes = calcNotifTimes(scheme, reminder_join_date, reminder_time_of_day);
   return new Promise<void>((resolve, reject) => {
-    window['cordova'].plugins.notification.local.getScheduled((notifs) => {
+    window['cordova'].plugins.notification.local.getScheduled((notifs: any[]) => {
       // some empty objects slip through, remove them from notifs
       notifs = removeEmptyObjects(notifs);
       if (areAlreadyScheduled(notifs, notifTimes)) {
@@ -214,12 +214,12 @@ export const updateScheduledNotifs = async (
     and use the default time of day from config (or noon if not specified)
    This is only called once when the user first joins the study
 */
-const initReminderPrefs = (reminderSchemes) => {
+const initReminderPrefs = (reminderSchemes: object): object => {
   // randomly assign from the schemes listed in config
   const schemes = Object.keys(reminderSchemes);
-  const randAssignment = schemes[Math.floor(Math.random() * schemes.length)];
-  const todayDate = DateTime.local().toFormat('yyyy-MM-dd');
-  const defaultTime = reminderSchemes[randAssignment]?.defaultTime || '12:00';
+  const randAssignment: string = schemes[Math.floor(Math.random() * schemes.length)];
+  const todayDate: string = DateTime.local().toFormat('yyyy-MM-dd');
+  const defaultTime: string = reminderSchemes[randAssignment]?.defaultTime || '12:00';
   return {
     reminder_assignment: randAssignment,
     reminder_join_date: todayDate,
@@ -240,7 +240,7 @@ interface User {
 }
 
 export const getReminderPrefs = async (
-  reminderSchemes,
+  reminderSchemes: object,
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,
@@ -270,7 +270,7 @@ export const setReminderPrefs = async (
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,
-) => {
+): Promise<void> => {
   await updateUser(newPrefs);
   const updatePromise = new Promise<void>((resolve, reject) => {
     //enforcing update before moving on
