@@ -1,4 +1,4 @@
-import { displayErrorMsg, logDebug } from '../plugin/logger';
+import { displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { getCustomFootprint } from './customMetricsHelper';
 
 //variables for the highest footprint in the set and if using custom
@@ -67,11 +67,10 @@ export const getFootprintForMetrics = function (userMetrics, defaultIfMissing = 
           6) *
         mtokm(userMetrics[i].values);
     } else {
-      console.warn(
-        'WARNING getFootprintFromMetrics() was requested for an unknown mode: ' +
-          mode +
-          ' metrics JSON: ' +
-          JSON.stringify(userMetrics),
+      logWarn(
+        `WARNING getFootprintFromMetrics() was requested for an unknown mode: ${mode} metrics JSON: ${JSON.stringify(
+          userMetrics,
+        )}`,
       );
       result += defaultIfMissing * mtokm(userMetrics[i].values);
     }
