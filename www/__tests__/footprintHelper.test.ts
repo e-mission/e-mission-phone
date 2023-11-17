@@ -4,7 +4,6 @@ import {
   getFootprintForMetrics,
   getHighestFootprint,
   getHighestFootprintForDistance,
-  setUseCustomFootprint,
 } from '../js/metrics/footprintHelper';
 import { getConfig } from '../js/config/dynamicConfig';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
@@ -28,7 +27,6 @@ global.fetch = (url: string) =>
   }) as any;
 
 beforeEach(() => {
-  setUseCustomFootprint(false);
   clearHighestFootprint();
 });
 
@@ -42,28 +40,24 @@ const custom_metrics = [
 
 it('gets footprint for metrics (custom, fallback 0)', async () => {
   initCustomDatasetHelper(getConfig());
-  setUseCustomFootprint(true);
   await new Promise((r) => setTimeout(r, 500));
   expect(getFootprintForMetrics(custom_metrics, 0)).toBe(2.4266);
 });
 
 it('gets footprint for metrics (custom, fallback 0.1)', async () => {
   initCustomDatasetHelper(getConfig());
-  setUseCustomFootprint(true);
   await new Promise((r) => setTimeout(r, 500));
   expect(getFootprintForMetrics(custom_metrics, 0.1)).toBe(2.4266 + 0.5);
 });
 
 it('gets the highest footprint from the dataset, custom', async () => {
   initCustomDatasetHelper(getConfig());
-  setUseCustomFootprint(true);
   await new Promise((r) => setTimeout(r, 500));
   expect(getHighestFootprint()).toBe(0.30741);
 });
 
 it('gets the highest footprint for distance, custom', async () => {
   initCustomDatasetHelper(getConfig());
-  setUseCustomFootprint(true);
   await new Promise((r) => setTimeout(r, 500));
   expect(getHighestFootprintForDistance(12345)).toBe(0.30741 * (12345 / 1000));
 });

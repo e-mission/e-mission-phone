@@ -3,7 +3,6 @@ import { getCustomFootprint } from './customMetricsHelper';
 
 //variables for the highest footprint in the set and if using custom
 let highestFootprint = 0;
-let useCustom = false;
 
 /**
  * @function converts meters to kilometers
@@ -12,14 +11,6 @@ let useCustom = false;
  */
 const mtokm = function (v) {
   return v / 1000;
-};
-
-/**
- * @function sets the value of useCustom
- * @param {boolean} val if using custom footprint
- */
-export const setUseCustomFootprint = function (val: boolean) {
-  useCustom = val;
 };
 
 /**
@@ -37,8 +28,9 @@ export const clearHighestFootprint = function () {
  * @returns the footprint or undefined
  */
 const getFootprint = function () {
-  if (useCustom == true) {
-    return getCustomFootprint();
+  let footprint = getCustomFootprint();
+  if (footprint) {
+    return footprint;
   } else {
     displayErrorMsg('failed to use custom labels', 'Error in Footprint Calculatons');
     return undefined;

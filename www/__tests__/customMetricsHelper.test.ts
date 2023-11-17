@@ -8,7 +8,6 @@ import { setUseCustomMET } from '../js/metrics/metHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 import fakeLabels from '../__mocks__/fakeLabels.json';
-import { setUseCustomFootprint } from '../js/metrics/footprintHelper';
 
 mockBEMUserCache();
 mockLogger();
@@ -42,7 +41,6 @@ it('gets the custom mets', async () => {
 
 it('gets the custom footprint', async () => {
   initCustomDatasetHelper(getConfig());
-  setUseCustomFootprint(true);
   await new Promise((r) => setTimeout(r, 800));
   expect(getCustomFootprint()).toMatchObject({
     walk: {},

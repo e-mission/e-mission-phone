@@ -5,7 +5,6 @@ import { MetricsData } from './metricsTypes';
 import { cardStyles } from './MetricsTab';
 import {
   getFootprintForMetrics,
-  setUseCustomFootprint,
   getHighestFootprint,
   getHighestFootprintForDistance,
 } from './footprintHelper';
@@ -52,11 +51,6 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
 
       //setting up data to be displayed
       let graphRecords = [];
-
-      //set custon dataset, if the labels are custom
-      if (isCustomLabels(userThisWeekModeMap)) {
-        setUseCustomFootprint(true);
-      }
 
       //calculate low-high and format range for prev week, if exists (14 days ago -> 8 days ago)
       let userPrevWeek;
