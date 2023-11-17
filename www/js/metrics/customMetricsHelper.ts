@@ -1,6 +1,6 @@
 import angular from 'angular';
 import { getLabelOptions } from '../survey/multilabel/confirmHelper';
-import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
+import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { standardMETs } from './metDataset';
 
 //variables to store values locally
@@ -52,9 +52,7 @@ const populateCustomMETs = function () {
         }
         return [opt.value, currMET];
       } else {
-        console.warn(
-          'Did not find either met_equivalent or met for ' + opt.value + ' ignoring entry',
-        );
+        logWarn(`Did not find either met_equivalent or met for ${opt.value} ignoring entry`);
         return undefined;
       }
     }
@@ -79,7 +77,7 @@ const populateCustomFootprints = function () {
           );
         }
         _range_limited_motorized = opt;
-        console.log('Found range limited motorized mode', _range_limited_motorized);
+        logDebug(`Found range limited motorized mode - ${_range_limited_motorized}`);
       }
       if (angular.isDefined(opt.kgCo2PerKm)) {
         return [opt.value, opt.kgCo2PerKm];
@@ -100,9 +98,9 @@ const populateCustomFootprints = function () {
 export const initCustomDatasetHelper = async function (newConfig) {
   try {
     logDebug('initializing custom datasets with config' + newConfig);
-    getLabelOptions(newConfig).then((inputParams) => {
-      console.log('Input params = ', inputParams);
-      _labelOptions = inputParams;
+    getLabelOptions(newConfig).then((labelOptions) => {
+      console.log('In custom metrics, label options: ', labelOptions);
+      _labelOptions = labelOptions;
       populateCustomMETs();
       populateCustomFootprints();
     });
