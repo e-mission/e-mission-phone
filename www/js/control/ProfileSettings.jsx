@@ -33,7 +33,7 @@ import { storageClear } from '../plugin/storage';
 import { getAppVersion } from '../plugin/clientStats';
 import { getConsentDocument } from '../splash/startprefs';
 import { logDebug } from '../plugin/logger';
-import { fetchOPCode, getSettings } from "../services/controlHelper";
+import { fetchOPCode, getSettings } from '../services/controlHelper';
 
 //any pure functions can go outside
 const ProfileSettings = () => {

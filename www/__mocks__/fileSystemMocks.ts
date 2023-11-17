@@ -16,16 +16,6 @@ export const mockFileSystem = () => {
               },
               nativeURL: 'file:///Users/Jest/test/URL/',
               isFile: true,
-              createWriter: (handleWriter) => {
-                var mockFileWriter: MockFileWriter = {
-                  onreadend: null,
-                  onerror: null,
-                  write: (obj) => {
-                    console.log(`Mock this: ${obj}`);
-                  },
-                };
-                handleWriter(mockFileWriter);
-              },
             };
             onSuccess(fileEntry);
           },
