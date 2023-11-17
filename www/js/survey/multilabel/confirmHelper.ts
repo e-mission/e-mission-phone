@@ -37,7 +37,6 @@ export let inputDetails: InputDetails<MultilabelKey>;
 export async function getLabelOptions(appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;
   if (labelOptions) return labelOptions;
-  console.log('in get label options', appConfig);
   if (appConfig.label_options) {
     const labelOptionsJson = await fetchUrlCached(appConfig.label_options);
     logDebug(
@@ -50,7 +49,6 @@ export async function getLabelOptions(appConfigParam?) {
       'No label_options found in config, using default label options at ' + defaultLabelOptionsURL,
     );
     const defaultLabelOptionsJson = await fetchUrlCached(defaultLabelOptionsURL);
-    console.log('label options', defaultLabelOptionsJson);
     labelOptions = JSON.parse(defaultLabelOptionsJson) as LabelOptions;
   }
   /* fill in the translations to the 'text' fields of the labelOptions,
