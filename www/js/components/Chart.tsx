@@ -139,7 +139,8 @@ const Chart = ({
                               chartDatasets = ${JSON.stringify(chartDatasets)};
                               chartDatasets[0].data = ${JSON.stringify(chartDatasets[0].data)}`);
                             //account for different data possiblities
-                            const label = chartDatasets[0].data[i]?.y || chartDatasets[i].data[0]?.y
+                            const label =
+                              chartDatasets[0].data[i]?.y || chartDatasets[i].data[0]?.y;
                             if (typeof label == 'string' && label.includes('\n'))
                               return label.split('\n');
                             return label;
@@ -177,7 +178,8 @@ const Chart = ({
                               chartDatasets = ${JSON.stringify(chartDatasets)}; 
                               chartDatasets[0].data = ${JSON.stringify(chartDatasets[0].data)}`);
                             //account for different data possiblities - one mode per week, one mode both weeks, mixed weeks
-                            const label = chartDatasets[0].data[i]?.x || chartDatasets[i].data[0]?.x
+                            const label =
+                              chartDatasets[0].data[i]?.x || chartDatasets[i].data[0]?.x;
                             if (typeof label == 'string' && label.includes('\n'))
                               return label.split('\n');
                             return label;
