@@ -3,7 +3,7 @@ import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 import fakeLabels from '../__mocks__/fakeLabels.json';
 import { getConfig } from '../js/config/dynamicConfig';
-import { initCustomDatasetHelper } from '../js/metrics/CustomMetricsHelper';
+import { initCustomDatasetHelper } from '../js/metrics/customMetricsHelper';
 
 mockBEMUserCache();
 mockLogger();

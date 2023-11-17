@@ -3,7 +3,7 @@ import {
   getCustomFootprint,
   getCustomMETs,
   initCustomDatasetHelper,
-} from '../js/metrics/CustomMetricsHelper';
+} from '../js/metrics/customMetricsHelper';
 import { setUseCustomMET } from '../js/metrics/metHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';

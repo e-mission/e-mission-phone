@@ -1,4 +1,4 @@
-import { initCustomDatasetHelper } from '../js/metrics/CustomMetricsHelper';
+import { initCustomDatasetHelper } from '../js/metrics/customMetricsHelper';
 import {
   clearHighestFootprint,
   getFootprintForMetrics,
