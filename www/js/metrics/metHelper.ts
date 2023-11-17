@@ -2,23 +2,14 @@ import { logDebug, logWarn } from '../plugin/logger';
 import { getCustomMETs } from './customMetricsHelper';
 import { standardMETs } from './metDataset';
 
-let useCustom = false;
-
-/**
- * @function sets boolean to use custom mets
- * @param {boolean} val
- */
-export const setUseCustomMET = function (val: boolean) {
-  useCustom = val;
-};
-
 /**
  * @function gets the METs object
  * @returns {object} mets either custom or standard
  */
 const getMETs = function () {
-  if (useCustom == true) {
-    return getCustomMETs();
+  let custom_mets = getCustomMETs();
+  if (custom_mets) {
+    return custom_mets;
   } else {
     return standardMETs;
   }

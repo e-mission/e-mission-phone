@@ -4,7 +4,6 @@ import {
   getCustomMETs,
   initCustomDatasetHelper,
 } from '../js/metrics/customMetricsHelper';
-import { setUseCustomMET } from '../js/metrics/metHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 import fakeLabels from '../__mocks__/fakeLabels.json';
@@ -27,7 +26,6 @@ global.fetch = (url: string) =>
 
 it('gets the custom mets', async () => {
   initCustomDatasetHelper(getConfig());
-  setUseCustomMET(true);
   await new Promise((r) => setTimeout(r, 800));
   expect(getCustomMETs()).toMatchObject({
     walk: {},

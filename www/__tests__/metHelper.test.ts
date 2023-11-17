@@ -1,4 +1,4 @@
-import { getMet, setUseCustomMET } from '../js/metrics/metHelper';
+import { getMet } from '../js/metrics/metHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 import fakeLabels from '../__mocks__/fakeLabels.json';
@@ -21,10 +21,6 @@ global.fetch = (url: string) =>
     );
   }) as any;
 
-beforeEach(() => {
-  setUseCustomMET(false);
-});
-
 it('gets met for mode and speed', () => {
   expect(getMet('WALKING', 1.47523, 0)).toBe(4.3);
   expect(getMet('BICYCLING', 4.5, 0)).toBe(6.8);
@@ -34,7 +30,6 @@ it('gets met for mode and speed', () => {
 
 it('gets custom met for mode and speed', async () => {
   initCustomDatasetHelper(getConfig());
-  setUseCustomMET(true);
   await new Promise((r) => setTimeout(r, 500));
   expect(getMet('walk', 1.47523, 0)).toBe(4.3);
   expect(getMet('bike', 4.5, 0)).toBe(6.8);
