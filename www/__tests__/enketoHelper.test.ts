@@ -86,13 +86,21 @@ it('resolves the timestamps', () => {
     '<tag> <Start_date>2016-08-28</Start_date> <End_date>2016-07-25</End_date> <Start_time>17:32:32.928-06:00</Start_time> <End_time>17:30:31.000-06:00</End_time> </tag>';
   const badTimeDoc = xmlParser.parseFromString(badTimes, 'text/xml');
   expect(resolveTimestamps(badTimeDoc, timelineEntry)).toBeUndefined();
-  //good info returns unix start and end timestamps -- TODO : address precise vs less precise?
-  const timeSurvey =
+  //if within a minute, timelineEntry timestamps
+  const timeEntry =
     '<tag> <Start_date>2016-07-25</Start_date> <End_date>2016-07-25</End_date> <Start_time>17:24:32.928-06:00</Start_time> <End_time>17:30:31.000-06:00</End_time> </tag>';
-  const xmlDoc = xmlParser.parseFromString(timeSurvey, 'text/xml');
-  expect(resolveTimestamps(xmlDoc, timelineEntry)).toMatchObject({
+  const xmlDoc1 = xmlParser.parseFromString(timeEntry, 'text/xml');
+  expect(resolveTimestamps(xmlDoc1, timelineEntry)).toMatchObject({
     start_ts: 1469492672.928242,
     end_ts: 1469493031,
+  });
+  // else survey timestamps
+  const timeSurvey =
+    '<tag> <Start_date>2016-07-25</Start_date> <End_date>2016-07-25</End_date> <Start_time>17:22:33.928-06:00</Start_time> <End_time>17:33:33.000-06:00</End_time> </tag>';
+  const xmlDoc2 = xmlParser.parseFromString(timeSurvey, 'text/xml');
+  expect(resolveTimestamps(xmlDoc2, timelineEntry)).toMatchObject({
+    start_ts: 1469492553.928,
+    end_ts: 1469493213,
   });
 });
 
