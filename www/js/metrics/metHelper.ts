@@ -1,5 +1,5 @@
 import { getCustomMETs } from './customMetricsHelper';
-import { standardMETs } from './metDataset';
+import { standardMETs } from './metDatasets';
 
 let useCustom = false;
 
