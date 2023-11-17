@@ -191,6 +191,7 @@ export const updateScheduledNotifs = async (
       notifs = removeEmptyObjects(notifs);
       if (areAlreadyScheduled(notifs, notifTimes)) {
         logDebug('Already scheduled, not scheduling again');
+        resolve();
       } else {
         // to ensure we don't overlap with the last scheduling() request,
         // we'll wait for the previous one to finish before scheduling again
