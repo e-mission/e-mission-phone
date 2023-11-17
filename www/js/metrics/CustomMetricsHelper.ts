@@ -1,6 +1,5 @@
 import angular from 'angular';
 import { getLabelOptions } from '../survey/multilabel/confirmHelper';
-import { getConfig } from '../config/dynamicConfig';
 import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import { standardMETs } from './metDataset';
 
@@ -8,7 +7,7 @@ import { standardMETs } from './metDataset';
 let _customMETs;
 let _customPerKmFootprint;
 let _range_limited_motorized;
-let _inputParams;
+let _labelOptions;
 
 /**
  * @function gets custom mets, must be initialized
@@ -30,10 +29,10 @@ export const getCustomFootprint = function () {
 
 /**
  * @function stores custom mets in local var
- * needs _inputParams, label options stored after gotten from config
+ * needs _labelOptions, stored after gotten from config
  */
 const populateCustomMETs = function () {
-  let modeOptions = _inputParams['MODE'];
+  let modeOptions = _labelOptions['MODE'];
   let modeMETEntries = modeOptions.map((opt) => {
     if (opt.met_equivalent) {
       let currMET = standardMETs[opt.met_equivalent];
@@ -69,7 +68,7 @@ const populateCustomMETs = function () {
  * needs _inputParams which is stored after gotten from config
  */
 const populateCustomFootprints = function () {
-  let modeOptions = _inputParams['MODE'];
+  let modeOptions = _labelOptions['MODE'];
   let modeCO2PerKm = modeOptions
     .map((opt) => {
       if (opt.range_limit_km) {
@@ -103,7 +102,7 @@ export const initCustomDatasetHelper = async function (newConfig) {
     logDebug('initializing custom datasets with config' + newConfig);
     getLabelOptions(newConfig).then((inputParams) => {
       console.log('Input params = ', inputParams);
-      _inputParams = inputParams;
+      _labelOptions = inputParams;
       populateCustomMETs();
       populateCustomFootprints();
     });
