@@ -8,7 +8,7 @@ import {
 } from '../js/survey/enketo/enketoHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
-import { getConfig } from '../../www/js/config/dynamicConfig';
+import { getConfig, resetStoredConfig } from '../../www/js/config/dynamicConfig';
 import fakeConfig from '../__mocks__/fakeConfig.json';
 
 import initializedI18next from '../js/i18nextInit';
@@ -19,6 +19,10 @@ mockLogger();
 
 global.URL = require('url').URL;
 global.Blob = require('node:buffer').Blob;
+
+beforeEach(() => {
+  resetStoredConfig();
+});
 
 it('gets the survey config', async () => {
   //this is aimed at testing my mock of the config
@@ -106,7 +110,7 @@ it('resolves the timestamps', () => {
 });
 
 //resolve label
-it('resolves the label', async () => {
+it('resolves the label, normal case', async () => {
   const xmlParser = new window.DOMParser();
   const xmlString = '<tag> <Domestic_activities> option_1 </Domestic_activities> </tag>';
   const xmlDoc = xmlParser.parseFromString(xmlString, 'text/html');
@@ -114,12 +118,81 @@ it('resolves the label', async () => {
     '<tag> <Domestic_activities> option_1 </Domestic_activities> <Employment_related_a_Education_activities> option_3 </Employment_related_a_Education_activities> </tag>';
   const xmlDoc2 = xmlParser.parseFromString(xmlString2, 'text/xml');
 
-  //if no template, returns "Answered" TODO: find a way to engineer this case
-  //if no labelVars, returns template TODO: find a way to engineer this case
   //have a custom survey label function TODO: we currently don't have custome label functions, but should test when we do
   //no custom function, fallback to UseLabelTemplate (standard case)
+  mockBEMUserCache(fakeConfig);
   expect(await resolveLabel('TimeUseSurvey', xmlDoc)).toBe('3 Domestic');
   expect(await resolveLabel('TimeUseSurvey', xmlDoc2)).toBe('3 Employment/Education, 3 Domestic');
+});
+
+it('resolves the label, if no template, returns "Answered"', async () => {
+  const xmlParser = new window.DOMParser();
+  const xmlString = '<tag> <Domestic_activities> option_1 </Domestic_activities> </tag>';
+  const xmlDoc = xmlParser.parseFromString(xmlString, 'text/html');
+  const xmlString2 =
+    '<tag> <Domestic_activities> option_1 </Domestic_activities> <Employment_related_a_Education_activities> option_3 </Employment_related_a_Education_activities> </tag>';
+  const xmlDoc2 = xmlParser.parseFromString(xmlString2, 'text/xml');
+
+  const noTemplate = {
+    survey_info: {
+      surveys: {
+        TimeUseSurvey: {
+          compatibleWith: 1,
+          formPath:
+            'https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
+          labelVars: {
+            da: {
+              key: 'Domestic_activities',
+              type: 'length',
+            },
+            erea: {
+              key: 'Employment_related_a_Education_activities',
+              type: 'length',
+            },
+          },
+          version: 9,
+        },
+      },
+      'trip-labels': 'ENKETO',
+    },
+  };
+  mockBEMUserCache(noTemplate);
+  expect(await resolveLabel('TimeUseSurvey', xmlDoc)).toBe('Answered');
+  expect(await resolveLabel('TimeUseSurvey', xmlDoc2)).toBe('Answered');
+});
+
+it('resolves the label, if no labelVars, returns template', async () => {
+  const xmlParser = new window.DOMParser();
+  const xmlString = '<tag> <Domestic_activities> option_1 </Domestic_activities> </tag>';
+  const xmlDoc = xmlParser.parseFromString(xmlString, 'text/html');
+  const xmlString2 =
+    '<tag> <Domestic_activities> option_1 </Domestic_activities> <Employment_related_a_Education_activities> option_3 </Employment_related_a_Education_activities> </tag>';
+  const xmlDoc2 = xmlParser.parseFromString(xmlString2, 'text/xml');
+
+  const noLabels = {
+    survey_info: {
+      surveys: {
+        TimeUseSurvey: {
+          compatibleWith: 1,
+          formPath:
+            'https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
+          labelTemplate: {
+            en: '{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }',
+            es: '{ erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }}',
+          },
+          version: 9,
+        },
+      },
+      'trip-labels': 'ENKETO',
+    },
+  };
+  mockBEMUserCache(noLabels);
+  expect(await resolveLabel('TimeUseSurvey', xmlDoc)).toBe(
+    '{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }',
+  );
+  expect(await resolveLabel('TimeUseSurvey', xmlDoc2)).toBe(
+    '{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }',
+  );
 });
 
 /**
