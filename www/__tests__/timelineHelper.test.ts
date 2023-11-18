@@ -8,7 +8,7 @@ import {
 } from '../js/diary/timelineHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import * as mockTLH from '../__mocks__/timelineHelperMocks';
-import { GeoJSON, GjFeature } from '../js/types/diaryTypes';
+import { GeoJSONData, GeoJSONStyledFeature } from '../js/types/diaryTypes';
 
 mockLogger();
 mockAlert();
@@ -28,12 +28,12 @@ describe('useGeojsonForTrip', () => {
     expect(testVal).toBeFalsy;
   });
 
-  const checkGeojson = (geoObj: GeoJSON) => {
+  const checkGeojson = (geoObj: GeoJSONData) => {
     expect(geoObj.data).toEqual(
       expect.objectContaining({
         id: expect.any(String),
         type: 'FeatureCollection',
-        features: expect.any(Array<GjFeature>),
+        features: expect.any(Array<GeoJSONStyledFeature>),
       }),
     );
   };

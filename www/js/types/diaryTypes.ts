@@ -4,6 +4,7 @@
 
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
 import { ServerData, LocalDt } from './serverData';
+import { FeatureCollection, Feature, Geometry } from 'geojson';
 
 type ObjectId = { $oid: string };
 export type ConfirmedPlace = {
@@ -13,7 +14,7 @@ export type ConfirmedPlace = {
   enter_fmt_time: string; // ISO string 2023-10-31T12:00:00.000-04:00
   enter_local_dt: LocalDt;
   enter_ts: number; // Unix timestamp
-  location: { type: string; coordinates: number[] };
+  location: Geometry;
   raw_places: ObjectId[];
   source: string;
   user_input: {
@@ -36,11 +37,6 @@ export type TripTransition = {
   ts: number;
 };
 
-export type LocationCoord = {
-  type: string; // e.x., "Point"
-  coordinates: [number, number] | Array<[number, number]>;
-};
-
 /* These are the properties received from the server (basically matches Python code)
   This should match what Timeline.readAllCompositeTrips returns (an array of these objects) */
 export type CompositeTrip = {
@@ -54,7 +50,7 @@ export type CompositeTrip = {
   duration: number;
   end_confirmed_place: ServerData<ConfirmedPlace>;
   end_fmt_time: string;
-  end_loc: { type: string; coordinates: number[] };
+  end_loc: Geometry;
   end_local_dt: LocalDt;
   end_place: ObjectId;
   end_ts: number;
@@ -71,7 +67,7 @@ export type CompositeTrip = {
   source: string;
   start_confirmed_place: ServerData<ConfirmedPlace>;
   start_fmt_time: string;
-  start_loc: { type: string; coordinates: number[] };
+  start_loc: Geometry;
   start_local_dt: LocalDt;
   start_place: ObjectId;
   start_ts: number;
@@ -141,7 +137,7 @@ export type Location = {
   latitude: number;
   fmt_time: string; // ISO
   mode: number;
-  loc: LocationCoord;
+  loc: Geometry;
   ts: number; // Unix
   altitude: number;
   distance: number;
@@ -150,14 +146,14 @@ export type Location = {
 // used in readAllCompositeTrips
 export type SectionData = {
   end_ts: number; // Unix time, e.x. 1696352498.804
-  end_loc: LocationCoord;
+  end_loc: Geometry;
   start_fmt_time: string; // ISO time
   end_fmt_time: string;
   trip_id: ObjectId;
   sensed_mode: number;
   source: string; // e.x., "SmoothedHighConfidenceMotion"
   start_ts: number; // Unix
-  start_loc: LocationCoord;
+  start_loc: Geometry;
   cleaned_section: ObjectId;
   start_local_dt: LocalDt;
   end_local_dt: LocalDt;
@@ -166,21 +162,8 @@ export type SectionData = {
   distance: number;
 };
 
-export type GjFeature = {
-  type: string;
-  geometry: LocationCoord;
-  properties?: { featureType: string }; // if geometry.coordinates.length == 1, property
-  style?: { color: string }; // otherwise, style (which is a hexcode)
-};
+export type GeoJSONStyledFeature = Feature & { style?: { color: string } };
 
-export type GeoJSON = {
-  data: {
-    id: string;
-    type: string;
-    features: GjFeature[];
-    properties: {
-      start_ts: number;
-      end_ts: number;
-    };
-  };
+export type GeoJSONData = {
+  data: FeatureCollection & { id: string; properties: { start_ts: number; end_ts: number } };
 };

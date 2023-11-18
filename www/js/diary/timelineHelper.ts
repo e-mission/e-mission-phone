@@ -5,12 +5,11 @@ import { getRawEntries } from '../services/commHelper';
 import { ServerResponse, ServerData } from '../types/serverData';
 import L from 'leaflet';
 import { DateTime } from 'luxon';
-import { UserInputEntry, TripTransition, TimelineEntry, GeoJSON } from '../types/diaryTypes';
+import { UserInputEntry, TripTransition, TimelineEntry, GeoJSONData } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
-import { getNotDeletedCandidates, getUniqueEntries } from '../survey/inputMatcher';
 
-const cachedGeojsons: Map<string, GeoJSON> = new Map();
+const cachedGeojsons: Map<string, GeoJSONData> = new Map();
 
 /**
  * @description Gets a formatted GeoJSON object for a trip, including the start and end places and the trajectory.
@@ -34,7 +33,7 @@ export function useGeojsonForTrip(trip, labelOptions: LabelOptions, labeledMode?
     ...locations2GeojsonTrajectory(trip, trip.locations, trajectoryColor),
   ];
 
-  const gj = {
+  const gj: GeoJSONData = {
     data: {
       id: gjKey,
       type: 'FeatureCollection',
@@ -249,16 +248,16 @@ export const readAllCompositeTrips = function (startTs: number, endTs: number) {
 const dateTime2localdate = function (currtime: DateTime, tz: string) {
   return {
     timezone: tz,
-    year: currtime.get('year'),
+    year: currtime.year,
     //the months of the draft trips match the one format needed for
     //moment function however now that is modified we need to also
     //modify the months value here
-    month: currtime.get('month') + 1,
-    day: currtime.get('day'),
-    weekday: currtime.get('weekday'),
-    hour: currtime.get('hour'),
-    minute: currtime.get('minute'),
-    second: currtime.get('second'),
+    month: currtime.month,
+    day: currtime.day,
+    weekday: currtime.weekday,
+    hour: currtime.hour,
+    minute: currtime.minute,
+    second: currtime.second,
   };
 };
 
@@ -507,10 +506,7 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
       DateTime.fromSeconds(tq.startTs).toLocaleString(DateTime.DATETIME_MED) +
       DateTime.fromSeconds(tq.endTs).toLocaleString(DateTime.DATETIME_MED),
   );
-
-  console.log('Testing...');
   const getMessageMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
-  console.log('Entering...');
   return getUnifiedDataForInterval('statemachine/transition', tq, getMessageMethod).then(function (
     transitionList: Array<ServerData<TripTransition>>,
   ) {
