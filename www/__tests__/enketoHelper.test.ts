@@ -247,6 +247,18 @@ it('filters the survey responses by their name and version', () => {
       },
       metadata: {},
     },
+    {
+      data: {
+        label: 'Activity', //display label (this value is use for displaying on the button)
+        ts: '100000000', //the timestamp at which the survey was filled out (in seconds)
+        fmt_time: '12:39', //the formatted timestamp at which the survey was filled out
+        name: 'TimeUseSurvey', //survey name
+        version: '0.5', //survey version
+        xmlResponse: '<this is my xml>', //survey response XML string
+        jsonDocResponse: 'this is my json object', //survey response JSON object
+      },
+      metadata: {},
+    },
   ];
 
   //several responses -> only the one that has a name match
