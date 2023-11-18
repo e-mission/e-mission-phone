@@ -7,8 +7,9 @@ import {
 
 import { mockBEMUserCache, mockBEMDataCollection } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
+import fakeConfig from '../__mocks__/fakeConfig.json';
 
-mockBEMUserCache();
+mockBEMUserCache(fakeConfig);
 mockBEMDataCollection();
 mockLogger();
 

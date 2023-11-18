@@ -6,12 +6,13 @@ import {
   getAppVersion,
   statKeys,
 } from '../js/plugin/clientStats';
+import fakeConfig from '../__mocks__/fakeConfig.json';
 
 mockDevice();
 // this mocks cordova-plugin-app-version, generating a "Mock App", version "1.2.3"
 mockGetAppVersion();
 // clientStats.ts uses BEMUserCache to store the stats, so we need to mock that too
-mockBEMUserCache();
+mockBEMUserCache(fakeConfig);
 const db = window['cordova']?.plugins?.BEMUserCache;
 
 it('gets the app version', async () => {

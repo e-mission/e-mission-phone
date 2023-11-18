@@ -9,10 +9,11 @@ import {
   mockInAppBrowser,
 } from '../__mocks__/cordovaMocks';
 import { clearAlerts, getAlerts, mockAlert, mockLogger } from '../__mocks__/globalMocks';
+import fakeConfig from '../__mocks__/fakeConfig.json';
 
 mockLogger();
 mockDevice();
-mockBEMUserCache();
+mockBEMUserCache(fakeConfig);
 mockGetAppVersion();
 mockInAppBrowser();
 mockAlert();

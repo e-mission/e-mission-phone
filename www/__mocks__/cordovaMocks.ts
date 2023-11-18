@@ -35,7 +35,7 @@ export const mockFile = () => {
 //for consent document
 const _storage = {};
 
-export const mockBEMUserCache = () => {
+export const mockBEMUserCache = (config) => {
   const _cache = {};
   const messages = [];
   const mockBEMUserCache = {
@@ -101,13 +101,11 @@ export const mockBEMUserCache = () => {
       );
     },
     getDocument: (key: string, withMetadata?: boolean) => {
-      // this was mocked specifically for enketoHelper's use, could be expanded if needed
-      const fakeSurveyConfig = fakeConfig;
-
+      //returns the config provided as a paramenter to this mock!
       if (key == 'config/app_ui_config') {
         return new Promise<any>((rs, rj) =>
           setTimeout(() => {
-            rs(fakeSurveyConfig);
+            rs(config);
           }, 100),
         );
       } else {

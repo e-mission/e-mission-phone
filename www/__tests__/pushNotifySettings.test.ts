@@ -11,11 +11,12 @@ import {
   mockPushNotification,
   getCalled,
 } from '../__mocks__/pushNotificationMocks';
+import fakeConfig from '../__mocks__/fakeConfig.json';
 
 mockCordova();
 mockLogger();
 mockPushNotification();
-mockBEMUserCache();
+mockBEMUserCache(fakeConfig);
 mockBEMDataCollection();
 
 global.fetch = (url: string) =>

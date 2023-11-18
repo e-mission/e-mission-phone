@@ -9,11 +9,12 @@ import {
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 import { getConfig } from '../../www/js/config/dynamicConfig';
+import fakeConfig from '../__mocks__/fakeConfig.json';
 
 import initializedI18next from '../js/i18nextInit';
 window['i18next'] = initializedI18next;
 
-mockBEMUserCache();
+mockBEMUserCache(fakeConfig);
 mockLogger();
 
 global.URL = require('url').URL;
