@@ -3,12 +3,12 @@ import {
   filterByNameAndVersion,
   resolveTimestamps,
   resolveLabel,
-  _lazyLoadConfig,
   loadPreviousResponseForSurvey,
   saveResponse,
 } from '../js/survey/enketo/enketoHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
+import { getConfig } from '../../www/js/config/dynamicConfig';
 
 import initializedI18next from '../js/i18nextInit';
 window['i18next'] = initializedI18next;
@@ -22,7 +22,7 @@ global.Blob = require('node:buffer').Blob;
 it('gets the survey config', async () => {
   //this is aimed at testing my mock of the config
   //mocked getDocument for the case of getting the config
-  let config = await _lazyLoadConfig();
+  let config = await getConfig();
   let mockSurveys = {
     TimeUseSurvey: {
       compatibleWith: 1,
@@ -39,7 +39,7 @@ it('gets the survey config', async () => {
       version: 9,
     },
   };
-  expect(config).toMatchObject(mockSurveys);
+  expect(config.survey_info.surveys).toMatchObject(mockSurveys);
 });
 
 it('gets the model response, if avaliable, or returns null', () => {

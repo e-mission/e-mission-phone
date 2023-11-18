@@ -8,6 +8,7 @@ import { getConfig } from '../../config/dynamicConfig';
 import { DateTime } from 'luxon';
 import { fetchUrlCached } from '../../services/commHelper';
 import { getUnifiedDataForInterval } from '../../services/unifiedDataLoader';
+import { EnketoSurveyConfig } from '../../types/appConfigTypes';
 
 export type PrefillFields = { [key: string]: string };
 
@@ -34,19 +35,10 @@ type EnketoResponse = {
   metadata: any;
 };
 
-type EnketoSurveyConfig = {
-  [surveyName: string]: {
-    formPath: string;
-    labelTemplate: { [lang: string]: string };
-    labelVars: { [activity: string]: { [key: string]: string; type: string } };
-    version: number;
-    compatibleWith: number;
-  };
-};
-
 const LABEL_FUNCTIONS = {
   UseLabelTemplate: async (xmlDoc: XMLDocument, name: string) => {
-    let configSurveys = await _lazyLoadConfig();
+    let appConfig = await getConfig();
+    const configSurveys = appConfig.survey_info.surveys;
 
     const config = configSurveys[name]; // config for this survey
     const lang = i18next.resolvedLanguage;
@@ -95,21 +87,6 @@ function _getAnswerByTagName(xmlDoc: XMLDocument, tagName: string) {
 let _config: EnketoSurveyConfig;
 
 /**
- * _lazyLoadConfig load enketo survey config. If already loaded, return the cached config
- * @returns {Promise<EnketoSurveyConfig>} enketo survey config
- */
-export function _lazyLoadConfig() {
-  if (_config !== undefined) {
-    return Promise.resolve(_config);
-  }
-  return getConfig().then((newConfig) => {
-    logInfo('Resolved UI_CONFIG_READY promise in enketoHelper, filling in templates');
-    _config = newConfig.survey_info.surveys;
-    return _config;
-  });
-}
-
-/**
  * filterByNameAndVersion filter the survey responses by survey name and their version.
  * The version for filtering is specified in enketo survey `compatibleWith` config.
  * The survey version of the response must be greater than or equal to `compatibleWith` to be included.
@@ -119,8 +96,11 @@ export function _lazyLoadConfig() {
  * @return {Promise<EnketoResponse[]>} filtered survey responses
  */
 export function filterByNameAndVersion(name: string, responses: EnketoResponse[]) {
-  return _lazyLoadConfig().then((config) =>
-    responses.filter((r) => r.data.name === name && r.data.version >= config[name].compatibleWith),
+  return getConfig().then((config) =>
+    responses.filter(
+      (r) =>
+        r.data.name === name && r.data.version >= config.survey_info.surveys[name].compatibleWith,
+    ),
   );
 }
 
