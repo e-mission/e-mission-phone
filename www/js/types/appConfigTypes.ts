@@ -6,7 +6,7 @@ export type AppConfig = {
   survey_info: {
     'trip-labels': 'MULTILABEL' | 'ENKETO';
     surveys: EnketoSurveyConfig;
-  }
+  };
   [k: string]: any; // TODO fill in all the other fields
 };
 
