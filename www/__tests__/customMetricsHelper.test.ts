@@ -28,12 +28,12 @@ it('gets the custom mets', async () => {
   const appConfig = await getConfig();
   await initCustomDatasetHelper(appConfig);
   expect(getCustomMETs()).toMatchObject({
-    walk: {},
-    bike: {},
-    bikeshare: {},
-    'e-bike': {},
-    scootershare: {},
-    drove_alone: {},
+    walk: expect.any(Object),
+    bike: expect.any(Object),
+    bikeshare: expect.any(Object),
+    'e-bike': expect.any(Object),
+    scootershare: expect.any(Object),
+    drove_alone: expect.any(Object),
   });
 });
 
@@ -41,11 +41,11 @@ it('gets the custom footprint', async () => {
   const appConfig = await getConfig();
   await initCustomDatasetHelper(appConfig);
   expect(getCustomFootprint()).toMatchObject({
-    walk: {},
-    bike: {},
-    bikeshare: {},
-    'e-bike': {},
-    scootershare: {},
-    drove_alone: {},
+    walk: expect.any(Number),
+    bike: expect.any(Number),
+    bikeshare: expect.any(Number),
+    'e-bike': expect.any(Number),
+    scootershare: expect.any(Number),
+    drove_alone: expect.any(Number),
   });
 });
