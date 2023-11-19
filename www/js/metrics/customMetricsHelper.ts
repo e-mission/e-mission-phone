@@ -98,12 +98,11 @@ const populateCustomFootprints = function () {
 export const initCustomDatasetHelper = async function (newConfig) {
   try {
     logDebug('initializing custom datasets with config' + newConfig);
-    getLabelOptions(newConfig).then((labelOptions) => {
-      console.log('In custom metrics, label options: ', labelOptions);
-      _labelOptions = labelOptions;
-      populateCustomMETs();
-      populateCustomFootprints();
-    });
+    const labelOptions = await getLabelOptions(newConfig);
+    console.log('In custom metrics, label options: ', labelOptions);
+    _labelOptions = labelOptions;
+    populateCustomMETs();
+    populateCustomFootprints();
   } catch (e) {
     setTimeout(() => {
       displayError(e, 'Error while initializing custom dataset helper');

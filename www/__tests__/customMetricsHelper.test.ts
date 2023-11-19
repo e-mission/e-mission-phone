@@ -25,8 +25,8 @@ global.fetch = (url: string) =>
   }) as any;
 
 it('gets the custom mets', async () => {
-  initCustomDatasetHelper(getConfig());
-  await new Promise((r) => setTimeout(r, 800));
+  const appConfig = await getConfig();
+  await initCustomDatasetHelper(appConfig);
   expect(getCustomMETs()).toMatchObject({
     walk: {},
     bike: {},
@@ -38,8 +38,8 @@ it('gets the custom mets', async () => {
 });
 
 it('gets the custom footprint', async () => {
-  initCustomDatasetHelper(getConfig());
-  await new Promise((r) => setTimeout(r, 800));
+  const appConfig = await getConfig();
+  await initCustomDatasetHelper(appConfig);
   expect(getCustomFootprint()).toMatchObject({
     walk: {},
     bike: {},

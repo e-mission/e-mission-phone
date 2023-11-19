@@ -39,25 +39,25 @@ const custom_metrics = [
 ];
 
 it('gets footprint for metrics (custom, fallback 0)', async () => {
-  initCustomDatasetHelper(getConfig());
-  await new Promise((r) => setTimeout(r, 500));
+  const appConfig = await getConfig();
+  await initCustomDatasetHelper(appConfig);
   expect(getFootprintForMetrics(custom_metrics, 0)).toBe(2.4266);
 });
 
 it('gets footprint for metrics (custom, fallback 0.1)', async () => {
-  initCustomDatasetHelper(getConfig());
-  await new Promise((r) => setTimeout(r, 500));
+  const appConfig = await getConfig();
+  await initCustomDatasetHelper(appConfig);
   expect(getFootprintForMetrics(custom_metrics, 0.1)).toBe(2.4266 + 0.5);
 });
 
 it('gets the highest footprint from the dataset, custom', async () => {
-  initCustomDatasetHelper(getConfig());
-  await new Promise((r) => setTimeout(r, 500));
+  const appConfig = await getConfig();
+  await initCustomDatasetHelper(appConfig);
   expect(getHighestFootprint()).toBe(0.30741);
 });
 
 it('gets the highest footprint for distance, custom', async () => {
-  initCustomDatasetHelper(getConfig());
-  await new Promise((r) => setTimeout(r, 500));
+  const appConfig = await getConfig();
+  await initCustomDatasetHelper(appConfig);
   expect(getHighestFootprintForDistance(12345)).toBe(0.30741 * (12345 / 1000));
 });
