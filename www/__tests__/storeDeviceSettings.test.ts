@@ -13,9 +13,8 @@ import {
 import { mockLogger } from '../__mocks__/globalMocks';
 import { EVENTS, publish } from '../js/customEventHandler';
 import { markIntroDone } from '../js/onboarding/onboardingHelper';
-import fakeConfig from '../__mocks__/fakeConfig.json';
 
-mockBEMUserCache(fakeConfig);
+mockBEMUserCache();
 mockDevice();
 mockCordova();
 mockLogger();

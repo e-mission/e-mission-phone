@@ -105,7 +105,7 @@ export const mockBEMUserCache = (config?) => {
       if (key == 'config/app_ui_config') {
         return new Promise<any>((rs, rj) =>
           setTimeout(() => {
-            rs(config);
+            rs(config || fakeConfig);
           }, 100),
         );
       } else {
