@@ -35,7 +35,7 @@ export const mockFile = () => {
 //for consent document
 const _storage = {};
 
-export const mockBEMUserCache = (config) => {
+export const mockBEMUserCache = (config?) => {
   const _cache = {};
   const messages = [];
   const mockBEMUserCache = {
