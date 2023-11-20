@@ -97,8 +97,8 @@ export function getBaseModeByText(text, labelOptions: LabelOptions) {
 export function isMultiDay(beginFmtTime: string, endFmtTime: string) {
   if (!beginFmtTime || !endFmtTime) return false;
   return (
-    DateTime.fromISO(beginFmtTime).toFormat('YYYYMMDD') !=
-    DateTime.fromISO(endFmtTime).toFormat('YYYYMMDD')
+    DateTime.fromISO(beginFmtTime, { setZone: true }).toFormat('YYYYMMDD') !=
+    DateTime.fromISO(endFmtTime, { setZone: true }).toFormat('YYYYMMDD')
   );
 }
 
@@ -114,7 +114,7 @@ export function getFormattedDate(beginFmtTime: string, endFmtTime?: string) {
     return `${getFormattedDate(beginFmtTime)} - ${getFormattedDate(endFmtTime)}`;
   }
   // only one day given, or both are the same day
-  const t = DateTime.fromISO(beginFmtTime || endFmtTime);
+  const t = DateTime.fromISO(beginFmtTime || endFmtTime, { setZone: true });
   // We use toLocale to get Wed May 3, 2023 or equivalent,
   const tConversion = t.toLocaleString({
     weekday: 'short',
@@ -148,8 +148,8 @@ export function getFormattedDateAbbr(beginFmtTime: string, endFmtTime?: string) 
  */
 export function getFormattedTimeRange(beginFmtTime: string, endFmtTime: string) {
   if (!beginFmtTime || !endFmtTime) return;
-  const beginTime = DateTime.fromISO(beginFmtTime);
-  const endTime = DateTime.fromISO(endFmtTime);
+  const beginTime = DateTime.fromISO(beginFmtTime, { setZone: true });
+  const endTime = DateTime.fromISO(endFmtTime, { setZone: true });
   const range = endTime.diff(beginTime, ['hours']);
   const roundedHours = Math.round(range.as('hours')); // Round up or down to nearest hour
   const formattedRange = `${roundedHours} hour${roundedHours !== 1 ? 's' : ''}`;
