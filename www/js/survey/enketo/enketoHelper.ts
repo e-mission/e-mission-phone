@@ -8,7 +8,8 @@ import { getConfig } from '../../config/dynamicConfig';
 import { DateTime } from 'luxon';
 import { fetchUrlCached } from '../../services/commHelper';
 import { getUnifiedDataForInterval } from '../../services/unifiedDataLoader';
-import { EnketoSurveyConfig } from '../../types/appConfigTypes';
+import { AppConfig, EnketoSurveyConfig } from '../../types/appConfigTypes';
+import { CompositeTrip, ConfirmedPlace, TimelineEntry } from '../../types/diaryTypes';
 
 export type PrefillFields = { [key: string]: string };
 
@@ -151,12 +152,12 @@ export function getInstanceStr(xmlModel: string, opts: SurveyOptions): string | 
 /**
  * resolve timestamps label from the survey response
  * @param {XMLDocument} xmlDoc survey response as XML object
- * @param {object} trip trip object
+ * @param {object} timelineEntry trip or place object
  * @returns {object} object with `start_ts` and `end_ts`
  *    - null if no timestamps are resolved
  *    - undefined if the timestamps are invalid
  */
-export function resolveTimestamps(xmlDoc, timelineEntry) {
+export function resolveTimestamps(xmlDoc: XMLDocument, timelineEntry: TimelineEntry) {
   // check for Date and Time fields
   const startDate = xmlDoc.getElementsByTagName('Start_date')?.[0]?.innerHTML;
   let startTime = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
@@ -167,10 +168,10 @@ export function resolveTimestamps(xmlDoc, timelineEntry) {
   if (!startDate || !startTime || !endDate || !endTime) return null;
 
   const timezone =
-    timelineEntry.start_local_dt?.timezone ||
-    timelineEntry.enter_local_dt?.timezone ||
-    timelineEntry.end_local_dt?.timezone ||
-    timelineEntry.exit_local_dt?.timezone;
+    (timelineEntry as CompositeTrip).start_local_dt?.timezone ||
+    (timelineEntry as ConfirmedPlace).enter_local_dt?.timezone ||
+    (timelineEntry as CompositeTrip).end_local_dt?.timezone ||
+    (timelineEntry as ConfirmedPlace).exit_local_dt?.timezone;
   // split by + or - to get time without offset
   startTime = startTime.split(/\-|\+/)[0];
   endTime = endTime.split(/\-|\+/)[0];
@@ -188,8 +189,10 @@ export function resolveTimestamps(xmlDoc, timelineEntry) {
     the millisecond. To avoid precision issues, we will check if the start/end timestamps from
     the survey response are within the same minute as the start/end or enter/exit timestamps.
     If so, we will use the exact trip/place timestamps */
-  const entryStartTs = timelineEntry.start_ts || timelineEntry.enter_ts;
-  const entryEndTs = timelineEntry.end_ts || timelineEntry.exit_ts;
+  const entryStartTs =
+    (timelineEntry as CompositeTrip).start_ts || (timelineEntry as ConfirmedPlace).enter_ts;
+  const entryEndTs =
+    (timelineEntry as CompositeTrip).end_ts || (timelineEntry as ConfirmedPlace).exit_ts;
   if (additionStartTs - (additionStartTs % 60) == entryStartTs - (entryStartTs % 60))
     additionStartTs = entryStartTs;
   if (additionEndTs - (additionEndTs % 60) == entryEndTs - (entryEndTs % 60))
@@ -209,7 +212,12 @@ export function resolveTimestamps(xmlDoc, timelineEntry) {
  * @param opts object with SurveyOptions like 'timelineEntry' or 'dataKey'
  * @returns Promise of the saved result, or an Error if there was a problem
  */
-export function saveResponse(surveyName: string, enketoForm: Form, appConfig, opts: SurveyOptions) {
+export function saveResponse(
+  surveyName: string,
+  enketoForm: Form,
+  appConfig: AppConfig,
+  opts: SurveyOptions,
+) {
   const xmlParser = new window.DOMParser();
   const xmlResponse = enketoForm.getDataStr();
   const xmlDoc = xmlParser.parseFromString(xmlResponse, 'text/xml');

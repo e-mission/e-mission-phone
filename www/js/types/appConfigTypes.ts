@@ -22,5 +22,6 @@ export type EnketoSurveyConfig = {
     labelVars: { [activity: string]: { [key: string]: string; type: string } };
     version: number;
     compatibleWith: number;
+    dataKey?: string;
   };
 };
