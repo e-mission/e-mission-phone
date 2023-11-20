@@ -9,17 +9,15 @@ let highestFootprint = 0;
  * @param {number} v value in meters to be converted
  * @returns {number} converted value in km
  */
-const mtokm = function (v) {
-  return v / 1000;
-};
+const mtokm = (v) => v / 1000;
 
 /**
  * @function clears the stored highest footprint
  */
-export const clearHighestFootprint = function () {
+export function clearHighestFootprint() {
   //need to clear for testing
   highestFootprint = undefined;
-};
+}
 
 /**
  * @function gets the footprint
@@ -27,7 +25,7 @@ export const clearHighestFootprint = function () {
  * fallback is json/label-options.json.sample, with MET and kgCO2 defined
  * @returns the footprint or undefined
  */
-const getFootprint = function () {
+function getFootprint() {
   let footprint = getCustomFootprint();
   if (footprint) {
     return footprint;
@@ -35,7 +33,7 @@ const getFootprint = function () {
     displayErrorMsg('failed to use custom labels', 'Error in Footprint Calculatons');
     return undefined;
   }
-};
+}
 
 /**
  * @function calculates footprint for given metrics
@@ -44,12 +42,12 @@ const getFootprint = function () {
  * @param {number} defaultIfMissing optional, carbon intensity if mode not in footprint
  * @returns {number} the sum of carbon emissions for userMetrics given
  */
-export const getFootprintForMetrics = function (userMetrics, defaultIfMissing = 0) {
-  var footprint = getFootprint();
+export function getFootprintForMetrics(userMetrics, defaultIfMissing = 0) {
+  const footprint = getFootprint();
   logDebug('getting footprint for ' + userMetrics + ' with ' + footprint);
-  var result = 0;
-  for (var i in userMetrics) {
-    var mode = userMetrics[i].key;
+  let result = 0;
+  for (let i in userMetrics) {
+    let mode = userMetrics[i].key;
     if (mode == 'ON_FOOT') {
       mode = 'WALKING';
     }
@@ -75,29 +73,27 @@ export const getFootprintForMetrics = function (userMetrics, defaultIfMissing = 
     }
   }
   return result;
-};
+}
 
 /**
  * @function gets highest co2 intensity in the footprint
  * @returns {number} the highest co2 intensity in the footprint
  */
-export const getHighestFootprint = function () {
+export function getHighestFootprint() {
   if (!highestFootprint) {
-    var footprint = getFootprint();
+    const footprint = getFootprint();
     let footprintList = [];
-    for (var mode in footprint) {
+    for (let mode in footprint) {
       footprintList.push(footprint[mode]);
     }
     highestFootprint = Math.max(...footprintList);
   }
   return highestFootprint;
-};
+}
 
 /**
  * @function gets highest theoretical footprint for given distance
  * @param {number} distance in meters to calculate max footprint
  * @returns max footprint for given distance
  */
-export const getHighestFootprintForDistance = function (distance) {
-  return getHighestFootprint() * mtokm(distance);
-};
+export const getHighestFootprintForDistance = (distance) => getHighestFootprint() * mtokm(distance);

@@ -2,6 +2,7 @@ import angular from 'angular';
 import { getLabelOptions } from '../survey/multilabel/confirmHelper';
 import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { standardMETs } from './metDataset';
+import { AppConfig } from '../types/appConfigTypes';
 
 //variables to store values locally
 let _customMETs;
@@ -13,25 +14,25 @@ let _labelOptions;
  * @function gets custom mets, must be initialized
  * @returns the custom mets stored locally
  */
-export const getCustomMETs = function () {
+export function getCustomMETs() {
   logDebug('Getting custom METs ' + JSON.stringify(_customMETs));
   return _customMETs;
-};
+}
 
 /**
  * @function gets the custom footprint, must be initialized
  * @returns custom footprint
  */
-export const getCustomFootprint = function () {
+export function getCustomFootprint() {
   logDebug('Getting custom footprint ' + JSON.stringify(_customPerKmFootprint));
   return _customPerKmFootprint;
-};
+}
 
 /**
  * @function stores custom mets in local var
  * needs _labelOptions, stored after gotten from config
  */
-const populateCustomMETs = function () {
+function populateCustomMETs() {
   let modeOptions = _labelOptions['MODE'];
   let modeMETEntries = modeOptions.map((opt) => {
     if (opt.met_equivalent) {
@@ -59,13 +60,13 @@ const populateCustomMETs = function () {
   });
   _customMETs = Object.fromEntries(modeMETEntries.filter((e) => angular.isDefined(e)));
   logDebug('After populating, custom METs = ' + JSON.stringify(_customMETs));
-};
+}
 
 /**
  * @function stores custom footprint in local var
  * needs _inputParams which is stored after gotten from config
  */
-const populateCustomFootprints = function () {
+function populateCustomFootprints() {
   let modeOptions = _labelOptions['MODE'];
   let modeCO2PerKm = modeOptions
     .map((opt) => {
@@ -88,18 +89,18 @@ const populateCustomFootprints = function () {
     .filter((modeCO2) => angular.isDefined(modeCO2));
   _customPerKmFootprint = Object.fromEntries(modeCO2PerKm);
   logDebug('After populating, custom perKmFootprint' + JSON.stringify(_customPerKmFootprint));
-};
+}
 
 /**
  * @function initializes the datasets based on configured label options
  * calls popuplateCustomMETs and populateCustomFootprint
  * @param newConfig the app config file
  */
-export const initCustomDatasetHelper = async function (newConfig) {
+export async function initCustomDatasetHelper(newConfig: AppConfig) {
   try {
     logDebug('initializing custom datasets with config' + newConfig);
     const labelOptions = await getLabelOptions(newConfig);
-    console.log('In custom metrics, label options: ', labelOptions);
+    logDebug('In custom metrics, label options = ' + JSON.stringify(labelOptions));
     _labelOptions = labelOptions;
     populateCustomMETs();
     populateCustomFootprints();
@@ -108,4 +109,4 @@ export const initCustomDatasetHelper = async function (newConfig) {
       displayError(e, 'Error while initializing custom dataset helper');
     }, 1000);
   }
-};
+}
