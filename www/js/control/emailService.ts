@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import i18next from 'i18next';
-import { logInfo, logDebug, displayError } from '../plugin/logger';
+import { logDebug, logInfo, logWarn } from '../plugin/logger';
 
 async function hasAccount(): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
@@ -13,18 +12,18 @@ async function hasAccount(): Promise<boolean> {
 export async function sendEmail(database: string) {
   let parentDir = 'unknown';
 
-  if (window['ionic'].Platform.isIOS() && !(await hasAccount())) {
+  if (window['cordova'].platformId == 'ios' && !(await hasAccount())) {
     alert(i18next.t('email-service.email-account-not-configured'));
     return;
   }
 
-  if (window['ionic'].Platform.isAndroid()) {
+  if (window['cordova'].platformId) == 'android') {
     parentDir = 'app://databases';
   }
 
-  if (window['ionic'].Platform.isIOS()) {
+  if (window['cordova'].platformId) == 'ios') {
     alert(i18next.t('email-service.email-account-mail-app'));
-    console.log(window['cordova'].file.dataDirectory);
+    logDebug(window['cordova'].file.dataDirectory);
     parentDir = window['cordova'].file.dataDirectory + '../LocalDatabase';
   }
 
@@ -47,10 +46,7 @@ export async function sendEmail(database: string) {
   };
 
   window['cordova'].plugins['email'].open(emailData, () => {
-    logInfo(
-      'Email app closed while sending, ' +
-        JSON.stringify(emailData) +
-        ' not sure if we should do anything',
-    );
+    logWarn(`Email app closed while sending, 
+      emailData = ${JSON.stringify(emailData)}`);
   });
 }
