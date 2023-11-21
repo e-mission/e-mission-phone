@@ -1,4 +1,5 @@
-import { displayError, logDebug } from '../plugin/logger';
+import moment from 'moment';
+import { logDebug, displayError } from '../plugin/logger';
 import { getBaseModeByKey, getBaseModeByValue } from './diaryHelper';
 import { getUnifiedDataForInterval } from '../services/unifiedDataLoader';
 import { getRawEntries } from '../services/commHelper';
