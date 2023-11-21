@@ -1,4 +1,3 @@
-import angular from 'angular';
 import { getLabelOptions } from '../survey/multilabel/confirmHelper';
 import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { standardMETs } from './metDataset';
@@ -58,7 +57,7 @@ function populateCustomMETs() {
       }
     }
   });
-  _customMETs = Object.fromEntries(modeMETEntries.filter((e) => angular.isDefined(e)));
+  _customMETs = Object.fromEntries(modeMETEntries.filter((e) => typeof e !== 'undefined'));
   logDebug('After populating, custom METs = ' + JSON.stringify(_customMETs));
 }
 
@@ -80,13 +79,13 @@ function populateCustomFootprints() {
         _range_limited_motorized = opt;
         logDebug(`Found range limited motorized mode - ${_range_limited_motorized}`);
       }
-      if (angular.isDefined(opt.kgCo2PerKm)) {
+      if (typeof opt.kgCo2PerKm !== 'undefined') {
         return [opt.value, opt.kgCo2PerKm];
       } else {
         return undefined;
       }
     })
-    .filter((modeCO2) => angular.isDefined(modeCO2));
+    .filter((modeCO2) => typeof modeCO2 !== 'undefined');
   _customPerKmFootprint = Object.fromEntries(modeCO2PerKm);
   logDebug('After populating, custom perKmFootprint' + JSON.stringify(_customPerKmFootprint));
 }
