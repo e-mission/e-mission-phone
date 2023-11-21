@@ -1,5 +1,3 @@
-// may refactor this into a React hook once it's no longer used by any Angular screens
-
 import { fetchUrlCached } from '../../services/commHelper';
 import i18next from 'i18next';
 import { logDebug } from '../../plugin/logger';
