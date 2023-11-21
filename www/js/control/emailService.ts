@@ -17,11 +17,11 @@ export async function sendEmail(database: string) {
     return;
   }
 
-  if (window['cordova'].platformId) == 'android') {
+  if (window['cordova'].platformId == 'android') {
     parentDir = 'app://databases';
   }
 
-  if (window['cordova'].platformId) == 'ios') {
+  if (window['cordova'].platformId == 'ios') {
     alert(i18next.t('email-service.email-account-mail-app'));
     logDebug(window['cordova'].file.dataDirectory);
     parentDir = window['cordova'].file.dataDirectory + '../LocalDatabase';
