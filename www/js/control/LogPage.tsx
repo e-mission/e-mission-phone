@@ -6,13 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import moment from 'moment';
 import AlertBar from './AlertBar';
+import { sendEmail } from './emailService';
 
 type loadStats = { currentStart: number; gotMaxIndex: boolean; reachedEnd: boolean };
 
 const LogPage = ({ pageVis, setPageVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const EmailHelper = getAngularService('EmailHelper');
 
   const [loadStats, setLoadStats] = useState<loadStats>();
   const [entries, setEntries] = useState([]);
@@ -96,7 +96,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
   };
 
   const emailLog = function () {
-    EmailHelper.sendEmail('loggerDB');
+    sendEmail('loggerDB');
   };
 
   const separator = () => <View style={{ height: 8 }} />;
