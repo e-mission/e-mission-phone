@@ -63,16 +63,21 @@ const exampleReminderSchemes = {
 mockLogger();
 mockReminders();
 
-jest.mock('i18next', () => ({
-  resolvedLanguage: 'en',
-}));
-
 jest.mock('../js/services/commHelper', () => ({
-  getUser: jest.fn(),
-  updateUser: jest.fn(),
+  ...jest.requireActual('../js/services/commHelper'),
+  getUser: jest.fn(() =>
+    Promise.resolve({
+      // These values are **important**...
+      //   reminder_assignment: must match a key from the reminder scheme above,
+      //   reminder_join_date: must match the first day of the mocked notifs below in the tests,
+      //   reminder_time_of_day: must match the defaultTime from the chosen reminder_assignment in the reminder scheme above
+      reminder_assignment: 'weekly',
+      reminder_join_date: '2023-11-14',
+      reminder_time_of_day: '21:00',
+    }),
+  ),
+  updateUser: jest.fn(() => Promise.resolve()),
 }));
-const mockGetUser = getUser as jest.Mock;
-const mockUpdateUser = updateUser as jest.Mock;
 
 jest.mock('../js/plugin/clientStats', () => ({
   ...jest.requireActual('../js/plugin/clientStats'),
