@@ -245,4 +245,19 @@ describe('updateScheduledNotifs', () => {
 
     expect(logDebug).toHaveBeenCalledWith('Already scheduled, not scheduling again');
   });
+
+  it('should log an error message if the reminder scheme is missing', async () => {
+    // updateScheduleNotifs arguments
+    let reminderSchemes: any = exampleReminderSchemes;
+    delete reminderSchemes.weekly; // delete the weekly reminder scheme, to create a missing reminder scheme error
+    let isScheduling: boolean = false;
+    const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
+    const scheduledPromise: Promise<any> = Promise.resolve();
+
+    await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+
+    // Your assertions here
+    expect(logDebug).toHaveBeenCalledWith('Error: Reminder scheme not found');
+    // Add more assertions as needed
+  });
 });
