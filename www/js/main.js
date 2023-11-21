@@ -6,7 +6,6 @@ angular
   .module('emission.main', [
     'emission.main.diary',
     'emission.i18n.utils',
-    'emission.splash.notifscheduler',
     'emission.main.metrics.factory',
     'emission.main.metrics.mappings',
     'emission.services',

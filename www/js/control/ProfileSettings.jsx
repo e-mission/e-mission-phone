@@ -32,8 +32,15 @@ import { shareQR } from '../components/QrCode';
 import { storageClear } from '../plugin/storage';
 import { getAppVersion } from '../plugin/clientStats';
 import { getConsentDocument } from '../splash/startprefs';
-import { logDebug } from '../plugin/logger';
+import { displayErrorMsg, logDebug } from '../plugin/logger';
 import { fetchOPCode, getSettings } from '../services/controlHelper';
+import {
+  updateScheduledNotifs,
+  getScheduledNotifs,
+  getReminderPrefs,
+  setReminderPrefs,
+} from '../splash/notifScheduler';
+import { DateTime } from 'luxon';
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -46,7 +53,6 @@ const ProfileSettings = () => {
   //angular services needed
   const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
   const EmailHelper = getAngularService('EmailHelper');
-  const NotificationScheduler = getAngularService('NotificationScheduler');
 
   //functions that come directly from an Angular service
   const editCollectionConfig = () => setEditCollectionVis(true);
@@ -95,6 +101,10 @@ const ProfileSettings = () => {
     { text: 'Remote push', transition: 'RECEIVED_SILENT_PUSH' },
   ];
 
+  // used for scheduling notifs
+  let scheduledPromise = new Promise((rs) => rs());
+  const [isScheduling, setIsScheduling] = useState(false);
+
   useEffect(() => {
     //added appConfig.name needed to be defined because appConfig was defined but empty
     if (appConfig && appConfig.name) {
@@ -141,6 +151,20 @@ const ProfileSettings = () => {
       tempUiConfig.opcode.autogen = tempUiConfig?.intro.program_or_study == 'study';
     }
 
+    // Update the scheduled notifs
+    updateScheduledNotifs(
+      tempUiConfig.reminderSchemes,
+      isScheduling,
+      setIsScheduling,
+      scheduledPromise,
+    )
+      .then(() => {
+        logDebug('updated scheduled notifs');
+      })
+      .catch((err) => {
+        displayErrorMsg('Error while updating scheduled notifs', err);
+      });
+
     // setTemplateText(tempUiConfig.intro.translated_text);
     // console.log("translated text is??", templateText);
     setUiConfig(tempUiConfig);
@@ -180,27 +204,42 @@ const ProfileSettings = () => {
   }, [editCollectionVis]);
 
   async function refreshNotificationSettings() {
-    console.debug(
-      'about to refreshNotificationSettings, notificationSettings = ',
-      notificationSettings,
+    logDebug(
+      'about to refreshNotificationSettings, notificationSettings = ' +
+        JSON.stringify(notificationSettings),
     );
     const newNotificationSettings = {};
 
     if (uiConfig?.reminderSchemes) {
-      const prefs = await NotificationScheduler.getReminderPrefs();
-      const m = moment(prefs.reminder_time_of_day, 'HH:mm');
-      newNotificationSettings.prefReminderTimeVal = m.toDate();
-      const n = moment(newNotificationSettings.prefReminderTimeVal);
-      newNotificationSettings.prefReminderTime = n.format('LT');
+      let promiseList = [];
+      promiseList.push(
+        getReminderPrefs(uiConfig.reminderSchemes, isScheduling, setIsScheduling, scheduledPromise),
+      );
+      promiseList.push(getScheduledNotifs(isScheduling, scheduledPromise));
+      let resultList = await Promise.all(promiseList);
+      const prefs = resultList[0];
+      const scheduledNotifs = resultList[1];
+      logDebug(
+        'prefs and scheduled notifs\n' +
+          JSON.stringify(prefs) +
+          '\n-\n' +
+          JSON.stringify(scheduledNotifs),
+      );
+
+      const m = DateTime.fromFormat(prefs.reminder_time_of_day, 'HH:mm');
+      newNotificationSettings.prefReminderTimeVal = m.toJSDate();
+      newNotificationSettings.prefReminderTime = m.toFormat('t');
       newNotificationSettings.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
-      newNotificationSettings.scheduledNotifs = await NotificationScheduler.getScheduledNotifs();
+      newNotificationSettings.scheduledNotifs = scheduledNotifs;
+
       updatePrefReminderTime(false);
     }
 
-    console.log(
-      'notification settings before and after',
-      notificationSettings,
-      newNotificationSettings,
+    logDebug(
+      'notification settings before and after\n' +
+        JSON.stringify(notificationSettings) +
+        '\n-\n' +
+        JSON.stringify(newNotificationSettings),
     );
     setNotificationSettings(newNotificationSettings);
   }
@@ -262,13 +301,17 @@ const ProfileSettings = () => {
   async function updatePrefReminderTime(storeNewVal = true, newTime) {
     console.log(newTime);
     if (storeNewVal) {
-      const m = moment(newTime);
+      const m = DateTime.fromISO(newTime);
       // store in HH:mm
-      NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }).then(
-        () => {
-          refreshNotificationSettings();
-        },
-      );
+      setReminderPrefs(
+        { reminder_time_of_day: m.toFormat('HH:mm') },
+        uiConfig.reminderSchemes,
+        isScheduling,
+        setIsScheduling,
+        scheduledPromise,
+      ).then(() => {
+        refreshNotificationSettings();
+      });
     }
   }
 
