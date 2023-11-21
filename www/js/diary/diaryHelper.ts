@@ -197,5 +197,5 @@ export function getLocalTimeString(dt) {
     hour: dt.hour,
     minute: dt.minute,
   });
-  return dateTime.toFormat('hh:mm a');
+  return dateTime.toFormat('h:mm a');
 }
