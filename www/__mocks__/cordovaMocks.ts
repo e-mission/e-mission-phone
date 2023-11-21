@@ -1,4 +1,5 @@
 import packageJsonBuild from '../../package.cordovabuild.json';
+import fakeConfig from './fakeConfig.json';
 
 export const mockCordova = () => {
   window['cordova'] ||= {};
@@ -35,7 +36,7 @@ export const mockFile = () => {
 //for consent document
 const _storage = {};
 
-export const mockBEMUserCache = () => {
+export const mockBEMUserCache = (config?) => {
   const _cache = {};
   const messages = [];
   const mockBEMUserCache = {
@@ -101,11 +102,20 @@ export const mockBEMUserCache = () => {
       );
     },
     getDocument: (key: string, withMetadata?: boolean) => {
-      return new Promise<any[]>((rs, rj) =>
-        setTimeout(() => {
-          rs(_storage[key]);
-        }, 100),
-      );
+      //returns the config provided as a paramenter to this mock!
+      if (key == 'config/app_ui_config') {
+        return new Promise<any>((rs, rj) =>
+          setTimeout(() => {
+            rs(config || fakeConfig);
+          }, 100),
+        );
+      } else {
+        return new Promise<any[]>((rs, rj) =>
+          setTimeout(() => {
+            rs(_storage[key]);
+          }, 100),
+        );
+      }
     },
     isEmptyDoc: (doc) => {
       if (doc == undefined) {
@@ -116,6 +126,20 @@ export const mockBEMUserCache = () => {
         return true;
       } else {
         return false;
+      }
+    },
+    getAllTimeQuery: () => {
+      return { key: 'write_ts', startTs: 0, endTs: Date.now() / 1000 };
+    },
+    getSensorDataForInterval: (key, tq, withMetadata) => {
+      if (key == `manual/demographic_survey`) {
+        return new Promise<any>((rs, rj) =>
+          setTimeout(() => {
+            rs({ metadata: { write_ts: '1699897723' }, data: 'completed', time: '01/01/2001' });
+          }, 100),
+        );
+      } else {
+        return undefined;
       }
     },
   };

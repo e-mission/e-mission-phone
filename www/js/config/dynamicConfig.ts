@@ -10,6 +10,11 @@ export let storedConfig = null;
 export let configChanged = false;
 export const setConfigChanged = (b) => (configChanged = b);
 
+//used test multiple configs, not used outside of test
+export const resetStoredConfig = function () {
+  storedConfig = null;
+};
+
 const _getStudyName = function (connectUrl) {
   const orig_host = new URL(connectUrl).hostname;
   const first_domain = orig_host.split('.')[0];
