@@ -33,6 +33,7 @@ import { storageClear } from '../plugin/storage';
 import { getAppVersion } from '../plugin/clientStats';
 import { getConsentDocument } from '../splash/startprefs';
 import { logDebug } from '../plugin/logger';
+import { fetchOPCode, getSettings } from '../services/controlHelper';
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -46,7 +47,6 @@ const ProfileSettings = () => {
   const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
   const EmailHelper = getAngularService('EmailHelper');
   const NotificationScheduler = getAngularService('NotificationScheduler');
-  const ControlHelper = getAngularService('ControlHelper');
 
   //functions that come directly from an Angular service
   const editCollectionConfig = () => setEditCollectionVis(true);
@@ -221,7 +221,7 @@ const ProfileSettings = () => {
   }, [editSync]);
 
   async function getConnectURL() {
-    ControlHelper.getSettings().then(
+    getSettings().then(
       function (response) {
         var newConnectSettings = {};
         newConnectSettings.url = response.connectUrl;
@@ -236,7 +236,7 @@ const ProfileSettings = () => {
 
   async function getOPCode() {
     const newAuthSettings = {};
-    const opcode = await ControlHelper.getOPCode();
+    const opcode = await fetchOPCode();
     if (opcode == null) {
       newAuthSettings.opcode = 'Not logged in';
     } else {

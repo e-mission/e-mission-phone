@@ -1,4 +1,9 @@
 export const mockFileSystem = () => {
+  type MockFileWriter = {
+    onreadend: any;
+    onerror: (e: any) => void;
+    write: (obj: Blob) => void;
+  };
   window['resolveLocalFileSystemURL'] = function (parentDir, handleFS) {
     const fs = {
       filesystem: {
@@ -9,6 +14,8 @@ export const mockFileSystem = () => {
                 let file = new File(['this is a mock'], 'loggerDB');
                 handleFile(file);
               },
+              nativeURL: 'file:///Users/Jest/test/URL/',
+              isFile: true,
             };
             onSuccess(fileEntry);
           },
