@@ -60,8 +60,8 @@ const exampleReminderSchemes = {
 mockLogger();
 mockReminders();
 
-jest.mock('../js/commHelper', () => ({
-  ...jest.requireActual('../js/commHelper'),
+jest.mock('../js/services/commHelper', () => ({
+  ...jest.requireActual('../js/services/commHelper'),
   getUser: jest.fn(() =>
     Promise.resolve({
       // These values are **important**...
