@@ -142,6 +142,9 @@ export const mockBEMUserCache = (config?) => {
         return undefined;
       }
     },
+    getMessagesForInterval: () => {
+      // Used for getUnifiedDataForInterval
+    },
   };
   window['cordova'] ||= {};
   window['cordova'].plugins ||= {};

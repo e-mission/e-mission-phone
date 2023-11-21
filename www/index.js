@@ -12,7 +12,6 @@ import './js/services.js';
 import './js/i18n-utils.js';
 import './js/main.js';
 import './js/diary.js';
-import './js/diary/services.js';
 import './js/control/emailService.js';
 import './js/metrics-factory.js';
 import './js/metrics-mappings.js';
