@@ -31,21 +31,12 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import App from './App';
 import { getTheme } from './appTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { logDebug } from './plugin/logger';
 
 angular
-  .module('emission', [
-    'ionic',
-    'jm.i18next',
-    'emission.controllers',
-    'emission.services',
-    'emission.plugin.logger',
-    'emission.splash.referral',
-    'emission.main',
-    'pascalprecht.translate',
-    'LocalStorageModule',
-  ])
+  .module('emission', ['ionic', 'jm.i18next', 'pascalprecht.translate', 'LocalStorageModule'])
 
-  .run(function ($ionicPlatform, $rootScope, $http, Logger, localStorageService) {
+  .run(function ($ionicPlatform, $rootScope, $http, localStorageService) {
     console.log('Starting run');
     // ensure that plugin events are delivered after the ionicPlatform is ready
     // https://github.com/katzer/cordova-plugin-local-notifications#launch-details
@@ -54,7 +45,7 @@ angular
     $ionicPlatform.ready(function () {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
       // for form inputs)
-      Logger.log('ionicPlatform is ready');
+      logDebug('ionicPlatform is ready');
 
       if (window.StatusBar) {
         // org.apache.cordova.statusbar required
