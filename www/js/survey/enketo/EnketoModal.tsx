@@ -69,7 +69,7 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
   /* adapted from the template given by enketo-core:
     https://github.com/enketo/enketo-core/blob/master/src/index.html */
   const enketoContent = (
-    <div className="main" id="survey-paper">
+    <div className="main" style={{ height: '100%' }}>
       <article className="paper" data-tap-disabled="true">
         {/* This form header (markup/css) can be changed in the application.
         Just make sure to keep a .form-language-selector element into which the form language selector (<select>)
