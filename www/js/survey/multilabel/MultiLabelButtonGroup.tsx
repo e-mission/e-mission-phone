@@ -3,7 +3,6 @@
   Next to the buttons is a small checkmark icon, which marks inferrel labels as confirmed */
 
 import React, { useContext, useEffect, useState, useMemo } from 'react';
-import { getAngularService } from '../../angular-react-helper';
 import { View, Modal, ScrollView, Pressable, useWindowDimensions } from 'react-native';
 import {
   IconButton,

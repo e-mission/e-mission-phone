@@ -3,13 +3,13 @@ import { Modal, View } from 'react-native';
 import { Dialog, Button, Switch, Text, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { settingStyles } from './ProfileSettings';
-import { getAngularService } from '../angular-react-helper';
 import ActionMenu from '../components/ActionMenu';
 import SettingRow from './SettingRow';
 import AlertBar from './AlertBar';
 import moment from 'moment';
 import { addStatEvent, statKeys } from '../plugin/clientStats';
 import { updateUser } from '../services/commHelper';
+import { displayError, logDebug, logWarn } from '../plugin/logger';
 
 /*
  * BEGIN: Simple read/write wrappers
@@ -45,7 +45,6 @@ type syncConfig = { sync_interval: number; ios_use_remote_push: boolean };
 export const ForceSyncRow = ({ getState }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const Logger = getAngularService('Logger');
 
   const [dataPendingVis, setDataPendingVis] = useState(false);
   const [dataPushedVis, setDataPushedVis] = useState(false);
@@ -74,24 +73,18 @@ export const ForceSyncRow = ({ getState }) => {
       };
       let syncLaunchedCalls = sensorDataList.filter(isTripEnd);
       let syncPending = syncLaunchedCalls.length > 0;
-      Logger.log(
-        'sensorDataList.length = ' +
-          sensorDataList.length +
-          ', syncLaunchedCalls.length = ' +
-          syncLaunchedCalls.length +
-          ', syncPending? = ' +
-          syncPending,
-      );
-      Logger.log('sync launched = ' + syncPending);
+      logDebug(`sensorDataList.length = ${sensorDataList.length}, 
+        syncLaunchedCalls.length = ${syncLaunchedCalls.length}, 
+        syncPending? = ${syncPending}`);
 
       if (syncPending) {
-        Logger.log(Logger.log('data is pending, showing confirm dialog'));
+        logDebug('data is pending, showing confirm dialog');
         setDataPendingVis(true); //consent handling in modal
       } else {
         setDataPushedVis(true);
       }
     } catch (error) {
-      Logger.displayError('Error while forcing sync', error);
+      displayError(error, 'Error while forcing sync');
     }
   }
 
@@ -161,7 +154,7 @@ export const ForceSyncRow = ({ getState }) => {
             <Button
               onPress={() => {
                 setDataPendingVis(false);
-                Logger.log('user refused to re-sync');
+                logWarn('user refused to re-sync');
               }}>
               {t('general-settings.cancel')}
             </Button>
@@ -188,7 +181,6 @@ export const ForceSyncRow = ({ getState }) => {
 const ControlSyncHelper = ({ editVis, setEditVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const Logger = getAngularService('Logger');
 
   const [localConfig, setLocalConfig] = useState<syncConfig>();
   const [intervalVis, setIntervalVis] = useState<boolean>(false);
@@ -231,7 +223,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
       });
     } catch (err) {
       console.log('error with setting sync config', err);
-      Logger.displayError('Error while setting sync config', err);
+      displayError(err, 'Error while setting sync config');
     }
   }
   const onChooseInterval = function (interval) {
