@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, StyleSheet, SafeAreaView, Modal } from 'react-native';
 import { useTheme, Text, Appbar, IconButton } from 'react-native-paper';
-import { getAngularService } from '../angular-react-helper';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import moment from 'moment';

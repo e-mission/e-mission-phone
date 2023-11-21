@@ -16,7 +16,6 @@ import {
   calculatePercentChange,
   segmentDaysByWeeks,
 } from './metricsHelper';
-import { getAngularService } from '../angular-react-helper';
 
 type Props = { userMetrics: MetricsData; aggMetrics: MetricsData };
 const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {

@@ -1,4 +1,3 @@
-import { getAngularService } from '../angular-react-helper';
 import { addStatReading, statKeys } from './clientStats';
 import { logDebug, logWarn } from './logger';
 

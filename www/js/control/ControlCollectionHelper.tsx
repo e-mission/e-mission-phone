@@ -4,7 +4,7 @@ import { Dialog, Button, Switch, Text, useTheme, TextInput } from 'react-native-
 import { useTranslation } from 'react-i18next';
 import ActionMenu from '../components/ActionMenu';
 import { settingStyles } from './ProfileSettings';
-import { getAngularService } from '../angular-react-helper';
+import { displayError } from '../plugin/logger';
 
 type collectionConfig = {
   is_duty_cycling: boolean;
@@ -62,7 +62,6 @@ export async function isMediumAccuracy() {
 }
 
 export async function helperToggleLowAccuracy() {
-  const Logger = getAngularService('Logger');
   let tempConfig = await getConfig();
   let accuracyOptions = await getAccuracyOptions();
   let medium = await isMediumAccuracy();
@@ -83,7 +82,7 @@ export async function helperToggleLowAccuracy() {
     let set = await setConfig(tempConfig);
     console.log('setConfig Sucess');
   } catch (err) {
-    Logger.displayError('Error while setting collection config', err);
+    displayError(err, 'Error while setting collection config');
   }
 }
 
@@ -138,7 +137,6 @@ const formatConfigForDisplay = function (config, accuracyOptions) {
 
 const ControlCollectionHelper = ({ editVis, setEditVis }) => {
   const { colors } = useTheme();
-  const Logger = getAngularService('Logger');
 
   const [localConfig, setLocalConfig] = useState<collectionConfig>();
   const [accuracyActions, setAccuracyActions] = useState([]);
@@ -178,7 +176,7 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
       let set = await setConfig(localConfig);
       setEditVis(false);
     } catch (err) {
-      Logger.displayError('Error while setting collection config', err);
+      displayError(err, 'Error while setting collection config');
     }
   }
 

@@ -7,7 +7,6 @@
 */
 
 import React, { useEffect, useState, useRef } from 'react';
-import { getAngularService } from '../angular-react-helper';
 import useAppConfig from '../useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { invalidateMaps } from '../components/LeafletView';

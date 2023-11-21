@@ -1,5 +1,4 @@
 import React, { useEffect, useState, createContext, useMemo } from 'react';
-import { getAngularService } from './angular-react-helper';
 import { ActivityIndicator, BottomNavigation, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import LabelTab from './diary/LabelTab';

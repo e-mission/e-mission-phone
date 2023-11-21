@@ -9,7 +9,6 @@
 */
 
 import React, { useContext, useMemo, useState } from 'react';
-import { getAngularService } from '../../angular-react-helper';
 import DiaryButton from '../../components/DiaryButton';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'react-native-paper';

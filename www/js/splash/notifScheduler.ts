@@ -1,5 +1,5 @@
 import { addStatReading, statKeys } from '../plugin/clientStats';
-import { getUser, updateUser } from '../commHelper';
+import { getUser, updateUser } from '../services/commHelper';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
 import { DateTime } from 'luxon';
 import i18next from 'i18next';
