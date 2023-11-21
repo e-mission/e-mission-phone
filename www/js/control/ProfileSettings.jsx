@@ -50,9 +50,6 @@ const ProfileSettings = () => {
   const { colors } = useTheme();
   const { setPermissionsPopupVis } = useContext(AppContext);
 
-  //angular services needed
-  const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
-
   //functions that come directly from an Angular service
   const editCollectionConfig = () => setEditCollectionVis(true);
   const editSyncConfig = () => setEditSync(true);
@@ -60,7 +57,6 @@ const ProfileSettings = () => {
   //states and variables used to control/create the settings
   const [opCodeVis, setOpCodeVis] = useState(false);
   const [nukeSetVis, setNukeVis] = useState(false);
-  const [carbonDataVis, setCarbonDataVis] = useState(false);
   const [forceStateVis, setForceStateVis] = useState(false);
   const [logoutVis, setLogoutVis] = useState(false);
   const [invalidateSuccessVis, setInvalidateSuccessVis] = useState(false);
@@ -88,9 +84,6 @@ const ProfileSettings = () => {
   const [uploadReason, setUploadReason] = useState('');
   const appVersion = useRef();
 
-  let carbonDatasetString =
-    t('general-settings.carbon-dataset') + ': ' + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
-  const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
   const stateActions = [
     { text: 'Initialize', transition: 'INITIALIZE' },
     { text: 'Start trip', transition: 'EXITED_GEOFENCE' },
@@ -401,16 +394,6 @@ const ProfileSettings = () => {
     forceTransition(stateObject.transition);
   };
 
-  const onSelectCarbon = function (carbonObject) {
-    console.log('changeCarbonDataset(): chose locale ' + carbonObject.value);
-    CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(carbonObject.value); //there's some sort of error here
-    //Unhandled Promise Rejection: While logging, error -[NSNull UTF8String]: unrecognized selector sent to instance 0x7fff8a625fb0
-    carbonDatasetString =
-      i18next.t('general-settings.carbon-dataset') +
-      ': ' +
-      CarbonDatasetHelper.getCurrentCarbonDatasetCode();
-  };
-
   //conditional creation of setting sections
 
   let logUploadSection;
@@ -481,10 +464,6 @@ const ProfileSettings = () => {
           textKey="control.medium-accuracy"
           action={toggleLowAccuracy}
           switchValue={collectSettings.lowAccuracy}></SettingRow>
-        <SettingRow
-          textKey={carbonDatasetString}
-          iconName="database-cog"
-          action={() => setCarbonDataVis(true)}></SettingRow>
         <SettingRow
           textKey="control.download-json-dump"
           iconName="calendar"
@@ -577,15 +556,6 @@ const ProfileSettings = () => {
           </Dialog.Actions>
         </Dialog>
       </Modal>
-
-      {/* menu for "set carbon dataset - only somewhat working" */}
-      <ActionMenu
-        vis={carbonDataVis}
-        setVis={setCarbonDataVis}
-        title={t('general-settings.choose-dataset')}
-        actionSet={carbonOptions}
-        onAction={onSelectCarbon}
-        onExit={() => clearNotifications()}></ActionMenu>
 
       {/* force state sheet */}
       <ActionMenu

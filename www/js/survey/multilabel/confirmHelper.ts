@@ -13,7 +13,6 @@ export let inputDetails: InputDetails<MultilabelKey>;
 export async function getLabelOptions(appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;
   if (labelOptions) return labelOptions;
-
   if (appConfig.label_options) {
     const labelOptionsJson = await fetchUrlCached(appConfig.label_options);
     logDebug(
