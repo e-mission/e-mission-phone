@@ -239,8 +239,8 @@ export function saveResponse(
           return new Error(i18next.t('survey.enketo-timestamps-invalid')); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
         }
         // if timestamps were not resolved from the survey, we will use the trip or place timestamps
-        data.start_ts = timestamps.start_ts || opts.timelineEntry.enter_ts;
-        data.end_ts = timestamps.end_ts || opts.timelineEntry.exit_ts;
+        data.start_ts = timestamps?.start_ts || opts.timelineEntry.enter_ts;
+        data.end_ts = timestamps?.end_ts || opts.timelineEntry.exit_ts;
         // UUID generated using this method https://stackoverflow.com/a/66332305
         data.match_id = URL.createObjectURL(new Blob([])).slice(-36);
       } else {
