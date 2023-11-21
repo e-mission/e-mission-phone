@@ -1,11 +1,15 @@
-import { getAngularService } from '../../angular-react-helper';
 import { Form } from 'enketo-core';
+import { transform } from 'enketo-transformer/web';
 import { XMLParser } from 'fast-xml-parser';
 import i18next from 'i18next';
 import MessageFormat from '@messageformat/core';
 import { logDebug, logInfo } from '../../plugin/logger';
 import { getConfig } from '../../config/dynamicConfig';
 import { DateTime } from 'luxon';
+import { fetchUrlCached } from '../../services/commHelper';
+import { getUnifiedDataForInterval } from '../../services/unifiedDataLoader';
+import { AppConfig, EnketoSurveyConfig } from '../../types/appConfigTypes';
+import { CompositeTrip, ConfirmedPlace, TimelineEntry } from '../../types/diaryTypes';
 
 export type PrefillFields = { [key: string]: string };
 
@@ -17,34 +21,25 @@ export type SurveyOptions = {
   dataKey?: string;
 };
 
-type EnketoAnswerData = {
+type EnketoResponseData = {
   label: string; //display label (this value is use for displaying on the button)
   ts: string; //the timestamp at which the survey was filled out (in seconds)
   fmt_time: string; //the formatted timestamp at which the survey was filled out
   name: string; //survey name
   version: string; //survey version
-  xmlResponse: string; //survey answer XML string
-  jsonDocResponse: string; //survey answer JSON object
+  xmlResponse: string; //survey response as XML string
+  jsonDocResponse: string; //survey response as JSON object
 };
 
-type EnketoAnswer = {
-  data: EnketoAnswerData; //answer data
+type EnketoResponse = {
+  data: EnketoResponseData; //survey response data
   metadata: any;
-};
-
-type EnketoSurveyConfig = {
-  [surveyName: string]: {
-    formPath: string;
-    labelTemplate: { [lang: string]: string };
-    labelVars: { [activity: string]: { [key: string]: string; type: string } };
-    version: number;
-    compatibleWith: number;
-  };
 };
 
 const LABEL_FUNCTIONS = {
   UseLabelTemplate: async (xmlDoc: XMLDocument, name: string) => {
-    let configSurveys = await _lazyLoadConfig();
+    let appConfig = await getConfig();
+    const configSurveys = appConfig.survey_info.surveys;
 
     const config = configSurveys[name]; // config for this survey
     const lang = i18next.resolvedLanguage;
@@ -76,9 +71,10 @@ const LABEL_FUNCTIONS = {
 };
 
 /**
- * _getAnswerByTagName lookup for the survey answer by tag name form the given XML document.
- * @param {XMLDocument} xmlDoc survey answer object
- * @param {string} tagName tag name
+ * _getAnswerByTagName look up how a question was answered, given the survey response
+ *   and the tag name of the question
+ * @param {XMLDocument} xmlDoc survey response as XML object
+ * @param {string} tagName tag name of the question
  * @returns {string} answer string. If not found, return "\<null\>"
  */
 function _getAnswerByTagName(xmlDoc: XMLDocument, tagName: string) {
@@ -92,41 +88,27 @@ function _getAnswerByTagName(xmlDoc: XMLDocument, tagName: string) {
 let _config: EnketoSurveyConfig;
 
 /**
- * _lazyLoadConfig load enketo survey config. If already loaded, return the cached config
- * @returns {Promise<EnketoSurveyConfig>} enketo survey config
- */
-export function _lazyLoadConfig() {
-  if (_config !== undefined) {
-    return Promise.resolve(_config);
-  }
-  return getConfig().then((newConfig) => {
-    logInfo('Resolved UI_CONFIG_READY promise in enketoHelper, filling in templates');
-    _config = newConfig.survey_info.surveys;
-    return _config;
-  });
-}
-
-/**
- * filterByNameAndVersion filter the survey answers by survey name and their version.
+ * filterByNameAndVersion filter the survey responses by survey name and their version.
  * The version for filtering is specified in enketo survey `compatibleWith` config.
- * The stored survey answer version must be greater than or equal to `compatibleWith` to be included.
+ * The survey version of the response must be greater than or equal to `compatibleWith` to be included.
  * @param {string} name survey name (defined in enketo survey config)
- * @param {EnketoAnswer[]} answers survey answers
- *  (usually retrieved by calling UnifiedDataLoader.getUnifiedMessagesForInterval('manual/survey_response', tq)) method.
- * @return {Promise<EnketoAnswer[]>} filtered survey answers
+ * @param {EnketoResponse[]} responses An array of previously recorded responses to Enketo surveys
+ *  (presumably having been retrieved from unifiedDataLoader)
+ * @return {Promise<EnketoResponse[]>} filtered survey responses
  */
-export function filterByNameAndVersion(name: string, answers: EnketoAnswer[]) {
-  return _lazyLoadConfig().then((config) =>
-    answers.filter(
-      (answer) => answer.data.name === name && answer.data.version >= config[name].compatibleWith,
+export function filterByNameAndVersion(name: string, responses: EnketoResponse[]) {
+  return getConfig().then((config) =>
+    responses.filter(
+      (r) =>
+        r.data.name === name && r.data.version >= config.survey_info.surveys[name].compatibleWith,
     ),
   );
 }
 
 /**
- * resolve answer label for the survey
+ * resolve a label for the survey response
  * @param {string} name survey name
- * @param {XMLDocument} xmlDoc survey answer object
+ * @param {XMLDocument} xmlDoc survey response as XML object
  * @returns {Promise<string>} label string Promise
  */
 export async function resolveLabel(name: string, xmlDoc: XMLDocument) {
@@ -169,13 +151,13 @@ export function getInstanceStr(xmlModel: string, opts: SurveyOptions): string | 
 
 /**
  * resolve timestamps label from the survey response
- * @param {XMLDocument} xmlDoc survey answer object
- * @param {object} trip trip object
+ * @param {XMLDocument} xmlDoc survey response as XML object
+ * @param {object} timelineEntry trip or place object
  * @returns {object} object with `start_ts` and `end_ts`
  *    - null if no timestamps are resolved
  *    - undefined if the timestamps are invalid
  */
-export function resolveTimestamps(xmlDoc, timelineEntry) {
+export function resolveTimestamps(xmlDoc: XMLDocument, timelineEntry: TimelineEntry) {
   // check for Date and Time fields
   const startDate = xmlDoc.getElementsByTagName('Start_date')?.[0]?.innerHTML;
   let startTime = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
@@ -186,10 +168,10 @@ export function resolveTimestamps(xmlDoc, timelineEntry) {
   if (!startDate || !startTime || !endDate || !endTime) return null;
 
   const timezone =
-    timelineEntry.start_local_dt?.timezone ||
-    timelineEntry.enter_local_dt?.timezone ||
-    timelineEntry.end_local_dt?.timezone ||
-    timelineEntry.exit_local_dt?.timezone;
+    (timelineEntry as CompositeTrip).start_local_dt?.timezone ||
+    (timelineEntry as ConfirmedPlace).enter_local_dt?.timezone ||
+    (timelineEntry as CompositeTrip).end_local_dt?.timezone ||
+    (timelineEntry as ConfirmedPlace).exit_local_dt?.timezone;
   // split by + or - to get time without offset
   startTime = startTime.split(/\-|\+/)[0];
   endTime = endTime.split(/\-|\+/)[0];
@@ -207,8 +189,10 @@ export function resolveTimestamps(xmlDoc, timelineEntry) {
     the millisecond. To avoid precision issues, we will check if the start/end timestamps from
     the survey response are within the same minute as the start/end or enter/exit timestamps.
     If so, we will use the exact trip/place timestamps */
-  const entryStartTs = timelineEntry.start_ts || timelineEntry.enter_ts;
-  const entryEndTs = timelineEntry.end_ts || timelineEntry.exit_ts;
+  const entryStartTs =
+    (timelineEntry as CompositeTrip).start_ts || (timelineEntry as ConfirmedPlace).enter_ts;
+  const entryEndTs =
+    (timelineEntry as CompositeTrip).end_ts || (timelineEntry as ConfirmedPlace).exit_ts;
   if (additionStartTs - (additionStartTs % 60) == entryStartTs - (entryStartTs % 60))
     additionStartTs = entryStartTs;
   if (additionEndTs - (additionEndTs % 60) == entryEndTs - (entryEndTs % 60))
@@ -228,7 +212,12 @@ export function resolveTimestamps(xmlDoc, timelineEntry) {
  * @param opts object with SurveyOptions like 'timelineEntry' or 'dataKey'
  * @returns Promise of the saved result, or an Error if there was a problem
  */
-export function saveResponse(surveyName: string, enketoForm: Form, appConfig, opts: SurveyOptions) {
+export function saveResponse(
+  surveyName: string,
+  enketoForm: Form,
+  appConfig: AppConfig,
+  opts: SurveyOptions,
+) {
   const xmlParser = new window.DOMParser();
   const xmlResponse = enketoForm.getDataStr();
   const xmlDoc = xmlParser.parseFromString(xmlResponse, 'text/xml');
@@ -266,10 +255,11 @@ export function saveResponse(surveyName: string, enketoForm: Form, appConfig, op
     .then((data) => data);
 }
 
-const _getMostRecent = (answers) => {
-  answers.sort((a, b) => a.metadata.write_ts < b.metadata.write_ts);
-  console.log('first answer is ', answers[0], ' last answer is ', answers[answers.length - 1]);
-  return answers[0];
+const _getMostRecent = (responses) => {
+  responses.sort((a, b) => a.metadata.write_ts < b.metadata.write_ts);
+  logDebug(`_getMostRecent: first response is ${responses[0]}; 
+                            last response is ${responses.slice(-1)[0]}`);
+  return responses[0];
 };
 
 /*
@@ -280,10 +270,20 @@ const _getMostRecent = (answers) => {
  * with incremental updates, we may want to revisit this.
  */
 export function loadPreviousResponseForSurvey(dataKey: string) {
-  const UnifiedDataLoader = getAngularService('UnifiedDataLoader');
   const tq = window['cordova'].plugins.BEMUserCache.getAllTimeQuery();
   logDebug('loadPreviousResponseForSurvey: dataKey = ' + dataKey + '; tq = ' + tq);
-  return UnifiedDataLoader.getUnifiedMessagesForInterval(dataKey, tq).then((answers) =>
-    _getMostRecent(answers),
+  const getMethod = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
+  return getUnifiedDataForInterval(dataKey, tq, getMethod).then((responses) =>
+    _getMostRecent(responses),
   );
+}
+
+export async function fetchSurvey(url: string) {
+  const responseText = await fetchUrlCached(url);
+  try {
+    return JSON.parse(responseText);
+  } catch (e) {
+    logDebug(`${e.name}: Survey was not in JSON format. Attempting to transform XML -> JSON...`);
+    return await transform({ xform: responseText });
+  }
 }
