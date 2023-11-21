@@ -145,7 +145,6 @@
     "luxon": "^3.3.0",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
-    "ng-i18next": "^1.0.7",
     "npm": "^9.6.3",
     "phonegap-plugin-barcodescanner": "git+https://github.com/phonegap/phonegap-plugin-barcodescanner#v8.1.0",
     "prop-types": "^15.8.1",

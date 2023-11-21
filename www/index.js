@@ -10,7 +10,6 @@ import 'chartjs-adapter-luxon';
 
 import initializedI18next from './js/i18nextInit';
 window.i18next = initializedI18next;
-import 'ng-i18next';
 
 import App from './js/App';
 import { getTheme } from './js/appTheme';
@@ -40,10 +39,11 @@ deviceReady.then(() => {
     <PaperProvider theme={theme}>
       <style type="text/css">
         {`
-    @font-face {
-      font-family: 'MaterialCommunityIcons';
-      src: url(${require('react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf')}) format('truetype');
-    }`}
+          @font-face {
+            font-family: 'MaterialCommunityIcons';
+            src: url(${require('react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf')}) format('truetype');
+          }
+        `}
       </style>
       <SafeAreaView style={{ flex: 1 }}>
         <App />
