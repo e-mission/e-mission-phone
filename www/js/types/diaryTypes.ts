@@ -42,10 +42,6 @@ export type LocationCoord = {
   coordinates: [number, number];
 };
 
-=========
-};
-
->>>>>>>>> Temporary merge branch 2
 /* These are the properties received from the server (basically matches Python code)
   This should match what Timeline.readAllCompositeTrips returns (an array of these objects) */
 export type CompositeTrip = {
