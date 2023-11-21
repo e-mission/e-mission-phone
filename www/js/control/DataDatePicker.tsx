@@ -1,5 +1,5 @@
-// this date picker element is set up to handle the "download data from day" in ProfileSettings
-// it relies on an angular service (Control Helper) but when we migrate that we might want to download a range instead of single
+/* This date picker element is set up to handle the "download data from day" in ProfileSettings.
+  Later, we may consider changing this to a date range instead of a single day */
 
 import React from 'react';
 import { DatePickerModal } from 'react-native-paper-dates';

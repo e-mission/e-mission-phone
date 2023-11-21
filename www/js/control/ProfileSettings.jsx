@@ -49,7 +49,6 @@ const ProfileSettings = () => {
   const { colors } = useTheme();
   const { setPermissionsPopupVis } = useContext(AppContext);
 
-  //functions that come directly from an Angular service
   const editCollectionConfig = () => setEditCollectionVis(true);
   const editSyncConfig = () => setEditSync(true);
 
