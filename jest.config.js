@@ -5,7 +5,6 @@ module.exports = {
     "/platforms/",
     "/plugins/",
     "/lib/",
-    "/manual_lib/"
   ],
   preset: 'react-native',
   transform: {
