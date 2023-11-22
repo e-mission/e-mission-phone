@@ -31,7 +31,7 @@ import { shareQR } from '../components/QrCode';
 import { storageClear } from '../plugin/storage';
 import { getAppVersion } from '../plugin/clientStats';
 import { getConsentDocument } from '../splash/startprefs';
-import { displayErrorMsg, logDebug } from '../plugin/logger';
+import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { fetchOPCode, getSettings } from '../services/controlHelper';
 import {
   updateScheduledNotifs,
@@ -40,6 +40,7 @@ import {
   setReminderPrefs,
 } from '../splash/notifScheduler';
 import { DateTime } from 'luxon';
+import { AppConfig } from '../types/appConfigTypes';
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -70,14 +71,14 @@ const ProfileSettings = () => {
   const [editCollectionVis, setEditCollectionVis] = useState(false);
 
   // const [collectConfig, setCollectConfig] = useState({});
-  const [collectSettings, setCollectSettings] = useState({});
-  const [notificationSettings, setNotificationSettings] = useState({});
-  const [authSettings, setAuthSettings] = useState({});
-  const [syncSettings, setSyncSettings] = useState({});
+  const [collectSettings, setCollectSettings] = useState<any>({});
+  const [notificationSettings, setNotificationSettings] = useState<any>({});
+  const [authSettings, setAuthSettings] = useState<any>({});
+  const [syncSettings, setSyncSettings] = useState<any>({});
   const [cacheResult, setCacheResult] = useState('');
   const [connectSettings, setConnectSettings] = useState({});
-  const [uiConfig, setUiConfig] = useState({});
-  const [consentDoc, setConsentDoc] = useState({});
+  const [uiConfig, setUiConfig] = useState<AppConfig | undefined>(undefined);
+  const [consentDoc, setConsentDoc] = useState<any>({});
   const [dumpDate, setDumpDate] = useState(new Date());
   const [uploadReason, setUploadReason] = useState('');
   const appVersion = useRef();
@@ -92,7 +93,7 @@ const ProfileSettings = () => {
   ];
 
   // used for scheduling notifs
-  let scheduledPromise = new Promise((rs) => rs());
+  let scheduledPromise = new Promise<void>((rs) => rs());
   const [isScheduling, setIsScheduling] = useState(false);
 
   useEffect(() => {
@@ -102,7 +103,7 @@ const ProfileSettings = () => {
     }
   }, [appConfig]);
 
-  const refreshScreen = function () {
+  function refreshScreen() {
     refreshCollectSettings();
     refreshNotificationSettings();
     getOPCode();
@@ -111,15 +112,15 @@ const ProfileSettings = () => {
     getAppVersion().then((version) => {
       appVersion.current = version;
     });
-  };
+  }
 
   //previously not loaded on regular refresh, this ensures it stays caught up
   useEffect(() => {
     refreshNotificationSettings();
   }, [uiConfig]);
 
-  const whenReady = function (newAppConfig) {
-    var tempUiConfig = newAppConfig;
+  function whenReady(newAppConfig: AppConfig) {
+    const tempUiConfig = newAppConfig;
 
     // backwards compat hack to fill in the raw_data_use for programs that don't have it
     const default_raw_data_use = {
@@ -159,11 +160,11 @@ const ProfileSettings = () => {
     // console.log("translated text is??", templateText);
     setUiConfig(tempUiConfig);
     refreshScreen();
-  };
+  }
 
   async function refreshCollectSettings() {
     console.debug('about to refreshCollectSettings, collectSettings = ', collectSettings);
-    const newCollectSettings = {};
+    const newCollectSettings: any = {};
 
     // // refresh collect plugin configuration
     const collectionPluginConfig = await getHelperCollectionSettings();
@@ -198,10 +199,10 @@ const ProfileSettings = () => {
       'about to refreshNotificationSettings, notificationSettings = ' +
         JSON.stringify(notificationSettings),
     );
-    const newNotificationSettings = {};
+    const newNotificationSettings: any = {};
 
     if (uiConfig?.reminderSchemes) {
-      let promiseList = [];
+      let promiseList: Promise<any>[] = [];
       promiseList.push(
         getReminderPrefs(uiConfig.reminderSchemes, isScheduling, setIsScheduling, scheduledPromise),
       );
@@ -221,8 +222,6 @@ const ProfileSettings = () => {
       newNotificationSettings.prefReminderTime = m.toFormat('t');
       newNotificationSettings.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
       newNotificationSettings.scheduledNotifs = scheduledNotifs;
-
-      updatePrefReminderTime(false);
     }
 
     logDebug(
@@ -236,7 +235,7 @@ const ProfileSettings = () => {
 
   async function getSyncSettings() {
     console.log('getting sync settings');
-    var newSyncSettings = {};
+    const newSyncSettings: any = {};
     getHelperSyncSettings().then(function (showConfig) {
       newSyncSettings.show_config = showConfig;
       setSyncSettings(newSyncSettings);
@@ -252,19 +251,19 @@ const ProfileSettings = () => {
   async function getConnectURL() {
     getSettings().then(
       function (response) {
-        var newConnectSettings = {};
+        const newConnectSettings: any = {};
         newConnectSettings.url = response.connectUrl;
         console.log(response);
         setConnectSettings(newConnectSettings);
       },
       function (error) {
-        Logger.displayError('While getting connect url', error);
+        displayError(error, 'While getting connect url');
       },
     );
   }
 
   async function getOPCode() {
-    const newAuthSettings = {};
+    const newAuthSettings: any = {};
     const opcode = await fetchOPCode();
     if (opcode == null) {
       newAuthSettings.opcode = 'Not logged in';
@@ -275,21 +274,17 @@ const ProfileSettings = () => {
   }
 
   //methods that control the settings
-  const uploadLog = function () {
+  function uploadLog() {
     if (uploadReason != '') {
       let reason = uploadReason;
       uploadFile('loggerDB', reason);
       setUploadVis(false);
     }
-  };
-
-  const emailLog = function () {
-    // Passing true, we want to send logs
-    sendEmail('loggerDB');
-  };
+  }
 
   async function updatePrefReminderTime(storeNewVal = true, newTime) {
-    console.log(newTime);
+    if (!uiConfig?.reminderSchemes)
+      return logWarn('In updatePrefReminderTime, no reminderSchemes yet, skipping');
     if (storeNewVal) {
       const m = DateTime.fromISO(newTime);
       // store in HH:mm
@@ -306,11 +301,11 @@ const ProfileSettings = () => {
   }
 
   function dummyNotification() {
-    cordova.plugins.notification.local.addActions('dummy-actions', [
+    window['cordova'].plugins.notification.local.addActions('dummy-actions', [
       { id: 'action', title: 'Yes' },
       { id: 'cancel', title: 'No' },
     ]);
-    cordova.plugins.notification.local.schedule({
+    window['cordova'].plugins.notification.local.schedule({
       id: new Date().getTime(),
       title: 'Dummy Title',
       text: 'Dummy text',
@@ -332,40 +327,32 @@ const ProfileSettings = () => {
     }, 1500);
   }
 
-  const viewQRCode = function (e) {
-    setOpCodeVis(true);
-  };
-
-  const clearNotifications = function () {
-    window.cordova.plugins.notification.local.clearAll();
-  };
-
   //Platform.OS returns "web" now, but could be used once it's fully a Native app
   //for now, use window.cordova.platformId
 
-  const parseState = function (state) {
+  function parseState(state) {
     console.log('state in parse state is', state);
     if (state) {
-      console.log('state in parse state exists', window.cordova.platformId);
-      if (window.cordova.platformId == 'android') {
+      console.log('state in parse state exists', window['cordova'].platformId);
+      if (window['cordova'].platformId == 'android') {
         console.log('ANDROID state in parse state is', state.substring(12));
         return state.substring(12);
-      } else if (window.cordova.platformId == 'ios') {
+      } else if (window['cordova'].platformId == 'ios') {
         console.log('IOS state in parse state is', state.substring(6));
         return state.substring(6);
       }
     }
-  };
+  }
 
   async function invalidateCache() {
-    window.cordova.plugins.BEMUserCache.invalidateAllCache().then(
+    window['cordova'].plugins.BEMUserCache.invalidateAllCache().then(
       function (result) {
         console.log('invalidate result', result);
         setCacheResult(result);
         setInvalidateSuccessVis(true);
       },
       function (error) {
-        Logger.displayError('while invalidating cache, error->', error);
+        displayError(error, 'while invalidating cache, error->');
       },
     );
   }
@@ -375,7 +362,7 @@ const ProfileSettings = () => {
     getConsentDocument().then(
       function (resultDoc) {
         setConsentDoc(resultDoc);
-        logDebug('In profile settings, consent doc found', resultDoc);
+        logDebug(`In profile settings, consent doc found = ${JSON.stringify(resultDoc)}`);
         if (resultDoc == null) {
           setNoConsentVis(true);
         } else {
@@ -383,12 +370,12 @@ const ProfileSettings = () => {
         }
       },
       function (error) {
-        Logger.displayError('Error reading consent document from cache', error);
+        displayError(error, 'Error reading consent document from cache');
       },
     );
   }
 
-  const onSelectState = function (stateObject) {
+  const onSelectState = (stateObject) => {
     forceTransition(stateObject.transition);
   };
 
@@ -441,7 +428,7 @@ const ProfileSettings = () => {
         <SettingRow
           textKey="control.view-qrc"
           iconName="grid"
-          action={viewQRCode}
+          action={(e) => setOpCodeVis(true)}
           desc={authSettings.opcode}
           descStyle={settingStyles.monoDesc}></SettingRow>
         <DemographicsSettingRow></DemographicsSettingRow>
@@ -467,7 +454,10 @@ const ProfileSettings = () => {
           iconName="calendar"
           action={() => setDateDumpVis(true)}></SettingRow>
         {logUploadSection}
-        <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
+        <SettingRow
+          textKey="control.email-log"
+          iconName="email"
+          action={() => sendEmail('loggerDB')}></SettingRow>
 
         <ExpansionSection sectionTitle="control.dev-zone">
           <SettingRow
@@ -605,7 +595,7 @@ const ProfileSettings = () => {
           style={settingStyles.dialog(colors.elevation.level3)}>
           <Dialog.Title>{t('general-settings.are-you-sure')}</Dialog.Title>
           <Dialog.Content>
-            <Text variant="">{t('general-settings.log-out-warning')}</Text>
+            <Text>{t('general-settings.log-out-warning')}</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => setLogoutVis(false)}>{t('general-settings.cancel')}</Button>
@@ -627,7 +617,7 @@ const ProfileSettings = () => {
           style={settingStyles.dialog(colors.elevation.level3)}>
           <Dialog.Title>{t('general-settings.consent-not-found')}</Dialog.Title>
           <Dialog.Content>
-            <Text variant="">{t('general-settings.no-consent-logout')}</Text>
+            <Text>{t('general-settings.no-consent-logout')}</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button
