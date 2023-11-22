@@ -29,13 +29,13 @@ const UserInputButton = ({ timelineEntry }: Props) => {
 
   // the label resolved from the survey response, or null if there is no response yet
   const responseLabel = useMemo<string | undefined>(
-    () => timelineLabelMap[timelineEntry._id.$oid]?.['SURVEY']?.data?.label || undefined,
+    () => timelineLabelMap?.[timelineEntry._id.$oid]?.['SURVEY']?.data?.label || undefined,
     [timelineEntry],
   );
 
   function launchUserInputSurvey() {
     logDebug('UserInputButton: About to launch survey');
-    const prevResponse = timelineLabelMap[timelineEntry._id.$oid]?.['SURVEY'];
+    const prevResponse = timelineLabelMap?.[timelineEntry._id.$oid]?.['SURVEY'];
     if (prevResponse?.data?.xmlResponse) {
       setPrevSurveyResponse(prevResponse.data.xmlResponse);
     }

@@ -57,9 +57,14 @@ const PlaceCard = ({ place }: Props) => {
           </View>
         </View>
       </View>
-      <View style={cardStyles.cardFooter}>
-        <AddedNotesList timelineEntry={place} additionEntries={timelineNotesMap[place._id.$oid]} />
-      </View>
+      {timelineNotesMap?.[place._id.$oid]?.length && (
+        <View style={cardStyles.cardFooter}>
+          <AddedNotesList
+            timelineEntry={place}
+            additionEntries={timelineNotesMap?.[place._id.$oid]}
+          />
+        </View>
+      )}
     </DiaryCard>
   );
 };

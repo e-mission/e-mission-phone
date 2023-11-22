@@ -90,7 +90,9 @@ export type CompositeTrip = {
 
 /* The 'timeline' for a user is a list of their trips and places,
  so a 'timeline entry' is either a trip or a place. */
-export type TimelineEntry = ConfirmedPlace | CompositeTrip;
+export type TimelineEntry = (ConfirmedPlace | CompositeTrip) & {
+  justRepopulated?: number | boolean; // TODO come up with a different way to handle this
+};
 
 /* Type guard to disambiguate timeline entries as either trips or places
   If it has a 'start_ts' and 'end_ts', it's a trip. Else, it's a place. */

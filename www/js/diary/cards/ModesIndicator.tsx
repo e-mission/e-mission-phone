@@ -17,8 +17,8 @@ const ModesIndicator = ({ trip, detectedModes }) => {
   let indicatorBorderColor = color('black').alpha(0.5).rgb().string();
 
   let modeViews;
-  const labeledModeForTrip = timelineLabelMap[trip._id.$oid]?.['MODE'];
-  if (labeledModeForTrip?.value) {
+  const labeledModeForTrip = timelineLabelMap?.[trip._id.$oid]?.['MODE'];
+  if (labelOptions && labeledModeForTrip?.value) {
     const baseMode = getBaseModeByValue(labeledModeForTrip.value, labelOptions);
     indicatorBorderColor = baseMode.color;
     logDebug(`TripCard: got baseMode = ${JSON.stringify(baseMode)}`);
@@ -33,7 +33,7 @@ const ModesIndicator = ({ trip, detectedModes }) => {
             fontWeight: '500',
             textDecorationLine: 'underline',
           }}>
-          {timelineLabelMap[trip._id.$oid]?.MODE?.text}
+          {timelineLabelMap?.[trip._id.$oid]?.MODE?.text}
         </Text>
       </View>
     );

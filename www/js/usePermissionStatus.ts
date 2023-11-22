@@ -35,7 +35,6 @@ const usePermissionStatus = () => {
   const [explanationList, setExplanationList] = useState<Array<any>>([]);
   const [haveSetText, setHaveSetText] = useState<boolean>(false);
 
-  const k = colors.backdrop;
   let iconMap = (statusState) => (statusState ? 'check-circle-outline' : 'alpha-x-circle-outline');
   let colorMap = (statusState) => (statusState ? colors.success : colors.danger);
 

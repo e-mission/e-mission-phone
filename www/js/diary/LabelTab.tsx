@@ -294,7 +294,9 @@ const LabelTab = () => {
       https://legacy.reactjs.org/docs/hooks-faq.html#why-am-i-seeing-stale-props-or-state-inside-my-function */
       timelineMapRef.current = newTimelineMap;
       setTimeout(() => {
-        const entry = { ...timelineMapRef.current?.get(oid) };
+        if (!timelineMapRef.current?.has(oid))
+          return displayErrorMsg('Item with oid: ' + oid + ' not found in timeline');
+        const entry = { ...timelineMapRef.current.get(oid) } as TimelineEntry;
         if (entry.justRepopulated != repopTime)
           return logDebug('Entry ' + oid + ' was repopulated again, skipping');
         const newTimelineMap = new Map(timelineMapRef.current).set(oid, {
