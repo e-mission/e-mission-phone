@@ -80,11 +80,12 @@ jobs:
         npx cordova build android
 
     - name: Android Emulator Runner
-      uses: ReactiveCircus/android-emulator-runner@v2.28.0
+      uses: ReactiveCircus/android-emulator-runner@v2
       with:
         working-directory: ./platforms/android
         api-level: 29
         ndk: 21.0.6113669
         cmake: 3.10.2.4988404
+        target: google_apis
         script: ./gradlew connectedCheck
-        
+
