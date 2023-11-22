@@ -79,8 +79,5 @@ jobs:
         gradle --version
         npx cordova build android
 
-    - name : Run Android Emulator
-      run: |
-        echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install 'system-images;android-28;google_apis;x86_64'
-        echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd -n test_device -k 'system-images;android-28;google_apis;x86_64' --force
-
+    - name: Android Emulator Runner
+      uses: ReactiveCircus/android-emulator-runner@v2.28.0
