@@ -78,17 +78,13 @@ jobs:
         which gradle
         gradle --version
         npx cordova build android
-        
-    - name: Print Gradle files
-      run: |
-        echo "Contents of the repository:"
-        ls -R $GITHUB_WORKSPACE
 
-    # - name: Android Emulator Runner
-    #   uses: ReactiveCircus/android-emulator-runner@v2.28.0
-    #   with:
-    #     working-directory: 
-    #     api-level: 29
-    #     ndk: 21.0.6113669
-    #     cmake: 3.10.2.4988404
-    #     script: ./gradlew connectedCheck
+    - name: Android Emulator Runner
+      uses: ReactiveCircus/android-emulator-runner@v2.28.0
+      with:
+        working-directory: ./platforms/android
+        api-level: 29
+        ndk: 21.0.6113669
+        cmake: 3.10.2.4988404
+        script: ./gradlew connectedCheck
+        
