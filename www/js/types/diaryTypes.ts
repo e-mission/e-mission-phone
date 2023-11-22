@@ -191,6 +191,22 @@ export type SectionData = {
   distance: number;
 };
 
+// used in timelineHelper's `transitionTrip2TripObj`
+export type FilteredLocation = {
+  accuracy: number;
+  altitude: number;
+  elapsedRealtimeNanos: number;
+  filter: number;
+  fmt_time: string;
+  heading: number;
+  latitude: number;
+  loc: Geometry;
+  local_dt: LocalDt;
+  longitude: number;
+  sensed_speed: number;
+  ts: number;
+};
+
 export type GeoJSONStyledFeature = Feature & { style?: { color: string } };
 
 export type GeoJSONData = {
