@@ -274,11 +274,9 @@ describe('updateScheduledNotifs', () => {
     let isScheduling: boolean = false;
     const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
     const scheduledPromise: Promise<any> = Promise.resolve();
-
+    // call the function
     await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
 
-    // Your assertions here
     expect(logDebug).toHaveBeenCalledWith('Error: Reminder scheme not found');
-    // Add more assertions as needed
   });
 });
