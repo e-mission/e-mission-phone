@@ -35,7 +35,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const { height: windowHeight } = useWindowDimensions();
   const appConfig = useAppConfig();
   const { tripId, flavoredTheme } = route.params;
-  const trip = timelineMap.get(tripId);
+  const trip = timelineMap?.get(tripId);
   const { colors } = flavoredTheme || useTheme();
   const { displayDate, displayStartTime, displayEndTime } = useDerivedProperties(trip);
   const [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
@@ -43,10 +43,11 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const [modesShown, setModesShown] = useState<'labeled' | 'detected'>('labeled');
   const tripGeojson =
     trip &&
+    labelOptions &&
     useGeojsonForTrip(
       trip,
       labelOptions,
-      modesShown == 'labeled' ? timelineLabelMap[trip._id.$oid]?.MODE?.value : undefined,
+      modesShown == 'labeled' ? timelineLabelMap?.[trip._id.$oid]?.MODE?.value : undefined,
     );
   const mapOpts = { minZoom: 3, maxZoom: 17 };
 
@@ -96,7 +97,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
 
             {/* If trip is labeled, show a toggle to switch between "Labeled Mode" and "Detected Modes"
               otherwise, just show "Detected" */}
-            {trip && timelineLabelMap[trip._id.$oid]?.MODE?.value ? (
+            {trip && timelineLabelMap?.[trip._id.$oid]?.MODE?.value ? (
               <ToggleSwitch
                 onValueChange={(v: 'labeled' | 'detected') => setModesShown(v)}
                 value={modesShown}

@@ -113,7 +113,9 @@ export type CompositeTrip = {
 
 /* The 'timeline' for a user is a list of their trips and places,
  so a 'timeline entry' is either a trip or a place. */
-export type TimelineEntry = ConfirmedPlace | CompositeTrip;
+export type TimelineEntry = (ConfirmedPlace | CompositeTrip) & {
+  justRepopulated?: number | boolean; // TODO come up with a different way to handle this
+};
 
 export type TimestampRange = { start_ts: number; end_ts: number };
 

@@ -28,7 +28,7 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
   useEffect(() => {
     let newLabel: string;
     const localeCode = i18n.language;
-    if (notesConfig?.['filled-in-label'] && timelineNotesMap[timelineEntry._id.$oid]?.length > 0) {
+    if (notesConfig?.['filled-in-label'] && timelineNotesMap?.[timelineEntry._id.$oid]?.length) {
       newLabel = notesConfig?.['filled-in-label']?.[localeCode];
       setDisplayLabel(newLabel);
     } else {
@@ -49,7 +49,7 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
     let stop = timelineEntry.end_ts || timelineEntry.exit_ts;
 
     // if addition(s) already present on this timeline entry, `begin` where the last one left off
-    timelineNotesMap[timelineEntry._id.$oid]?.forEach((a) => {
+    timelineNotesMap?.[timelineEntry._id.$oid]?.forEach((a) => {
       if (a.data.end_ts > (begin || 0) && a.data.end_ts != stop) begin = a.data.end_ts;
     });
 

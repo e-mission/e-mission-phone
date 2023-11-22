@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 import { TimelineEntry, UserInputEntry } from '../types/diaryTypes';
-import { LabelOption } from '../types/labelTypes';
+import { LabelOption, LabelOptions } from '../types/labelTypes';
 
 export type TimelineMap = Map<string, TimelineEntry>; // Todo: update to reflect unpacked trips (origin_Key, etc)
 export type TimelineLabelMap = {
@@ -20,11 +20,11 @@ export type TimelineNotesMap = {
 };
 
 type ContextProps = {
-  labelOptions: any;
-  timelineMap: TimelineMap;
-  timelineLabelMap: TimelineLabelMap;
-  timelineNotesMap: TimelineNotesMap;
-  displayedEntries: TimelineEntry[];
+  labelOptions: LabelOptions | null;
+  timelineMap: TimelineMap | null;
+  timelineLabelMap: TimelineLabelMap | null;
+  timelineNotesMap: TimelineNotesMap | null;
+  displayedEntries: TimelineEntry[] | null;
   filterInputs: any; // TODO
   setFilterInputs: any; // TODO
   queriedRange: any; // TODO

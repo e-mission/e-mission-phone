@@ -18,13 +18,13 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
 
   const { colors } = useTheme();
 
-  const labeledModeForTrip = timelineLabelMap[trip._id.$oid]?.MODE;
+  const labeledModeForTrip = timelineLabelMap?.[trip._id.$oid]?.MODE;
   let sections = formattedSectionProperties;
   /* if we're only showing the labeled mode, or there are no sections (i.e. unprocessed trip),
     we treat this as unimodal and use trip-level attributes to construct a single section */
   if ((showLabeledMode && labeledModeForTrip) || !trip.sections?.length) {
     let baseMode;
-    if (showLabeledMode && labeledModeForTrip) {
+    if (showLabeledMode && labelOptions && labeledModeForTrip) {
       baseMode = getBaseModeByValue(labeledModeForTrip.value, labelOptions);
     } else {
       baseMode = getBaseModeByKey('UNPROCESSED');

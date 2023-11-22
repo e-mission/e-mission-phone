@@ -26,7 +26,7 @@ const bigSpinner = <ActivityIndicator size="large" style={{ margin: 15 }} />;
 const smallSpinner = <ActivityIndicator size="small" style={{ margin: 5 }} />;
 
 type Props = {
-  listEntries: any[];
+  listEntries: any[] | null;
   queriedRange: any;
   pipelineRange: any;
   loadMoreFn: (direction: string) => void;

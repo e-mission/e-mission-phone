@@ -22,6 +22,7 @@ import {
   getLabelInputs,
   inferFinalLabels,
   labelInputDetailsForTrip,
+  labelKeyToReadable,
   labelKeyToRichMode,
   readableLabelToKey,
   verifiabilityForTrip,
@@ -43,16 +44,16 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const chosenLabel = useMemo<string | null>(() => {
     if (modalVisibleFor == null) return null;
     if (otherLabel != null) return 'other';
-    return timelineLabelMap[trip._id.$oid]?.[modalVisibleFor]?.value || null;
+    return timelineLabelMap?.[trip._id.$oid]?.[modalVisibleFor]?.value || null;
   }, [modalVisibleFor, otherLabel]);
 
   // to mark 'inferred' labels as 'confirmed'; turn yellow labels blue
   function verifyTrip() {
-    const inferredLabelsForTrip = inferFinalLabels(trip, timelineLabelMap[trip._id.$oid]);
+    const inferredLabelsForTrip = inferFinalLabels(trip, timelineLabelMap?.[trip._id.$oid]);
     for (const inputType of getLabelInputs()) {
       const inferred = inferredLabelsForTrip?.[inputType];
       // if the is an inferred label that is not already confirmed, confirm it now by storing it
-      if (inferred?.value && !timelineLabelMap[trip._id.$oid]?.[inputType]) {
+      if (inferred?.value && !timelineLabelMap?.[trip._id.$oid]?.[inputType]) {
         store(inputType, inferred.value, false);
       }
     }
@@ -93,15 +94,15 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     });
   }
 
-  const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap[trip._id.$oid], appConfig);
+  const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap?.[trip._id.$oid], appConfig);
   return (
     <>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1, flexDirection: buttonsInline ? 'row' : 'column', columnGap: 8 }}>
           {Object.keys(tripInputDetails).map((key, i) => {
             const input = tripInputDetails[key];
-            const inputIsConfirmed = timelineLabelMap[trip._id.$oid]?.[input.name];
-            const inputIsInferred = inferFinalLabels(trip, timelineLabelMap[trip._id.$oid])[
+            const inputIsConfirmed = timelineLabelMap?.[trip._id.$oid]?.[input.name];
+            const inputIsInferred = inferFinalLabels(trip, timelineLabelMap?.[trip._id.$oid])[
               input.name
             ];
             let fillColor, textColor, borderColor;
@@ -128,7 +129,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
             );
           })}
         </View>
-        {verifiabilityForTrip(trip, timelineLabelMap[trip._id.$oid]) == 'can-verify' && (
+        {verifiabilityForTrip(trip, timelineLabelMap?.[trip._id.$oid]) == 'can-verify' && (
           <View style={{ marginTop: 16 }}>
             <IconButton
               icon="check-bold"
@@ -156,10 +157,9 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                   value={chosenLabel || ''}>
                   {modalVisibleFor &&
                     labelOptions?.[modalVisibleFor]?.map((o, i) => (
-                      // @ts-ignore
                       <RadioButton.Item
                         key={i}
-                        label={t(o.text)}
+                        label={o.text || labelKeyToReadable(o.value)}
                         value={o.value}
                         style={{ paddingVertical: 2 }}
                       />
