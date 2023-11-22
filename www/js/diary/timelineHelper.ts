@@ -4,7 +4,7 @@ import { getBaseModeByKey, getBaseModeByValue } from './diaryHelper';
 import { getUnifiedDataForInterval } from '../services/unifiedDataLoader';
 import { getRawEntries } from '../services/commHelper';
 import { ServerResponse, ServerData } from '../types/serverData';
-import L from 'leaflet';
+import L, { LatLng } from 'leaflet';
 import { DateTime } from 'luxon';
 import { UserInputEntry, TripTransition, TimelineEntry, GeoJSONData } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
@@ -23,10 +23,8 @@ export function useGeojsonForTrip(trip, labelOptions: LabelOptions, labeledMode?
     return cachedGeojsons.get(gjKey);
   }
 
-  let trajectoryColor: string | null;
-  if (labeledMode) {
-    trajectoryColor = getBaseModeByValue(labeledMode, labelOptions)?.color;
-  }
+  const trajectoryColor =
+    (labeledMode && getBaseModeByValue(labeledMode, labelOptions)?.color) || null;
 
   logDebug("Reading trip's " + trip.locations.length + ' location points at ' + new Date());
   var features = [
@@ -161,7 +159,7 @@ export function keysForLabelInputs(appConfig) {
 }
 
 function keysForNotesInputs(appConfig) {
-  const notesKeys = [];
+  const notesKeys: string[] = [];
   if (appConfig.survey_info?.buttons?.['trip-notes']) notesKeys.push('manual/trip_addition_input');
   if (appConfig.survey_info?.buttons?.['place-notes'])
     notesKeys.push('manual/place_addition_input');
@@ -272,9 +270,10 @@ const points2TripProps = function (locationPoints) {
   const startTime = DateTime.fromSeconds(startPoint.data.ts).setZone(startPoint.metadata.time_zone);
   const endTime = DateTime.fromSeconds(endPoint.data.ts).setZone(endPoint.metadata.time_zone);
 
-  const speeds = [],
-    dists = [];
-  var loc, locLatLng;
+  const speeds: number[] = [];
+  const dists: number[] = [];
+  let loc;
+  let locLatLng: LatLng;
   locationPoints.forEach((pt) => {
     const ptLatLng = L.latLng([pt.data.latitude, pt.data.longitude]);
     if (loc) {
@@ -435,10 +434,10 @@ const isEndingTransition = function (transWrapper) {
  */
 const transitions2Trips = function (transitionList: Array<ServerData<TripTransition>>) {
   var inTrip = false;
-  var tripList = [];
-  var currStartTransitionIndex = -1;
-  var currEndTransitionIndex = -1;
-  var processedUntil = 0;
+  const tripList: [ServerData<TripTransition>, ServerData<TripTransition>][] = [];
+  let currStartTransitionIndex = -1;
+  let currEndTransitionIndex = -1;
+  let processedUntil = 0;
 
   while (processedUntil < transitionList.length) {
     // Logger.log("searching within list = "+JSON.stringify(transitionList.slice(processedUntil)));

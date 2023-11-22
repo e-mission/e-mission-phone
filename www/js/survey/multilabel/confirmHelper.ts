@@ -1,7 +1,9 @@
 import { fetchUrlCached } from '../../services/commHelper';
 import i18next from 'i18next';
+import enJson from '../../../i18n/en.json';
 import { logDebug } from '../../plugin/logger';
 import { LabelOption, LabelOptions, MultilabelKey, InputDetails } from '../../types/labelTypes';
+import { CompositeTrip, InferredLabels } from '../../types/diaryTypes';
 
 let appConfig;
 export let labelOptions: LabelOptions<MultilabelKey>;
@@ -12,15 +14,13 @@ export async function getLabelOptions(appConfigParam?) {
   if (labelOptions) return labelOptions;
   if (appConfig.label_options) {
     const labelOptionsJson = await fetchUrlCached(appConfig.label_options);
-    logDebug(
-      'label_options found in config, using dynamic label options at ' + appConfig.label_options,
-    );
+    logDebug(`label_options found in config, using dynamic label options 
+      at ${appConfig.label_options}`);
     labelOptions = JSON.parse(labelOptionsJson) as LabelOptions;
   } else {
     const defaultLabelOptionsURL = 'json/label-options.json.sample';
-    logDebug(
-      'No label_options found in config, using default label options at ' + defaultLabelOptionsURL,
-    );
+    logDebug(`No label_options found in config, using default label options 
+      at ${defaultLabelOptionsURL}`);
     const defaultLabelOptionsJson = await fetchUrlCached(defaultLabelOptionsURL);
     labelOptions = JSON.parse(defaultLabelOptionsJson) as LabelOptions;
   }
@@ -30,12 +30,14 @@ export async function getLabelOptions(appConfigParam?) {
   for (const opt in labelOptions) {
     labelOptions[opt]?.forEach?.((o, i) => {
       const translationKey = o.value;
-      // If translation exists in labelOptions, use that. Otherwise, use the one in the i18next. If there is not "translations" field in labelOptions, defaultly use the one in the i18next.
-      const translation = labelOptions.translations
-        ? labelOptions.translations[lang][translationKey] ||
-          i18next.t(`multilabel.${translationKey}`)
-        : i18next.t(`multilabel.${translationKey}`);
-      labelOptions[opt][i].text = translation;
+      /* If translation exists in labelOptions, use that. Otherwise, try i18next translations. */
+      const translationFromLabelOptions = labelOptions.translations?.[lang]?.[translationKey];
+      if (translationFromLabelOptions) {
+        labelOptions[opt][i].text = translationFromLabelOptions;
+      } else {
+        const i18nextKey = translationKey as keyof typeof enJson.multilabel; // cast for type safety
+        labelOptions[opt][i].text = i18next.t(`multilabel.${i18nextKey}`);
+      }
     });
   }
   return labelOptions;
@@ -119,7 +121,7 @@ export const labelKeyToReadable = (otherValue: string) => {
 export const readableLabelToKey = (otherText: string) =>
   otherText.trim().replace(/ /g, '_').toLowerCase();
 
-export const getFakeEntry = (otherValue): Partial<LabelOption> => {
+export const getFakeEntry = (otherValue): Partial<LabelOption> | undefined => {
   if (!otherValue) return undefined;
   return {
     text: labelKeyToReadable(otherValue),
@@ -147,9 +149,9 @@ export function verifiabilityForTrip(trip, userInputForTrip) {
   return someInferred ? 'can-verify' : allConfirmed ? 'already-verified' : 'cannot-verify';
 }
 
-export function inferFinalLabels(trip, userInputForTrip) {
+export function inferFinalLabels(trip: CompositeTrip, userInputForTrip) {
   // Deep copy the possibility tuples
-  let labelsList = [];
+  let labelsList: InferredLabels = [];
   if (trip.inferred_labels) {
     labelsList = JSON.parse(JSON.stringify(trip.inferred_labels));
   }

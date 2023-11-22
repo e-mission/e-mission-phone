@@ -2,7 +2,7 @@ import { displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { getCustomFootprint } from './customMetricsHelper';
 
 //variables for the highest footprint in the set and if using custom
-let highestFootprint = 0;
+let highestFootprint: number | undefined = 0;
 
 /**
  * @function converts meters to kilometers
@@ -30,8 +30,7 @@ function getFootprint() {
   if (footprint) {
     return footprint;
   } else {
-    displayErrorMsg('failed to use custom labels', 'Error in Footprint Calculatons');
-    return undefined;
+    throw new Error('In Footprint Calculatins, failed to use custom labels');
   }
 }
 
@@ -82,7 +81,7 @@ export function getFootprintForMetrics(userMetrics, defaultIfMissing = 0) {
 export function getHighestFootprint() {
   if (!highestFootprint) {
     const footprint = getFootprint();
-    let footprintList = [];
+    let footprintList: number[] = [];
     for (let mode in footprint) {
       footprintList.push(footprint[mode]);
     }

@@ -7,7 +7,7 @@ import i18next from 'i18next';
 async function getUploadConfig() {
   return new Promise<string[]>(async function (resolve, reject) {
     logInfo('About to get email config');
-    let url = [];
+    let url: string[] = [];
     try {
       let response = await fetch('json/uploadConfig.json');
       let uploadConfig = await response.json();
@@ -64,7 +64,9 @@ function readDBFile(parentDir, database, callbackFn) {
             };
 
             reader.onload = function () {
-              console.log('Successful file read with ' + this.result['byteLength'] + ' characters');
+              console.log(
+                'Successful file read with ' + this.result?.['byteLength'] + ' characters',
+              );
               resolve(new DataView(this.result as ArrayBuffer));
             };
 
@@ -82,7 +84,7 @@ const sendToServer = function upload(url, binArray, params) {
   const urlParams = '?reason=' + params.reason + '&tz=' + params.tz;
   return fetch(url + urlParams, {
     method: 'POST',
-    headers: { 'Content-Type': undefined },
+    // headers: { 'Content-Type': undefined },
     body: binArray,
   });
 };
@@ -103,7 +105,7 @@ export async function uploadFile(database, reason) {
 
     logInfo('Going to upload ' + database);
     try {
-      let binString = await readDBFile(parentDir, database, undefined);
+      let binString: any = await readDBFile(parentDir, database, undefined);
       console.log('Uploading file of size ' + binString['byteLength']);
       const params = {
         reason: reason,

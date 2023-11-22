@@ -27,6 +27,7 @@ import TripSectionsDescriptives from './TripSectionsDescriptives';
 import OverallTripDescriptives from './OverallTripDescriptives';
 import ToggleSwitch from '../../components/ToggleSwitch';
 import useAppConfig from '../../useAppConfig';
+import { CompositeTrip } from '../../types/diaryTypes';
 
 const LabelScreenDetails = ({ route, navigation }) => {
   const { timelineMap, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
@@ -40,11 +41,13 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
 
   const [modesShown, setModesShown] = useState<'labeled' | 'detected'>('labeled');
-  const tripGeojson = useGeojsonForTrip(
-    trip,
-    labelOptions,
-    modesShown == 'labeled' && timelineLabelMap[trip._id.$oid]?.MODE?.value,
-  );
+  const tripGeojson =
+    trip &&
+    useGeojsonForTrip(
+      trip,
+      labelOptions,
+      modesShown == 'labeled' && !!timelineLabelMap[trip._id.$oid]?.MODE?.value,
+    );
   const mapOpts = { minZoom: 3, maxZoom: 17 };
 
   const modal = (
@@ -93,9 +96,9 @@ const LabelScreenDetails = ({ route, navigation }) => {
 
             {/* If trip is labeled, show a toggle to switch between "Labeled Mode" and "Detected Modes"
               otherwise, just show "Detected" */}
-            {timelineLabelMap[trip._id.$oid]?.MODE?.value ? (
+            {trip && timelineLabelMap[trip._id.$oid]?.MODE?.value ? (
               <ToggleSwitch
-                onValueChange={(v) => setModesShown(v)}
+                onValueChange={(v: 'labeled' | 'detected') => setModesShown(v)}
                 value={modesShown}
                 density="medium"
                 buttons={[
@@ -119,7 +122,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
             {/* Overall trip duration, distance, and modes.
               Only show this when multiple sections are shown, and we are showing detected modes.
               If we just showed the labeled mode or a single section, this would be redundant. */}
-            {modesShown == 'detected' && trip?.sections?.length > 1 && (
+            {modesShown == 'detected' && (trip as CompositeTrip)?.sections?.length > 1 && (
               <OverallTripDescriptives trip={trip} />
             )}
             {/* TODO: show speed graph here */}

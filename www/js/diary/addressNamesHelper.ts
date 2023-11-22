@@ -39,7 +39,7 @@ export const LocalStorageObserver = createObserver<string, string>();
 export const { subscribe, publish } = LocalStorageObserver;
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
-  const [storedValue, setStoredValue] = useState(() => {
+  const [storedValue, setStoredValue] = useState<T | string>(() => {
     try {
       const item = window.localStorage.getItem(key);
       return item || initialValue;
@@ -53,7 +53,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     keyRef.current = key;
     // force state update
     const storedValue = window.localStorage.getItem(key);
-    setStoredValue(storedValue);
+    if (storedValue) setStoredValue(storedValue);
   }
 
   LocalStorageObserver.subscribe(key, setStoredValue);

@@ -52,8 +52,8 @@ const MetricsTab = () => {
     useImperialConfig();
 
   const [dateRange, setDateRange] = useState<DateTime[]>(getLastTwoWeeksDtRange);
-  const [aggMetrics, setAggMetrics] = useState<MetricsData>(null);
-  const [userMetrics, setUserMetrics] = useState<MetricsData>(null);
+  const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
+  const [userMetrics, setUserMetrics] = useState<MetricsData | undefined>(undefined);
 
   useEffect(() => {
     if (!appConfig?.server) return;
@@ -65,7 +65,11 @@ const MetricsTab = () => {
     try {
       logDebug(`MetricsTab: fetching metrics for population ${population}'
         in date range ${JSON.stringify(dateRange)}`);
-      const serverResponse = await fetchMetricsFromServer(population, dateRange, appConfig.server);
+      const serverResponse: any = await fetchMetricsFromServer(
+        population,
+        dateRange,
+        appConfig.server,
+      );
       logDebug('MetricsTab: received metrics: ' + JSON.stringify(serverResponse));
       const metrics = {};
       const dataKey = population == 'user' ? 'user_metrics' : 'aggregate_metrics';

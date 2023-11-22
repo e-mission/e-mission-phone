@@ -3,6 +3,7 @@
  As much as possible, these types parallel the types used in the server code. */
 
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
+import { MultilabelKey } from './labelTypes';
 import { ServerData, LocalDt } from './serverData';
 import { FeatureCollection, Feature, Geometry } from 'geojson';
 
@@ -61,7 +62,7 @@ export type CompositeTrip = {
   end_ts: number;
   expectation: any; // TODO "{to_label: boolean}"
   expected_trip: ObjectId;
-  inferred_labels: any[]; // TODO
+  inferred_labels: InferredLabels;
   inferred_section_summary: SectionSummary;
   inferred_trip: ObjectId;
   key: string;
@@ -116,6 +117,11 @@ export type SectionSummary = {
   duration: { [k: MotionTypeKey | BaseModeKey]: number };
 };
 
+export type InferredLabels = {
+  p: number;
+  labels: { [k in Lowercase<MultilabelKey> as `${k}_confirm`]?: string };
+}[];
+
 export type UserInputEntry = {
   data: {
     end_ts: number;
@@ -125,6 +131,8 @@ export type UserInputEntry = {
     end_local_dt?: LocalDt;
     status?: string;
     match_id?: string;
+    name: string;
+    xmlResponse: string;
   };
   metadata: {
     time_zone: string;
@@ -172,7 +180,7 @@ export type SectionData = {
   distance: number;
 };
 
-export type GeoJSONStyledFeature = Feature & { style?: { color: string } };
+export type GeoJSONStyledFeature = Feature<Geometry, any> & { style?: { color: string } };
 
 export type GeoJSONData = {
   data: FeatureCollection & { id: string; properties: { start_ts: number; end_ts: number } };

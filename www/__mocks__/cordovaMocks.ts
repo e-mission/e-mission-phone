@@ -46,7 +46,7 @@ const _storage = {};
 
 export const mockBEMUserCache = (config?) => {
   const _cache = {};
-  const messages = [];
+  const messages: { key: string; value: any }[] = [];
   const mockBEMUserCache = {
     getLocalStorage: (key: string, isSecure: boolean) => {
       return new Promise((rs, rj) =>

@@ -10,9 +10,7 @@ const SensedPage = ({ pageVis, setPageVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  /* Let's keep a reference to the database for convenience */
-  const [DB, setDB] = useState();
-  const [entries, setEntries] = useState([]);
+  const [entries, setEntries] = useState<any[]>([]);
 
   const emailCache = function () {
     sendEmail('userCacheDB');
@@ -20,12 +18,11 @@ const SensedPage = ({ pageVis, setPageVis }) => {
 
   async function updateEntries() {
     //hardcoded function and keys after eliminating bit-rotted options
-    setDB(window.cordova.plugins.BEMUserCache);
-    let userCacheFn = DB.getAllMessages;
+    let userCacheFn = window['cordova'].plugins.BEMUserCache.getAllMessages;
     let userCacheKey = 'statemachine/transition';
     try {
       let entryList = await userCacheFn(userCacheKey, true);
-      let tempEntries = [];
+      let tempEntries: any[] = [];
       entryList.forEach((entry) => {
         entry.metadata.write_fmt_time = moment
           .unix(entry.metadata.write_ts)
@@ -36,7 +33,7 @@ const SensedPage = ({ pageVis, setPageVis }) => {
       });
       setEntries(tempEntries);
     } catch (error) {
-      window.Logger.log(window.Logger.LEVEL_ERROR, 'Error updating entries' + error);
+      window['Logger'].log(window['Logger'].LEVEL_ERROR, 'Error updating entries' + error);
     }
   }
 

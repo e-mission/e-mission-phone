@@ -26,8 +26,8 @@ export const combinedPromises = function (
     Promise.allSettled(promiseList).then(
       (results) => {
         let allRej = true;
-        const values = [];
-        const rejections = [];
+        const values: Promise<any>[] = [];
+        const rejections: any[] = [];
         results.forEach((item) => {
           if (item.status === 'fulfilled') {
             if (allRej) allRej = false;

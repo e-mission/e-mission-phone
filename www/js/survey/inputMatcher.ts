@@ -3,13 +3,12 @@ import { DateTime } from 'luxon';
 import { CompositeTrip, TimelineEntry, UserInputEntry } from '../types/diaryTypes';
 import { keysForLabelInputs, unprocessedLabels, unprocessedNotes } from '../diary/timelineHelper';
 import {
-  LabelOption,
-  MultilabelKey,
   getLabelInputDetails,
   inputType2retKey,
   labelOptionByValue,
 } from './multilabel/confirmHelper';
 import { TimelineLabelMap, TimelineNotesMap } from '../diary/LabelTabContext';
+import { LabelOption, MultilabelKey } from '../types/labelTypes';
 
 const EPOCH_MAXIMUM = 2 ** 31 - 1;
 
@@ -295,7 +294,7 @@ export function mapInputsToTimelineEntries(
     } else {
       // MULTILABEL configuration: use the label inputs from the labelOptions to determine which
       // keys to look for in the unprocessedInputs
-      const labelsForTrip: { [k: string]: LabelOption } = {};
+      const labelsForTrip: { [k: string]: LabelOption | undefined } = {};
       Object.keys(getLabelInputDetails()).forEach((label: MultilabelKey) => {
         // Check unprocessed labels first since they are more recent
         const userInputForTrip = getUserInputForTimelineEntry(

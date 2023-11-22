@@ -8,7 +8,7 @@ export const mockLogger = () => {
   };
 };
 
-let alerts = [];
+let alerts: string[] = [];
 
 export const mockAlert = () => {
   window['alert'] = (message) => {

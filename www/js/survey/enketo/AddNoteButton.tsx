@@ -27,7 +27,7 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
 
   useEffect(() => {
     let newLabel: string;
-    const localeCode = i18n.resolvedLanguage;
+    const localeCode = i18n.language;
     if (notesConfig?.['filled-in-label'] && timelineNotesMap[timelineEntry._id.$oid]?.length > 0) {
       newLabel = notesConfig?.['filled-in-label']?.[localeCode];
       setDisplayLabel(newLabel);
@@ -37,6 +37,12 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
     }
   }, [notesConfig]);
 
+  type PrefillTimes = {
+    Start_date?: string;
+    Start_time?: string;
+    End_date?: string;
+    End_time?: string;
+  };
   // return a dictionary of fields we want to prefill, using start/enter and end/exit times
   function getPrefillTimes() {
     let begin = timelineEntry.start_ts || timelineEntry.enter_ts;
@@ -57,21 +63,21 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
 
     // the current, local time offset (e.g. -07:00)
     const currOffset = moment().toISOString(true).slice(-6);
-    let Start_date: string, Start_time: string, End_date: string, End_time: string;
+    const prefillTimes: PrefillTimes = {};
 
     // enketo requires dates as YYYY-MM-DD, and times as HH:mm:ss.SSS+/-HH:mm
     // some may be left blank, if the timelineEntry doesn't have them
     if (momentBegin) {
-      Start_date = momentBegin.format('YYYY-MM-DD');
-      Start_time = momentBegin.format('HH:mm:ss.SSS') + currOffset;
-    } else {
-      Start_date = momentStop.format('YYYY-MM-DD');
+      prefillTimes.Start_date = momentBegin.format('YYYY-MM-DD');
+      prefillTimes.Start_time = momentBegin.format('HH:mm:ss.SSS') + currOffset;
+    } else if (momentStop) {
+      prefillTimes.Start_date = momentStop.format('YYYY-MM-DD');
     }
     if (momentStop) {
-      End_date = momentStop.format('YYYY-MM-DD');
-      End_time = momentStop.format('HH:mm:ss.SSS') + currOffset;
+      prefillTimes.End_date = momentStop.format('YYYY-MM-DD');
+      prefillTimes.End_time = momentStop.format('HH:mm:ss.SSS') + currOffset;
     }
-    return { Start_date, Start_time, End_date, End_time };
+    return prefillTimes;
   }
 
   function launchAddNoteSurvey() {
@@ -93,7 +99,7 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
     }
   }
 
-  const [prefillTimes, setPrefillTimes] = useState(null);
+  const [prefillTimes, setPrefillTimes] = useState<PrefillTimes | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState(false);
 
   return (

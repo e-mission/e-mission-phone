@@ -22,7 +22,7 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
   const { colors } = useTheme();
   const [open, setOpen] = React.useState(false);
   const [dateRange, setDateRange] = useState([null, null]);
-  const [selDate, setSelDate] = useState(null);
+  const [selDate, setSelDate] = useState<Date>(new Date());
   const minMaxDates = useMemo(() => {
     if (!pipelineRange) return { startDate: new Date(), endDate: new Date() };
     return {

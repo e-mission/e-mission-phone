@@ -11,17 +11,19 @@ import { getFormattedDateAbbr, isMultiDay } from '../../diary/diaryHelper';
 import { Icon } from '../../components/Icon';
 import EnketoModal from './EnketoModal';
 import { useTranslation } from 'react-i18next';
+import { UserInputEntry } from '../../types/diaryTypes';
 
+type EntryWithDisplayDt = UserInputEntry & { displayDt?: { date: string; time: string } };
 type Props = {
   timelineEntry: any;
-  additionEntries: any[];
+  additionEntries: EntryWithDisplayDt[];
 };
 const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
   const { t } = useTranslation();
   const { repopulateTimelineEntry } = useContext(LabelTabContext);
   const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
   const [surveyModalVisible, setSurveyModalVisible] = useState(false);
-  const [editingEntry, setEditingEntry] = useState(null);
+  const [editingEntry, setEditingEntry] = useState<EntryWithDisplayDt | null>(null);
 
   function setDisplayDt(entry) {
     const timezone =
@@ -113,7 +115,7 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
                 textStyle={{ fontSize: 12, lineHeight: 12 }}>
                 <Text style={{ display: 'flex' }}>{entry.displayDt?.date}</Text>
                 <Text style={{ display: 'flex' }}>
-                  {entry.displayDt?.time || setDisplayDt(entry)}
+                  {entry.displayDt?.time || (setDisplayDt(entry) && '')}
                 </Text>
               </DataTable.Cell>
               <DataTable.Cell
@@ -125,17 +127,19 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
           );
         })}
       </DataTable>
-      <EnketoModal
-        visible={surveyModalVisible}
-        onDismiss={onModalDismiss}
-        onResponseSaved={onEditedResponse}
-        surveyName={editingEntry?.data.name}
-        opts={{
-          timelineEntry,
-          prefilledSurveyResponse: editingEntry?.data.xmlResponse,
-          dataKey: editingEntry?.key || editingEntry?.metadata?.key,
-        }}
-      />
+      {editingEntry && (
+        <EnketoModal
+          visible={surveyModalVisible}
+          onDismiss={onModalDismiss}
+          onResponseSaved={onEditedResponse}
+          surveyName={editingEntry.data.name}
+          opts={{
+            timelineEntry,
+            prefilledSurveyResponse: editingEntry?.data.xmlResponse,
+            dataKey: editingEntry?.key || editingEntry?.metadata?.key,
+          }}
+        />
+      )}
       <Modal
         visible={confirmDeleteModalVisible}
         transparent={true}
