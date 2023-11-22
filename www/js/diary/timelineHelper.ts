@@ -5,7 +5,13 @@ import { getRawEntries } from '../services/commHelper';
 import { ServerResponse, ServerData } from '../types/serverData';
 import L from 'leaflet';
 import { DateTime } from 'luxon';
-import { UserInputEntry, TripTransition, TimelineEntry, GeoJSONData } from '../types/diaryTypes';
+import {
+  UserInputEntry,
+  TripTransition,
+  TimelineEntry,
+  GeoJSONData,
+  UnprocessedTrip,
+} from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
 
@@ -534,7 +540,7 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
         logDebug(`mapped trips to trip_gj_list of size ${raw_trip_gj_list.length}`);
         /* Filtering: we will keep trips that are 1) defined and 2) have a distance >= 100m or duration >= 5 minutes
               https://github.com/e-mission/e-mission-docs/issues/966#issuecomment-1709112578 */
-        const trip_gj_list = raw_trip_gj_list.filter(
+        const trip_gj_list: UnprocessedTrip[] = raw_trip_gj_list.filter(
           (trip) => trip && (trip.distance >= 100 || trip.duration >= 300),
         );
         logDebug(
