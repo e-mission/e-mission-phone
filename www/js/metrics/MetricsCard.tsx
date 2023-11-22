@@ -13,8 +13,8 @@ import { useTranslation } from 'react-i18next';
 
 type Props = {
   cardTitle: string;
-  userMetricsDays: DayOfMetricData[];
-  aggMetricsDays: DayOfMetricData[];
+  userMetricsDays?: DayOfMetricData[];
+  aggMetricsDays?: DayOfMetricData[];
   axisUnits: string;
   unitFormatFn?: (val: number) => string | number;
 };
@@ -62,6 +62,7 @@ const MetricsCard = ({
   }, [metricDataDays, viewMode]);
 
   const cardSubtitleText = useMemo(() => {
+    if (!metricDataDays) return;
     const groupText =
       populationMode == 'user' ? t('main-metrics.user-totals') : t('main-metrics.group-totals');
     return `${groupText} (${formatDateRangeOfDays(metricDataDays)})`;

@@ -44,7 +44,7 @@ const TripCard = ({ trip }: Props) => {
   const tripGeojson = useGeojsonForTrip(
     trip,
     labelOptions,
-    !!timelineLabelMap[trip._id.$oid]?.MODE?.value,
+    timelineLabelMap[trip._id.$oid]?.MODE?.value,
   );
 
   const isDraft = trip.key.includes('UNPROCESSED');

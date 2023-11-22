@@ -28,7 +28,7 @@ afterAll(() => {
 
 describe('useGeojsonForTrip', () => {
   it('work with an empty input', () => {
-    const testVal = useGeojsonForTrip(null, null, null);
+    const testVal = useGeojsonForTrip({}, {} as any);
     expect(testVal).toBeFalsy;
   });
 
@@ -46,7 +46,8 @@ describe('useGeojsonForTrip', () => {
     const testValue = useGeojsonForTrip(
       mockTLH.mockCompDataTwo.phone_data[1].data,
       mockTLH.mockLabelOptions,
-    );
+    ) as GeoJSONData;
+    expect(testValue).toBeTruthy;
     checkGeojson(testValue);
     expect(testValue.data.features.length).toBe(3);
   });

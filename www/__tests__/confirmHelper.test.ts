@@ -45,9 +45,12 @@ const fakeDefaultLabelOptions = {
   },
 };
 
-CommHelper.fetchUrlCached = jest
-  .fn()
-  .mockImplementation(() => JSON.stringify(fakeDefaultLabelOptions));
+jest.mock('../js/services/commHelper', () => ({
+  ...jest.requireActual('../js/services/commHelper'),
+  fetchUrlCached: jest
+    .fn()
+    .mockReturnValue(Promise.resolve(JSON.stringify(fakeDefaultLabelOptions))),
+}));
 
 describe('confirmHelper', () => {
   it('returns labelOptions given an appConfig', async () => {

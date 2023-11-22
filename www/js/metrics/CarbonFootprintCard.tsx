@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View } from 'react-native';
-import { Card, Text, useTheme } from 'react-native-paper';
+import { Card, Text } from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardStyles } from './MetricsTab';
 import {
@@ -21,10 +21,11 @@ import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 import ChangeIndicator from './ChangeIndicator';
 import color from 'color';
+import { useAppTheme } from '../appTheme';
 
 type Props = { userMetrics?: MetricsData; aggMetrics?: MetricsData };
 const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
-  const { colors } = useTheme();
+  const { colors } = useAppTheme();
   const { t } = useTranslation();
 
   const [emissionsChange, setEmissionsChange] = useState({});

@@ -19,13 +19,13 @@ import {
 } from './metricsHelper';
 import { logWarn } from '../plugin/logger';
 
-type Props = { userMetrics: MetricsData; aggMetrics: MetricsData };
+type Props = { userMetrics?: MetricsData; aggMetrics?: MetricsData };
 const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
   const userText = useMemo(() => {
-    if (userMetrics?.distance?.length > 0) {
+    if (userMetrics?.distance?.length) {
       //separate data into weeks
       const [thisWeekDistance, lastWeekDistance] = segmentDaysByWeeks(userMetrics?.distance, 2);
 
@@ -87,7 +87,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
   }, [userMetrics]);
 
   const groupText = useMemo(() => {
-    if (aggMetrics?.distance?.length > 0) {
+    if (aggMetrics?.distance?.length) {
       //separate data into weeks
       const thisWeekDistance = segmentDaysByWeeks(aggMetrics?.distance, 1)[0];
 
@@ -138,6 +138,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
   }, [userText, groupText]);
 
   const cardSubtitleText = useMemo(() => {
+    if (!aggMetrics?.distance?.length) return;
     const recentEntries = segmentDaysByWeeks(aggMetrics?.distance, 2)
       .reverse()
       .flat();

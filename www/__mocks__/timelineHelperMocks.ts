@@ -1,4 +1,4 @@
-import { MetaData, BEMData, ServerResponse } from '../js/types/serverData';
+import { LocalDt, MetaData, BEMData, ServerResponse } from '../js/types/serverData';
 import {
   CompositeTrip,
   ConfirmedPlace,
@@ -15,7 +15,7 @@ const mockMetaData: MetaData = {
   platform: 'test',
   time_zone: 'America/Los_Angeles',
   write_fmt_time: '1969-07-16T07:01:49.000Z',
-  write_local_dt: null,
+  write_local_dt: null as any,
   origin_key: '1',
 };
 
@@ -24,9 +24,9 @@ export const mockLabelOptions: LabelOptions = {
   PURPOSE: null,
   REPLACED_MODE: null,
   translations: null,
-};
+} as unknown as LabelOptions;
 
-const mockConfirmedPlaceData: ConfirmedPlace = {
+const mockConfirmedPlaceData = {
   source: 'DwellSegmentationTimeFilter',
   key: null,
   origin_key: null,
@@ -46,7 +46,7 @@ const mockConfirmedPlaceData: ConfirmedPlace = {
   raw_places: [null, null],
   enter_ts: 1437578093.881,
   exit_ts: 1437578093.881,
-};
+} as unknown as ConfirmedPlace;
 // using parse/stringify to deep copy & populate data
 let tempMetaData = JSON.parse(JSON.stringify(mockMetaData));
 tempMetaData.write_ts = 2;
@@ -75,7 +75,7 @@ export const mockUnprocessedTrip: UnprocessedTrip = {
   user_input: null,
 };
 
-export const mockCompData: ServerResponse<CompositeTrip> = {
+export const mockCompData = {
   phone_data: [
     {
       data: {
@@ -152,7 +152,8 @@ export const mockCompData: ServerResponse<CompositeTrip> = {
       metadata: mockMetaData,
     },
   ],
-};
+} as unknown as ServerResponse<CompositeTrip>;
+
 // Setup for second mockData
 let newPhoneData = JSON.parse(JSON.stringify(mockCompData.phone_data[0]));
 newPhoneData.data._id.$oid = 'mockDataTwo';

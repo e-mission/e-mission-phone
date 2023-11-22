@@ -29,9 +29,9 @@ const cachedGeojsons: Map<string, GeoJSONData> = new Map();
 export function useGeojsonForTrip(
   trip: CompositeTrip,
   labelOptions: LabelOptions,
-  labeledMode?: Boolean,
+  labeledMode?: string,
 ) {
-  if (!trip) return;
+  if (!trip?._id?.$oid) return;
   const gjKey = `trip-${trip._id.$oid}-${labeledMode || 'detected'}`;
   if (cachedGeojsons.has(gjKey)) {
     return cachedGeojsons.get(gjKey);

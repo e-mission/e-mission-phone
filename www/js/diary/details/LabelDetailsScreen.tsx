@@ -46,7 +46,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
     useGeojsonForTrip(
       trip,
       labelOptions,
-      modesShown == 'labeled' && !!timelineLabelMap[trip._id.$oid]?.MODE?.value,
+      modesShown == 'labeled' ? timelineLabelMap[trip._id.$oid]?.MODE?.value : undefined,
     );
   const mapOpts = { minZoom: 3, maxZoom: 17 };
 
