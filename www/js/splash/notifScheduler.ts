@@ -192,6 +192,7 @@ export const updateScheduledNotifs = async (
         scheduledPromise.then(() => {
           if (isScheduling) {
             logDebug('ERROR: Already scheduling notifications, not scheduling again');
+            resolve();
           } else {
             scheduledPromise = scheduleNotifs(scheme, notifTimes, setIsScheduling);
             //enforcing end of scheduling to conisder update through

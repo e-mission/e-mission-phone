@@ -239,11 +239,32 @@ describe('updateScheduledNotifs', () => {
     // mock the cordova plugin
     jest
       .spyOn(window['cordova'].plugins.notification.local, 'getScheduled')
-      .mockImplementationOnce((callback) => callback(mockNotifs));
+      .mockImplementation((callback) => callback(mockNotifs));
     // call the function
     await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
 
     expect(logDebug).toHaveBeenCalledWith('Already scheduled, not scheduling again');
+  });
+
+  it('should wait for the previous scheduling to finish if isScheduling is true', async () => {
+    // updateScheduleNotifs arguments
+    const reminderSchemes: any = exampleReminderSchemes;
+    let isScheduling: boolean = true;
+    const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
+    const scheduledPromise: Promise<any> = Promise.resolve();
+    // create an empty array of mock notifs from cordova plugin
+    const mockNotifs = [];
+
+    // mock the cordova plugin
+    jest
+      .spyOn(window['cordova'].plugins.notification.local, 'getScheduled')
+      .mockImplementation((callback) => callback(mockNotifs));
+    // call the function
+    await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+
+    expect(logDebug).toHaveBeenCalledWith(
+      'ERROR: Already scheduling notifications, not scheduling again',
+    );
   });
 
   it('should log an error message if the reminder scheme is missing', async () => {
