@@ -10,7 +10,8 @@
     "resolveJsonModule": true,
     "jsx": "react",
     "allowJs": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "typeRoots": ["node_modules/@types", "www/js/types"],
   },
   "include": ["www/**/*"],
   "exclude": ["**/node_modules/*", "**/dist/*"],
