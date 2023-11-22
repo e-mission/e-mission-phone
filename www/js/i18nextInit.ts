@@ -38,14 +38,10 @@ const mergeInTranslations = (lang, fallbackLang) => {
 
 import enJson from '../i18n/en.json';
 import esJson from '../../locales/es/i18n/es.json';
-import frJson from '../../locales/fr/i18n/fr.json';
-import itJson from '../../locales/it/i18n/it.json';
 import loJson from '../../locales/lo/i18n/lo.json';
 const langs = {
   en: { translation: enJson },
   es: { translation: mergeInTranslations(esJson, enJson) },
-  fr: { translation: mergeInTranslations(frJson, enJson) },
-  it: { translation: mergeInTranslations(itJson, enJson) },
   lo: { translation: mergeInTranslations(loJson, enJson) },
 };
 
