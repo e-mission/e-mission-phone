@@ -84,7 +84,7 @@ const flavorOverrides = {
 /* This function is used to retrieve the theme for a given flavor.
   If no valid flavor is specified, it returns the default theme. */
 export const getTheme = (flavor?: keyof typeof flavorOverrides) => {
-  if (!flavorOverrides[flavor]) return AppTheme;
+  if (!flavor || !flavorOverrides[flavor]) return AppTheme;
   const typeStyle = flavorOverrides[flavor];
   const scopedElevation = { ...AppTheme.colors.elevation, ...typeStyle?.colors?.elevation };
   const scopedColors = {

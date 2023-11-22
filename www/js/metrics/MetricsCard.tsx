@@ -43,11 +43,13 @@ const MetricsCard = ({
       const labels = getLabelsForDay(day);
       labels.forEach((label) => {
         const rawVal = day[`label_${label}`];
-        records.push({
-          label: labelKeyToRichMode(label),
-          x: unitFormatFn ? unitFormatFn(rawVal) : rawVal,
-          y: day.ts * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
-        });
+        if (rawVal) {
+          records.push({
+            label: labelKeyToRichMode(label),
+            x: unitFormatFn ? unitFormatFn(rawVal) : rawVal,
+            y: day.ts * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
+          });
+        }
       });
     });
     // sort records (affects the order they appear in the chart legend)

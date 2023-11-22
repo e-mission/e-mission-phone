@@ -40,9 +40,10 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     'MODE' | 'PURPOSE' | 'REPLACED_MODE' | null
   >(null);
   const [otherLabel, setOtherLabel] = useState<string | null>(null);
-  const chosenLabel = useMemo<string>(() => {
+  const chosenLabel = useMemo<string | null>(() => {
+    if (modalVisibleFor == null) return null;
     if (otherLabel != null) return 'other';
-    return timelineLabelMap[trip._id.$oid]?.[modalVisibleFor]?.value;
+    return timelineLabelMap[trip._id.$oid]?.[modalVisibleFor]?.value || null;
   }, [modalVisibleFor, otherLabel]);
 
   // to mark 'inferred' labels as 'confirmed'; turn yellow labels blue
@@ -150,16 +151,19 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
             </Dialog.Title>
             <Dialog.Content style={{ maxHeight: windowHeight / 2, paddingBottom: 0 }}>
               <ScrollView style={{ paddingBottom: 24 }}>
-                <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={chosenLabel}>
-                  {labelOptions?.[modalVisibleFor]?.map((o, i) => (
-                    // @ts-ignore
-                    <RadioButton.Item
-                      key={i}
-                      label={t(o.text)}
-                      value={o.value}
-                      style={{ paddingVertical: 2 }}
-                    />
-                  ))}
+                <RadioButton.Group
+                  onValueChange={(val) => onChooseLabel(val)}
+                  value={chosenLabel || ''}>
+                  {modalVisibleFor &&
+                    labelOptions?.[modalVisibleFor]?.map((o, i) => (
+                      // @ts-ignore
+                      <RadioButton.Item
+                        key={i}
+                        label={t(o.text)}
+                        value={o.value}
+                        style={{ paddingVertical: 2 }}
+                      />
+                    ))}
                 </RadioButton.Group>
               </ScrollView>
             </Dialog.Content>

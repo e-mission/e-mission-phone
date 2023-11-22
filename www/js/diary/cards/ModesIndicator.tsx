@@ -33,7 +33,7 @@ const ModesIndicator = ({ trip, detectedModes }) => {
             fontWeight: '500',
             textDecorationLine: 'underline',
           }}>
-          {timelineLabelMap[trip._id.$oid]?.MODE.text}
+          {timelineLabelMap[trip._id.$oid]?.MODE?.text}
         </Text>
       </View>
     );

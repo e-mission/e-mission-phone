@@ -5,6 +5,7 @@ import i18next from 'i18next';
 import { DateTime } from 'luxon';
 import { CompositeTrip } from '../types/diaryTypes';
 import { LabelOptions } from '../types/labelTypes';
+import { LocalDt } from '../types/serverData';
 import humanizeDuration from 'humanize-duration';
 import { AppConfig } from '../types/appConfigTypes';
 
@@ -75,9 +76,9 @@ export type BaseModeKey = keyof typeof BaseModes;
 export function getBaseModeByKey(
   motionName: BaseModeKey | MotionTypeKey | `MotionTypes.${MotionTypeKey}`,
 ) {
-  let key = ('' + motionName).toUpperCase();
-  key = key.split('.').pop(); // if "MotionTypes.WALKING", then just take "WALKING"
-  return BaseModes[key] || BaseModes.UNKNOWN;
+  const key = ('' + motionName).toUpperCase();
+  const pop = key.split('.').pop(); // if "MotionTypes.WALKING", then just take "WALKING"
+  return (pop && BaseModes[pop]) || BaseModes.UNKNOWN;
 }
 
 export function getBaseModeByValue(value, labelOptions: LabelOptions) {
@@ -96,7 +97,7 @@ export function getBaseModeByText(text: string, labelOptions: LabelOptions) {
  * @returns true if the start and end timestamps fall on different days
  * @example isMultiDay("2023-07-13T00:00:00-07:00", "2023-07-14T00:00:00-07:00") => true
  */
-export function isMultiDay(beginFmtTime: string, endFmtTime: string) {
+export function isMultiDay(beginFmtTime?: string, endFmtTime?: string) {
   if (!beginFmtTime || !endFmtTime) return false;
   return (
     DateTime.fromISO(beginFmtTime, { setZone: true }).toFormat('YYYYMMDD') !=
@@ -110,13 +111,13 @@ export function isMultiDay(beginFmtTime: string, endFmtTime: string) {
  * @returns A formatted range if both params are defined, one formatted date if only one is defined
  * @example getFormattedDate("2023-07-14T00:00:00-07:00") => "Fri, Jul 14, 2023"
  */
-export function getFormattedDate(beginFmtTime: string, endFmtTime?: string) {
+export function getFormattedDate(beginFmtTime?: string, endFmtTime?: string) {
   if (!beginFmtTime && !endFmtTime) return;
   if (isMultiDay(beginFmtTime, endFmtTime)) {
     return `${getFormattedDate(beginFmtTime)} - ${getFormattedDate(endFmtTime)}`;
   }
   // only one day given, or both are the same day
-  const t = DateTime.fromISO(beginFmtTime || endFmtTime, { setZone: true });
+  const t = DateTime.fromISO(beginFmtTime || endFmtTime || '', { setZone: true });
   // We use toLocale to get Wed May 3, 2023 or equivalent,
   const tConversion = t.toLocaleString({
     weekday: 'short',
@@ -133,13 +134,13 @@ export function getFormattedDate(beginFmtTime: string, endFmtTime?: string) {
  * @returns A formatted range if both params are defined, one formatted date if only one is defined
  * @example getFormattedDate("2023-07-14T00:00:00-07:00") => "Fri, Jul 14"
  */
-export function getFormattedDateAbbr(beginFmtTime: string, endFmtTime?: string) {
+export function getFormattedDateAbbr(beginFmtTime?: string, endFmtTime?: string) {
   if (!beginFmtTime && !endFmtTime) return;
   if (isMultiDay(beginFmtTime, endFmtTime)) {
     return `${getFormattedDateAbbr(beginFmtTime)} - ${getFormattedDateAbbr(endFmtTime)}`;
   }
   // only one day given, or both are the same day
-  const dt = DateTime.fromISO(beginFmtTime || endFmtTime, { setZone: true });
+  const dt = DateTime.fromISO(beginFmtTime || endFmtTime || '', { setZone: true });
   return dt.toLocaleString({ weekday: 'short', month: 'short', day: 'numeric' });
 }
 
@@ -149,7 +150,6 @@ export function getFormattedDateAbbr(beginFmtTime: string, endFmtTime?: string) 
  * @returns A human-readable, approximate time range, e.g. "2 hours"
  */
 export function getFormattedTimeRange(beginFmtTime: string, endFmtTime: string) {
-  if (!beginFmtTime || !endFmtTime) return;
   const beginTime = DateTime.fromISO(beginFmtTime, { setZone: true });
   const endTime = DateTime.fromISO(endFmtTime, { setZone: true });
   const range = endTime.diff(beginTime, ['hours', 'minutes']);
@@ -190,8 +190,7 @@ export function getFormattedSectionProperties(trip: CompositeTrip, ImperialConfi
   }));
 }
 
-export function getLocalTimeString(dt: DateTime) {
-  if (!dt) return;
+export function getLocalTimeString(dt: LocalDt) {
   const dateTime = DateTime.fromObject({
     hour: dt.hour,
     minute: dt.minute,

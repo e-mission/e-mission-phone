@@ -19,7 +19,7 @@ export function forcePluginSync() {
 }
 
 const formatConfigForDisplay = (configToFormat) => {
-  var formatted = [];
+  const formatted: any[] = [];
   for (let prop in configToFormat) {
     formatted.push({ key: prop, val: configToFormat[prop] });
   }
@@ -219,7 +219,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
         // or continue to store from native
         // this is easier for people to see, but means that calls to
         // native, even through the javascript interface are not complete
-        curr_sync_interval: localConfig.sync_interval,
+        curr_sync_interval: (localConfig as syncConfig).sync_interval,
       });
     } catch (err) {
       console.log('error with setting sync config', err);
@@ -227,14 +227,14 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
     }
   }
   const onChooseInterval = function (interval) {
-    let tempConfig = { ...localConfig };
+    let tempConfig = { ...localConfig } as syncConfig;
     tempConfig.sync_interval = interval.value;
     setLocalConfig(tempConfig);
   };
 
   const onTogglePush = function () {
-    let tempConfig = { ...localConfig };
-    tempConfig.ios_use_remote_push = !localConfig.ios_use_remote_push;
+    let tempConfig = { ...localConfig } as syncConfig;
+    tempConfig.ios_use_remote_push = !(localConfig as syncConfig).ios_use_remote_push;
     setLocalConfig(tempConfig);
   };
 

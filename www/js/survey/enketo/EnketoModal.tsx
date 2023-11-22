@@ -15,8 +15,8 @@ type Props = Omit<ModalProps, 'children'> & {
 
 const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
   const { t, i18n } = useTranslation();
-  const headerEl = useRef(null);
-  const surveyJson = useRef(null);
+  const headerEl = useRef<HTMLElement>(null);
+  const surveyJson = useRef<any>(null);
   const enketoForm = useRef<Form | null>(null);
   const appConfig = useAppConfig();
 
@@ -32,7 +32,7 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
       displayError(result);
     } else {
       // success
-      rest.onDismiss();
+      rest.onDismiss?.();
       onResponseSaved(result);
       return;
     }
@@ -46,7 +46,7 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
 
     fetchSurvey(formPath).then(({ form, model }) => {
       surveyJson.current = { form, model };
-      headerEl?.current.insertAdjacentHTML('afterend', form); // inject form into DOM
+      headerEl?.current?.insertAdjacentHTML('afterend', form); // inject form into DOM
       const formEl = document.querySelector('form.or');
       const data = {
         modelStr: model, // the XML model for this form
@@ -75,8 +75,8 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
         Just make sure to keep a .form-language-selector element into which the form language selector (<select>)
         will be appended by Enketo Core. */}
         <header ref={headerEl} className="form-header clearfix">
-          {!opts.undismissable && (
-            <button style={s.dismissBtn} onClick={() => rest.onDismiss()}>
+          {!opts?.undismissable && (
+            <button style={s.dismissBtn} onClick={() => rest.onDismiss?.()}>
               {/* arrow-left glyph from https://pictogrammers.com/library/mdi/icon/arrow-left/ */}
               <span style={{ fontFamily: 'MaterialCommunityIcons', fontSize: 24, marginRight: 5 }}>
                 󰁍

@@ -36,4 +36,4 @@ type ContextProps = {
   repopulateTimelineEntry: any; // TODO
 };
 
-export default createContext<ContextProps>(null);
+export default createContext<ContextProps>({} as ContextProps);

@@ -23,20 +23,22 @@ const UserInputButton = ({ timelineEntry }: Props) => {
   const { colors } = useTheme();
   const { t, i18n } = useTranslation();
 
-  const [prevSurveyResponse, setPrevSurveyResponse] = useState(null);
+  const [prevSurveyResponse, setPrevSurveyResponse] = useState<string | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState(false);
   const { repopulateTimelineEntry, timelineLabelMap } = useContext(LabelTabContext);
 
   // the label resolved from the survey response, or null if there is no response yet
-  const responseLabel = useMemo<string | null>(
-    () => timelineLabelMap[timelineEntry._id.$oid]?.['SURVEY']?.data?.label || null,
+  const responseLabel = useMemo<string | undefined>(
+    () => timelineLabelMap[timelineEntry._id.$oid]?.['SURVEY']?.data?.label || undefined,
     [timelineEntry],
   );
 
   function launchUserInputSurvey() {
     logDebug('UserInputButton: About to launch survey');
     const prevResponse = timelineLabelMap[timelineEntry._id.$oid]?.['SURVEY'];
-    setPrevSurveyResponse(prevResponse?.data?.xmlResponse);
+    if (prevResponse?.data?.xmlResponse) {
+      setPrevSurveyResponse(prevResponse.data.xmlResponse);
+    }
     setModalVisible(true);
   }
 

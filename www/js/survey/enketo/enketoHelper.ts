@@ -44,7 +44,7 @@ const LABEL_FUNCTIONS = {
     const configSurveys = appConfig.survey_info.surveys;
 
     const config = configSurveys[name]; // config for this survey
-    const lang = i18next.resolvedLanguage;
+    const lang = i18next.language;
     const labelTemplate = config.labelTemplate?.[lang];
 
     if (!labelTemplate) return 'Answered'; // no template given in config
@@ -55,7 +55,7 @@ const LABEL_FUNCTIONS = {
     const labelVars = {};
     for (let lblVar in config.labelVars) {
       const fieldName = config.labelVars[lblVar].key;
-      let fieldStr = _getAnswerByTagName(xmlDoc, fieldName);
+      let fieldStr: string | null = _getAnswerByTagName(xmlDoc, fieldName);
       if (fieldStr == '<null>') fieldStr = null;
       if (config.labelVars[lblVar].type == 'length') {
         const fieldMatches = fieldStr?.split(' ');
@@ -142,10 +142,10 @@ function getXmlWithPrefills(xmlModel: string, prefillFields: PrefillFields) {
  * @param opts object with options like 'prefilledSurveyResponse' or 'prefillFields'
  * @returns XML string of an existing or prefilled model response, or null if no response is available
  */
-export function getInstanceStr(xmlModel: string, opts: SurveyOptions): string | null {
+export function getInstanceStr(xmlModel: string, opts?: SurveyOptions): string | null {
   if (!xmlModel) return null;
-  if (opts.prefilledSurveyResponse) return opts.prefilledSurveyResponse;
-  if (opts.prefillFields) return getXmlWithPrefills(xmlModel, opts.prefillFields);
+  if (opts?.prefilledSurveyResponse) return opts.prefilledSurveyResponse;
+  if (opts?.prefillFields) return getXmlWithPrefills(xmlModel, opts.prefillFields);
   return null;
 }
 
@@ -216,7 +216,7 @@ export function saveResponse(
   surveyName: string,
   enketoForm: Form,
   appConfig: AppConfig,
-  opts: SurveyOptions,
+  opts?: SurveyOptions,
 ) {
   const xmlParser = new window.DOMParser();
   const xmlResponse = enketoForm.getDataStr();
@@ -232,7 +232,7 @@ export function saveResponse(
         xmlResponse,
         jsonDocResponse,
       };
-      if (opts.timelineEntry) {
+      if (opts?.timelineEntry) {
         let timestamps = resolveTimestamps(xmlDoc, opts.timelineEntry);
         if (timestamps === undefined) {
           // timestamps were resolved, but they are invalid
@@ -249,7 +249,7 @@ export function saveResponse(
         data.fmt_time = new Date(now);
       }
       // use dataKey passed into opts if available, otherwise get it from the config
-      const dataKey = opts.dataKey || appConfig.survey_info.surveys[surveyName].dataKey;
+      const dataKey = opts?.dataKey || appConfig.survey_info.surveys[surveyName].dataKey;
       return window['cordova'].plugins.BEMUserCache.putMessage(dataKey, data).then(() => data);
     })
     .then((data) => data);

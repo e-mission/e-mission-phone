@@ -36,6 +36,8 @@ import LabelTabContext, {
   TimelineNotesMap,
 } from './LabelTabContext';
 import { readAllCompositeTrips, readUnprocessedTrips } from './timelineHelper';
+import { LabelOptions, MultilabelKey } from '../types/labelTypes';
+import { TimelineEntry } from '../types/diaryTypes';
 
 let showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -46,15 +48,19 @@ const LabelTab = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const [labelOptions, setLabelOptions] = useState(null);
-  const [filterInputs, setFilterInputs] = useState([]);
-  const [pipelineRange, setPipelineRange] = useState(null);
-  const [queriedRange, setQueriedRange] = useState(null);
-  const [timelineMap, setTimelineMap] = useState<TimelineMap>(null);
-  const [timelineLabelMap, setTimelineLabelMap] = useState<TimelineLabelMap>(null);
-  const [timelineNotesMap, setTimelineNotesMap] = useState<TimelineNotesMap>(null);
-  const [displayedEntries, setDisplayedEntries] = useState(null);
-  const [refreshTime, setRefreshTime] = useState(null);
+  const [labelOptions, setLabelOptions] = useState<LabelOptions<MultilabelKey> | null>(null);
+  const [filterInputs, setFilterInputs] = useState<any[]>([]);
+  const [pipelineRange, setPipelineRange] = useState<{ start_ts: number; end_ts: number } | null>(
+    null,
+  );
+  const [queriedRange, setQueriedRange] = useState<{ start_ts: number; end_ts: number } | null>(
+    null,
+  );
+  const [timelineMap, setTimelineMap] = useState<TimelineMap | null>(null);
+  const [timelineLabelMap, setTimelineLabelMap] = useState<TimelineLabelMap | null>(null);
+  const [timelineNotesMap, setTimelineNotesMap] = useState<TimelineNotesMap | null>(null);
+  const [displayedEntries, setDisplayedEntries] = useState<TimelineEntry[] | null>(null);
+  const [refreshTime, setRefreshTime] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState<string | false>('replace');
 
   // initialization, once the appConfig is loaded
@@ -162,6 +168,7 @@ const LabelTab = () => {
   async function loadAnotherWeek(when: 'past' | 'future') {
     try {
       logDebug('LabelTab: loadAnotherWeek into the ' + when);
+      if (!pipelineRange?.start_ts) return logWarn('No pipelineRange yet - early return');
 
       const reachedPipelineStart =
         queriedRange?.start_ts && queriedRange.start_ts <= pipelineRange.start_ts;
@@ -231,9 +238,9 @@ const LabelTab = () => {
     logDebug(`LabelTab: after composite trips converted, 
       readTimelineMap = ${[...readTimelineMap.entries()]}`);
     if (mode == 'append') {
-      setTimelineMap(new Map([...timelineMap, ...readTimelineMap]));
+      setTimelineMap(new Map([...(timelineMap || []), ...readTimelineMap]));
     } else if (mode == 'prepend') {
-      setTimelineMap(new Map([...readTimelineMap, ...timelineMap]));
+      setTimelineMap(new Map([...readTimelineMap, ...(timelineMap || [])]));
     } else if (mode == 'replace') {
       setTimelineMap(readTimelineMap);
     } else {
@@ -242,7 +249,7 @@ const LabelTab = () => {
   }
 
   async function fetchTripsInRange(startTs: number, endTs: number) {
-    if (!pipelineRange.start_ts) return logWarn('No pipelineRange yet - early return');
+    if (!pipelineRange?.start_ts) return logWarn('No pipelineRange yet - early return');
     logDebug('LabelTab: fetchTripsInRange from ' + startTs + ' to ' + endTs);
     const readCompositePromise = readAllCompositeTrips(startTs, endTs);
     let readUnprocessedPromise;
@@ -269,16 +276,16 @@ const LabelTab = () => {
     setIsLoading(false);
   }, [displayedEntries]);
 
-  const timelineMapRef = useRef(timelineMap);
+  const timelineMapRef = useRef<typeof timelineMap>(timelineMap);
   async function repopulateTimelineEntry(oid: string) {
     try {
       logDebug('LabelTab: Repopulating timeline entry with oid ' + oid);
-      if (!timelineMap.has(oid))
+      if (!timelineMap?.has(oid))
         return displayErrorMsg('Item with oid: ' + oid + ' not found in timeline');
       await updateLocalUnprocessedInputs(pipelineRange, appConfig);
       const repopTime = new Date().getTime();
       logDebug('LabelTab: creating new entry for oid ' + oid + ' with repopTime ' + repopTime);
-      const newEntry = { ...timelineMap.get(oid), justRepopulated: repopTime };
+      const newEntry = { ...timelineMap.get(oid), justRepopulated: repopTime } as TimelineEntry;
       const newTimelineMap = new Map(timelineMap).set(oid, newEntry);
       setTimelineMap(newTimelineMap);
 
@@ -287,7 +294,7 @@ const LabelTab = () => {
       https://legacy.reactjs.org/docs/hooks-faq.html#why-am-i-seeing-stale-props-or-state-inside-my-function */
       timelineMapRef.current = newTimelineMap;
       setTimeout(() => {
-        const entry = { ...timelineMapRef.current.get(oid) };
+        const entry = { ...timelineMapRef.current?.get(oid) };
         if (entry.justRepopulated != repopTime)
           return logDebug('Entry ' + oid + ' was repopulated again, skipping');
         const newTimelineMap = new Map(timelineMapRef.current).set(oid, {

@@ -56,7 +56,7 @@ function debugGetScheduled(prefix) {
     if (!notifs?.length) return logDebug(`${prefix}, there are no scheduled notifications`);
     const time = DateTime.fromJSDate(notifs[0].trigger.at).toFormat('HH:mm');
     //was in plugin, changed to scheduler
-    let scheduledNotifs = [];
+    let scheduledNotifs: { key: string; val: string }[] = [];
     scheduledNotifs = notifs.map((n) => {
       const date = DateTime.fromJSDate(n.trigger.at).toFormat('DDD');
       const time = DateTime.fromJSDate(n.trigger.at).toFormat('t');
@@ -113,7 +113,7 @@ const getNotifs = function () {
       }
 
       const notifSubset = notifs.slice(0, 5); //prevent near-infinite listing
-      let scheduledNotifs = [];
+      let scheduledNotifs: { key: string; val: string }[] = [];
       scheduledNotifs = notifSubset.map((n) => {
         const time: string = DateTime.fromJSDate(n.trigger.at).toFormat('t');
         const date: string = DateTime.fromJSDate(n.trigger.at).toFormat('DDD');
@@ -131,7 +131,7 @@ const getNotifs = function () {
 const scheduleNotifs = (scheme, notifTimes: DateTime[], setIsScheduling: Function) => {
   return new Promise<void>((rs) => {
     setIsScheduling(true);
-    const localeCode = i18next.resolvedLanguage;
+    const localeCode = i18next.language;
     const nots = notifTimes.map((n) => {
       const nDate = n.toJSDate();
       const seconds = nDate.getTime() / 1000; // the id must be in seconds, otherwise the sorting won't work

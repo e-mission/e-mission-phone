@@ -12,6 +12,8 @@ import { getConfig, _test_resetStoredConfig } from '../../www/js/config/dynamicC
 import fakeConfig from '../__mocks__/fakeConfig.json';
 
 import initializedI18next from '../js/i18nextInit';
+import { CompositeTrip } from '../js/types/diaryTypes';
+import { AppConfig } from '../js/types/appConfigTypes';
 window['i18next'] = initializedI18next;
 
 mockBEMUserCache(fakeConfig);
@@ -63,7 +65,7 @@ it('gets the model response, if avaliable, or returns null', () => {
   };
 
   //if no xmlModel, returns null
-  expect(getInstanceStr(null, opts)).toBe(null);
+  expect(getInstanceStr('', opts)).toBe(null);
   //if there is a prefilled survey, return it
   expect(getInstanceStr(xmlModel, opts)).toBe(filled);
   //if there is a model and fields, return prefilled
@@ -79,7 +81,7 @@ it('resolves the timestamps', () => {
     end_local_dt: { timezone: 'America/Los_Angeles' },
     start_ts: 1469492672.928242,
     end_ts: 1469493031,
-  };
+  } as CompositeTrip;
 
   //missing data returns null
   const missingData =
@@ -235,7 +237,7 @@ it('gets the saved result or throws an error', () => {
         },
       },
     },
-  };
+  } as unknown as AppConfig;
   const opts = {
     timelineEntry: {
       end_local_dt: { timezone: 'America/Los_Angeles' },

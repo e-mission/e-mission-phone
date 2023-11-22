@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import L from 'leaflet';
+import L, { Map } from 'leaflet';
+import { GeoJSONStyledFeature } from '../types/diaryTypes';
 
 const mapSet = new Set<any>();
 export function invalidateMaps() {
@@ -9,12 +10,12 @@ export function invalidateMaps() {
 }
 
 const LeafletView = ({ geojson, opts, ...otherProps }) => {
-  const mapElRef = useRef(null);
-  const leafletMapRef = useRef(null);
+  const mapElRef = useRef<HTMLDivElement | null>(null);
+  const leafletMapRef = useRef<Map | null>(null);
   const geoJsonIdRef = useRef(null);
   const { colors } = useTheme();
 
-  function initMap(map) {
+  function initMap(map: Map) {
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       opacity: 1,
@@ -22,7 +23,7 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
     }).addTo(map);
     const gj = L.geoJson(geojson.data, {
       pointToLayer: pointToLayer,
-      style: (feature) => feature.style,
+      style: (feature) => (feature as GeoJSONStyledFeature)?.style || {},
     }).addTo(map);
     const gjBounds = gj.getBounds().pad(0.2);
     map.fitBounds(gjBounds);
@@ -37,6 +38,7 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
       leafletMapRef.current.remove();
       mapSet.delete(leafletMapRef.current);
     }
+    if (!mapElRef.current) return;
     const map = L.map(mapElRef.current, opts || {});
     initMap(map);
   }, [geojson]);
@@ -44,8 +46,8 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
   /* If the geojson is different between renders, we need to recreate the map
     (happens because of FlashList's view recycling on the trip cards:
       https://shopify.github.io/flash-list/docs/recycling) */
-  if (geoJsonIdRef.current && geoJsonIdRef.current !== geojson.data.id) {
-    leafletMapRef.current.eachLayer((layer) => leafletMapRef.current.removeLayer(layer));
+  if (geoJsonIdRef.current && geoJsonIdRef.current !== geojson.data.id && leafletMapRef.current) {
+    leafletMapRef.current.eachLayer((layer) => leafletMapRef.current?.removeLayer(layer));
     initMap(leafletMapRef.current);
   }
 

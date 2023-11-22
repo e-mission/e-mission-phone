@@ -4,8 +4,8 @@ import { standardMETs } from './metDataset';
 import { AppConfig } from '../types/appConfigTypes';
 
 //variables to store values locally
-let _customMETs;
-let _customPerKmFootprint;
+let _customMETs: { [key: string]: { [key: string]: { range: number[]; met: number } } };
+let _customPerKmFootprint: { [key: string]: number };
 let _range_limited_motorized;
 let _labelOptions;
 
