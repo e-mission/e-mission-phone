@@ -79,7 +79,7 @@ export function getBaseModeByKey(
   return (pop && BaseModes[pop]) || BaseModes.UNKNOWN;
 }
 
-export function getBaseModeByValue(value, labelOptions: LabelOptions) {
+export function getBaseModeByValue(value: string, labelOptions: LabelOptions) {
   const modeOption = labelOptions?.MODE?.find((opt) => opt.value == value);
   return getBaseModeByKey(modeOption?.baseMode || 'OTHER');
 }

@@ -1,6 +1,6 @@
 import { logDebug, displayErrorMsg } from '../plugin/logger';
 import { DateTime } from 'luxon';
-import { CompositeTrip, TimelineEntry, UserInputEntry } from '../types/diaryTypes';
+import { CompositeTrip, ConfirmedPlace, TimelineEntry, UserInputEntry } from '../types/diaryTypes';
 import { keysForLabelInputs, unprocessedLabels, unprocessedNotes } from '../diary/timelineHelper';
 import {
   getLabelInputDetails,
@@ -56,7 +56,7 @@ export const validUserInputForTimelineEntry = (
 ): boolean => {
   if (!tlEntry.origin_key) return false;
   if (tlEntry.origin_key.includes('UNPROCESSED'))
-    return validUserInputForDraftTrip(tlEntry, userInput, logsEnabled);
+    return validUserInputForDraftTrip(tlEntry as CompositeTrip, userInput, logsEnabled);
 
   /* Place-level inputs always have a key starting with 'manual/place', and
         trip-level inputs never have a key starting with 'manual/place'
@@ -66,8 +66,8 @@ export const validUserInputForTimelineEntry = (
 
   if (entryIsPlace !== isPlaceInput) return false;
 
-  let entryStart = tlEntry.start_ts || tlEntry.enter_ts;
-  let entryEnd = tlEntry.end_ts || tlEntry.exit_ts;
+  let entryStart = (tlEntry as CompositeTrip).start_ts || (tlEntry as ConfirmedPlace).enter_ts;
+  let entryEnd = (tlEntry as CompositeTrip).end_ts || (tlEntry as ConfirmedPlace).exit_ts;
 
   if (!entryStart && entryEnd) {
     /* if a place has no enter time, this is the first start_place of the first composite trip object
@@ -103,7 +103,8 @@ export const validUserInputForTimelineEntry = (
 
   if (startChecks && !endChecks) {
     if (nextEntry) {
-      const nextEntryEnd = nextEntry.end_ts || nextEntry.exit_ts;
+      const nextEntryEnd =
+        (nextEntry as CompositeTrip).end_ts || (nextEntry as ConfirmedPlace).exit_ts;
       if (!nextEntryEnd) {
         // the last place will not have an exit_ts
         endChecks = true; // so we will just skip the end check
@@ -115,10 +116,10 @@ export const validUserInputForTimelineEntry = (
       }
     } else {
       // next trip is not defined, last trip
-      endChecks = userInput.data.end_local_dt.day == userInput.data.start_local_dt.day;
+      endChecks = userInput.data.end_local_dt?.day == userInput.data.start_local_dt?.day;
       logDebug('Second level of end checks for the last trip of the day');
       logDebug(
-        `compare ${userInput.data.end_local_dt.day} with ${userInput.data.start_local_dt.day} ${endChecks}`,
+        `compare ${userInput.data.end_local_dt?.day} with ${userInput.data.start_local_dt?.day} ${endChecks}`,
       );
     }
     if (endChecks) {

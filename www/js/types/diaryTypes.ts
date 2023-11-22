@@ -20,6 +20,7 @@ export type ConfirmedPlace = {
   exit_local_dt: LocalDt;
   exit_ts: number; // Unix timestamp
   location: Geometry;
+  origin_key: string;
   raw_places: ObjectId[];
   source: string;
   user_input: {

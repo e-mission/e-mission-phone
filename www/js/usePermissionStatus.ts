@@ -1,8 +1,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import useAppStateChange from './useAppStateChange';
 import useAppConfig from './useAppConfig';
-import { useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import { useAppTheme } from './appTheme';
 
 //refreshing checks with the plugins to update the check's statusState
 export function refreshAllChecks(checkList) {
@@ -13,18 +13,29 @@ export function refreshAllChecks(checkList) {
   console.log('setting checks are', checkList);
 }
 
+type Check = {
+  name: string;
+  desc: string;
+  fix: () => Promise<any>;
+  refresh: () => Promise<any>;
+  statusState?: boolean;
+  statusIcon?: string;
+  statusColor?: string;
+};
+
 const usePermissionStatus = () => {
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors } = useAppTheme();
   const appConfig = useAppConfig();
 
   const [error, setError] = useState<string>('');
   const [errorVis, setErrorVis] = useState<boolean>(false);
 
-  const [checkList, setCheckList] = useState([]);
+  const [checkList, setCheckList] = useState<Check[]>([]);
   const [explanationList, setExplanationList] = useState<Array<any>>([]);
   const [haveSetText, setHaveSetText] = useState<boolean>(false);
 
+  const k = colors.backdrop;
   let iconMap = (statusState) => (statusState ? 'check-circle-outline' : 'alpha-x-circle-outline');
   let colorMap = (statusState) => (statusState ? colors.success : colors.danger);
 
@@ -118,20 +129,21 @@ const usePermissionStatus = () => {
         false,
       );
     };
-    var androidSettingsDescTag = 'intro.appstatus.locsettings.description.android-gte-9';
-    if (window['device'].version.split('.')[0] < 9) {
-      androidSettingsDescTag = 'intro.appstatus.locsettings.description.android-lt-9';
-    }
-    var androidPermDescTag = 'intro.appstatus.locperms.description.android-gte-12';
-    if (window['device'].version.split('.')[0] < 6) {
-      androidPermDescTag = 'intro.appstatus.locperms.description.android-lt-6';
-    } else if (window['device'].version.split('.')[0] < 10) {
-      androidPermDescTag = 'intro.appstatus.locperms.description.android-6-9';
-    } else if (window['device'].version.split('.')[0] < 11) {
-      androidPermDescTag = 'intro.appstatus.locperms.description.android-10';
-    } else if (window['device'].version.split('.')[0] < 12) {
-      androidPermDescTag = 'intro.appstatus.locperms.description.android-11';
-    }
+    const androidVersion = window['device'].version.split('.')[0];
+    const androidSettingsDescTag =
+      androidVersion < 9
+        ? 'intro.appstatus.locsettings.description.android-lt-9'
+        : 'intro.appstatus.locsettings.description.android-gte-9';
+    const androidPermDescTag =
+      androidVersion < 6
+        ? 'intro.appstatus.locperms.description.android-lt-6'
+        : androidVersion < 10
+        ? 'intro.appstatus.locperms.description.android-6-9'
+        : androidVersion < 11
+        ? 'intro.appstatus.locperms.description.android-10'
+        : androidVersion < 12
+        ? 'intro.appstatus.locperms.description.android-11'
+        : 'intro.appstatus.locperms.description.android-gte-12';
     console.log('description tags are ' + androidSettingsDescTag + ' ' + androidPermDescTag);
     // location settings
     let locSettingsCheck = {
@@ -188,11 +200,12 @@ const usePermissionStatus = () => {
         false,
       );
     };
-    var iOSSettingsDescTag = 'intro.appstatus.locsettings.description.ios';
-    var iOSPermDescTag = 'intro.appstatus.locperms.description.ios-gte-13';
-    if (window['device'].version.split('.')[0] < 13) {
-      iOSPermDescTag = 'intro.appstatus.locperms.description.ios-lt-13';
-    }
+    const iOSVersion = window['device'].version.split('.')[0];
+    const iOSSettingsDescTag = 'intro.appstatus.locsettings.description.ios';
+    const iOSPermDescTag =
+      iOSVersion < 13
+        ? 'intro.appstatus.locperms.description.ios-lt-13'
+        : 'intro.appstatus.locperms.description.ios-gte-13';
     console.log('description tags are ' + iOSSettingsDescTag + ' ' + iOSPermDescTag);
 
     const locSettingsCheck = {
@@ -341,13 +354,13 @@ const usePermissionStatus = () => {
         false,
       );
     };
-    var androidUnusedDescTag =
-      'intro.appstatus.unusedapprestrict.description.android-disable-gte-13';
-    if (window['device'].version.split('.')[0] == 12) {
-      androidUnusedDescTag = 'intro.appstatus.unusedapprestrict.description.android-disable-12';
-    } else if (window['device'].version.split('.')[0] < 12) {
-      androidUnusedDescTag = 'intro.appstatus.unusedapprestrict.description.android-disable-lt-12';
-    }
+    const androidVersion = window['device'].version.split('.')[0];
+    const androidUnusedDescTag =
+      androidVersion == 12
+        ? 'intro.appstatus.unusedapprestrict.description.android-disable-12'
+        : androidVersion < 12
+        ? 'intro.appstatus.unusedapprestrict.description.android-disable-lt-12'
+        : 'intro.appstatus.unusedapprestrict.description.android-disable-gte-13';
     let unusedAppsUnrestrictedCheck = {
       name: t('intro.appstatus.unusedapprestrict.name'),
       desc: t(androidUnusedDescTag),

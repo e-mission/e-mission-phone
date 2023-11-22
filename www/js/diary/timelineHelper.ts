@@ -16,8 +16,8 @@ const cachedGeojsons: Map<string, GeoJSONData> = new Map();
 /**
  * @description Gets a formatted GeoJSON object for a trip, including the start and end places and the trajectory.
  */
-export function useGeojsonForTrip(trip, labelOptions: LabelOptions, labeledMode?: Boolean) {
-  if (!trip) return;
+export function useGeojsonForTrip(trip, labelOptions: LabelOptions, labeledMode?: string) {
+  if (!trip?._id?.$oid) return;
   const gjKey = `trip-${trip._id.$oid}-${labeledMode || 'detected'}`;
   if (cachedGeojsons.has(gjKey)) {
     return cachedGeojsons.get(gjKey);

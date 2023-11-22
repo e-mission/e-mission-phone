@@ -12,13 +12,14 @@ import { getBaseModeByText } from '../diary/diaryHelper';
 export const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = (typeof ACTIVE_MODES)[number];
 
-type Props = { userMetrics: MetricsData };
+type Props = { userMetrics?: MetricsData };
 const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
   const weeklyActiveMinutesRecords = useMemo(() => {
-    const records = [];
+    if (!userMetrics?.duration) return [];
+    const records: { x: string; y: number; label: string }[] = [];
     const [recentWeek, prevWeek] = segmentDaysByWeeks(userMetrics?.duration, 2);
     ACTIVE_MODES.forEach((mode) => {
       const prevSum = prevWeek?.reduce((acc, day) => acc + (day[`label_${mode}`] || 0), 0);

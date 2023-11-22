@@ -11,7 +11,7 @@ import { getBaseModeByText } from '../diary/diaryHelper';
 const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = (typeof ACTIVE_MODES)[number];
 
-type Props = { userMetrics: MetricsData };
+type Props = { userMetrics?: MetricsData };
 const DailyActiveMinutesCard = ({ userMetrics }: Props) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
