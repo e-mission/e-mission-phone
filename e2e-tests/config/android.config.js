@@ -13,7 +13,7 @@ config.capabilities = [
     'appium:deviceName': getDeviceName('Android'),
     'appium:platformVersion': getPlatformVersion('Android'),
     'appium:automationName': 'UiAutomator2',
-    'appium:app': join(process.cwd(), './apps/em-devapp-3.2.5.apk'),
+    'appium:app': join(process.cwd(), './platforms/android/app/build/outputs/apk/debug/app-debug.apk'),
   },
 ];
 

@@ -105,4 +105,8 @@ jobs:
         cmake: 3.10.2.4988404
         script: ./gradlew connectedCheck --status
 
+    - name: Android appium test run
+      run: |
+        npx wdio ./e2e-tests/config/android.config.js
+
 
