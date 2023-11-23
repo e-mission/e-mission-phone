@@ -79,12 +79,21 @@ jobs:
         gradle --version
         npx cordova build android
 
+    - name: Gradle version
+      shell: bash -l {0}
+      run: |
+        echo $PATH
+        ./gradlew --version
+        
     - name: Android Emulator Runner
       uses: ReactiveCircus/android-emulator-runner@v2
       with:
         working-directory: ./platforms/android
         api-level: 26
+        target: google_apis
+        arch: x86_64
         ndk: 21.0.6113669
         cmake: 3.10.2.4988404
-        script: ./gradlew connectedCheck
+        script: ./gradlew connectedCheck --status
+
 
