@@ -83,9 +83,8 @@ jobs:
       uses: ReactiveCircus/android-emulator-runner@v2
       with:
         working-directory: ./platforms/android
-        api-level: 29
+        api-level: 26
         ndk: 21.0.6113669
         cmake: 3.10.2.4988404
-        target: google_apis
         script: ./gradlew connectedCheck
 
