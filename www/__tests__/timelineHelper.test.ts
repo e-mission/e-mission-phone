@@ -86,13 +86,12 @@ describe('compositeTrips2TimelineMap', () => {
 
   it('Works with a list of len >= 1, with flag', () => {
     testValue = compositeTrips2TimelineMap(tripListTwo, true);
-    console.log(`Len: ${testValue.size}`);
     expect(testValue.size).toBe(6);
   });
 });
 
-// updateAllUnprocessedinputs tests
-it('can use an appConfig to get labelInputKeys', () => {
+// Tests for updateLocalUnprocessedInputs & keysForLabelInputs
+describe('The updateUnprocessedInput functions can ', () => {
   const mockAppConfigOne = {
     survey_info: {
       'trip-labels': 'ENKETO',
@@ -106,9 +105,15 @@ it('can use an appConfig to get labelInputKeys', () => {
       mode_studied: 'sample',
     },
   };
-  expect(keysForLabelInputs(mockAppConfigOne)).rejects;
-  expect(keysForLabelInputs(mockAppConfigOne)).toEqual(['manual/trip_user_input']);
-  expect(keysForLabelInputs(mockAppConfigTwo).length).toEqual(3);
+  // keysForLabelInputs tests
+  it('use an appConfig to get labelInputKeys', () => {
+    expect(keysForLabelInputs(mockAppConfigOne)).rejects;
+    expect(keysForLabelInputs(mockAppConfigOne)).toEqual(['manual/trip_user_input']);
+    expect(keysForLabelInputs(mockAppConfigTwo).length).toEqual(3);
+  });
+  it('update the unprocessed labels', () => {
+    // TODO
+  });
 });
 
 // Tests for readAllCompositeTrips
@@ -162,9 +167,13 @@ it('Works with multiple trips', async () => {
 // Tests for `readUnprocessedTrips`
 jest.mock('../js/services/unifiedDataLoader', () => ({
   getUnifiedDataForInterval: jest.fn((key, tq, combiner) => {
-    if (tq.startTs === mockTLH.fakeStartTsOne) return Promise.resolve(mockTLH.mockTransition);
-    if (tq.startTs === mockTLH.fakeStartTsTwo) return Promise.resolve(mockTLH.mockTransitionTwo);
-    return Promise.resolve([]);
+    if (key === 'statemachine/transition') {
+      if (tq.startTs === mockTLH.fakeStartTsOne) return Promise.resolve(mockTLH.mockTransitions);
+      return Promise.resolve([]);
+    }
+    if (key === 'background/filtered_location') {
+      return Promise.resolve(mockTLH.mockFilterLocations);
+    }
   }),
 }));
 
@@ -172,13 +181,21 @@ it('works when there are no unprocessed trips...', async () => {
   expect(readUnprocessedTrips(-1, -1, null)).resolves.toEqual([]);
 });
 
-// In manual testing, it seems that `trip_gj_list` always returns
-// as an empty array - should find data where this is different...
 it('works when there are one or more unprocessed trips...', async () => {
   const testValueOne = await readUnprocessedTrips(
     mockTLH.fakeStartTsOne,
     mockTLH.fakeEndTsOne,
     null,
   );
-  expect(testValueOne).toEqual([]);
+  expect(testValueOne.length).toEqual(1);
+  expect(testValueOne[0]).toEqual(
+    expect.objectContaining({
+      origin_key: expect.any(String),
+      distance: expect.any(Number),
+      start_loc: expect.objectContaining({
+        type: expect.any(String),
+        coordinates: expect.any(Array<Number>),
+      }),
+    }),
+  );
 });

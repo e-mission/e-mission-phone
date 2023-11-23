@@ -1,5 +1,11 @@
 import { MetaData, ServerData, ServerResponse } from '../js/types/serverData';
-import { CompositeTrip, ConfirmedPlace, TripTransition } from '../js/types/diaryTypes';
+import {
+  CompositeTrip,
+  ConfirmedPlace,
+  FilteredLocation,
+  TripTransition,
+  UnprocessedTrip,
+} from '../js/types/diaryTypes';
 import { LabelOptions } from '../js/types/labelTypes';
 
 const mockMetaData: MetaData = {
@@ -56,7 +62,30 @@ const mockConfirmedPlaceData: ConfirmedPlace = {
 let tempMetaData = JSON.parse(JSON.stringify(mockMetaData));
 tempMetaData.write_ts = 2;
 tempMetaData.origin_key = '2';
+
 export const mockMetaDataTwo = tempMetaData;
+
+export const mockUnprocessedTrip: UnprocessedTrip = {
+  _id: { $oid: 'mockUnprocessedTrip' },
+  additions: [],
+  confidence_threshold: 0.0,
+  distance: 1.0,
+  duration: 3.0,
+  end_fmt_time: '',
+  end_loc: { type: '', coordinates: [] },
+  end_local_dt: null,
+  expectation: null,
+  inferred_labels: [],
+  key: 'mockUnprocessedTrip',
+  locations: [],
+  origin_key: '',
+  source: '',
+  start_local_dt: null,
+  start_ts: 0.1,
+  start_loc: { type: '', coordinates: [] },
+  starting_trip: null,
+  user_input: null,
+};
 
 export const mockData: ServerResponse<CompositeTrip> = {
   phone_data: [
@@ -150,18 +179,56 @@ export const mockDataTwo = {
   phone_data: [mockData.phone_data[0], newPhoneData],
 };
 
-export const mockTransition: Array<ServerData<TripTransition>> = [
+export const mockTransitions: Array<ServerData<TripTransition>> = [
   {
     data: {
-      currstate: 'STATE_WAITING_FOR_TRIP_TO_START',
-      transition: 'T_NOP',
-      ts: 12345.6789,
+      // mock of a startTransition
+      currstate: '',
+      transition: 'T_EXITED_GEOFENCE',
+      ts: 1,
+    },
+    metadata: mockMetaData,
+  },
+  {
+    data: {
+      // mock of an endTransition
+      currstate: '',
+      transition: 'T_TRIP_ENDED',
+      ts: 9999,
     },
     metadata: mockMetaData,
   },
 ];
 
-export const mockTransitionTwo = mockTransition.push(mockTransition[0]);
+const mockFilterLocation: FilteredLocation = {
+  accuracy: 0.1,
+  altitude: 100,
+  elapsedRealtimeNanos: 10000,
+  filter: 'time',
+  fmt_time: '',
+  heading: 1.0,
+  latitude: 1.0,
+  loc: null,
+  local_dt: null,
+  longitude: -1.0,
+  sensed_speed: 0,
+  ts: 100,
+};
+let mockFilterLocationTwo = JSON.parse(JSON.stringify(mockFilterLocation));
+mockFilterLocationTwo.ts = 900;
+mockFilterLocationTwo.longitude = 200;
+mockFilterLocationTwo.longitude = -200;
+
+export const mockFilterLocations: Array<ServerData<FilteredLocation>> = [
+  {
+    data: mockFilterLocation,
+    metadata: mockMetaData,
+  },
+  {
+    data: mockFilterLocationTwo,
+    metadata: mockMetaDataTwo,
+  },
+];
 
 // When called by mocks, pair 1 returns 1 value, Pair two 2, pair 3 returns none.
 export const fakeStartTsOne = -14576291;

@@ -333,8 +333,9 @@ const transitionTrip2TripObj = function (trip) {
     endTs: tripEndTransition.data.ts,
   };
   logDebug(
-    'About to pull location data for range' +
+    'About to pull location data for range ' +
       DateTime.fromSeconds(tripStartTransition.data.ts).toLocaleString(DateTime.DATETIME_MED) +
+      ' to ' +
       DateTime.fromSeconds(tripEndTransition.data.ts).toLocaleString(DateTime.DATETIME_MED),
   );
   const getSensorData = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
@@ -544,7 +545,7 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
           (trip) => trip && (trip.distance >= 100 || trip.duration >= 300),
         );
         logDebug(
-          `after filtering undefined and distance < 100, trip_gj_list size = ${raw_trip_gj_list.length}`,
+          `after filtering undefined and distance < 100, trip_gj_list size = ${trip_gj_list.length}`,
         );
         // Link 0th trip to first, first to second, ...
         for (var i = 0; i < trip_gj_list.length - 1; i++) {

@@ -196,7 +196,7 @@ export type FilteredLocation = {
   accuracy: number;
   altitude: number;
   elapsedRealtimeNanos: number;
-  filter: number;
+  filter: string;
   fmt_time: string;
   heading: number;
   latitude: number;
