@@ -79,6 +79,14 @@ jobs:
         gradle --version
         npx cordova build android
 
+    - name: Running Appium
+      run: |
+        #!/bin/bash
+        set -ex
+        npm install -g appium
+        appium -v
+        appium &>/dev/null &
+
     - name: set up JDK 11
       uses: actions/setup-java@v3
       with:
