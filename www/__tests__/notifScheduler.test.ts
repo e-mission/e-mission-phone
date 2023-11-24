@@ -221,6 +221,34 @@ describe('updateScheduledNotifs', () => {
     jest.restoreAllMocks(); // Restore mocked functions after each test
   });
 
+  it('should resolve after scheduling notifications', async () => {
+    // updateScheduleNotifs arguments
+    const reminderSchemes: any = exampleReminderSchemes;
+    let isScheduling: boolean = false;
+    const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
+    const scheduledPromise: Promise<any> = Promise.resolve();
+    // create an empty array of mock notifs from cordova plugin
+    const mockNotifs = [];
+
+    // mock the cordova plugin
+    jest
+      .spyOn(window['cordova'].plugins.notification.local, 'getScheduled')
+      .mockImplementation((callback) => callback(mockNotifs));
+    jest
+      .spyOn(window['cordova'].plugins.notification.local, 'cancelAll')
+      .mockImplementation((callback) => callback());
+    jest
+      .spyOn(window['cordova'].plugins.notification.local, 'schedule')
+      .mockImplementation((arg, callback) => callback(arg));
+    // call the function
+    await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+
+    expect(setIsScheduling).toHaveBeenCalledWith(true);
+    expect(logDebug).toHaveBeenCalledWith('After cancelling, there are no scheduled notifications');
+    expect(logDebug).toHaveBeenCalledWith('After scheduling, there are no scheduled notifications');
+    expect(setIsScheduling).toHaveBeenCalledWith(false);
+  });
+
   it('should resolve without scheduling if notifications are already scheduled', async () => {
     // updateScheduleNotifs arguments
     const reminderSchemes: any = exampleReminderSchemes;

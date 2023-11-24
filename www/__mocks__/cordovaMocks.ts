@@ -13,6 +13,8 @@ export const mockReminders = () => {
   window['cordova'].plugins.notification ||= {};
   window['cordova'].plugins.notification.local ||= {};
   window['cordova'].plugins.notification.local.getScheduled ||= () => [];
+  window['cordova'].plugins.notification.local.cancelAll ||= () => {};
+  window['cordova'].plugins.notification.local.schedule ||= () => {};
 };
 
 export const mockDevice = () => {
