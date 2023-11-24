@@ -104,6 +104,7 @@ jobs:
         source setup/activate_native.sh
         npx appium --version
         npx wdio --version
+        npx appium
         
 
     # - name: Waiting until appium server executed
