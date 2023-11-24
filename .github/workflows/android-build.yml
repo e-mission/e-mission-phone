@@ -104,8 +104,14 @@ jobs:
         ndk: 21.0.6113669
         cmake: 3.10.2.4988404
         script: ./gradlew connectedCheck --status
+    
+    - name: Setup the serve environment
+      shell: bash -l {0}
+      run: |
+        bash setup/setup_serve.sh
 
     - name: Android appium test run
+      shell: bash -l {0}
       run: |
         npx wdio ./e2e-tests/config/android.config.js
 
