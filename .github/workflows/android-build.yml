@@ -106,9 +106,13 @@ jobs:
         npx appium
         ls
 
-    # - name: Android appium test run
-    #   shell: bash -l {0}
-    #   run: |
-    #     npx wdio ./e2e-tests/config/android.config.js
+    - name: Waiting until appium server executed
+      run: sleep 10  
+
+    - name: Android appium test run
+      shell: bash -l {0}
+      run: |
+        source setup/activate_native.sh
+        npx wdio ./e2e-tests/config/android.config.js
 
 
