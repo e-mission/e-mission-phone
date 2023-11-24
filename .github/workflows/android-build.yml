@@ -99,11 +99,12 @@ jobs:
 
     - name: Run appium server
       shell: bash -l {0}
+      timeout-minutes: 3
       run: |
         source setup/activate_native.sh
         npx appium --version
         npx wdio --version
-        ls
+        
 
     # - name: Waiting until appium server executed
     #   run: sleep 10  
