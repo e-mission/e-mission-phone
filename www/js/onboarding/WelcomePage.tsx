@@ -121,6 +121,7 @@ const WelcomePage = () => {
           </Text>
           <View style={{ marginVertical: 15, gap: 10 }}>
             <Text>{t('join.to-proceed-further')}</Text>
+            <a href="https://open-access-openpath.nrel.gov/join/"><Text>{t('join.op-acc-link')}</Text></a> // proof of concept - first change
             <Text>{t('join.code-hint')}</Text>
           </View>
           <View style={s.buttonsSection}>
