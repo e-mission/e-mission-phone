@@ -10,9 +10,7 @@ on:
         - master
         - maint_upgrade_**
   pull_request:
-    branches:
-        - master
-        - maint_upgrade_**
+
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '5 4 * * 0'
@@ -114,4 +112,3 @@ jobs:
       run: |
         source setup/activate_native.sh
         npx wdio ./e2e-tests/config/android.config.js
-        
