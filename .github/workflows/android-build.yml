@@ -97,18 +97,12 @@ jobs:
 
     - name: Run appium server
       shell: bash -l {0}
-      timeout-minutes: 3
+      timeout-minutes: 10
       run: |
         source setup/activate_native.sh
         npx appium --version
         npx wdio --version
         npx appium &>/dev/null &
-        
-    - name: Waiting until appium server executed
-      run: sleep 10  
-  
-    - name: Android appium test run
-      shell: bash -l {0}
-      run: |
-        source setup/activate_native.sh
+        sleep 10
         npx wdio ./e2e-tests/config/android.config.js
+        
