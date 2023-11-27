@@ -16,34 +16,38 @@ export const getMyDataHelpers = function (
   const localWriteFile = function (result: ServerResponse<any>) {
     const resultList = result.phone_data;
     return new Promise<void>(function (resolve, reject) {
-      window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function (fs) {
-        fs.root.getFile(fileName, { create: true, exclusive: false }, function (fileEntry) {
-          logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
-          fileEntry.createWriter(function (fileWriter) {
-            fileWriter.onwriteend = function () {
-              logDebug('Successful file write...');
-              resolve();
-            };
-            fileWriter.onerror = function (e) {
-              logDebug(`Failed file write: ${e.toString()}`);
-              reject();
-            };
-            logDebug(`fileWriter is: ${JSON.stringify(fileWriter.onwriteend, null, 2)}`);
-            // if data object is not passed in, create a new blob instead.
-            const dataObj = new Blob([JSON.stringify(resultList, null, 2)], {
-              type: 'application/json',
+      window['resolveLocalFileSystemURL'](window['cordova'].file.tempDirectory, function (fs) {
+        fs.filesystem.root.getFile(
+          fileName,
+          { create: true, exclusive: false },
+          function (fileEntry) {
+            logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
+            fileEntry.createWriter(function (fileWriter) {
+              fileWriter.onwriteend = function () {
+                logDebug('Successful file write...');
+                resolve();
+              };
+              fileWriter.onerror = function (e) {
+                logDebug(`Failed file write: ${e.toString()}`);
+                reject();
+              };
+              logDebug(`fileWriter is: ${JSON.stringify(fileWriter.onwriteend, null, 2)}`);
+              // if data object is not passed in, create a new blob instead.
+              const dataObj = new Blob([JSON.stringify(resultList, null, 2)], {
+                type: 'application/json',
+              });
+              fileWriter.write(dataObj);
             });
-            fileWriter.write(dataObj);
-          });
-        });
+          },
+        );
       });
     });
   };
 
   const localShareData = function () {
     return new Promise<void>(function (resolve, reject) {
-      window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function (fs) {
-        fs.root.getFile(fileName, null, function (fileEntry) {
+      window['resolveLocalFileSystemURL'](window['cordova'].file.tempDirectory, function (fs) {
+        fs.filesystem.root.getFile(fileName, null, function (fileEntry) {
           logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
           fileEntry.file(
             function (file) {
@@ -89,9 +93,31 @@ export const getMyDataHelpers = function (
     });
   };
 
+  // window['cordova'].file.TempDirectory is not guaranteed to free up memory,
+  // so it's good practice to remove the file right after it's used!
+  const localClearData = function () {
+    return new Promise<void>(function (resolve, reject) {
+      window['resolveLocalFileSystemURL'](window['cordova'].file.tempDirectory, function (fs) {
+        fs.filesystem.root.getFile(fileName, null, function (fileEntry) {
+          fileEntry.remove(
+            () => {
+              logDebug(`Successfully cleaned up file ${fileName}`);
+              resolve();
+            },
+            (err) => {
+              logWarn(`Error deleting ${fileName} : ${err}`);
+              reject(err);
+            },
+          );
+        });
+      });
+    });
+  };
+
   return {
     writeFile: localWriteFile,
     shareData: localShareData,
+    clearData: localClearData,
   };
 };
 
@@ -115,6 +141,7 @@ export const getMyData = function (timeStamp: Date) {
   getRawEntries(null, startTime.toUnixInteger(), endTime.toUnixInteger())
     .then(getDataMethods.writeFile)
     .then(getDataMethods.shareData)
+    .then(getDataMethods.clearData)
     .then(function () {
       logInfo('Share queued successfully');
     })
