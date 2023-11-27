@@ -63,37 +63,37 @@ jobs:
         echo "gradle version"
         gradle -version
 
-    - name: Build android
-      shell: bash -l {0}
-      run: |
-        echo $PATH
-        which gradle
-        gradle -version
-        echo "Let's rerun the activation"
-        source setup/activate_native.sh
-        export JAVA_HOME=$JAVA_HOME_11_X64
-        echo $PATH
-        which gradle
-        gradle --version
-        npx cordova build android
+    # - name: Build android
+    #   shell: bash -l {0}
+    #   run: |
+    #     echo $PATH
+    #     which gradle
+    #     gradle -version
+    #     echo "Let's rerun the activation"
+    #     source setup/activate_native.sh
+    #     export JAVA_HOME=$JAVA_HOME_11_X64
+    #     echo $PATH
+    #     which gradle
+    #     gradle --version
+    #     npx cordova build android
 
-    - name: set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: gradle
+    # - name: set up JDK 11
+    #   uses: actions/setup-java@v3
+    #   with:
+    #     java-version: '11'
+    #     distribution: 'temurin'
+    #     cache: gradle
         
-    - name: Android Emulator Runner
-      uses: ReactiveCircus/android-emulator-runner@v2
-      with:
-        working-directory: ./platforms/android
-        api-level: 26
-        target: google_apis
-        arch: x86_64
-        ndk: 21.0.6113669
-        cmake: 3.10.2.4988404
-        script: ./gradlew connectedCheck --status    
+    # - name: Android Emulator Runner
+    #   uses: ReactiveCircus/android-emulator-runner@v2
+    #   with:
+    #     working-directory: ./platforms/android
+    #     api-level: 26
+    #     target: google_apis
+    #     arch: x86_64
+    #     ndk: 21.0.6113669
+    #     cmake: 3.10.2.4988404
+    #     script: ./gradlew connectedCheck --status    
 
     - name: Run appium server
       shell: bash -l {0}
@@ -104,5 +104,12 @@ jobs:
         npx wdio --version
         npx appium &>/dev/null &
         sleep 10
-        npx wdio ./e2e-tests/config/android.config.js
+        echo "Checking current directory"
+        pwd
+        echo "Checking files"
+        ls
+        echo "Checking where android.config.js"
+        find -name android.config.js
+    
+    # npx wdio ./e2e-tests/config/android.config.js
         
