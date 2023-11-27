@@ -105,11 +105,10 @@ jobs:
         npx appium &>/dev/null &
         sleep 10
         echo "Checking current directory"
-        pwd
+        cd e2e-tests/config
         echo "Checking files"
         ls
-        echo "Checking where android.config.js"
-        find -name android.config.js
+        
     
     # npx wdio ./e2e-tests/config/android.config.js
         
