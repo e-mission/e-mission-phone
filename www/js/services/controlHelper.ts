@@ -16,7 +16,7 @@ export const getMyDataHelpers = function (
   const localWriteFile = function (result: ServerResponse<any>) {
     const resultList = result.phone_data;
     return new Promise<void>(function (resolve, reject) {
-      window['resolveLocalFileSystemURL'](window['cordova'].file.tempDirectory, function (fs) {
+      window['resolveLocalFileSystemURL'](window['cordova'].file.cacheDirectory, function (fs) {
         fs.filesystem.root.getFile(
           fileName,
           { create: true, exclusive: false },
@@ -46,7 +46,7 @@ export const getMyDataHelpers = function (
 
   const localShareData = function () {
     return new Promise<void>(function (resolve, reject) {
-      window['resolveLocalFileSystemURL'](window['cordova'].file.tempDirectory, function (fs) {
+      window['resolveLocalFileSystemURL'](window['cordova'].file.cacheDirectory, function (fs) {
         fs.filesystem.root.getFile(fileName, null, function (fileEntry) {
           logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
           fileEntry.file(
@@ -93,11 +93,11 @@ export const getMyDataHelpers = function (
     });
   };
 
-  // window['cordova'].file.TempDirectory is not guaranteed to free up memory,
+  // window['cordova'].file.cacheDirectory is not guaranteed to free up memory,
   // so it's good practice to remove the file right after it's used!
   const localClearData = function () {
     return new Promise<void>(function (resolve, reject) {
-      window['resolveLocalFileSystemURL'](window['cordova'].file.tempDirectory, function (fs) {
+      window['resolveLocalFileSystemURL'](window['cordova'].file.cacheDirectory, function (fs) {
         fs.filesystem.root.getFile(fileName, null, function (fileEntry) {
           fileEntry.remove(
             () => {
