@@ -104,11 +104,9 @@ jobs:
         npx wdio --version
         npx appium &>/dev/null &
         sleep 10
-        echo "Checking current directory"
+        echo "Change directory"
         cd e2e-tests/config
-        echo "Checking files"
-        ls
+        echo "Run webDriverIO"
+        npx wdio android.config.js
         
-    
-    # npx wdio ./e2e-tests/config/android.config.js
         
