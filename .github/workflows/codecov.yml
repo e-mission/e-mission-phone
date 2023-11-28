@@ -8,7 +8,8 @@ jobs:
     steps:
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          flags: unit
+          fail_ci_if_error: ${{ github.repository == 'e-mission/e-mission-phone' }}
           
       
