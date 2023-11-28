@@ -16,3 +16,4 @@ app-settings.json
 www/dist/
 config.xml
 package.json
+coverage/
