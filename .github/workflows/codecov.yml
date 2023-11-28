@@ -6,11 +6,16 @@ jobs:
   run-codecov:
     runs-on: ubuntu-latest
     steps:
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage.json
-          flags: unit
-          fail_ci_if_error: ${{ github.repository == 'e-mission/e-mission-phone' }}
+      - name : Check coverage file directory
+      - run: |
+        cd coverage
+        ls -la ./
+
+      # - name: Upload coverage reports to Codecov
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     files: coverage/coverage.json
+      #     flags: unit
+      #     fail_ci_if_error: ${{ github.repository == 'e-mission/e-mission-phone' }}
           
       
