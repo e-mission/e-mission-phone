@@ -186,7 +186,8 @@ export function getFormattedSectionProperties(trip, ImperialConfig) {
   }));
 }
 
-export function getLocalTimeString(dt: LocalDt) {
+export function getLocalTimeString(dt?: LocalDt) {
+  if (!dt) return;
   const dateTime = DateTime.fromObject({
     hour: dt.hour,
     minute: dt.minute,
