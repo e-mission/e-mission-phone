@@ -99,6 +99,8 @@ export type TimelineEntry = (ConfirmedPlace | CompositeTrip) & {
 export const isTrip = (entry: TimelineEntry): entry is CompositeTrip =>
   entry.hasOwnProperty('start_ts') && entry.hasOwnProperty('end_ts');
 
+export type TimestampRange = { start_ts: number; end_ts: number };
+
 /* These properties aren't received from the server, but are derived from the above properties.
   They are used in the UI to display trip/place details and are computed by the useDerivedProperties hook. */
 export type DerivedProperties = {
@@ -135,7 +137,6 @@ export type UserInputEntry = {
     status?: string;
     match_id?: string;
     name: string;
-    xmlResponse: string;
   };
   metadata: {
     time_zone: string;

@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import { logDebug } from '../plugin/logger';
 import { ServerConnConfig } from '../types/appConfigTypes';
+import { TimestampRange } from '../types/diaryTypes';
 
 /**
  * @param url URL endpoint for the request
@@ -87,8 +88,8 @@ export function getRawEntriesForLocalDate(
   });
 }
 
-export function getPipelineRangeTs(): Promise<{ start_ts: number; end_ts: number }> {
-  return new Promise((rs: (rangeTs: { start_ts: number; end_ts: number }) => void, rj) => {
+export function getPipelineRangeTs(): Promise<TimestampRange> {
+  return new Promise((rs: (rangeTs: TimestampRange) => void, rj) => {
     logDebug('getting pipeline range timestamps');
     window['cordova'].plugins.BEMServerComm.getUserPersonalData('/pipeline/get_range_ts', rs, rj);
   }).catch((error) => {
