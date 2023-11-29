@@ -35,7 +35,9 @@ export const DiaryCard = ({ timelineEntry, children, flavoredTheme, ...otherProp
             justifyContent: 'center',
             zIndex: 999,
           }}>
-          <TimestampBadge time={displayStartTime} date={displayStartDateAbbr} lightBg={true} />
+          {displayStartTime && (
+            <TimestampBadge time={displayStartTime} date={displayStartDateAbbr} lightBg={true} />
+          )}
         </View>
         {children}
         <View
@@ -48,7 +50,9 @@ export const DiaryCard = ({ timelineEntry, children, flavoredTheme, ...otherProp
             justifyContent: 'center',
             zIndex: 999,
           }}>
-          <TimestampBadge time={displayEndTime} date={displayEndDateAbbr} lightBg={false} />
+          {displayEndTime && (
+            <TimestampBadge time={displayEndTime} date={displayEndDateAbbr} lightBg={false} />
+          )}
         </View>
       </Card>
     </PaperProvider>
