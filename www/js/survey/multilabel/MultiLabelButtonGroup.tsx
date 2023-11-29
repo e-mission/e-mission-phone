@@ -28,32 +28,31 @@ import {
   verifiabilityForTrip,
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
+import { MultilabelKey } from '../../types/labelTypes';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const appConfig = useAppConfig();
-  const { repopulateTimelineEntry, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
+  const { labelOptions, labelFor, userInputFor, addUserInputToEntry } = useContext(LabelTabContext);
   const { height: windowHeight } = useWindowDimensions();
 
-  // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
-  const [modalVisibleFor, setModalVisibleFor] = useState<
-    'MODE' | 'PURPOSE' | 'REPLACED_MODE' | null
-  >(null);
+  // modal visible for which input type? (MODE or PURPOSE or REPLACED_MODE, null if not visible)
+  const [modalVisibleFor, setModalVisibleFor] = useState<MultilabelKey | null>(null);
   const [otherLabel, setOtherLabel] = useState<string | null>(null);
   const chosenLabel = useMemo<string | null>(() => {
     if (modalVisibleFor == null) return null;
     if (otherLabel != null) return 'other';
-    return timelineLabelMap?.[trip._id.$oid]?.[modalVisibleFor]?.value || null;
+    return labelFor(trip, modalVisibleFor)?.value || null;
   }, [modalVisibleFor, otherLabel]);
 
   // to mark 'inferred' labels as 'confirmed'; turn yellow labels blue
   function verifyTrip() {
-    const inferredLabelsForTrip = inferFinalLabels(trip, timelineLabelMap?.[trip._id.$oid]);
+    const inferredLabelsForTrip = inferFinalLabels(trip, userInputFor(trip));
     for (const inputType of getLabelInputs()) {
       const inferred = inferredLabelsForTrip?.[inputType];
       // if the is an inferred label that is not already confirmed, confirm it now by storing it
-      if (inferred?.value && !timelineLabelMap?.[trip._id.$oid]?.[inputType]) {
+      if (inferred?.value && !labelFor(trip, inputType)) {
         store(inputType, inferred.value, false);
       }
     }
@@ -73,8 +72,8 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     setOtherLabel(null);
   }
 
-  function store(inputType, chosenLabel, isOther) {
-    if (!chosenLabel) return displayErrorMsg('Label is empty');
+  function store(inputType: MultilabelKey | null, chosenLabel, isOther) {
+    if (!inputType || !chosenLabel) return displayErrorMsg('Label is empty');
     if (isOther) {
       /* Let's make the value for user entered inputs look consistent with our other values
        (i.e. lowercase, and with underscores instead of spaces) */
@@ -89,22 +88,20 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     const storageKey = getLabelInputDetails()[inputType].key;
     window['cordova'].plugins.BEMUserCache.putMessage(storageKey, inputDataToStore).then(() => {
       dismiss();
-      repopulateTimelineEntry(trip._id.$oid);
+      addUserInputToEntry(trip._id.$oid, inputDataToStore, 'label', inputType);
       logDebug('Successfully stored input data ' + JSON.stringify(inputDataToStore));
     });
   }
 
-  const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap?.[trip._id.$oid], appConfig);
+  const tripInputDetails = labelInputDetailsForTrip(userInputFor(trip), appConfig);
   return (
     <>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1, flexDirection: buttonsInline ? 'row' : 'column', columnGap: 8 }}>
           {Object.keys(tripInputDetails).map((key, i) => {
             const input = tripInputDetails[key];
-            const inputIsConfirmed = timelineLabelMap?.[trip._id.$oid]?.[input.name];
-            const inputIsInferred = inferFinalLabels(trip, timelineLabelMap?.[trip._id.$oid])[
-              input.name
-            ];
+            const inputIsConfirmed = labelFor(trip, input.name);
+            const inputIsInferred = inferFinalLabels(trip, userInputFor(trip))[input.name];
             let fillColor, textColor, borderColor;
             if (inputIsConfirmed) {
               fillColor = colors.primary;
@@ -129,7 +126,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
             );
           })}
         </View>
-        {verifiabilityForTrip(trip, timelineLabelMap?.[trip._id.$oid]) == 'can-verify' && (
+        {verifiabilityForTrip(trip, userInputFor(trip)) == 'can-verify' && (
           <View style={{ marginTop: 16 }}>
             <IconButton
               icon="check-bold"

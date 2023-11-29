@@ -25,17 +25,17 @@ const UserInputButton = ({ timelineEntry }: Props) => {
 
   const [prevSurveyResponse, setPrevSurveyResponse] = useState<string | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState(false);
-  const { repopulateTimelineEntry, timelineLabelMap } = useContext(LabelTabContext);
+  const { userInputFor, addUserInputToEntry } = useContext(LabelTabContext);
 
   // the label resolved from the survey response, or null if there is no response yet
   const responseLabel = useMemo<string | undefined>(
-    () => timelineLabelMap?.[timelineEntry._id.$oid]?.['SURVEY']?.data?.label || undefined,
+    () => userInputFor(timelineEntry)?.['SURVEY']?.data.label || undefined,
     [timelineEntry],
   );
 
   function launchUserInputSurvey() {
     logDebug('UserInputButton: About to launch survey');
-    const prevResponse = timelineLabelMap?.[timelineEntry._id.$oid]?.['SURVEY'];
+    const prevResponse = userInputFor(timelineEntry)?.['SURVEY'];
     if (prevResponse?.data?.xmlResponse) {
       setPrevSurveyResponse(prevResponse.data.xmlResponse);
     }
@@ -44,11 +44,9 @@ const UserInputButton = ({ timelineEntry }: Props) => {
 
   function onResponseSaved(result) {
     if (result) {
-      logDebug(
-        'UserInputButton: response was saved, about to repopulateTimelineEntry; result=' +
-          JSON.stringify(result),
-      );
-      repopulateTimelineEntry(timelineEntry._id.$oid);
+      logDebug(`UserInputButton: response was saved, about to addUserInputToEntry; 
+        result = ${JSON.stringify(result)}`);
+      addUserInputToEntry(timelineEntry._id.$oid, result, 'label', 'SURVEY');
     } else {
       displayErrorMsg('UserInputButton: response was not saved, result=', result);
     }

@@ -7,7 +7,7 @@ import { getBaseModeByKey, getBaseModeByValue } from '../diaryHelper';
 import LabelTabContext from '../LabelTabContext';
 
 const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
-  const { labelOptions, timelineLabelMap } = useContext(LabelTabContext);
+  const { labelOptions, labelFor } = useContext(LabelTabContext);
   const {
     displayStartTime,
     displayTime,
@@ -18,7 +18,7 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
 
   const { colors } = useTheme();
 
-  const labeledModeForTrip = timelineLabelMap?.[trip._id.$oid]?.MODE;
+  const labeledModeForTrip = labelFor(trip, 'MODE');
   let sections = formattedSectionProperties;
   /* if we're only showing the labeled mode, or there are no sections (i.e. unprocessed trip),
     we treat this as unimodal and use trip-level attributes to construct a single section */
