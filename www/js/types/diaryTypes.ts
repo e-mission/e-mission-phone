@@ -124,6 +124,8 @@ export type TimestampRange = { start_ts: number; end_ts: number };
 export const isTrip = (entry: TimelineEntry): entry is CompositeTrip =>
   entry.hasOwnProperty('start_ts') && entry.hasOwnProperty('end_ts');
 
+export type TimestampRange = { start_ts: number; end_ts: number };
+
 /* These properties aren't received from the server, but are derived from the above properties.
   They are used in the UI to display trip/place details and are computed by the useDerivedProperties hook. */
 export type DerivedProperties = {
@@ -150,17 +152,27 @@ export type InferredLabels = {
   labels: { [k in Lowercase<MultilabelKey> as `${k}_confirm`]?: string };
 }[];
 
-type UserInputData = {
-  end_ts: number;
-  start_ts: number;
-  label: string;
-  start_local_dt?: LocalDt;
-  end_local_dt?: LocalDt;
-  status?: string;
-  match_id?: string;
+export type UserInputEntry = {
+  data: {
+    end_ts: number;
+    start_ts: number;
+    label: string;
+    start_local_dt?: LocalDt;
+    end_local_dt?: LocalDt;
+    status?: string;
+    match_id?: string;
+    name: string;
+  };
+  metadata: {
+    time_zone: string;
+    plugin: string;
+    write_ts: number;
+    platform: string;
+    read_ts: number;
+    key: string;
+  };
+  key?: string;
 };
-
-export type UserInputEntry = BEMData<UserInputData>;
 
 export type Location = {
   speed: number;
