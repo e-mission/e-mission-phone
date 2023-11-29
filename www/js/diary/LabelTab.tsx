@@ -23,11 +23,11 @@ import {
   unprocessedNotes,
 } from './timelineHelper';
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from './addressNamesHelper';
-import { getLabelOptions } from '../survey/multilabel/confirmHelper';
+import { getLabelOptions, labelOptionByValue } from '../survey/multilabel/confirmHelper';
 import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { useTheme } from 'react-native-paper';
 import { getPipelineRangeTs } from '../services/commHelper';
-import { mapInputsToTimelineEntries } from '../survey/inputMatcher';
+import { getNotDeletedCandidates, mapInputsToTimelineEntries } from '../survey/inputMatcher';
 import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
 import LabelTabContext, {
@@ -37,7 +37,7 @@ import LabelTabContext, {
 } from './LabelTabContext';
 import { readAllCompositeTrips, readUnprocessedTrips } from './timelineHelper';
 import { LabelOptions, MultilabelKey } from '../types/labelTypes';
-import { TimelineEntry } from '../types/diaryTypes';
+import { TimelineEntry, TimestampRange, UserInputEntry } from '../types/diaryTypes';
 
 let showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -50,12 +50,9 @@ const LabelTab = () => {
 
   const [labelOptions, setLabelOptions] = useState<LabelOptions<MultilabelKey> | null>(null);
   const [filterInputs, setFilterInputs] = useState<any[]>([]);
-  const [pipelineRange, setPipelineRange] = useState<{ start_ts: number; end_ts: number } | null>(
-    null,
-  );
-  const [queriedRange, setQueriedRange] = useState<{ start_ts: number; end_ts: number } | null>(
-    null,
-  );
+  const [lastFilteredTs, setLastFilteredTs] = useState<number | null>(null);
+  const [pipelineRange, setPipelineRange] = useState<TimestampRange | null>(null);
+  const [queriedRange, setQueriedRange] = useState<TimestampRange | null>(null);
   const [timelineMap, setTimelineMap] = useState<TimelineMap | null>(null);
   const [timelineLabelMap, setTimelineLabelMap] = useState<TimelineLabelMap | null>(null);
   const [timelineNotesMap, setTimelineNotesMap] = useState<TimelineNotesMap | null>(null);
@@ -104,32 +101,53 @@ const LabelTab = () => {
       setTimelineLabelMap(newTimelineLabelMap);
       setTimelineNotesMap(newTimelineNotesMap);
 
-      const activeFilter = filterInputs?.find((f) => f.state == true);
-      let entriesToDisplay = allEntries;
-      if (activeFilter) {
-        const entriesAfterFilter = allEntries.filter(
-          (t) => t.justRepopulated || activeFilter?.filter(t, newTimelineLabelMap[t._id.$oid]),
-        );
-        /* next, filter out any untracked time if the trips that came before and
-        after it are no longer displayed */
-        entriesToDisplay = entriesAfterFilter.filter((tlEntry) => {
-          if (!tlEntry.origin_key.includes('untracked')) return true;
-          const prevTrip = allEntries[allEntries.indexOf(tlEntry) - 1];
-          const nextTrip = allEntries[allEntries.indexOf(tlEntry) + 1];
-          const prevTripDisplayed = entriesAfterFilter.includes(prevTrip);
-          const nextTripDisplayed = entriesAfterFilter.includes(nextTrip);
-          // if either the trip before or after is displayed, then keep the untracked time
-          return prevTripDisplayed || nextTripDisplayed;
-        });
-        logDebug('After filtering, entriesToDisplay = ' + JSON.stringify(entriesToDisplay));
-      } else {
-        logDebug('No active filter, displaying all entries');
-      }
-      setDisplayedEntries(entriesToDisplay);
+      applyFilters(timelineMap, newTimelineLabelMap);
     } catch (e) {
       displayError(e, t('errors.while-updating-timeline'));
     }
   }, [timelineMap, filterInputs]);
+
+  useEffect(() => {
+    if (!timelineMap || !timelineLabelMap) return;
+    applyFilters(timelineMap, timelineLabelMap);
+  }, [lastFilteredTs]);
+
+  function applyFilters(timelineMap, labelMap: TimelineLabelMap) {
+    const allEntries: TimelineEntry[] = Array.from(timelineMap.values());
+    const activeFilter = filterInputs?.find((f) => f.state == true);
+    let entriesToDisplay = allEntries;
+    if (activeFilter) {
+      const cutoffTs = new Date().getTime() / 1000 - 30; // 30s ago, as epoch seconds
+      const entriesAfterFilter = allEntries.filter((e) => {
+        // if the entry has a recently recorded user input, it is immune to filtering
+        const labels = labelMap[e._id.$oid];
+        for (let labelValue of Object.values(labels || [])) {
+          logDebug(`LabelTab filtering: labelValue = ${JSON.stringify(labelValue)}`);
+          if (labelValue?.metadata?.write_ts > cutoffTs) {
+            logDebug('LabelTab filtering: entry has recent user input, keeping');
+            return true;
+          }
+        }
+        // otherwise, just apply the filter
+        return activeFilter?.filter(e, labelMap[e._id.$oid]);
+      });
+      /* next, filter out any untracked time if the trips that came before and
+        after it are no longer displayed */
+      entriesToDisplay = entriesAfterFilter.filter((tlEntry) => {
+        if (!tlEntry.origin_key.includes('untracked')) return true;
+        const prevTrip = allEntries[allEntries.indexOf(tlEntry) - 1];
+        const nextTrip = allEntries[allEntries.indexOf(tlEntry) + 1];
+        const prevTripDisplayed = entriesAfterFilter.includes(prevTrip);
+        const nextTripDisplayed = entriesAfterFilter.includes(nextTrip);
+        // if either the trip before or after is displayed, then keep the untracked time
+        return prevTripDisplayed || nextTripDisplayed;
+      });
+      logDebug('After filtering, entriesToDisplay = ' + JSON.stringify(entriesToDisplay));
+    } else {
+      logDebug('No active filter, displaying all entries');
+    }
+    setDisplayedEntries(entriesToDisplay);
+  }
 
   async function loadTimelineEntries() {
     try {
@@ -276,45 +294,59 @@ const LabelTab = () => {
     setIsLoading(false);
   }, [displayedEntries]);
 
-  const timelineMapRef = useRef<typeof timelineMap>(timelineMap);
-  async function repopulateTimelineEntry(oid: string) {
-    try {
-      logDebug('LabelTab: Repopulating timeline entry with oid ' + oid);
-      if (!timelineMap?.has(oid))
-        return displayErrorMsg('Item with oid: ' + oid + ' not found in timeline');
-      await updateLocalUnprocessedInputs(pipelineRange, appConfig);
-      const repopTime = new Date().getTime();
-      logDebug('LabelTab: creating new entry for oid ' + oid + ' with repopTime ' + repopTime);
-      const newEntry = { ...timelineMap.get(oid), justRepopulated: repopTime } as TimelineEntry;
-      const newTimelineMap = new Map(timelineMap).set(oid, newEntry);
-      setTimelineMap(newTimelineMap);
+  const userInputFor = (tlEntry: TimelineEntry) =>
+    timelineLabelMap?.[tlEntry._id.$oid] || undefined;
+  const notesFor = (tlEntry: TimelineEntry) => timelineNotesMap?.[tlEntry._id.$oid] || undefined;
 
-      // after 30 seconds, remove the justRepopulated flag unless it was repopulated again since then
-      /* ref is needed to avoid stale closure:
-      https://legacy.reactjs.org/docs/hooks-faq.html#why-am-i-seeing-stale-props-or-state-inside-my-function */
-      timelineMapRef.current = newTimelineMap;
-      setTimeout(() => {
-        if (!timelineMapRef.current?.has(oid))
-          return displayErrorMsg('Item with oid: ' + oid + ' not found in timeline');
-        const entry = { ...timelineMapRef.current.get(oid) } as TimelineEntry;
-        if (entry.justRepopulated != repopTime)
-          return logDebug('Entry ' + oid + ' was repopulated again, skipping');
-        const newTimelineMap = new Map(timelineMapRef.current).set(oid, {
-          ...entry,
-          justRepopulated: false,
-        });
-        setTimelineMap(newTimelineMap);
-      }, 30000);
-    } catch (e) {
-      displayError(e, t('errors.while-repopulating-entry'));
+  /**
+   * @param tlEntry The trip or place object to get the label for
+   * @param labelType The type of label to get (e.g. MODE, PURPOSE, etc.)
+   * @returns the label option object for the given label type, or undefined if there is no label
+   */
+  const labelFor = (tlEntry: TimelineEntry, labelType: MultilabelKey) => {
+    const chosenLabel = userInputFor(tlEntry)?.[labelType]?.data.label;
+    return chosenLabel ? labelOptionByValue(chosenLabel, labelType) : undefined;
+  };
+
+  function addUserInputToEntry(
+    oid: string,
+    userInput: any,
+    inputType: 'label' | 'note',
+    labelKey?: MultilabelKey | 'SURVEY',
+  ) {
+    const tlEntry = timelineMap?.get(oid);
+    if (!tlEntry) return displayErrorMsg('Item with oid: ' + oid + ' not found in timeline');
+    const nowTs = new Date().getTime() / 1000; // epoch seconds
+    const newInput = { data: userInput, metadata: { write_ts: nowTs } };
+    if (inputType == 'label') {
+      if (!labelKey) throw new Error('labelKey must be provided for label input');
+      const newTimelineLabelMap: TimelineLabelMap = {
+        ...timelineLabelMap,
+        [oid]: {
+          ...timelineLabelMap?.[oid],
+          [labelKey]: newInput,
+        },
+      };
+      setTimelineLabelMap(newTimelineLabelMap);
+      setTimeout(() => setLastFilteredTs(new Date().getTime() / 1000), 30000); // wait 30s before reapplying filters
+    } else if (inputType == 'note') {
+      const notesForEntry = timelineNotesMap?.[oid] || [];
+      notesForEntry.push(newInput as UserInputEntry);
+      const newTimelineNotesMap: TimelineNotesMap = {
+        ...timelineNotesMap,
+        [oid]: getNotDeletedCandidates(notesForEntry),
+      };
+      setTimelineNotesMap(newTimelineNotesMap);
     }
   }
 
   const contextVals = {
     labelOptions,
     timelineMap,
-    timelineLabelMap,
-    timelineNotesMap,
+    userInputFor,
+    labelFor,
+    notesFor,
+    addUserInputToEntry,
     displayedEntries,
     filterInputs,
     setFilterInputs,
@@ -324,7 +356,6 @@ const LabelTab = () => {
     loadAnotherWeek,
     loadSpecificWeek,
     refresh,
-    repopulateTimelineEntry,
   };
 
   const Tab = createStackNavigator();

@@ -7,7 +7,12 @@ import {
   inputType2retKey,
   labelOptionByValue,
 } from './multilabel/confirmHelper';
-import { TimelineLabelMap, TimelineNotesMap } from '../diary/LabelTabContext';
+import {
+  EnketoUserInputEntry,
+  MultilabelUserInputEntry,
+  TimelineLabelMap,
+  TimelineNotesMap,
+} from '../diary/LabelTabContext';
 import { LabelOption, MultilabelKey } from '../types/labelTypes';
 
 const EPOCH_MAXIMUM = 2 ** 31 - 1;
@@ -279,7 +284,7 @@ export function mapInputsToTimelineEntries(
         tlEntry,
         nextEntry,
         unprocessedLabels['SURVEY'],
-      );
+      ) as EnketoUserInputEntry;
       if (userInputForTrip) {
         timelineLabelMap[tlEntry._id.$oid] = { SURVEY: userInputForTrip };
       } else {
@@ -295,36 +300,37 @@ export function mapInputsToTimelineEntries(
     } else {
       // MULTILABEL configuration: use the label inputs from the labelOptions to determine which
       // keys to look for in the unprocessedInputs
-      const labelsForTrip: { [k: string]: LabelOption | undefined } = {};
+      const labelsForTrip: { [k: string]: UserInputEntry | undefined } = {};
       Object.keys(getLabelInputDetails()).forEach((label: MultilabelKey) => {
         // Check unprocessed labels first since they are more recent
         const userInputForTrip = getUserInputForTimelineEntry(
           tlEntry,
           nextEntry,
           unprocessedLabels[label],
-        );
+        ) as MultilabelUserInputEntry;
         if (userInputForTrip) {
-          labelsForTrip[label] = labelOptionByValue(userInputForTrip.data.label, label);
+          labelsForTrip[label] = userInputForTrip;
         } else {
           const processedLabelValue = tlEntry.user_input?.[inputType2retKey(label)];
-          labelsForTrip[label] = labelOptionByValue(processedLabelValue, label);
+          if (processedLabelValue) {
+            // TODO: when we unify the user input types on the server, we can remove this 'any' cast
+            labelsForTrip[label] = { data: { label: processedLabelValue } } as any;
+          }
         }
       });
       if (Object.keys(labelsForTrip).length) {
         timelineLabelMap[tlEntry._id.$oid] = labelsForTrip;
       }
     }
-  });
 
-  if (
-    appConfig?.survey_info?.buttons?.['trip-notes'] ||
-    appConfig?.survey_info?.buttons?.['place-notes']
-  ) {
-    // trip-level or place-level notes are configured, so we need to match additions too
-    allEntries.forEach((tlEntry, i) => {
+    if (
+      appConfig?.survey_info?.buttons?.['trip-notes'] ||
+      appConfig?.survey_info?.buttons?.['place-notes']
+    ) {
+      // trip-level or place-level notes are configured, so we need to match additions too
       /* With additions/notes, we can have multiple entries for a single trip or place.
-        So, we will read both the processed additions and unprocessed additions
-        and merge them together, removing duplicates. */
+          So, we will read both the processed additions and unprocessed additions
+          and merge them together, removing duplicates. */
       const nextEntry = i + 1 < allEntries.length ? allEntries[i + 1] : null;
       const unprocessedAdditions = getAdditionsForTimelineEntry(
         tlEntry,
@@ -339,8 +345,8 @@ export function mapInputsToTimelineEntries(
       if (mergedAdditions?.length) {
         timelineNotesMap[tlEntry._id.$oid] = mergedAdditions;
       }
-    });
-  }
+    }
+  });
 
   return [timelineLabelMap, timelineNotesMap];
 }

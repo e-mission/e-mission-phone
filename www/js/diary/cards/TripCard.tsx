@@ -18,13 +18,14 @@ import { getTheme } from '../../appTheme';
 import { DiaryCard, cardStyles } from './DiaryCard';
 import { useNavigation } from '@react-navigation/native';
 import { useAddressNames } from '../addressNamesHelper';
-import LabelTabContext from '../LabelTabContext';
+import LabelTabContext, { EnketoUserInputEntry } from '../LabelTabContext';
 import useDerivedProperties from '../useDerivedProperties';
 import StartEndLocations from '../components/StartEndLocations';
 import ModesIndicator from './ModesIndicator';
 import { useGeojsonForTrip } from '../timelineHelper';
+import { CompositeTrip } from '../../types/diaryTypes';
 
-type Props = { trip: { [key: string]: any } };
+type Props = { trip: CompositeTrip };
 const TripCard = ({ trip }: Props) => {
   const { t } = useTranslation();
   const { width: windowWidth } = useWindowDimensions();
@@ -40,11 +41,9 @@ const TripCard = ({ trip }: Props) => {
   } = useDerivedProperties(trip);
   let [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
   const navigation = useNavigation<any>();
-  const { labelOptions, timelineLabelMap, timelineNotesMap } = useContext(LabelTabContext);
+  const { labelOptions, labelFor, notesFor } = useContext(LabelTabContext);
   const tripGeojson =
-    trip &&
-    labelOptions &&
-    useGeojsonForTrip(trip, labelOptions, timelineLabelMap?.[trip._id.$oid]?.MODE?.value);
+    trip && labelOptions && useGeojsonForTrip(trip, labelOptions, labelFor(trip, 'MODE')?.value);
 
   const isDraft = trip.key.includes('UNPROCESSED');
   const flavoredTheme = getTheme(isDraft ? 'draft' : undefined);
@@ -132,11 +131,11 @@ const TripCard = ({ trip }: Props) => {
           )}
         </View>
       </View>
-      {timelineNotesMap?.[trip._id.$oid]?.length && (
+      {notesFor(trip)?.length && (
         <View style={cardStyles.cardFooter}>
           <AddedNotesList
             timelineEntry={trip}
-            additionEntries={timelineNotesMap?.[trip._id.$oid]}
+            additionEntries={(notesFor(trip) as EnketoUserInputEntry[]) || []}
           />
         </View>
       )}

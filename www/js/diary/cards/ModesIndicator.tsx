@@ -10,14 +10,14 @@ import { useTranslation } from 'react-i18next';
 
 const ModesIndicator = ({ trip, detectedModes }) => {
   const { t } = useTranslation();
-  const { labelOptions, timelineLabelMap } = useContext(LabelTabContext);
+  const { labelOptions, labelFor } = useContext(LabelTabContext);
   const { colors } = useTheme();
 
   const indicatorBackgroundColor = color(colors.onPrimary).alpha(0.8).rgb().string();
   let indicatorBorderColor = color('black').alpha(0.5).rgb().string();
 
   let modeViews;
-  const labeledModeForTrip = timelineLabelMap?.[trip._id.$oid]?.['MODE'];
+  const labeledModeForTrip = labelFor(trip, 'MODE');
   if (labelOptions && labeledModeForTrip?.value) {
     const baseMode = getBaseModeByValue(labeledModeForTrip.value, labelOptions);
     indicatorBorderColor = baseMode.color;
@@ -33,7 +33,7 @@ const ModesIndicator = ({ trip, detectedModes }) => {
             fontWeight: '500',
             textDecorationLine: 'underline',
           }}>
-          {timelineLabelMap?.[trip._id.$oid]?.MODE?.text}
+          {labelFor(trip, 'MODE')?.text}
         </Text>
       </View>
     );

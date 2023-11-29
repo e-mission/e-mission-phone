@@ -6,21 +6,20 @@ import React, { useContext, useState } from 'react';
 import moment from 'moment';
 import { Modal } from 'react-native';
 import { Text, Button, DataTable, Dialog } from 'react-native-paper';
-import LabelTabContext from '../../diary/LabelTabContext';
+import LabelTabContext, { EnketoUserInputEntry } from '../../diary/LabelTabContext';
 import { getFormattedDateAbbr, isMultiDay } from '../../diary/diaryHelper';
 import { Icon } from '../../components/Icon';
 import EnketoModal from './EnketoModal';
 import { useTranslation } from 'react-i18next';
-import { UserInputEntry } from '../../types/diaryTypes';
 
-type EntryWithDisplayDt = UserInputEntry & { displayDt?: { date: string; time: string } };
+type EntryWithDisplayDt = EnketoUserInputEntry & { displayDt?: { date: string; time: string } };
 type Props = {
   timelineEntry: any;
   additionEntries: EntryWithDisplayDt[];
 };
 const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
   const { t } = useTranslation();
-  const { repopulateTimelineEntry } = useContext(LabelTabContext);
+  const { addUserInputToEntry } = useContext(LabelTabContext);
   const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
   const [surveyModalVisible, setSurveyModalVisible] = useState(false);
   const [editingEntry, setEditingEntry] = useState<EntryWithDisplayDt | null>(null);
@@ -87,7 +86,7 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
     if (!response) return;
     await deleteEntry(editingEntry);
     setEditingEntry(null);
-    repopulateTimelineEntry(timelineEntry._id.$oid);
+    addUserInputToEntry(timelineEntry._id.$oid, response, 'note');
   }
 
   function onModalDismiss() {

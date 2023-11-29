@@ -3,7 +3,8 @@ import i18next from 'i18next';
 import enJson from '../../../i18n/en.json';
 import { logDebug } from '../../plugin/logger';
 import { LabelOption, LabelOptions, MultilabelKey, InputDetails } from '../../types/labelTypes';
-import { CompositeTrip, InferredLabels } from '../../types/diaryTypes';
+import { CompositeTrip, InferredLabels, TimelineEntry } from '../../types/diaryTypes';
+import { TimelineLabelMap, UserInputMap } from '../../diary/LabelTabContext';
 
 let appConfig;
 export let labelOptions: LabelOptions<MultilabelKey>;
@@ -107,8 +108,8 @@ export function labelInputDetailsForTrip(userInputForTrip, appConfigParam?) {
   }
 }
 
-export const getLabelInputs = () => Object.keys(getLabelInputDetails());
-export const getBaseLabelInputs = () => Object.keys(baseLabelInputDetails);
+export const getLabelInputs = () => Object.keys(getLabelInputDetails()) as MultilabelKey[];
+export const getBaseLabelInputs = () => Object.keys(baseLabelInputDetails) as MultilabelKey[];
 
 /** @description replace all underscores with spaces, and capitalizes the first letter of each word */
 export const labelKeyToReadable = (otherValue: string) => {
@@ -135,13 +136,13 @@ export const labelKeyToRichMode = (labelKey: string) =>
 /* manual/mode_confirm becomes mode_confirm */
 export const inputType2retKey = (inputType) => getLabelInputDetails()[inputType].key.split('/')[1];
 
-export function verifiabilityForTrip(trip, userInputForTrip) {
+export function verifiabilityForTrip(trip: CompositeTrip, userInputForTrip?: UserInputMap) {
   let allConfirmed = true;
   let someInferred = false;
   const inputsForTrip = Object.keys(labelInputDetailsForTrip(userInputForTrip));
   for (const inputType of inputsForTrip) {
     const finalInference = inferFinalLabels(trip, userInputForTrip)[inputType];
-    const confirmed = userInputForTrip[inputType];
+    const confirmed = userInputForTrip?.[inputType];
     const inferred = finalInference && Object.values(finalInference).some((o) => o);
     if (inferred && !confirmed) someInferred = true;
     if (!confirmed) allConfirmed = false;

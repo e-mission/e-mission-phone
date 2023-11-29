@@ -17,12 +17,13 @@ import { DiaryCard, cardStyles } from './DiaryCard';
 import { useAddressNames } from '../addressNamesHelper';
 import useDerivedProperties from '../useDerivedProperties';
 import StartEndLocations from '../components/StartEndLocations';
-import LabelTabContext from '../LabelTabContext';
+import LabelTabContext, { EnketoUserInputEntry } from '../LabelTabContext';
+import { ConfirmedPlace } from '../../types/diaryTypes';
 
-type Props = { place: { [key: string]: any } };
+type Props = { place: ConfirmedPlace };
 const PlaceCard = ({ place }: Props) => {
   const appConfig = useAppConfig();
-  const { timelineNotesMap } = useContext(LabelTabContext);
+  const { notesFor } = useContext(LabelTabContext);
   const { displayStartTime, displayEndTime, displayDate } = useDerivedProperties(place);
   let [placeDisplayName] = useAddressNames(place);
 
@@ -57,11 +58,11 @@ const PlaceCard = ({ place }: Props) => {
           </View>
         </View>
       </View>
-      {timelineNotesMap?.[place._id.$oid]?.length && (
+      {notesFor(place)?.length && (
         <View style={cardStyles.cardFooter}>
           <AddedNotesList
             timelineEntry={place}
-            additionEntries={timelineNotesMap?.[place._id.$oid]}
+            additionEntries={(notesFor(place) as EnketoUserInputEntry[]) || []}
           />
         </View>
       )}

@@ -30,7 +30,7 @@ import useAppConfig from '../../useAppConfig';
 import { CompositeTrip } from '../../types/diaryTypes';
 
 const LabelScreenDetails = ({ route, navigation }) => {
-  const { timelineMap, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
+  const { timelineMap, labelOptions, labelFor } = useContext(LabelTabContext);
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
   const appConfig = useAppConfig();
@@ -47,7 +47,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
     useGeojsonForTrip(
       trip,
       labelOptions,
-      modesShown == 'labeled' ? timelineLabelMap?.[trip._id.$oid]?.MODE?.value : undefined,
+      modesShown == 'labeled' ? labelFor(trip, 'MODE')?.value : undefined,
     );
   const mapOpts = { minZoom: 3, maxZoom: 17 };
 
@@ -97,7 +97,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
 
             {/* If trip is labeled, show a toggle to switch between "Labeled Mode" and "Detected Modes"
               otherwise, just show "Detected" */}
-            {trip && timelineLabelMap?.[trip._id.$oid]?.MODE?.value ? (
+            {trip && labelFor(trip, 'MODE')?.value ? (
               <ToggleSwitch
                 onValueChange={(v: 'labeled' | 'detected') => setModesShown(v)}
                 value={modesShown}

@@ -23,12 +23,12 @@ type Props = {
 const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
   const { t, i18n } = useTranslation();
   const [displayLabel, setDisplayLabel] = useState('');
-  const { repopulateTimelineEntry, timelineNotesMap } = useContext(LabelTabContext);
+  const { notesFor, addUserInputToEntry } = useContext(LabelTabContext);
 
   useEffect(() => {
     let newLabel: string;
     const localeCode = i18n.language;
-    if (notesConfig?.['filled-in-label'] && timelineNotesMap?.[timelineEntry._id.$oid]?.length) {
+    if (notesConfig?.['filled-in-label'] && notesFor(timelineEntry)?.length) {
       newLabel = notesConfig?.['filled-in-label']?.[localeCode];
       setDisplayLabel(newLabel);
     } else {
@@ -49,7 +49,7 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
     let stop = timelineEntry.end_ts || timelineEntry.exit_ts;
 
     // if addition(s) already present on this timeline entry, `begin` where the last one left off
-    timelineNotesMap?.[timelineEntry._id.$oid]?.forEach((a) => {
+    notesFor(timelineEntry)?.forEach((a) => {
       if (a.data.end_ts > (begin || 0) && a.data.end_ts != stop) begin = a.data.end_ts;
     });
 
@@ -89,11 +89,9 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
 
   function onResponseSaved(result) {
     if (result) {
-      logDebug(
-        'AddNoteButton: response was saved, about to repopulateTimelineEntry; result=' +
-          JSON.stringify(result),
-      );
-      repopulateTimelineEntry(timelineEntry._id.$oid);
+      logDebug(`AddNoteButton: response was saved, about to addUserInputToEntry; 
+        result = ${JSON.stringify(result)}`);
+      addUserInputToEntry(timelineEntry._id.$oid, result, 'note');
     } else {
       displayErrorMsg('AddNoteButton: response was not saved, result=', result);
     }
