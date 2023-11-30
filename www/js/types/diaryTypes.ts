@@ -21,6 +21,7 @@ type UserInput = {
 export type ConfirmedPlace = {
   additions: UserInputEntry[];
   cleaned_place: ObjectId;
+  duration: number;
   ending_trip: ObjectId;
   enter_fmt_time: string; // ISO string e.g. 2023-10-31T12:00:00.000-04:00
   enter_local_dt: LocalDt;
@@ -150,17 +151,18 @@ export type InferredLabels = {
   labels: { [k in Lowercase<MultilabelKey> as `${k}_confirm`]?: string };
 }[];
 
-export type UserInputEntry = {
-  data: {
-    end_ts: number;
-    start_ts: number;
-    label: string;
-    start_local_dt?: LocalDt;
-    end_local_dt?: LocalDt;
-    status?: string;
-    match_id?: string;
-    name: string;
-  };
+export type UserInputData = {
+  end_ts: number;
+  start_ts: number;
+  label: string;
+  start_local_dt?: LocalDt;
+  end_local_dt?: LocalDt;
+  status?: string;
+  match_id?: string;
+  name: string;
+};
+export type UserInputEntry<T = UserInputData> = {
+  data: T;
   metadata: {
     time_zone: string;
     plugin: string;
