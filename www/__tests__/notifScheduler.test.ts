@@ -91,7 +91,6 @@ jest.mock('../js/splash/notifScheduler', () => ({
   // for getScheduledNotifs
   getNotifs: jest.fn(),
   // for updateScheduledNotifs
-  getReminderPrefs: jest.fn(),
   calcNotifTimes: jest.fn(),
   removeEmptyObjects: jest.fn(),
   areAlreadyScheduled: jest.fn(),
@@ -306,5 +305,29 @@ describe('updateScheduledNotifs', () => {
     await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
 
     expect(logDebug).toHaveBeenCalledWith('Error: Reminder scheme not found');
+  });
+});
+
+describe('getReminderPrefs', () => {
+  it('should resolve with reminder prefs when user exists', async () => {
+    // getReminderPrefs arguments
+    const reminderSchemes: any = exampleReminderSchemes;
+    let isScheduling: boolean = true;
+    const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
+    const scheduledPromise: Promise<any> = Promise.resolve();
+    // create the expected result
+    const expectedResult = {
+      reminder_assignment: 'weekly',
+      reminder_join_date: '2023-11-14',
+      reminder_time_of_day: '21:00',
+    };
+
+    // call the function
+    const { reminder_assignment, reminder_join_date, reminder_time_of_day } =
+      await getReminderPrefs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+
+    expect(reminder_assignment).toEqual(expectedResult.reminder_assignment);
+    expect(reminder_join_date).toEqual(expectedResult.reminder_join_date);
+    expect(reminder_time_of_day).toEqual(expectedResult.reminder_time_of_day);
   });
 });

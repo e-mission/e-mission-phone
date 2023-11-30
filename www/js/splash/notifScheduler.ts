@@ -243,6 +243,7 @@ export const getReminderPrefs = async (
 ): Promise<User> => {
   const userPromise = getUser();
   const user = (await userPromise) as User;
+  console.log('user', user);
   if (user?.reminder_assignment && user?.reminder_join_date && user?.reminder_time_of_day) {
     logDebug('User already has reminder prefs, returning them: ' + JSON.stringify(user));
     return user;
