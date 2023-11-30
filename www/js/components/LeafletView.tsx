@@ -69,6 +69,7 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
           z-index: 9;
         }
         #${mapElId} .leaflet-div-icon-start, #${mapElId} .leaflet-div-icon-stop {
+          box-sizing: border-box;
           border: 2px solid ${colors.primary};
           border-radius: 100%;
           display: flex;

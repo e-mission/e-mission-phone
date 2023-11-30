@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { View, ScrollView, useWindowDimensions } from 'react-native';
-import { Appbar } from 'react-native-paper';
+import { Appbar, useTheme } from 'react-native-paper';
 import NavBarButton from '../components/NavBarButton';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
@@ -47,6 +47,7 @@ function getLastTwoWeeksDtRange() {
 
 const MetricsTab = () => {
   const appConfig = useAppConfig();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const { getFormattedSpeed, speedSuffix, getFormattedDistance, distanceSuffix } =
     useImperialConfig();
@@ -99,7 +100,7 @@ const MetricsTab = () => {
       <Appbar.Header
         statusBarHeight={0}
         elevated={true}
-        style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+        style={{ height: 46, backgroundColor: colors.surface }}>
         <Appbar.Content title={t('metrics.dashboard-tab')} />
         <MetricsDateSelect dateRange={dateRange} setDateRange={setDateRange} />
         <Appbar.Action icon="refresh" size={32} onPress={refresh} />

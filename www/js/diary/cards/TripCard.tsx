@@ -122,7 +122,7 @@ const TripCard = ({ trip }: Props) => {
           />
           <ModesIndicator trip={trip} detectedModes={detectedModes} />
           {showAddNoteButton && (
-            <View style={s.notesButton}>
+            <View style={cardStyles.notesButton}>
               <AddNoteButton
                 timelineEntry={trip}
                 notesConfig={appConfig?.survey_info?.buttons?.['trip-notes']}
@@ -156,12 +156,6 @@ const s = StyleSheet.create({
     overflow: 'hidden',
     borderTopLeftRadius: 15,
     borderBottomRightRadius: 15,
-  },
-  notesButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-    minWidth: 150,
-    margin: 'auto',
   },
   rightPanel: {
     flex: 1,

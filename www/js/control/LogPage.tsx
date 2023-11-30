@@ -119,7 +119,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
         <Appbar.Header
           statusBarHeight={0}
           elevated={true}
-          style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+          style={{ height: 46, backgroundColor: colors.surface }}>
           <Appbar.BackAction
             onPress={() => {
               setPageVis(false);

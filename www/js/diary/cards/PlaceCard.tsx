@@ -48,15 +48,13 @@ const PlaceCard = ({ place }: Props) => {
           {/*  place name */}
           <StartEndLocations centered={true} displayStartName={placeDisplayName} />
         </View>
-        <View style={{ margin: 'auto' }}>
-          {/*  add note button */}
-          <View style={s.notesButton}>
-            <AddNoteButton
-              timelineEntry={place}
-              notesConfig={appConfig?.survey_info?.buttons?.['place-notes']}
-              storeKey={'manual/place_addition_input'}
-            />
-          </View>
+        {/*  add note button */}
+        <View style={[cardStyles.notesButton, { paddingTop: 0 }]}>
+          <AddNoteButton
+            timelineEntry={place}
+            notesConfig={appConfig?.survey_info?.buttons?.['place-notes']}
+            storeKey={'manual/place_addition_input'}
+          />
         </View>
       </View>
       {notesFor(place)?.length && (
@@ -75,11 +73,6 @@ const s = StyleSheet.create({
   placeCardContent: {
     marginTop: 12,
     marginBottom: 6,
-  },
-  notesButton: {
-    paddingHorizontal: 8,
-    minWidth: 150,
-    margin: 'auto',
   },
   locationText: {
     fontSize: 14,
