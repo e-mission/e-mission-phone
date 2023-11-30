@@ -30,7 +30,7 @@ const UserInputButton = ({ timelineEntry }: Props) => {
   // the label resolved from the survey response, or null if there is no response yet
   const responseLabel = useMemo<string | undefined>(
     () => userInputFor(timelineEntry)?.['SURVEY']?.data.label || undefined,
-    [timelineEntry],
+    [userInputFor(timelineEntry)?.['SURVEY']?.data.label],
   );
 
   function launchUserInputSurvey() {
