@@ -2,23 +2,15 @@ import { logDebug, displayErrorMsg } from '../plugin/logger';
 import { DateTime } from 'luxon';
 import { CompositeTrip, ConfirmedPlace, TimelineEntry, UserInputEntry } from '../types/diaryTypes';
 import { keysForLabelInputs, unprocessedLabels, unprocessedNotes } from '../diary/timelineHelper';
-import {
-  getLabelInputDetails,
-  inputType2retKey,
-  labelOptionByValue,
-} from './multilabel/confirmHelper';
-import {
-  EnketoUserInputEntry,
-  MultilabelUserInputEntry,
-  TimelineLabelMap,
-  TimelineNotesMap,
-} from '../diary/LabelTabContext';
-import { LabelOption, MultilabelKey } from '../types/labelTypes';
+import { getLabelInputDetails, inputType2retKey } from './multilabel/confirmHelper';
+import { TimelineLabelMap, TimelineNotesMap } from '../diary/LabelTabContext';
+import { MultilabelKey } from '../types/labelTypes';
+import { EnketoUserInputEntry } from './enketo/enketoHelper';
 
 const EPOCH_MAXIMUM = 2 ** 31 - 1;
 
-export const fmtTs = (ts_in_secs: number, tz: string): string | null =>
-  DateTime.fromSeconds(ts_in_secs, { zone: tz }).toISO();
+export const fmtTs = (ts_in_secs: number, tz: string): false | string | null =>
+  ts_in_secs && tz ? DateTime.fromSeconds(ts_in_secs, { zone: tz }).toISO() : null;
 
 export const printUserInput = (ui: UserInputEntry): string => `${fmtTs(
   ui.data.start_ts,
@@ -205,7 +197,7 @@ export const getUserInputForTimelineEntry = (
 export const getAdditionsForTimelineEntry = (
   entry: TimelineEntry,
   nextEntry: TimelineEntry | null,
-  additionsList: UserInputEntry[],
+  additionsList: EnketoUserInputEntry[],
 ): UserInputEntry[] => {
   const logsEnabled = additionsList?.length < 20;
 
@@ -307,7 +299,7 @@ export function mapInputsToTimelineEntries(
           tlEntry,
           nextEntry,
           unprocessedLabels[label],
-        ) as MultilabelUserInputEntry;
+        ) as UserInputEntry;
         if (userInputForTrip) {
           labelsForTrip[label] = userInputForTrip;
         } else {

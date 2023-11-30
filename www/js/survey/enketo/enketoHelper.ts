@@ -9,13 +9,21 @@ import { DateTime } from 'luxon';
 import { fetchUrlCached } from '../../services/commHelper';
 import { getUnifiedDataForInterval } from '../../services/unifiedDataLoader';
 import { AppConfig, EnketoSurveyConfig } from '../../types/appConfigTypes';
-import { CompositeTrip, ConfirmedPlace, TimelineEntry } from '../../types/diaryTypes';
+import {
+  CompositeTrip,
+  ConfirmedPlace,
+  TimelineEntry,
+  TimestampRange,
+  UserInputData,
+  UserInputEntry,
+  isTrip,
+} from '../../types/diaryTypes';
 
 export type PrefillFields = { [key: string]: string };
 
 export type SurveyOptions = {
   undismissable?: boolean;
-  timelineEntry?: any;
+  timelineEntry?: TimelineEntry;
   prefilledSurveyResponse?: string;
   prefillFields?: PrefillFields;
   dataKey?: string;
@@ -23,10 +31,11 @@ export type SurveyOptions = {
 
 type EnketoResponseData = {
   label: string; //display label (this value is use for displaying on the button)
-  ts: string; //the timestamp at which the survey was filled out (in seconds)
+  ts: number; //the timestamp at which the survey was filled out (in seconds)
   fmt_time: string; //the formatted timestamp at which the survey was filled out
   name: string; //survey name
-  version: string; //survey version
+  version: number; //survey version
+  key?: string; //data key
   xmlResponse: string; //survey response as XML string
   jsonDocResponse: string; //survey response as JSON object
 };
@@ -35,6 +44,13 @@ type EnketoResponse = {
   data: EnketoResponseData; //survey response data
   metadata: any;
 };
+
+export type EnketoUserInputData = UserInputData & {
+  version: number;
+  xmlResponse: string;
+  jsonDocResponse: { [k: string]: any };
+};
+export type EnketoUserInputEntry = UserInputEntry<EnketoUserInputData>;
 
 const LABEL_FUNCTIONS = {
   UseLabelTemplate: async (xmlDoc: XMLDocument, name: string) => {

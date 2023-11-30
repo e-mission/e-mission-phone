@@ -9,7 +9,7 @@ import { DateTime } from 'luxon';
 import { UserInputEntry, TripTransition, TimelineEntry, GeoJSONData } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
-import { filterByNameAndVersion } from '../survey/enketo/enketoHelper';
+import { EnketoUserInputEntry, filterByNameAndVersion } from '../survey/enketo/enketoHelper';
 
 const cachedGeojsons: Map<string, GeoJSONData> = new Map();
 
@@ -80,7 +80,7 @@ export function compositeTrips2TimelineMap(ctList: any[], unpackPlaces?: boolean
   (e.g. 'MODE' and 'PURPOSE' for MULTILABEL configuration, or 'SURVEY' for ENKETO configuration) */
 export let unprocessedLabels: { [key: string]: UserInputEntry[] } = {};
 /* 'NOTES' are 1:n - each trip or place can have any number of notes */
-export let unprocessedNotes: UserInputEntry[] = [];
+export let unprocessedNotes: EnketoUserInputEntry[] = [];
 
 const getUnprocessedInputQuery = (pipelineRange) => ({
   key: 'write_ts',

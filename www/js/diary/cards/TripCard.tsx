@@ -18,12 +18,13 @@ import { getTheme } from '../../appTheme';
 import { DiaryCard, cardStyles } from './DiaryCard';
 import { useNavigation } from '@react-navigation/native';
 import { useAddressNames } from '../addressNamesHelper';
-import LabelTabContext, { EnketoUserInputEntry } from '../LabelTabContext';
+import LabelTabContext from '../LabelTabContext';
 import useDerivedProperties from '../useDerivedProperties';
 import StartEndLocations from '../components/StartEndLocations';
 import ModesIndicator from './ModesIndicator';
 import { useGeojsonForTrip } from '../timelineHelper';
 import { CompositeTrip } from '../../types/diaryTypes';
+import { EnketoUserInputEntry } from '../../survey/enketo/enketoHelper';
 
 type Props = { trip: CompositeTrip };
 const TripCard = ({ trip }: Props) => {

@@ -6,11 +6,13 @@ import React, { useContext, useState } from 'react';
 import moment from 'moment';
 import { Modal } from 'react-native';
 import { Text, Button, DataTable, Dialog } from 'react-native-paper';
-import LabelTabContext, { EnketoUserInputEntry } from '../../diary/LabelTabContext';
+import LabelTabContext from '../../diary/LabelTabContext';
 import { getFormattedDateAbbr, isMultiDay } from '../../diary/diaryHelper';
 import { Icon } from '../../components/Icon';
 import EnketoModal from './EnketoModal';
 import { useTranslation } from 'react-i18next';
+import { EnketoUserInputEntry } from './enketoHelper';
+import { logDebug } from '../../plugin/logger';
 
 type EntryWithDisplayDt = EnketoUserInputEntry & { displayDt?: { date: string; time: string } };
 type Props = {
@@ -53,12 +55,14 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
   }
 
   function deleteEntry(entry) {
-    console.log('Deleting entry', entry);
-
-    const dataKey = entry.key || entry.metadata.key;
+    const dataKey = entry.data.key || entry.metadata.key;
     const data = entry.data;
     const index = additionEntries.indexOf(entry);
     data.status = 'DELETED';
+
+    logDebug(`Deleting entry ${JSON.stringify(entry)} 
+      with dataKey ${dataKey}; 
+      index = ${index}`);
 
     return window['cordova'].plugins.BEMUserCache.putMessage(dataKey, data).then(() => {
       additionEntries.splice(index, 1);

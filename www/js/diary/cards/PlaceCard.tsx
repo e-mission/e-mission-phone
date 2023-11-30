@@ -17,8 +17,9 @@ import { DiaryCard, cardStyles } from './DiaryCard';
 import { useAddressNames } from '../addressNamesHelper';
 import useDerivedProperties from '../useDerivedProperties';
 import StartEndLocations from '../components/StartEndLocations';
-import LabelTabContext, { EnketoUserInputEntry } from '../LabelTabContext';
+import LabelTabContext from '../LabelTabContext';
 import { ConfirmedPlace } from '../../types/diaryTypes';
+import { EnketoUserInputEntry } from '../../survey/enketo/enketoHelper';
 
 type Props = { place: ConfirmedPlace };
 const PlaceCard = ({ place }: Props) => {
