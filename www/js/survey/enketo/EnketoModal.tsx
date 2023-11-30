@@ -23,18 +23,18 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
   async function validateAndSave() {
     const valid = await enketoForm.current.validate();
     if (!valid) return false;
-    const result = await saveResponse(surveyName, enketoForm.current, appConfig, opts);
-    if (!result) {
-      // validation failed
-      displayErrorMsg(t('survey.enketo-form-errors'));
-    } else if (result instanceof Error) {
-      // error thrown in saveResponse
-      displayError(result);
-    } else {
-      // success
-      rest.onDismiss?.();
-      onResponseSaved(result);
-      return;
+    try {
+      const result = await saveResponse(surveyName, enketoForm.current, appConfig, opts);
+      if (result) {
+        // success
+        rest.onDismiss?.();
+        onResponseSaved(result);
+      } else {
+        // validation failed
+        displayErrorMsg(t('survey.enketo-form-errors'));
+      }
+    } catch (err) {
+      window.alert(err.message);
     }
   }
 

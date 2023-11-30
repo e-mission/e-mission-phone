@@ -155,7 +155,6 @@ export function getInstanceStr(xmlModel: string, opts?: SurveyOptions): string |
  * @param {object} timelineEntry trip or place object
  * @returns {object} object with `start_ts` and `end_ts`
  *    - null if no timestamps are resolved
- *    - undefined if the timestamps are invalid
  */
 export function resolveTimestamps(xmlDoc: XMLDocument, timelineEntry: TimelineEntry) {
   // check for Date and Time fields
@@ -182,7 +181,7 @@ export function resolveTimestamps(xmlDoc: XMLDocument, timelineEntry: TimelineEn
   let additionEndTs = DateTime.fromISO(endDate + 'T' + endTime, { zone: timezone }).toSeconds();
 
   if (additionStartTs > additionEndTs) {
-    return undefined; // if the start time is after the end time, this is an invalid response
+    throw new Error(i18next.t('survey.enketo-timestamps-invalid')); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
   }
 
   /* Enketo survey time inputs are only precise to the minute, while trips/places are precise to
@@ -210,7 +209,7 @@ export function resolveTimestamps(xmlDoc: XMLDocument, timelineEntry: TimelineEn
  * @param enketoForm the Form object from enketo-core that contains this survey
  * @param appConfig the dynamic config file for the app
  * @param opts object with SurveyOptions like 'timelineEntry' or 'dataKey'
- * @returns Promise of the saved result, or an Error if there was a problem
+ * @returns Promise of the saved result. May reject if there was a problem
  */
 export function saveResponse(
   surveyName: string,
@@ -225,31 +224,45 @@ export function saveResponse(
   const jsonDocResponse = xml2js.parse(xmlResponse);
   return resolveLabel(surveyName, xmlDoc)
     .then((rsLabel) => {
-      const data: any = {
-        label: rsLabel,
-        name: surveyName,
-        version: appConfig.survey_info.surveys[surveyName].version,
-        xmlResponse,
-        jsonDocResponse,
-      };
+      let timestamps: TimestampRange | { ts: number; fmt_time: string } | undefined;
+      let match_id: string | undefined;
       if (opts?.timelineEntry) {
-        let timestamps = resolveTimestamps(xmlDoc, opts.timelineEntry);
-        if (timestamps === undefined) {
-          // timestamps were resolved, but they are invalid
-          return new Error(i18next.t('survey.enketo-timestamps-invalid')); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
+        const resolvedTimestamps = resolveTimestamps(xmlDoc, opts.timelineEntry);
+        if (resolvedTimestamps?.start_ts && resolvedTimestamps?.end_ts) {
+          timestamps = resolvedTimestamps;
+        } else {
+          // if timestamps were not resolved from the survey, we will try the trip or place timestamps
+          timestamps = {
+            start_ts: isTrip(opts.timelineEntry)
+              ? opts.timelineEntry.start_ts
+              : opts.timelineEntry.enter_ts,
+            end_ts: isTrip(opts.timelineEntry)
+              ? opts.timelineEntry.end_ts
+              : opts.timelineEntry.exit_ts,
+          };
         }
-        // if timestamps were not resolved from the survey, we will use the trip or place timestamps
-        data.start_ts = timestamps?.start_ts || opts.timelineEntry.enter_ts;
-        data.end_ts = timestamps?.end_ts || opts.timelineEntry.exit_ts;
+
         // UUID generated using this method https://stackoverflow.com/a/66332305
-        data.match_id = URL.createObjectURL(new Blob([])).slice(-36);
+        match_id = URL.createObjectURL(new Blob([])).slice(-36);
       } else {
-        const now = Date.now();
-        data.ts = now / 1000; // convert to seconds to be consistent with the server
-        data.fmt_time = new Date(now);
+        const now = new Date();
+        timestamps = {
+          ts: now.getTime() / 1000, // epoch seconds to be consistent with the server
+          fmt_time: now.toISOString(),
+        };
       }
       // use dataKey passed into opts if available, otherwise get it from the config
       const dataKey = opts?.dataKey || appConfig.survey_info.surveys[surveyName].dataKey;
+      const data: EnketoUserInputData | EnketoResponseData = {
+        ...(timestamps || {}),
+        name: surveyName,
+        version: appConfig.survey_info.surveys[surveyName].version,
+        label: rsLabel,
+        match_id,
+        key: dataKey,
+        xmlResponse,
+        jsonDocResponse,
+      };
       return window['cordova'].plugins.BEMUserCache.putMessage(dataKey, data).then(() => data);
     })
     .then((data) => data);
