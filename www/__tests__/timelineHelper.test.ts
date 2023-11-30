@@ -4,11 +4,13 @@ import {
   readAllCompositeTrips,
   readUnprocessedTrips,
   compositeTrips2TimelineMap,
+  updateUnprocessedInputs,
   keysForLabelInputs,
 } from '../js/diary/timelineHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import * as mockTLH from '../__mocks__/timelineHelperMocks';
-import { GeoJSONData, GeoJSONStyledFeature } from '../js/types/diaryTypes';
+import { unprocessedLabels } from '../js/diary/timelineHelper';
+import { GeoJSONData, GeoJSONStyledFeature, UserInputEntry } from '../js/types/diaryTypes';
 
 mockLogger();
 mockAlert();
@@ -40,7 +42,7 @@ describe('useGeojsonForTrip', () => {
 
   it('works without labelMode flag', () => {
     const testValue = useGeojsonForTrip(
-      mockTLH.mockDataTwo.phone_data[1].data,
+      mockTLH.mockCompDataTwo.phone_data[1].data,
       mockTLH.mockLabelOptions,
     );
     checkGeojson(testValue);
@@ -49,14 +51,14 @@ describe('useGeojsonForTrip', () => {
 });
 
 describe('compositeTrips2TimelineMap', () => {
-  const tripListOne = [mockTLH.mockData.phone_data[0].data];
+  const tripListOne = [mockTLH.mockCompData.phone_data[0].data];
   const tripListTwo = [
-    mockTLH.mockDataTwo.phone_data[0].data,
-    mockTLH.mockDataTwo.phone_data[1].data,
+    mockTLH.mockCompDataTwo.phone_data[0].data,
+    mockTLH.mockCompDataTwo.phone_data[1].data,
   ];
-  const keyOne = mockTLH.mockData.phone_data[0].data._id.$oid;
-  const keyTwo = mockTLH.mockDataTwo.phone_data[1].data._id.$oid;
-  const keyThree = mockTLH.mockData.phone_data[0].data._id.$oid;
+  const keyOne = mockTLH.mockCompData.phone_data[0].data._id.$oid;
+  const keyTwo = mockTLH.mockCompDataTwo.phone_data[1].data._id.$oid;
+  const keyThree = mockTLH.mockCompData.phone_data[0].data._id.$oid;
   let testValue;
 
   it('Works with an empty list', () => {
@@ -90,38 +92,42 @@ describe('compositeTrips2TimelineMap', () => {
   });
 });
 
-// Tests for updateLocalUnprocessedInputs & keysForLabelInputs
-describe('The updateUnprocessedInput functions can ', () => {
-  const mockAppConfigOne = {
-    survey_info: {
-      'trip-labels': 'ENKETO',
-    },
-  };
-  const mockAppConfigTwo = {
-    survey_info: {
-      'trip-labels': 'Other',
-    },
-    intro: {
-      mode_studied: 'sample',
-    },
-  };
-  // keysForLabelInputs tests
-  it('use an appConfig to get labelInputKeys', () => {
-    expect(keysForLabelInputs(mockAppConfigOne)).rejects;
-    expect(keysForLabelInputs(mockAppConfigOne)).toEqual(['manual/trip_user_input']);
-    expect(keysForLabelInputs(mockAppConfigTwo).length).toEqual(3);
-  });
-  it('update the unprocessed labels', () => {
-    // TODO
-  });
+it('use an appConfig to get labelInputKeys', () => {
+  expect(keysForLabelInputs(mockTLH.mockAppConfigOne)).toEqual(['manual/trip_user_input']);
+  expect(keysForLabelInputs(mockTLH.mockAppConfigTwo).length).toEqual(3);
+});
+
+// updateUnprocessedInputs Tests
+jest.mock('../js/survey/multilabel/confirmHelper', () => ({
+  ...jest.requireActual('../js/survey/multilabel/confirmHelper'),
+  getLabelInputs: jest.fn(() => ['MODE', 'PURPOSE', 'REPLACED_MODE']),
+}));
+
+it('processed empty labels', async () => {
+  await updateUnprocessedInputs([], [], mockTLH.mockAppConfigThree);
+  expect(unprocessedLabels).toEqual({});
+});
+
+it('updates unprocessed labels', async () => {
+  await updateUnprocessedInputs(mockTLH.mockLabelDataPromises, [], mockTLH.mockAppConfigThree);
+  expect(unprocessedLabels).toEqual(
+    expect.objectContaining({
+      MODE: expect.any(Array<UserInputEntry>),
+      PURPOSE: expect.any(Array<UserInputEntry>),
+      REPLACED_MODE: expect.any(Array<UserInputEntry>),
+    }),
+  );
+  expect(unprocessedLabels.MODE.length).toEqual(2);
+  expect(unprocessedLabels.PURPOSE.length).toEqual(2);
+  expect(unprocessedLabels.REPLACED_MODE.length).toEqual(0);
 });
 
 // Tests for readAllCompositeTrips
 // Once we have end-to-end testing, we could utilize getRawEnteries.
 jest.mock('../js/services/commHelper', () => ({
   getRawEntries: jest.fn((key, startTs, endTs, valTwo) => {
-    if (startTs === mockTLH.fakeStartTsOne) return mockTLH.mockData;
-    if (startTs == mockTLH.fakeStartTsTwo) return mockTLH.mockDataTwo;
+    if (startTs === mockTLH.fakeStartTsOne) return mockTLH.mockCompData;
+    if (startTs == mockTLH.fakeStartTsTwo) return mockTLH.mockCompDataTwo;
     return {};
   }),
 }));

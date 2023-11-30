@@ -95,8 +95,12 @@ const getUnprocessedInputQuery = (pipelineRange) => ({
   endTs: DateTime.now().toUnixInteger() + 10,
 });
 
-function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
-  Promise.all([...labelsPromises, ...notesPromises]).then((comboResults) => {
+/**
+ * updateUnprocessedInputs is a helper function for updateLocalUnprocessedInputs
+ * and updateAllUnprocessedInputs, exported for unit testing.
+ */
+export function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
+  return Promise.all([...labelsPromises, ...notesPromises]).then((comboResults) => {
     const labelResults = comboResults.slice(0, labelsPromises.length);
     const notesResults = comboResults.slice(labelsPromises.length).flat(2);
     // fill in the unprocessedLabels object with the labels we just read
@@ -121,7 +125,6 @@ function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
  * @param pipelineRange an object with start_ts and end_ts representing the range of time
  *     for which travel data has been processed through the pipeline on the server
  *  @param appConfig the app configuration
- * @returns Promise an array with 1) results for labels and 2) results for notes
  */
 export async function updateLocalUnprocessedInputs(pipelineRange, appConfig) {
   const BEMUserCache = window['cordova'].plugins.BEMUserCache;
@@ -141,7 +144,6 @@ export async function updateLocalUnprocessedInputs(pipelineRange, appConfig) {
  * @param pipelineRange an object with start_ts and end_ts representing the range of time
  *     for which travel data has been processed through the pipeline on the server
  * @param appConfig the app configuration
- * @returns Promise an array with 1) results for labels and 2) results for notes
  */
 export async function updateAllUnprocessedInputs(pipelineRange, appConfig) {
   const tq = getUnprocessedInputQuery(pipelineRange);

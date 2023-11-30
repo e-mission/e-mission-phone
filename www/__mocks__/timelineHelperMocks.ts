@@ -57,12 +57,10 @@ const mockConfirmedPlaceData: ConfirmedPlace = {
   enter_ts: 1437578093.881,
   exit_ts: 1437578093.881,
 };
-
 // using parse/stringify to deep copy & populate data
 let tempMetaData = JSON.parse(JSON.stringify(mockMetaData));
 tempMetaData.write_ts = 2;
 tempMetaData.origin_key = '2';
-
 export const mockMetaDataTwo = tempMetaData;
 
 export const mockUnprocessedTrip: UnprocessedTrip = {
@@ -87,7 +85,7 @@ export const mockUnprocessedTrip: UnprocessedTrip = {
   user_input: null,
 };
 
-export const mockData: ServerResponse<CompositeTrip> = {
+export const mockCompData: ServerResponse<CompositeTrip> = {
   phone_data: [
     {
       data: {
@@ -165,18 +163,16 @@ export const mockData: ServerResponse<CompositeTrip> = {
     },
   ],
 };
-
 // Setup for second mockData
-let newPhoneData = JSON.parse(JSON.stringify(mockData.phone_data[0]));
+let newPhoneData = JSON.parse(JSON.stringify(mockCompData.phone_data[0]));
 newPhoneData.data._id.$oid = 'mockDataTwo';
 newPhoneData.metadata = mockMetaDataTwo;
 newPhoneData.data.start_confirmed_place.metadata = mockMetaDataTwo;
 newPhoneData.data.start_confirmed_place._id.$oid = 'startConfirmedPlaceTwo';
 newPhoneData.data.end_confirmed_place.metadata = mockMetaDataTwo;
 newPhoneData.data.end_confirmed_place._id.$oid = 'endConfirmedPlaceTwo';
-
-export const mockDataTwo = {
-  phone_data: [mockData.phone_data[0], newPhoneData],
+export const mockCompDataTwo = {
+  phone_data: [mockCompData.phone_data[0], newPhoneData],
 };
 
 export const mockTransitions: Array<ServerData<TripTransition>> = [
@@ -230,7 +226,72 @@ export const mockFilterLocations: Array<ServerData<FilteredLocation>> = [
   },
 ];
 
-// When called by mocks, pair 1 returns 1 value, Pair two 2, pair 3 returns none.
+export const mockAppConfigOne = {
+  survey_info: {
+    'trip-labels': 'ENKETO',
+  },
+};
+export const mockAppConfigTwo = {
+  survey_info: {
+    'trip-labels': 'Other',
+  },
+  intro: {
+    mode_studied: 'sample_study',
+  },
+};
+export const mockAppConfigThree = {
+  survey_info: {
+    'trip-labels': 'Other',
+  },
+  intro: {
+    mode_studied: false,
+  },
+};
+
+export const mockLabelDataPromises = [
+  Promise.resolve([
+    // Mode
+    {
+      data: {
+        end_ts: 1681438322.981,
+        label: 'walk',
+        start_ts: 1681437527.4971218,
+      },
+      metadata: mockMetaData,
+    },
+    {
+      data: {
+        end_ts: 1681439339.983,
+        label: 'walk',
+        start_ts: 1681438918.6598706,
+      },
+      metadata: mockMetaDataTwo,
+    },
+  ]),
+  Promise.resolve([
+    // Purpose
+    {
+      data: {
+        end_ts: 1681438322.981,
+        label: 'test',
+        start_ts: 1681437527.4971218,
+      },
+      metadata: mockMetaData,
+    },
+    {
+      data: {
+        end_ts: 1681438322.983,
+        label: 'testValue',
+        start_ts: 1681438918.6598706,
+      },
+      metadata: mockMetaDataTwo,
+    },
+  ]),
+  Promise.resolve([]), // Replaced_Mode
+];
+//let mockLabelDataPromisesTwo = JSON.parse(JSON.stringify(mockLabelDataPromises));
+
+// Used by jest.mocks() to return a various mocked objects.
 export const fakeStartTsOne = -14576291;
 export const fakeEndTsOne = -13885091;
 export const fakeStartTsTwo = 1092844665;

@@ -135,26 +135,17 @@ export type SectionSummary = {
   duration: { [k: MotionTypeKey | BaseModeKey]: number };
 };
 
-export type UserInputEntry = {
-  data: {
-    end_ts: number;
-    start_ts: number;
-    label: string;
-    start_local_dt?: LocalDt;
-    end_local_dt?: LocalDt;
-    status?: string;
-    match_id?: string;
-  };
-  metadata: {
-    time_zone: string;
-    plugin: string;
-    write_ts: number;
-    platform: string;
-    read_ts: number;
-    key: string;
-  };
-  key?: string;
+type UserInputData = {
+  end_ts: number;
+  start_ts: number;
+  label: string;
+  start_local_dt?: LocalDt;
+  end_local_dt?: LocalDt;
+  status?: string;
+  match_id?: string;
 };
+
+export type UserInputEntry = ServerData<UserInputData>;
 
 export type Location = {
   speed: number;
