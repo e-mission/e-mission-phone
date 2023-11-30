@@ -17,7 +17,7 @@ import {
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
-import { filterByNameAndVersion } from '../survey/enketo/enketoHelper';
+import { EnketoUserInputEntry, filterByNameAndVersion } from '../survey/enketo/enketoHelper';
 import { AppConfig } from '../types/appConfigTypes';
 import { Point, Feature } from 'geojson';
 
@@ -94,7 +94,7 @@ export function compositeTrips2TimelineMap(ctList: Array<any>, unpackPlaces?: bo
   (e.g. 'MODE' and 'PURPOSE' for MULTILABEL configuration, or 'SURVEY' for ENKETO configuration) */
 export let unprocessedLabels: { [key: string]: UserInputEntry[] } = {};
 /* 'NOTES' are 1:n - each trip or place can have any number of notes */
-export let unprocessedNotes: UserInputEntry[] = [];
+export let unprocessedNotes: EnketoUserInputEntry[] = [];
 
 const getUnprocessedInputQuery = (pipelineRange: TimestampRange) => ({
   key: 'write_ts',

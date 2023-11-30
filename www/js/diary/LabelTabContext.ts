@@ -1,9 +1,8 @@
 import { createContext } from 'react';
 import { TimelineEntry, UserInputEntry } from '../types/diaryTypes';
 import { LabelOption, LabelOptions, MultilabelKey } from '../types/labelTypes';
+import { EnketoUserInputEntry } from '../survey/enketo/enketoHelper';
 
-export type EnketoUserInputEntry = UserInputEntry & { data: { xmlResponse: string } };
-export type MultilabelUserInputEntry = UserInputEntry;
 export type UserInputMap = {
   /* if the key here is 'SURVEY', we are in the ENKETO configuration, meaning the user input
     value will have the raw 'xmlResponse' string */
@@ -11,7 +10,7 @@ export type UserInputMap = {
 } & {
   /* all other keys, (e.g. 'MODE', 'PURPOSE') are from the MULTILABEL configuration
     and will have the 'label' string but no 'xmlResponse' string */
-  [k in MultilabelKey]?: MultilabelUserInputEntry;
+  [k in MultilabelKey]?: UserInputEntry;
 };
 
 export type TimelineMap = Map<string, TimelineEntry>; // Todo: update to reflect unpacked trips (origin_Key, etc)
