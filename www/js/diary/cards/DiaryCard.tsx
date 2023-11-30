@@ -79,4 +79,10 @@ export const cardStyles = StyleSheet.create({
     width: '100%',
     paddingBottom: 10,
   },
+  notesButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    minWidth: 150,
+    margin: 'auto',
+  },
 });

@@ -57,7 +57,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
         <Appbar.Header
           statusBarHeight={0}
           elevated={true}
-          style={{ height: 46, backgroundColor: colors.surface, elevation: 3 }}>
+          style={{ height: 46, backgroundColor: colors.surface }}>
           <Appbar.BackAction
             onPress={() => {
               navigation.goBack();
@@ -75,9 +75,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
           />
         </Surface>
         <ScrollView style={{ paddingBottom: 30, backgroundColor: colors.background }}>
-          <Surface
-            mode="flat"
-            style={{ margin: 10, paddingHorizontal: 10, rowGap: 12, borderRadius: 15 }}>
+          <Surface mode="flat" style={{ margin: 10, padding: 10, rowGap: 12, borderRadius: 15 }}>
             {/* MultiLabel or UserInput button, inline on one row */}
             <View style={{ paddingVertical: 10 }}>
               {appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL' && (

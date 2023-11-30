@@ -64,7 +64,7 @@ const ModesIndicator = ({ trip, detectedModes }) => {
 
   return (
     modeViews && (
-      <View style={{ position: 'absolute', width: '100%' }}>
+      <View style={s.indicatorWrapper}>
         <View
           style={[
             s.modesIndicator,
@@ -78,6 +78,11 @@ const ModesIndicator = ({ trip, detectedModes }) => {
 };
 
 const s = StyleSheet.create({
+  indicatorWrapper: {
+    position: 'absolute',
+    width: '100%',
+    paddingHorizontal: 5,
+  },
   modesIndicator: {
     marginVertical: 5,
     marginHorizontal: 'auto',
