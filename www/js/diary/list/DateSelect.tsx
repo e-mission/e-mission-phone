@@ -9,7 +9,7 @@
 import React, { useEffect, useState, useMemo, useContext } from 'react';
 import { StyleSheet } from 'react-native';
 import moment from 'moment';
-import { LabelTabContext } from '../LabelTab';
+import LabelTabContext from '../LabelTabContext';
 import { DatePickerModal } from 'react-native-paper-dates';
 import { Text, Divider, useTheme } from 'react-native-paper';
 import i18next from 'i18next';
