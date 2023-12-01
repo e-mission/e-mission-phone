@@ -29,6 +29,25 @@ import {
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
 
+// This will be sorted by frequency and createdAt from server
+const DUMMY_CUSTOMIZED_MODE = {
+    "jiji-car" : {
+      "createdAt": new Date(),
+      "frequency": 10,
+      "isActive": true,
+    },
+    "jiji-ebike" : {
+      "createdAt": new Date(),
+      "frequency": 10,
+      "isActive": true,
+    },
+    "longlongtextlonglongtext" : {
+      "createdAt": new Date(),
+      "frequency": 3,
+      "isActive": true,
+    }
+  }
+
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -161,6 +180,15 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                       style={{ paddingVertical: 2 }}
                     />
                   ))}
+                  {Object.keys(DUMMY_CUSTOMIZED_MODE).map((key, i) => (
+                    // @ts-ignore
+                    <RadioButton.Item
+                      key={key + i}
+                      label={key}
+                      value={key}
+                      style={{ paddingVertical: 2 }}
+                    />
+                  ))}
                 </RadioButton.Group>
               </ScrollView>
             </Dialog.Content>
@@ -172,6 +200,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                   })}
                   value={otherLabel || ''}
                   onChangeText={(t) => setOtherLabel(t)}
+                  maxLength={25}
                 />
                 <Dialog.Actions>
                   <Button onPress={() => store(modalVisibleFor, otherLabel, true)}>
