@@ -31,22 +31,22 @@ import useAppConfig from '../../useAppConfig';
 
 // This will be sorted by frequency and createdAt from server
 const DUMMY_CUSTOMIZED_MODE = {
-    "jiji-car" : {
-      "createdAt": new Date(),
-      "frequency": 10,
-      "isActive": true,
-    },
-    "jiji-ebike" : {
-      "createdAt": new Date(),
-      "frequency": 10,
-      "isActive": true,
-    },
-    "longlongtextlonglongtext" : {
-      "createdAt": new Date(),
-      "frequency": 3,
-      "isActive": true,
-    }
-  }
+  'jiji-car': {
+    createdAt: new Date(),
+    frequency: 10,
+    isActive: true,
+  },
+  'jiji-ebike': {
+    createdAt: new Date(),
+    frequency: 10,
+    isActive: true,
+  },
+  longlongtextlonglongtext: {
+    createdAt: new Date(),
+    frequency: 3,
+    isActive: true,
+  },
+};
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
