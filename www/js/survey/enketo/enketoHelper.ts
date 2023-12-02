@@ -301,7 +301,7 @@ const _getMostRecent = (responses) => {
 export function loadPreviousResponseForSurvey(dataKey: string) {
   const tq = window['cordova'].plugins.BEMUserCache.getAllTimeQuery();
   logDebug('loadPreviousResponseForSurvey: dataKey = ' + dataKey + '; tq = ' + tq);
-  const getMethod = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
+  const getMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
   return getUnifiedDataForInterval(dataKey, tq, getMethod).then((responses) =>
     _getMostRecent(responses),
   );

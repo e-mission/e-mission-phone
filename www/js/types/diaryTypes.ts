@@ -8,6 +8,16 @@ import { ServerData, LocalDt } from './serverData';
 import { FeatureCollection, Feature, Geometry } from 'geojson';
 
 type ObjectId = { $oid: string };
+
+type UserInput = {
+  /* for keys ending in 'user_input' (e.g. 'trip_user_input'), the server gives us the raw user
+      input object with 'data' and 'metadata' */
+  [k: `${string}user_input`]: UserInputEntry;
+  /* for keys ending in 'confirm' (e.g. 'mode_confirm'), the server just gives us the user input value
+      as a string (e.g. 'walk', 'drove_alone') */
+  [k: `${string}confirm`]: string;
+};
+
 export type ConfirmedPlace = {
   _id: ObjectId;
   additions: UserInputEntry[];
@@ -45,6 +55,39 @@ export type LocationCoord = {
   coordinates: [number, number];
 };
 
+type CompTripLocations = {
+  loc: {
+    coordinates: [number, number]; // [1,2.3]
+  };
+  speed: number;
+  ts: number;
+};
+
+//  Used for return type of readUnprocessedTrips
+export type UnprocessedTrip = {
+  _id: ObjectId;
+  additions: UserInputEntry[];
+  confidence_threshold: number;
+  distance: number;
+  duration: number;
+  end_fmt_time: string;
+  /* While the end_loc & start_loc objects are similar to GeoJSON's `Point` object, 
+    they lack the additional GeoJSONObject methods, so `Point` cannot be used here. */
+  end_loc: { type: string; coordinates: any[] };
+  end_local_dt: LocalDt;
+  expectation: any; // TODO "{to_label: boolean}"
+  inferred_labels: any[]; // TODO
+  key: string;
+  locations?: CompTripLocations[];
+  origin_key: string; // e.x., UNPROCESSED_trip
+  source: string;
+  start_local_dt: LocalDt;
+  start_ts: number;
+  start_loc: { type: string; coordinates: any[] };
+  starting_trip?: any;
+  user_input: UserInput;
+};
+
 /* These are the properties received from the server (basically matches Python code)
   This should match what Timeline.readAllCompositeTrips returns (an array of these objects) */
 export type CompositeTrip = {
@@ -79,14 +122,7 @@ export type CompositeTrip = {
   start_local_dt: LocalDt;
   start_place: ObjectId;
   start_ts: number;
-  user_input: {
-    /* for keys ending in 'user_input' (e.g. 'trip_user_input'), the server gives us the raw user
-      input object with 'data' and 'metadata' */
-    [k: `${string}user_input`]: UserInputEntry;
-    /* for keys ending in 'confirm' (e.g. 'mode_confirm'), the server just gives us the user input value
-      as a string (e.g. 'walk', 'drove_alone') */
-    [k: `${string}confirm`]: string;
-  };
+  user_input: UserInput;
 };
 
 /* The 'timeline' for a user is a list of their trips and places,
@@ -182,6 +218,22 @@ export type SectionData = {
   sensed_mode_str: string; //e.x., "CAR"
   duration: number;
   distance: number;
+};
+
+// used in timelineHelper's `transitionTrip2TripObj`
+export type FilteredLocation = {
+  accuracy: number;
+  altitude: number;
+  elapsedRealtimeNanos: number;
+  filter: string;
+  fmt_time: string;
+  heading: number;
+  latitude: number;
+  loc: Geometry;
+  local_dt: LocalDt;
+  longitude: number;
+  sensed_speed: number;
+  ts: number;
 };
 
 export type GeoJSONStyledFeature = Feature<Geometry, any> & { style?: { color: string } };

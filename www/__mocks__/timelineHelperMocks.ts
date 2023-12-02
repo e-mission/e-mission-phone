@@ -1,5 +1,11 @@
 import { LocalDt, MetaData, ServerData, ServerResponse } from '../js/types/serverData';
-import { CompositeTrip, ConfirmedPlace, TripTransition } from '../js/types/diaryTypes';
+import {
+  CompositeTrip,
+  ConfirmedPlace,
+  FilteredLocation,
+  TripTransition,
+  UnprocessedTrip,
+} from '../js/types/diaryTypes';
 import { LabelOptions } from '../js/types/labelTypes';
 
 const mockMetaData: MetaData = {
@@ -58,7 +64,29 @@ tempMetaData.write_ts = 2;
 tempMetaData.origin_key = '2';
 export const mockMetaDataTwo = tempMetaData;
 
-export const mockData = {
+export const mockUnprocessedTrip: UnprocessedTrip = {
+  _id: { $oid: 'mockUnprocessedTrip' },
+  additions: [],
+  confidence_threshold: 0.0,
+  distance: 1.0,
+  duration: 3.0,
+  end_fmt_time: '',
+  end_loc: { type: '', coordinates: [] },
+  end_local_dt: null,
+  expectation: null,
+  inferred_labels: [],
+  key: 'mockUnprocessedTrip',
+  locations: [],
+  origin_key: '',
+  source: '',
+  start_local_dt: null,
+  start_ts: 0.1,
+  start_loc: { type: '', coordinates: [] },
+  starting_trip: null,
+  user_input: null,
+};
+
+export const mockCompData: ServerResponse<CompositeTrip> = {
   phone_data: [
     {
       data: {
@@ -138,32 +166,134 @@ export const mockData = {
 } as unknown as ServerResponse<CompositeTrip>;
 
 // Setup for second mockData
-let newPhoneData = JSON.parse(JSON.stringify(mockData.phone_data[0]));
+let newPhoneData = JSON.parse(JSON.stringify(mockCompData.phone_data[0]));
 newPhoneData.data._id.$oid = 'mockDataTwo';
 newPhoneData.metadata = mockMetaDataTwo;
 newPhoneData.data.start_confirmed_place.metadata = mockMetaDataTwo;
 newPhoneData.data.start_confirmed_place._id.$oid = 'startConfirmedPlaceTwo';
 newPhoneData.data.end_confirmed_place.metadata = mockMetaDataTwo;
 newPhoneData.data.end_confirmed_place._id.$oid = 'endConfirmedPlaceTwo';
-
-export const mockDataTwo = {
-  phone_data: [mockData.phone_data[0], newPhoneData],
+export const mockCompDataTwo = {
+  phone_data: [mockCompData.phone_data[0], newPhoneData],
 };
 
-export const mockTransition: Array<ServerData<TripTransition>> = [
+export const mockTransitions: Array<ServerData<TripTransition>> = [
   {
     data: {
-      currstate: 'STATE_WAITING_FOR_TRIP_TO_START',
-      transition: 'T_NOP',
-      ts: 12345.6789,
+      // mock of a startTransition
+      currstate: '',
+      transition: 'T_EXITED_GEOFENCE',
+      ts: 1,
+    },
+    metadata: mockMetaData,
+  },
+  {
+    data: {
+      // mock of an endTransition
+      currstate: '',
+      transition: 'T_TRIP_ENDED',
+      ts: 9999,
     },
     metadata: mockMetaData,
   },
 ];
 
-export const mockTransitionTwo = mockTransition.push(mockTransition[0]);
+const mockFilterLocation: FilteredLocation = {
+  accuracy: 0.1,
+  altitude: 100,
+  elapsedRealtimeNanos: 10000,
+  filter: 'time',
+  fmt_time: '',
+  heading: 1.0,
+  latitude: 1.0,
+  loc: null,
+  local_dt: null,
+  longitude: -1.0,
+  sensed_speed: 0,
+  ts: 100,
+};
+let mockFilterLocationTwo = JSON.parse(JSON.stringify(mockFilterLocation));
+mockFilterLocationTwo.ts = 900;
+mockFilterLocationTwo.longitude = 200;
+mockFilterLocationTwo.longitude = -200;
 
-// When called by mocks, pair 1 returns 1 value, Pair two 2, pair 3 returns none.
+export const mockFilterLocations: Array<ServerData<FilteredLocation>> = [
+  {
+    data: mockFilterLocation,
+    metadata: mockMetaData,
+  },
+  {
+    data: mockFilterLocationTwo,
+    metadata: mockMetaDataTwo,
+  },
+];
+
+export const mockAppConfigOne = {
+  survey_info: {
+    'trip-labels': 'ENKETO',
+  },
+};
+export const mockAppConfigTwo = {
+  survey_info: {
+    'trip-labels': 'Other',
+  },
+  intro: {
+    mode_studied: 'sample_study',
+  },
+};
+export const mockAppConfigThree = {
+  survey_info: {
+    'trip-labels': 'Other',
+  },
+  intro: {
+    mode_studied: false,
+  },
+};
+
+export const mockLabelDataPromises = [
+  Promise.resolve([
+    // Mode
+    {
+      data: {
+        end_ts: 1681438322.981,
+        label: 'walk',
+        start_ts: 1681437527.4971218,
+      },
+      metadata: mockMetaData,
+    },
+    {
+      data: {
+        end_ts: 1681439339.983,
+        label: 'walk',
+        start_ts: 1681438918.6598706,
+      },
+      metadata: mockMetaDataTwo,
+    },
+  ]),
+  Promise.resolve([
+    // Purpose
+    {
+      data: {
+        end_ts: 1681438322.981,
+        label: 'test',
+        start_ts: 1681437527.4971218,
+      },
+      metadata: mockMetaData,
+    },
+    {
+      data: {
+        end_ts: 1681438322.983,
+        label: 'testValue',
+        start_ts: 1681438918.6598706,
+      },
+      metadata: mockMetaDataTwo,
+    },
+  ]),
+  Promise.resolve([]), // Replaced_Mode
+];
+//let mockLabelDataPromisesTwo = JSON.parse(JSON.stringify(mockLabelDataPromises));
+
+// Used by jest.mocks() to return a various mocked objects.
 export const fakeStartTsOne = -14576291;
 export const fakeEndTsOne = -13885091;
 export const fakeStartTsTwo = 1092844665;

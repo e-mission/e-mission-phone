@@ -6,7 +6,14 @@ import { getRawEntries } from '../services/commHelper';
 import { ServerResponse, ServerData } from '../types/serverData';
 import L, { LatLng } from 'leaflet';
 import { DateTime } from 'luxon';
-import { UserInputEntry, TripTransition, TimelineEntry, GeoJSONData } from '../types/diaryTypes';
+import {
+  UserInputEntry,
+  TripTransition,
+  TimelineEntry,
+  GeoJSONData,
+  UnprocessedTrip,
+  FilteredLocation,
+} from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
 import { EnketoUserInputEntry, filterByNameAndVersion } from '../survey/enketo/enketoHelper';
@@ -88,8 +95,12 @@ const getUnprocessedInputQuery = (pipelineRange) => ({
   endTs: DateTime.now().toUnixInteger() + 10,
 });
 
-function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
-  Promise.all([...labelsPromises, ...notesPromises]).then((comboResults) => {
+/**
+ * updateUnprocessedInputs is a helper function for updateLocalUnprocessedInputs
+ * and updateAllUnprocessedInputs, exported for unit testing.
+ */
+export function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
+  return Promise.all([...labelsPromises, ...notesPromises]).then((comboResults) => {
     const labelResults = comboResults.slice(0, labelsPromises.length);
     const notesResults = comboResults.slice(labelsPromises.length).flat(2);
     // fill in the unprocessedLabels object with the labels we just read
@@ -116,7 +127,6 @@ function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
  * @param pipelineRange an object with start_ts and end_ts representing the range of time
  *     for which travel data has been processed through the pipeline on the server
  *  @param appConfig the app configuration
- * @returns Promise an array with 1) results for labels and 2) results for notes
  */
 export async function updateLocalUnprocessedInputs(pipelineRange, appConfig) {
   const BEMUserCache = window['cordova'].plugins.BEMUserCache;
@@ -136,7 +146,6 @@ export async function updateLocalUnprocessedInputs(pipelineRange, appConfig) {
  * @param pipelineRange an object with start_ts and end_ts representing the range of time
  *     for which travel data has been processed through the pipeline on the server
  * @param appConfig the app configuration
- * @returns Promise an array with 1) results for labels and 2) results for notes
  */
 export async function updateAllUnprocessedInputs(pipelineRange, appConfig) {
   const tq = getUnprocessedInputQuery(pipelineRange);
@@ -329,14 +338,14 @@ const transitionTrip2TripObj = function (trip) {
     endTs: tripEndTransition.data.ts,
   };
   logDebug(
-    'About to pull location data for range' +
+    'About to pull location data for range ' +
       DateTime.fromSeconds(tripStartTransition.data.ts).toLocaleString(DateTime.DATETIME_MED) +
+      ' to ' +
       DateTime.fromSeconds(tripEndTransition.data.ts).toLocaleString(DateTime.DATETIME_MED),
   );
   const getSensorData = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
   return getUnifiedDataForInterval('background/filtered_location', tq, getSensorData).then(
-    function (locationList: Array<any>) {
-      // change 'any' later
+    function (locationList: Array<ServerData<FilteredLocation>>) {
       if (locationList.length == 0) {
         return undefined;
       }
@@ -524,7 +533,7 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
         logDebug(JSON.stringify(trip, null, 2));
       });
       var tripFillPromises = tripsList.map(transitionTrip2TripObj);
-      return Promise.all(tripFillPromises).then(function (raw_trip_gj_list) {
+      return Promise.all(tripFillPromises).then(function (raw_trip_gj_list: UnprocessedTrip[]) {
         // Now we need to link up the trips. linking unprocessed trips
         // to one another is fairly simple, but we need to link the
         // first unprocessed trip to the last processed trip.
@@ -541,7 +550,7 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
           (trip) => trip && (trip.distance >= 100 || trip.duration >= 300),
         );
         logDebug(
-          `after filtering undefined and distance < 100, trip_gj_list size = ${raw_trip_gj_list.length}`,
+          `after filtering undefined and distance < 100, trip_gj_list size = ${trip_gj_list.length}`,
         );
         // Link 0th trip to first, first to second, ...
         for (var i = 0; i < trip_gj_list.length - 1; i++) {

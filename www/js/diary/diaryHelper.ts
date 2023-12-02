@@ -1,11 +1,13 @@
 // here we have some helper functions used throughout the label tab
 // these functions are being gradually migrated out of services.js
 
+import i18next from 'i18next';
 import { DateTime } from 'luxon';
-import { readableLabelToKey } from '../survey/multilabel/confirmHelper';
 import { CompositeTrip } from '../types/diaryTypes';
 import { LabelOptions } from '../types/labelTypes';
 import { LocalDt } from '../types/serverData';
+
+const humanizeDuration = require('humanize-duration');
 
 export const modeColors = {
   pink: '#c32e85', // oklch(56% 0.2 350)     // e-car
@@ -150,10 +152,13 @@ export function getFormattedDateAbbr(beginFmtTime?: string, endFmtTime?: string)
 export function getFormattedTimeRange(beginFmtTime: string, endFmtTime: string) {
   const beginTime = DateTime.fromISO(beginFmtTime, { setZone: true });
   const endTime = DateTime.fromISO(endFmtTime, { setZone: true });
-  const range = endTime.diff(beginTime, ['hours']);
-  const roundedHours = Math.round(range.as('hours')); // Round up or down to nearest hour
-  const formattedRange = `${roundedHours} hour${roundedHours !== 1 ? 's' : ''}`;
-  return formattedRange;
+  const range = endTime.diff(beginTime, ['hours', 'minutes']);
+  const unitsToDisplay = range.hours < 1 ? ['m'] : ['h'];
+  return humanizeDuration(range.as('milliseconds'), {
+    language: i18next.language,
+    units: unitsToDisplay,
+    round: true,
+  });
 }
 
 /**
@@ -192,5 +197,5 @@ export function getLocalTimeString(dt?: LocalDt) {
     hour: dt.hour,
     minute: dt.minute,
   });
-  return dateTime.toFormat('hh:mm a');
+  return dateTime.toFormat('h:mm a');
 }
