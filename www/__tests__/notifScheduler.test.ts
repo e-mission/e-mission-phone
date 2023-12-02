@@ -91,7 +91,6 @@ jest.mock('../js/splash/notifScheduler', () => ({
   // for getScheduledNotifs
   getNotifs: jest.fn(),
   // for updateScheduledNotifs
-  getReminderPrefs: jest.fn(),
   calcNotifTimes: jest.fn(),
   removeEmptyObjects: jest.fn(),
   areAlreadyScheduled: jest.fn(),
@@ -221,6 +220,34 @@ describe('updateScheduledNotifs', () => {
     jest.restoreAllMocks(); // Restore mocked functions after each test
   });
 
+  it('should resolve after scheduling notifications', async () => {
+    // updateScheduleNotifs arguments
+    const reminderSchemes: any = exampleReminderSchemes;
+    let isScheduling: boolean = false;
+    const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
+    const scheduledPromise: Promise<any> = Promise.resolve();
+    // create an empty array of mock notifs from cordova plugin
+    const mockNotifs = [];
+
+    // mock the cordova plugin
+    jest
+      .spyOn(window['cordova'].plugins.notification.local, 'getScheduled')
+      .mockImplementation((callback) => callback(mockNotifs));
+    jest
+      .spyOn(window['cordova'].plugins.notification.local, 'cancelAll')
+      .mockImplementation((callback) => callback());
+    jest
+      .spyOn(window['cordova'].plugins.notification.local, 'schedule')
+      .mockImplementation((arg, callback) => callback(arg));
+    // call the function
+    await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+
+    expect(setIsScheduling).toHaveBeenCalledWith(true);
+    expect(logDebug).toHaveBeenCalledWith('After cancelling, there are no scheduled notifications');
+    expect(logDebug).toHaveBeenCalledWith('After scheduling, there are no scheduled notifications');
+    expect(setIsScheduling).toHaveBeenCalledWith(false);
+  });
+
   it('should resolve without scheduling if notifications are already scheduled', async () => {
     // updateScheduleNotifs arguments
     const reminderSchemes: any = exampleReminderSchemes;
@@ -239,10 +266,68 @@ describe('updateScheduledNotifs', () => {
     // mock the cordova plugin
     jest
       .spyOn(window['cordova'].plugins.notification.local, 'getScheduled')
-      .mockImplementationOnce((callback) => callback(mockNotifs));
+      .mockImplementation((callback) => callback(mockNotifs));
     // call the function
     await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
 
     expect(logDebug).toHaveBeenCalledWith('Already scheduled, not scheduling again');
+  });
+
+  it('should wait for the previous scheduling to finish if isScheduling is true', async () => {
+    // updateScheduleNotifs arguments
+    const reminderSchemes: any = exampleReminderSchemes;
+    let isScheduling: boolean = true;
+    const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
+    const scheduledPromise: Promise<any> = Promise.resolve();
+    // create an empty array of mock notifs from cordova plugin
+    const mockNotifs = [];
+
+    // mock the cordova plugin
+    jest
+      .spyOn(window['cordova'].plugins.notification.local, 'getScheduled')
+      .mockImplementation((callback) => callback(mockNotifs));
+    // call the function
+    await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+
+    expect(logDebug).toHaveBeenCalledWith(
+      'ERROR: Already scheduling notifications, not scheduling again',
+    );
+  });
+
+  it('should log an error message if the reminder scheme is missing', async () => {
+    // updateScheduleNotifs arguments
+    let reminderSchemes: any = exampleReminderSchemes;
+    delete reminderSchemes.weekly; // delete the weekly reminder scheme, to create a missing reminder scheme error
+    let isScheduling: boolean = false;
+    const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
+    const scheduledPromise: Promise<any> = Promise.resolve();
+    // call the function
+    await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+
+    expect(logDebug).toHaveBeenCalledWith('Error: Reminder scheme not found');
+  });
+});
+
+describe('getReminderPrefs', () => {
+  it('should resolve with reminder prefs when user exists', async () => {
+    // getReminderPrefs arguments
+    const reminderSchemes: any = exampleReminderSchemes;
+    let isScheduling: boolean = true;
+    const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
+    const scheduledPromise: Promise<any> = Promise.resolve();
+    // create the expected result
+    const expectedResult = {
+      reminder_assignment: 'weekly',
+      reminder_join_date: '2023-11-14',
+      reminder_time_of_day: '21:00',
+    };
+
+    // call the function
+    const { reminder_assignment, reminder_join_date, reminder_time_of_day } =
+      await getReminderPrefs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+
+    expect(reminder_assignment).toEqual(expectedResult.reminder_assignment);
+    expect(reminder_join_date).toEqual(expectedResult.reminder_join_date);
+    expect(reminder_time_of_day).toEqual(expectedResult.reminder_time_of_day);
   });
 });

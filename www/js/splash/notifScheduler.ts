@@ -173,16 +173,10 @@ export const updateScheduledNotifs = async (
     setIsScheduling,
     scheduledPromise,
   );
-  var scheme = {};
-  try {
-    scheme = reminderSchemes[reminder_assignment];
-  } catch (e) {
-    displayErrorMsg(
-      'ERROR: Could not find reminder scheme for assignment ' +
-        reminderSchemes +
-        ' - ' +
-        reminder_assignment,
-    );
+  const scheme = reminderSchemes[reminder_assignment];
+  if (scheme === undefined) {
+    logDebug('Error: Reminder scheme not found');
+    return;
   }
   const notifTimes = calcNotifTimes(scheme, reminder_join_date, reminder_time_of_day);
   return new Promise<void>((resolve, reject) => {
@@ -198,6 +192,7 @@ export const updateScheduledNotifs = async (
         scheduledPromise.then(() => {
           if (isScheduling) {
             logDebug('ERROR: Already scheduling notifications, not scheduling again');
+            resolve();
           } else {
             scheduledPromise = scheduleNotifs(scheme, notifTimes, setIsScheduling);
             //enforcing end of scheduling to conisder update through
