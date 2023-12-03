@@ -40,7 +40,6 @@ angular
     'emission.services',
     'emission.plugin.logger',
     'emission.splash.referral',
-    'emission.services.email',
     'emission.main',
     'pascalprecht.translate',
     'LocalStorageModule',

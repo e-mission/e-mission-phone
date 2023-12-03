@@ -14,5 +14,4 @@ import './js/main.js';
 import './js/diary.js';
 import './js/diary/services.js';
 import './js/survey/enketo/answer.js';
-import './js/control/emailService.js';
 import './js/plugin/logger.ts';
