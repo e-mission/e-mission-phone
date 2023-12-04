@@ -1,4 +1,4 @@
-import { displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
+import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { getCustomFootprint } from './customMetricsHelper';
 
 //variables for the highest footprint in the set and if using custom
@@ -22,7 +22,6 @@ export function clearHighestFootprint() {
 /**
  * @function gets the footprint
  * currently will only be custom, as all labels are "custom"
- * fallback is json/label-options.json.sample, with MET and kgCO2 defined
  * @returns the footprint or undefined
  */
 function getFootprint() {
@@ -30,8 +29,7 @@ function getFootprint() {
   if (footprint) {
     return footprint;
   } else {
-    displayErrorMsg('failed to use custom labels', 'Error in Footprint Calculatons');
-    return undefined;
+    throw new ReferenceError('footprint is undefined, failed to use custom labels');
   }
 }
 
@@ -43,36 +41,38 @@ function getFootprint() {
  * @returns {number} the sum of carbon emissions for userMetrics given
  */
 export function getFootprintForMetrics(userMetrics, defaultIfMissing = 0) {
-  const footprint = getFootprint();
-  logDebug('getting footprint for ' + userMetrics + ' with ' + footprint);
-  let result = 0;
-  for (let i in userMetrics) {
-    let mode = userMetrics[i].key;
-    if (mode == 'ON_FOOT') {
-      mode = 'WALKING';
-    }
+  try {
+    const footprint = getFootprint();
+    logDebug('getting footprint for ' + userMetrics + ' with ' + footprint);
+    let result = 0;
+    for (let i in userMetrics) {
+      let mode = userMetrics[i].key;
 
-    if (mode in footprint) {
-      result += footprint[mode] * mtokm(userMetrics[i].values);
-    } else if (mode == 'IN_VEHICLE') {
-      const sum =
-        footprint['CAR'] +
-        footprint['BUS'] +
-        footprint['LIGHT_RAIL'] +
-        footprint['TRAIN'] +
-        footprint['TRAM'] +
-        footprint['SUBWAY'];
-      result += (sum / 6) * mtokm(userMetrics[i].values);
-    } else {
-      logWarn(
-        `WARNING getFootprintFromMetrics() was requested for an unknown mode: ${mode} metrics JSON: ${JSON.stringify(
-          userMetrics,
-        )}`,
-      );
-      result += defaultIfMissing * mtokm(userMetrics[i].values);
+      if (mode in footprint) {
+        result += footprint[mode] * mtokm(userMetrics[i].values);
+      } else if (mode == 'IN_VEHICLE') {
+        //this... could be deprecated
+        const sum =
+          footprint['CAR'] +
+          footprint['BUS'] +
+          footprint['LIGHT_RAIL'] +
+          footprint['TRAIN'] +
+          footprint['TRAM'] +
+          footprint['SUBWAY'];
+        result += (sum / 6) * mtokm(userMetrics[i].values);
+      } else {
+        logWarn(
+          `WARNING getFootprintFromMetrics() was requested for an unknown mode: ${mode} metrics JSON: ${JSON.stringify(
+            userMetrics,
+          )}`,
+        );
+        result += defaultIfMissing * mtokm(userMetrics[i].values);
+      }
     }
+    return result;
+  } catch (error) {
+    displayError(error, 'Error in Footprint Calculatons');
   }
-  return result;
 }
 
 /**

@@ -11,6 +11,16 @@ let _range_limited_motorized;
 let _labelOptions;
 
 /**
+ * @function clears the locally stored variables
+ */
+export function clearCustomMetrics() {
+  _customMETs = undefined;
+  _customPerKmFootprint = undefined;
+  _range_limited_motorized = undefined;
+  _labelOptions = undefined;
+}
+
+/**
  * @function gets custom mets, must be initialized
  * @returns the custom mets stored locally
  */
