@@ -17,7 +17,7 @@ import {
 import DiaryButton from '../../components/DiaryButton';
 import { useTranslation } from 'react-i18next';
 import LabelTabContext from '../../diary/LabelTabContext';
-import { displayError, displayErrorMsg, logDebug } from '../../plugin/logger';
+import { displayErrorMsg, logDebug } from '../../plugin/logger';
 import {
   getLabelInputDetails,
   getLabelInputs,
@@ -99,12 +99,12 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
        (i.e. lowercase, and with underscores instead of spaces) */
       chosenLabel = readableLabelToKey(chosenLabel);
       createMode(chosenLabel)
-      .then((res) => {
-        logDebug('Create Mode in CommHelper result ' + JSON.stringify(res));
-      })
-      .catch((e) => {
-        displayError(e, 'Create Mode Error')
-      })
+        .then((res) => {
+          logDebug('Create Mode in CommHelper result ' + JSON.stringify(res));
+        })
+        .catch((e) => {
+          displayErrorMsg(e, 'Create Mode Error');
+        });
     }
     const inputDataToStore = {
       start_ts: trip.start_ts,
