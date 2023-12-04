@@ -17,4 +17,5 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   moduleDirectories: ["node_modules", "src"],
   globals: {"__DEV__": false},
+  collectCoverage: true,
 };
