@@ -11,7 +11,7 @@ export let configChanged = false;
 export const setConfigChanged = (b) => (configChanged = b);
 
 //used test multiple configs, not used outside of test
-export const resetStoredConfig = function () {
+export const _test_resetStoredConfig = function () {
   storedConfig = null;
 };
 
