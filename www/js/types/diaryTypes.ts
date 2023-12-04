@@ -114,6 +114,8 @@ export type CompositeTrip = {
  so a 'timeline entry' is either a trip or a place. */
 export type TimelineEntry = ConfirmedPlace | CompositeTrip;
 
+export type TimestampRange = { start_ts: number; end_ts: number };
+
 /* These properties aren't received from the server, but are derived from the above properties.
   They are used in the UI to display trip/place details and are computed by the useDerivedProperties hook. */
 export type DerivedProperties = {
