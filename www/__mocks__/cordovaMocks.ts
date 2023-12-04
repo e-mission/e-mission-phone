@@ -33,9 +33,11 @@ export const mockFile = () => {
 //for consent document
 const _storage = {};
 
+type MessageData = any;
+type Message = { key: string; data: MessageData; metadata: { write_ts: number; [k: string]: any } };
 export const mockBEMUserCache = () => {
   const _cache = {};
-  const messages = [];
+  const messages: Message[] = [];
   const mockBEMUserCache = {
     getLocalStorage: (key: string, isSecure: boolean) => {
       return new Promise((rs, rj) =>
@@ -86,17 +88,35 @@ export const mockBEMUserCache = () => {
     putMessage: (key: string, value: any) => {
       return new Promise<void>((rs, rj) =>
         setTimeout(() => {
-          messages.push({ key, value });
+          messages.push({
+            key,
+            data: value,
+            // write_ts is epoch time in seconds
+            metadata: { write_ts: Math.floor(Date.now() / 1000) },
+          });
           rs();
         }, 100),
       );
     },
     getAllMessages: (key: string, withMetadata?: boolean) => {
-      return new Promise<any[]>((rs, rj) =>
+      return new Promise<Message[] | MessageData[]>((rs, rj) =>
         setTimeout(() => {
-          rs(messages.filter((m) => m.key == key).map((m) => m.value));
+          rs(messages.filter((m) => m.key == key).map((m) => (withMetadata ? m : m.data)));
         }, 100),
       );
+    },
+    getMessagesForInterval: (key: string, tq, withMetadata?: boolean) => {
+      return new Promise<Message[] | MessageData[]>((rs, rj) =>
+        setTimeout(() => {
+          rs(
+            messages
+              .filter((m) => m.key == key)
+              .filter((m) => m.metadata[tq.key] >= tq.startTs && m.metadata.write_ts <= tq.endTs)
+              .map((m) => (withMetadata ? m : m.data)),
+          );
+        }, 100),
+      );
+      // Used for getUnifiedDataForInterval
     },
     getDocument: (key: string, withMetadata?: boolean) => {
       return new Promise<any[]>((rs, rj) =>
@@ -115,9 +135,6 @@ export const mockBEMUserCache = () => {
       } else {
         return false;
       }
-    },
-    getMessagesForInterval: () => {
-      // Used for getUnifiedDataForInterval
     },
   };
   window['cordova'] ||= {};
