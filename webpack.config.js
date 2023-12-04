@@ -79,7 +79,12 @@ module.exports = {
       /* Enketo expects its per-app configuration to be available as 'enketo-config',
         so we have to alias it here.
       https://github.com/enketo/enketo-core#global-configuration */
-      'enketo/config': path.resolve(__dirname, 'www/js/config/enketo-config')
+      'enketo/config': path.resolve(__dirname, 'www/js/config/enketo-config'),
+      /* enketo-transformer has 'libxslt' as an optional peer dependency.
+        We don't need it since we are only doing client-side transformations via
+          enketo-transformer/web (https://github.com/enketo/enketo-transformer#web).
+        So, we can tell webpack it's ok to ignore libxslt by aliasing it to false. */
+      'libxslt': false,
     },
     extensions: ['.web.js', '.jsx', '.tsx', '.ts', '.js'],
   },
