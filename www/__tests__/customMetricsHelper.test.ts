@@ -27,6 +27,7 @@ global.fetch = (url: string) =>
 it('gets the custom mets', async () => {
   const appConfig = await getConfig();
   await initCustomDatasetHelper(appConfig);
+  //expecting the keys from fakeLabels.json NOT metrics/metDataset.ts
   expect(getCustomMETs()).toMatchObject({
     walk: expect.any(Object),
     bike: expect.any(Object),
@@ -40,12 +41,13 @@ it('gets the custom mets', async () => {
 it('gets the custom footprint', async () => {
   const appConfig = await getConfig();
   await initCustomDatasetHelper(appConfig);
+  //numbers from fakeLabels.json
   expect(getCustomFootprint()).toMatchObject({
-    walk: expect.any(Number),
-    bike: expect.any(Number),
-    bikeshare: expect.any(Number),
-    'e-bike': expect.any(Number),
-    scootershare: expect.any(Number),
-    drove_alone: expect.any(Number),
+    walk: 0,
+    bike: 0,
+    bikeshare: 0,
+    'e-bike': 0.00728,
+    scootershare: 0.00894,
+    drove_alone: 0.22031,
   });
 });
