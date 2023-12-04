@@ -17,7 +17,7 @@ import {
 import DiaryButton from '../../components/DiaryButton';
 import { useTranslation } from 'react-i18next';
 import LabelTabContext from '../../diary/LabelTabContext';
-import { displayErrorMsg, logDebug } from '../../plugin/logger';
+import { displayError, displayErrorMsg, logDebug } from '../../plugin/logger';
 import {
   getLabelInputDetails,
   getLabelInputs,
@@ -28,6 +28,7 @@ import {
   verifiabilityForTrip,
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
+import { createMode } from '../../services/commHelper';
 
 // This will be sorted by frequency and createdAt from server
 const DUMMY_CUSTOMIZED_MODE = {
@@ -97,6 +98,13 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
       /* Let's make the value for user entered inputs look consistent with our other values
        (i.e. lowercase, and with underscores instead of spaces) */
       chosenLabel = readableLabelToKey(chosenLabel);
+      createMode(chosenLabel)
+      .then((res) => {
+        logDebug('Create Mode in CommHelper result ' + JSON.stringify(res));
+      })
+      .catch((e) => {
+        displayError(e, 'Create Mode Error')
+      })
     }
     const inputDataToStore = {
       start_ts: trip.start_ts,

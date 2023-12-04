@@ -229,3 +229,18 @@ export function putOne(key, data) {
     throw error;
   });
 }
+
+export function createMode(mode) {
+  return new Promise((rs, rj) => {
+    window['cordova'].plugins.BEMServerComm.postUserPersonalData(
+      '/mode/create',
+      'mode',
+      mode,
+      rs,
+      rj,
+    );
+  }).catch((error) => {
+    error = 'While putting one mode, ' + error;
+    throw error;
+  });
+}
