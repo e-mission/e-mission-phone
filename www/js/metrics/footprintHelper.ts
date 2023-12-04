@@ -41,38 +41,34 @@ function getFootprint() {
  * @returns {number} the sum of carbon emissions for userMetrics given
  */
 export function getFootprintForMetrics(userMetrics, defaultIfMissing = 0) {
-  try {
-    const footprint = getFootprint();
-    logDebug('getting footprint for ' + userMetrics + ' with ' + footprint);
-    let result = 0;
-    for (let i in userMetrics) {
-      let mode = userMetrics[i].key;
+  const footprint = getFootprint();
+  logDebug('getting footprint for ' + userMetrics + ' with ' + footprint);
+  let result = 0;
+  for (let i in userMetrics) {
+    let mode = userMetrics[i].key;
 
-      if (mode in footprint) {
-        result += footprint[mode] * mtokm(userMetrics[i].values);
-      } else if (mode == 'IN_VEHICLE') {
-        //this... could be deprecated
-        const sum =
-          footprint['CAR'] +
-          footprint['BUS'] +
-          footprint['LIGHT_RAIL'] +
-          footprint['TRAIN'] +
-          footprint['TRAM'] +
-          footprint['SUBWAY'];
-        result += (sum / 6) * mtokm(userMetrics[i].values);
-      } else {
-        logWarn(
-          `WARNING getFootprintFromMetrics() was requested for an unknown mode: ${mode} metrics JSON: ${JSON.stringify(
-            userMetrics,
-          )}`,
-        );
-        result += defaultIfMissing * mtokm(userMetrics[i].values);
-      }
+    if (mode in footprint) {
+      result += footprint[mode] * mtokm(userMetrics[i].values);
+    } else if (mode == 'IN_VEHICLE') {
+      //this... could be deprecated
+      const sum =
+        footprint['CAR'] +
+        footprint['BUS'] +
+        footprint['LIGHT_RAIL'] +
+        footprint['TRAIN'] +
+        footprint['TRAM'] +
+        footprint['SUBWAY'];
+      result += (sum / 6) * mtokm(userMetrics[i].values);
+    } else {
+      logWarn(
+        `WARNING getFootprintFromMetrics() was requested for an unknown mode: ${mode} metrics JSON: ${JSON.stringify(
+          userMetrics,
+        )}`,
+      );
+      result += defaultIfMissing * mtokm(userMetrics[i].values);
     }
-    return result;
-  } catch (error) {
-    displayError(error, 'Error in Footprint Calculatons');
   }
+  return result;
 }
 
 /**
