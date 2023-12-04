@@ -277,9 +277,9 @@ const points2TripProps = function (locationPoints) {
   const startTime = DateTime.fromSeconds(startPoint.data.ts).setZone(startPoint.metadata.time_zone);
   const endTime = DateTime.fromSeconds(endPoint.data.ts).setZone(endPoint.metadata.time_zone);
 
-  const speeds = [],
-    dists = [];
-  var loc, locLatLng;
+  const speeds = [];
+  const dists = [];
+  let loc, locLatLng;
   locationPoints.forEach((pt) => {
     const ptLatLng = L.latLng([pt.data.latitude, pt.data.longitude]);
     if (loc) {
@@ -353,7 +353,7 @@ const transitionTrip2TripObj = function (trip) {
         );
       };
 
-      var filteredLocationList = sortedLocationList.filter(retainInRange);
+      const filteredLocationList = sortedLocationList.filter(retainInRange);
 
       // Fix for https://github.com/e-mission/e-mission-docs/issues/417
       if (filteredLocationList.length == 0) {
@@ -439,11 +439,11 @@ const isEndingTransition = function (transWrapper) {
  * Let's abstract this out into our own minor state machine.
  */
 const transitions2Trips = function (transitionList: Array<ServerData<TripTransition>>) {
-  var inTrip = false;
-  var tripList = [];
-  var currStartTransitionIndex = -1;
-  var currEndTransitionIndex = -1;
-  var processedUntil = 0;
+  let inTrip = false;
+  const tripList = [];
+  let currStartTransitionIndex = -1;
+  let currEndTransitionIndex = -1;
+  let processedUntil = 0;
 
   while (processedUntil < transitionList.length) {
     // Logger.log("searching within list = "+JSON.stringify(transitionList.slice(processedUntil)));
@@ -509,7 +509,7 @@ const linkTrips = function (trip1, trip2) {
 };
 
 export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip) {
-  var tq = { key: 'write_ts', startTs, endTs };
+  const tq = { key: 'write_ts', startTs, endTs };
   logDebug(
     'about to query for unprocessed trips from ' +
       DateTime.fromSeconds(tq.startTs).toLocaleString(DateTime.DATETIME_MED) +
@@ -529,7 +529,7 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
       tripsList.forEach(function (trip) {
         logDebug(JSON.stringify(trip, null, 2));
       });
-      var tripFillPromises = tripsList.map(transitionTrip2TripObj);
+      const tripFillPromises = tripsList.map(transitionTrip2TripObj);
       return Promise.all(tripFillPromises).then(function (raw_trip_gj_list: UnprocessedTrip[]) {
         // Now we need to link up the trips. linking unprocessed trips
         // to one another is fairly simple, but we need to link the
@@ -550,7 +550,7 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
           `after filtering undefined and distance < 100, trip_gj_list size = ${trip_gj_list.length}`,
         );
         // Link 0th trip to first, first to second, ...
-        for (var i = 0; i < trip_gj_list.length - 1; i++) {
+        for (let i = 0; i < trip_gj_list.length - 1; i++) {
           linkTrips(trip_gj_list[i], trip_gj_list[i + 1]);
         }
         logDebug(`finished linking trips for list of size ${trip_gj_list.length}`);

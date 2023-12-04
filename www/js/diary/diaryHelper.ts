@@ -152,10 +152,9 @@ export function getFormattedTimeRange(beginFmtTime: string, endFmtTime: string) 
   const beginTime = DateTime.fromISO(beginFmtTime, { setZone: true });
   const endTime = DateTime.fromISO(endFmtTime, { setZone: true });
   const range = endTime.diff(beginTime, ['hours', 'minutes']);
-  const unitsToDisplay = range.hours < 1 ? ['m'] : ['h'];
   return humanizeDuration(range.as('milliseconds'), {
     language: i18next.language,
-    units: unitsToDisplay,
+    largest: 1,
     round: true,
   });
 }
@@ -196,5 +195,5 @@ export function getLocalTimeString(dt) {
     hour: dt.hour,
     minute: dt.minute,
   });
-  return dateTime.toFormat('h:mm a');
+  return dateTime.toLocaleString(DateTime.TIME_SIMPLE);
 }
