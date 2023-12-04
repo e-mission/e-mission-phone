@@ -1,5 +1,4 @@
-import moment from 'moment';
-import { logDebug, displayError } from '../plugin/logger';
+import { displayError, logDebug } from '../plugin/logger';
 import { getBaseModeByKey, getBaseModeByValue } from './diaryHelper';
 import { getUnifiedDataForInterval } from '../services/unifiedDataLoader';
 import { getRawEntries } from '../services/commHelper';
@@ -13,6 +12,7 @@ import {
   GeoJSONData,
   UnprocessedTrip,
   FilteredLocation,
+  TimestampRange,
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
@@ -89,7 +89,7 @@ export let unprocessedLabels: { [key: string]: UserInputEntry[] } = {};
 /* 'NOTES' are 1:n - each trip or place can have any number of notes */
 export let unprocessedNotes: EnketoUserInputEntry[] = [];
 
-const getUnprocessedInputQuery = (pipelineRange) => ({
+const getUnprocessedInputQuery = (pipelineRange: TimestampRange) => ({
   key: 'write_ts',
   startTs: pipelineRange.end_ts - 10,
   endTs: DateTime.now().toUnixInteger() + 10,
@@ -106,9 +106,8 @@ export function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig
     // fill in the unprocessedLabels object with the labels we just read
     labelResults.forEach((r, i) => {
       if (appConfig.survey_info?.['trip-labels'] == 'ENKETO') {
-        filterByNameAndVersion('TripConfirmSurvey', r).then((filtered) => {
-          unprocessedLabels['SURVEY'] = filtered;
-        });
+        const filtered = filterByNameAndVersion('TripConfirmSurvey', r, appConfig);
+        unprocessedLabels['SURVEY'] = filtered as UserInputEntry[];
       } else {
         unprocessedLabels[getLabelInputs()[i]] = r;
       }
@@ -128,7 +127,7 @@ export function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig
  *     for which travel data has been processed through the pipeline on the server
  *  @param appConfig the app configuration
  */
-export async function updateLocalUnprocessedInputs(pipelineRange, appConfig) {
+export async function updateLocalUnprocessedInputs(pipelineRange: TimestampRange, appConfig) {
   const BEMUserCache = window['cordova'].plugins.BEMUserCache;
   const tq = getUnprocessedInputQuery(pipelineRange);
   const labelsPromises = keysForLabelInputs(appConfig).map((key) =>
@@ -147,7 +146,7 @@ export async function updateLocalUnprocessedInputs(pipelineRange, appConfig) {
  *     for which travel data has been processed through the pipeline on the server
  * @param appConfig the app configuration
  */
-export async function updateAllUnprocessedInputs(pipelineRange, appConfig) {
+export async function updateAllUnprocessedInputs(pipelineRange: TimestampRange, appConfig) {
   const tq = getUnprocessedInputQuery(pipelineRange);
   const getMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
   const labelsPromises = keysForLabelInputs(appConfig).map((key) =>
@@ -281,8 +280,7 @@ const points2TripProps = function (locationPoints) {
 
   const speeds: number[] = [];
   const dists: number[] = [];
-  let loc;
-  let locLatLng: LatLng;
+  let loc, locLatLng: LatLng;
   locationPoints.forEach((pt) => {
     const ptLatLng = L.latLng([pt.data.latitude, pt.data.longitude]);
     if (loc) {
@@ -356,7 +354,7 @@ const transitionTrip2TripObj = function (trip) {
         );
       };
 
-      var filteredLocationList = sortedLocationList.filter(retainInRange);
+      const filteredLocationList = sortedLocationList.filter(retainInRange);
 
       // Fix for https://github.com/e-mission/e-mission-docs/issues/417
       if (filteredLocationList.length == 0) {
@@ -442,7 +440,7 @@ const isEndingTransition = function (transWrapper) {
  * Let's abstract this out into our own minor state machine.
  */
 const transitions2Trips = function (transitionList: Array<ServerData<TripTransition>>) {
-  var inTrip = false;
+  let inTrip = false;
   const tripList: [ServerData<TripTransition>, ServerData<TripTransition>][] = [];
   let currStartTransitionIndex = -1;
   let currEndTransitionIndex = -1;
@@ -512,7 +510,7 @@ const linkTrips = function (trip1, trip2) {
 };
 
 export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip) {
-  var tq = { key: 'write_ts', startTs, endTs };
+  const tq = { key: 'write_ts', startTs, endTs };
   logDebug(
     'about to query for unprocessed trips from ' +
       DateTime.fromSeconds(tq.startTs).toLocaleString(DateTime.DATETIME_MED) +
@@ -532,7 +530,7 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
       tripsList.forEach(function (trip) {
         logDebug(JSON.stringify(trip, null, 2));
       });
-      var tripFillPromises = tripsList.map(transitionTrip2TripObj);
+      const tripFillPromises = tripsList.map(transitionTrip2TripObj);
       return Promise.all(tripFillPromises).then(function (raw_trip_gj_list: UnprocessedTrip[]) {
         // Now we need to link up the trips. linking unprocessed trips
         // to one another is fairly simple, but we need to link the
@@ -553,7 +551,7 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
           `after filtering undefined and distance < 100, trip_gj_list size = ${trip_gj_list.length}`,
         );
         // Link 0th trip to first, first to second, ...
-        for (var i = 0; i < trip_gj_list.length - 1; i++) {
+        for (let i = 0; i < trip_gj_list.length - 1; i++) {
           linkTrips(trip_gj_list[i], trip_gj_list[i + 1]);
         }
         logDebug(`finished linking trips for list of size ${trip_gj_list.length}`);

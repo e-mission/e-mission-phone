@@ -30,6 +30,8 @@ export type SurveyOptions = {
 };
 
 type EnketoResponseData = {
+  start_ts?: number; //start timestamp (in seconds)
+  end_ts?: number; //end timestamp (in seconds)
   label: string; //display label (this value is use for displaying on the button)
   ts: number; //the timestamp at which the survey was filled out (in seconds)
   fmt_time: string; //the formatted timestamp at which the survey was filled out
@@ -110,16 +112,14 @@ let _config: EnketoSurveyConfig;
  * @param {string} name survey name (defined in enketo survey config)
  * @param {EnketoResponse[]} responses An array of previously recorded responses to Enketo surveys
  *  (presumably having been retrieved from unifiedDataLoader)
+ * @param {AppConfig} appConfig the dynamic config file for the app
  * @return {Promise<EnketoResponse[]>} filtered survey responses
  */
-export function filterByNameAndVersion(name: string, responses: EnketoResponse[]) {
-  return getConfig().then((config) =>
-    responses.filter(
-      (r) =>
-        r.data.name === name && r.data.version >= config.survey_info.surveys[name].compatibleWith,
-    ),
+export const filterByNameAndVersion = (name: string, responses: EnketoResponse[], appConfig) =>
+  responses.filter(
+    (r) =>
+      r.data.name === name && r.data.version >= appConfig.survey_info.surveys[name].compatibleWith,
   );
-}
 
 /**
  * resolve a label for the survey response

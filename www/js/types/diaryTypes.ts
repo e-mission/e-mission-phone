@@ -30,18 +30,13 @@ export type ConfirmedPlace = {
   exit_fmt_time: string; // ISO string e.g. 2023-10-31T12:00:00.000-04:00
   exit_local_dt: LocalDt;
   exit_ts: number; // Unix timestamp
+  key: string;
   location: Geometry;
   origin_key: string;
   raw_places: ObjectId[];
   source: string;
-  user_input: {
-    /* for keys ending in 'user_input' (e.g. 'trip_user_input'), the server gives us the raw user
-      input object with 'data' and 'metadata' */
-    [k: `${string}user_input`]: UserInputEntry;
-    /* for keys ending in 'confirm' (e.g. 'mode_confirm'), the server just gives us the user input value
-      as a string (e.g. 'walk', 'drove_alone') */
-    [k: `${string}confirm`]: string;
-  };
+  user_input: UserInput;
+  starting_trip: ObjectId;
 };
 
 export type TripTransition = {

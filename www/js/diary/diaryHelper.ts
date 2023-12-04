@@ -6,8 +6,7 @@ import { DateTime } from 'luxon';
 import { CompositeTrip } from '../types/diaryTypes';
 import { LabelOptions } from '../types/labelTypes';
 import { LocalDt } from '../types/serverData';
-
-const humanizeDuration = require('humanize-duration');
+import humanizeDuration from 'humanize-duration';
 
 export const modeColors = {
   pink: '#c32e85', // oklch(56% 0.2 350)     // e-car
@@ -125,7 +124,7 @@ export function getFormattedDate(beginFmtTime?: string, endFmtTime?: string) {
     day: '2-digit',
     year: 'numeric',
   });
-  return tConversion.replace(',', '');
+  return tConversion;
 }
 
 /**
@@ -153,10 +152,9 @@ export function getFormattedTimeRange(beginFmtTime: string, endFmtTime: string) 
   const beginTime = DateTime.fromISO(beginFmtTime, { setZone: true });
   const endTime = DateTime.fromISO(endFmtTime, { setZone: true });
   const range = endTime.diff(beginTime, ['hours', 'minutes']);
-  const unitsToDisplay = range.hours < 1 ? ['m'] : ['h'];
   return humanizeDuration(range.as('milliseconds'), {
     language: i18next.language,
-    units: unitsToDisplay,
+    largest: 1,
     round: true,
   });
 }
@@ -197,5 +195,5 @@ export function getLocalTimeString(dt?: LocalDt) {
     hour: dt.hour,
     minute: dt.minute,
   });
-  return dateTime.toFormat('h:mm a');
+  return dateTime.toLocaleString(DateTime.TIME_SIMPLE);
 }
