@@ -33,9 +33,6 @@ export type ConfirmedPlace = {
   raw_places: ObjectId[];
   source: string;
   user_input: UserInput;
-  exit_fmt_time: string;
-  exit_ts: number;
-  exit_local_dt: LocalDt;
   starting_trip: ObjectId;
 };
 
