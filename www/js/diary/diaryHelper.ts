@@ -5,8 +5,7 @@ import i18next from 'i18next';
 import { DateTime } from 'luxon';
 import { CompositeTrip } from '../types/diaryTypes';
 import { LabelOptions } from '../types/labelTypes';
-
-const humanizeDuration = require('humanize-duration');
+import humanizeDuration from 'humanize-duration';
 
 export const modeColors = {
   pink: '#c32e85', // oklch(56% 0.2 350)     // e-car
