@@ -22,19 +22,19 @@ global.fetch = (url: string) =>
   }) as any;
 
 it('gets met for mode and speed', () => {
-  expect(getMet('WALKING', 1.47523, 0)).toBe(4.3);
-  expect(getMet('BICYCLING', 4.5, 0)).toBe(6.8);
-  expect(getMet('UNICYCLE', 100, 0)).toBe(0);
-  expect(getMet('CAR', 25, 1)).toBe(0);
+  expect(getMet('WALKING', 1.47523, 0)).toBe(4.3); //1.47523 mps = 3.299 mph -> 4.3 METs
+  expect(getMet('BICYCLING', 4.5, 0)).toBe(6.8); //4.5 mps = 10.07 mph =  6.8 METs
+  expect(getMet('UNICYCLE', 100, 0)).toBe(0); //unkown mode, 0 METs
+  expect(getMet('CAR', 25, 1)).toBe(0); //0 METs in CAR
 });
 
 it('gets custom met for mode and speed', async () => {
   const appConfig = await getConfig();
   await initCustomDatasetHelper(appConfig);
-  expect(getMet('walk', 1.47523, 0)).toBe(4.3);
-  expect(getMet('bike', 4.5, 0)).toBe(6.8);
-  expect(getMet('unicycle', 100, 0)).toBe(0);
-  expect(getMet('drove_alone', 25, 1)).toBe(0);
-  expect(getMet('e-bike', 6, 1)).toBe(4.9);
-  expect(getMet('e-bike', 12, 1)).toBe(4.9);
+  expect(getMet('walk', 1.47523, 0)).toBe(4.3); //1.47523 mps = 3.299 mph -> 4.3 METs
+  expect(getMet('bike', 4.5, 0)).toBe(6.8); //4.5 mps = 10.07 mph =  6.8 METs
+  expect(getMet('unicycle', 100, 0)).toBe(0); //unkown mode, 0 METs
+  expect(getMet('drove_alone', 25, 1)).toBe(0); //0 METs IN_VEHICLE
+  expect(getMet('e-bike', 6, 1)).toBe(4.9); //e-bike is 4.9 for all speeds
+  expect(getMet('e-bike', 12, 1)).toBe(4.9); //e-bike is 4.9 for all speeds
 });

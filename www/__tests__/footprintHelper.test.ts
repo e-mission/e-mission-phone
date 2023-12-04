@@ -38,24 +38,38 @@ const custom_metrics = [
   { key: 'unicycle', values: 5000 },
 ];
 
+/*
+  3*0 + 6.5*0 + 10*0.22031 + 25*0.00894 + 5*0
+  0 + 0 + 2.2031 + 0.2235 + 0
+  2.4266
+*/
 it('gets footprint for metrics (custom, fallback 0)', async () => {
   const appConfig = await getConfig();
   await initCustomDatasetHelper(appConfig);
   expect(getFootprintForMetrics(custom_metrics, 0)).toBe(2.4266);
 });
 
+/*
+  3*0 + 6.5*0 + 10*0.22031 + 25*0.00894 + 5*0.1
+  0 + 0 + 2.2031 + 0.2235 + 0.5
+  2.4266 + 0.5
+*/
 it('gets footprint for metrics (custom, fallback 0.1)', async () => {
   const appConfig = await getConfig();
   await initCustomDatasetHelper(appConfig);
   expect(getFootprintForMetrics(custom_metrics, 0.1)).toBe(2.4266 + 0.5);
 });
 
+//expects TAXI from the fake labels
 it('gets the highest footprint from the dataset, custom', async () => {
   const appConfig = await getConfig();
   await initCustomDatasetHelper(appConfig);
   expect(getHighestFootprint()).toBe(0.30741);
 });
 
+/*
+  TAXI co2/km * meters/1000
+*/
 it('gets the highest footprint for distance, custom', async () => {
   const appConfig = await getConfig();
   await initCustomDatasetHelper(appConfig);
