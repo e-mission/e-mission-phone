@@ -123,7 +123,7 @@ export function getFormattedDate(beginFmtTime: string, endFmtTime?: string) {
     day: '2-digit',
     year: 'numeric',
   });
-  return tConversion.replace(',', '');
+  return tConversion;
 }
 
 /**
