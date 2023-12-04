@@ -21,10 +21,15 @@ export type ConfirmedPlace = {
   additions: UserInputEntry[];
   cleaned_place: ObjectId;
   ending_trip: ObjectId;
-  enter_fmt_time: string; // ISO string 2023-10-31T12:00:00.000-04:00
+  enter_fmt_time: string; // ISO string e.g. 2023-10-31T12:00:00.000-04:00
   enter_local_dt: LocalDt;
   enter_ts: number; // Unix timestamp
+  exit_fmt_time: string; // ISO string e.g. 2023-10-31T12:00:00.000-04:00
+  exit_local_dt: LocalDt;
+  exit_ts: number; // Unix timestamp
+  key: string;
   location: Geometry;
+  origin_key: string;
   raw_places: ObjectId[];
   source: string;
   user_input: UserInput;
@@ -115,6 +120,11 @@ export type CompositeTrip = {
 export type TimelineEntry = ConfirmedPlace | CompositeTrip;
 
 export type TimestampRange = { start_ts: number; end_ts: number };
+
+/* Type guard to disambiguate timeline entries as either trips or places
+  If it has a 'start_ts' and 'end_ts', it's a trip. Else, it's a place. */
+export const isTrip = (entry: TimelineEntry): entry is CompositeTrip =>
+  entry.hasOwnProperty('start_ts') && entry.hasOwnProperty('end_ts');
 
 /* These properties aren't received from the server, but are derived from the above properties.
   They are used in the UI to display trip/place details and are computed by the useDerivedProperties hook. */

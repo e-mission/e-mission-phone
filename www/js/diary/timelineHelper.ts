@@ -16,6 +16,7 @@ import {
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
+import { filterByNameAndVersion } from '../survey/enketo/enketoHelper';
 
 const cachedGeojsons: Map<string, GeoJSONData> = new Map();
 
@@ -107,7 +108,9 @@ export function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig
     // fill in the unprocessedLabels object with the labels we just read
     labelResults.forEach((r, i) => {
       if (appConfig.survey_info?.['trip-labels'] == 'ENKETO') {
-        unprocessedLabels['SURVEY'] = r;
+        filterByNameAndVersion('TripConfirmSurvey', r).then((filtered) => {
+          unprocessedLabels['SURVEY'] = filtered;
+        });
       } else {
         unprocessedLabels[getLabelInputs()[i]] = r;
       }
