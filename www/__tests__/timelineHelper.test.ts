@@ -135,7 +135,7 @@ it('processes trip- and place- survey responses after they were just recorded', 
   const tripSurveyResponse = {
     start_ts: 4,
     end_ts: 5,
-    name: 'FooBarSurvey',
+    name: 'TripConfirmSurvey', // for now, the name of this survey must be hardcoded (see note in UserInputButton.tsx)
     version: 1.2,
     label: '1 foobar',
     match_id: 'd263935e-9163-4072-9909-9d3e1edb31be',

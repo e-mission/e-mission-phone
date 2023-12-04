@@ -229,6 +229,7 @@ export const mockFilterLocations: Array<ServerData<FilteredLocation>> = [
 export const mockConfigEnketo = {
   survey_info: {
     'trip-labels': 'ENKETO',
+    surveys: { TripConfirmSurvey: { compatibleWith: 1.2 } },
   },
 };
 export const mockConfigModeOfStudy = {
