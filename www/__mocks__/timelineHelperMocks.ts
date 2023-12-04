@@ -226,20 +226,20 @@ export const mockFilterLocations: Array<ServerData<FilteredLocation>> = [
   },
 ];
 
-export const mockAppConfigOne = {
+export const mockConfigEnketo = {
   survey_info: {
     'trip-labels': 'ENKETO',
   },
 };
-export const mockAppConfigTwo = {
+export const mockConfigModeOfStudy = {
   survey_info: {
-    'trip-labels': 'Other',
+    'trip-labels': 'MULTILABEL',
   },
   intro: {
     mode_studied: 'sample_study',
   },
 };
-export const mockAppConfigThree = {
+export const mockConfigNoModeOfStudy = {
   survey_info: {
     'trip-labels': 'Other',
   },
@@ -247,49 +247,6 @@ export const mockAppConfigThree = {
     mode_studied: false,
   },
 };
-
-export const mockLabelDataPromises = [
-  Promise.resolve([
-    // Mode
-    {
-      data: {
-        end_ts: 1681438322.981,
-        label: 'walk',
-        start_ts: 1681437527.4971218,
-      },
-      metadata: mockMetaData,
-    },
-    {
-      data: {
-        end_ts: 1681439339.983,
-        label: 'walk',
-        start_ts: 1681438918.6598706,
-      },
-      metadata: mockMetaDataTwo,
-    },
-  ]),
-  Promise.resolve([
-    // Purpose
-    {
-      data: {
-        end_ts: 1681438322.981,
-        label: 'test',
-        start_ts: 1681437527.4971218,
-      },
-      metadata: mockMetaData,
-    },
-    {
-      data: {
-        end_ts: 1681438322.983,
-        label: 'testValue',
-        start_ts: 1681438918.6598706,
-      },
-      metadata: mockMetaDataTwo,
-    },
-  ]),
-  Promise.resolve([]), // Replaced_Mode
-];
-//let mockLabelDataPromisesTwo = JSON.parse(JSON.stringify(mockLabelDataPromises));
 
 // Used by jest.mocks() to return a various mocked objects.
 export const fakeStartTsOne = -14576291;

@@ -12,6 +12,7 @@ import {
   GeoJSONData,
   UnprocessedTrip,
   FilteredLocation,
+  TimestampRange,
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
@@ -89,7 +90,7 @@ export let unprocessedLabels: { [key: string]: UserInputEntry[] } = {};
 /* 'NOTES' are 1:n - each trip or place can have any number of notes */
 export let unprocessedNotes: UserInputEntry[] = [];
 
-const getUnprocessedInputQuery = (pipelineRange) => ({
+const getUnprocessedInputQuery = (pipelineRange: TimestampRange) => ({
   key: 'write_ts',
   startTs: pipelineRange.end_ts - 10,
   endTs: DateTime.now().toUnixInteger() + 10,
@@ -126,7 +127,7 @@ export function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig
  *     for which travel data has been processed through the pipeline on the server
  *  @param appConfig the app configuration
  */
-export async function updateLocalUnprocessedInputs(pipelineRange, appConfig) {
+export async function updateLocalUnprocessedInputs(pipelineRange: TimestampRange, appConfig) {
   const BEMUserCache = window['cordova'].plugins.BEMUserCache;
   const tq = getUnprocessedInputQuery(pipelineRange);
   const labelsPromises = keysForLabelInputs(appConfig).map((key) =>
@@ -145,7 +146,7 @@ export async function updateLocalUnprocessedInputs(pipelineRange, appConfig) {
  *     for which travel data has been processed through the pipeline on the server
  * @param appConfig the app configuration
  */
-export async function updateAllUnprocessedInputs(pipelineRange, appConfig) {
+export async function updateAllUnprocessedInputs(pipelineRange: TimestampRange, appConfig) {
   const tq = getUnprocessedInputQuery(pipelineRange);
   const getMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
   const labelsPromises = keysForLabelInputs(appConfig).map((key) =>
