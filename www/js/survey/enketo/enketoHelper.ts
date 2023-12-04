@@ -167,9 +167,10 @@ export function resolveTimestamps(xmlDoc: XMLDocument, timelineEntry: TimelineEn
   // if any of the fields are missing, return null
   if (!startDate || !startTime || !endDate || !endTime) return null;
 
-  const timezone =
+  const start_timezone =
     (timelineEntry as CompositeTrip).start_local_dt?.timezone ||
-    (timelineEntry as ConfirmedPlace).enter_local_dt?.timezone ||
+    (timelineEntry as ConfirmedPlace).enter_local_dt?.timezone;
+  const end_timezone = 
     (timelineEntry as CompositeTrip).end_local_dt?.timezone ||
     (timelineEntry as ConfirmedPlace).exit_local_dt?.timezone;
   // split by + or - to get time without offset
@@ -177,9 +178,9 @@ export function resolveTimestamps(xmlDoc: XMLDocument, timelineEntry: TimelineEn
   endTime = endTime.split(/\-|\+/)[0];
 
   let additionStartTs = DateTime.fromISO(startDate + 'T' + startTime, {
-    zone: timezone,
+    zone: start_timezone,
   }).toSeconds();
-  let additionEndTs = DateTime.fromISO(endDate + 'T' + endTime, { zone: timezone }).toSeconds();
+  let additionEndTs = DateTime.fromISO(endDate + 'T' + endTime, { zone: end_timezone }).toSeconds();
 
   if (additionStartTs > additionEndTs) {
     return undefined; // if the start time is after the end time, this is an invalid response

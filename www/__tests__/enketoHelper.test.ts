@@ -77,6 +77,7 @@ it('resolves the timestamps', () => {
   const xmlParser = new window.DOMParser();
   const timelineEntry = {
     end_local_dt: { timezone: 'America/Los_Angeles' },
+    start_local_dt: { timezone: 'America/Los_Angeles' },
     start_ts: 1469492672.928242,
     end_ts: 1469493031,
   };
