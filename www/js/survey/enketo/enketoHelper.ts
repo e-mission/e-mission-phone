@@ -170,7 +170,7 @@ export function resolveTimestamps(xmlDoc: XMLDocument, timelineEntry: TimelineEn
   const start_timezone =
     (timelineEntry as CompositeTrip).start_local_dt?.timezone ||
     (timelineEntry as ConfirmedPlace).enter_local_dt?.timezone;
-  const end_timezone = 
+  const end_timezone =
     (timelineEntry as CompositeTrip).end_local_dt?.timezone ||
     (timelineEntry as ConfirmedPlace).exit_local_dt?.timezone;
   // split by + or - to get time without offset
