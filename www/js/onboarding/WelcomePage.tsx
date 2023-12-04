@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import {
   View,
@@ -26,6 +26,7 @@ import { AppContext } from '../App';
 import { displayError, logDebug } from '../plugin/logger';
 import { onboardingStyles } from './OnboardingStack';
 import { Icon } from '../components/Icon';
+import openURL from './ClickableLink';
 
 const WelcomePage = () => {
   const { t } = useTranslation();
@@ -95,6 +96,11 @@ const WelcomePage = () => {
       });
   }
 
+  const OPAccessStudy = function () {
+    logDebug('Opening URL...');
+    window['cordova'].InAppBrowser.open('https://open-access-openpath.nrel.gov/join/', '_system');
+      };
+
   return (
     <>
       <Surface style={[onboardingStyles.page, { paddingVertical: 0 }]}>
@@ -121,8 +127,9 @@ const WelcomePage = () => {
           </Text>
           <View style={{ marginVertical: 15, gap: 10 }}>
             <Text>{t('join.to-proceed-further')}</Text>
-            <a href="https://open-access-openpath.nrel.gov/join/"><Text>{t('join.op-acc-link')}</Text></a> // proof of concept - first change
-            <Text>{t('join.code-hint')}</Text>
+            <WelcomePageButton onPress={OPAccessStudy} icon={undefined}>
+                {t('join.open-access-study')}
+            </WelcomePageButton>
           </View>
           <View style={s.buttonsSection}>
             <View style={{ width: windowWidth / 2 - 5, paddingHorizontal: 10, gap: 8 }}>
