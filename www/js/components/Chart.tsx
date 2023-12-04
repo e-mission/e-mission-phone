@@ -138,7 +138,9 @@ const Chart = ({
                             logDebug(`Horizontal axis callback: i = ${i};
                               chartDatasets = ${JSON.stringify(chartDatasets)};
                               chartDatasets[0].data = ${JSON.stringify(chartDatasets[0].data)}`);
-                            const label = chartDatasets[0].data[i].y;
+                            //account for different data possiblities
+                            const label =
+                              chartDatasets[0].data[i]?.y || chartDatasets[i].data[0]?.y;
                             if (typeof label == 'string' && label.includes('\n'))
                               return label.split('\n');
                             return label;
@@ -175,7 +177,9 @@ const Chart = ({
                             logDebug(`Vertical axis callback: i = ${i}; 
                               chartDatasets = ${JSON.stringify(chartDatasets)}; 
                               chartDatasets[0].data = ${JSON.stringify(chartDatasets[0].data)}`);
-                            const label = chartDatasets[0].data[i].x;
+                            //account for different data possiblities - one mode per week, one mode both weeks, mixed weeks
+                            const label =
+                              chartDatasets[0].data[i]?.x || chartDatasets[i].data[0]?.x;
                             if (typeof label == 'string' && label.includes('\n'))
                               return label.split('\n');
                             return label;
