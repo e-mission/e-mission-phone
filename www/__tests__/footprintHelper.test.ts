@@ -1,4 +1,7 @@
-import { clearCustomMetrics, initCustomDatasetHelper } from '../js/metrics/customMetricsHelper';
+import {
+  _test_clearCustomMetrics,
+  initCustomDatasetHelper,
+} from '../js/metrics/customMetricsHelper';
 import {
   clearHighestFootprint,
   getFootprintForMetrics,
@@ -28,7 +31,7 @@ global.fetch = (url: string) =>
 
 beforeEach(() => {
   clearHighestFootprint();
-  clearCustomMetrics();
+  _test_clearCustomMetrics();
 });
 
 const custom_metrics = [

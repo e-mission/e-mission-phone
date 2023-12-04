@@ -1,5 +1,6 @@
 import { getConfig } from '../js/config/dynamicConfig';
 import {
+  _test_clearCustomMetrics,
   getCustomFootprint,
   getCustomMETs,
   initCustomDatasetHelper,
@@ -10,6 +11,10 @@ import fakeLabels from '../__mocks__/fakeLabels.json';
 
 mockBEMUserCache();
 mockLogger();
+
+beforeEach(() => {
+  _test_clearCustomMetrics();
+});
 
 global.fetch = (url: string) =>
   new Promise((rs, rj) => {
@@ -23,6 +28,11 @@ global.fetch = (url: string) =>
       }),
     );
   }) as any;
+
+it('has no footprint or mets before initialized', () => {
+  expect(getCustomFootprint()).toBeUndefined();
+  expect(getCustomMETs()).toBeUndefined();
+});
 
 it('gets the custom mets', async () => {
   const appConfig = await getConfig();

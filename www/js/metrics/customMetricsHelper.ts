@@ -11,9 +11,10 @@ let _range_limited_motorized;
 let _labelOptions;
 
 /**
+ * ONLY USED IN TESTING
  * @function clears the locally stored variables
  */
-export function clearCustomMetrics() {
+export function _test_clearCustomMetrics() {
   _customMETs = undefined;
   _customPerKmFootprint = undefined;
   _range_limited_motorized = undefined;
