@@ -5,6 +5,7 @@ import {
   resolveLabel,
   loadPreviousResponseForSurvey,
   saveResponse,
+  fetchSurvey,
 } from '../js/survey/enketo/enketoHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
@@ -196,15 +197,13 @@ it('resolves the label, if no labelVars, returns template', async () => {
   );
 });
 
-/**
- * @param surveyName the name of the survey (e.g. "TimeUseSurvey")
- * @param enketoForm the Form object from enketo-core that contains this survey
- * @param appConfig the dynamic config file for the app
- * @param opts object with SurveyOptions like 'timelineEntry' or 'dataKey'
- * @returns Promise of the saved result, or an Error if there was a problem
- */
-//   export function saveResponse(surveyName: string, enketoForm: Form, appConfig, opts: SurveyOptions) {
-it('gets the saved result or throws an error', () => {
+/* cases tested here:
+  1. returns the label with options timestamps
+  2. returns the label with fallback timestamps
+  3. returns error about the invalid timestamps
+  4. errors out on invalid label vars
+*/
+it('gets the saved result or throws an error', async () => {
   const surveyName = 'TimeUseSurvey';
   const form = {
     getDataStr: () => {
@@ -225,18 +224,20 @@ it('gets the saved result or throws an error', () => {
           formPath:
             'https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
           labelTemplate: {
-            en: '{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }',
-            es: '{ erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }}',
+            en: '{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }{ pca, plural, =0 {} other {# Personal Care, } }',
+            es: '{ erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }}{ pca, plural, =0 {} other {# Cuidado, } }',
           },
           labelVars: {
             da: { key: 'Domestic_activities', type: 'length' },
             erea: { key: 'Employment_related_a_Education_activities', type: 'length' },
+            pca: { key: 'Personal_Care_activities', type: 'length' },
           },
           version: 9,
         },
       },
     },
   };
+  mockBEMUserCache(config);
   const opts = {
     timelineEntry: {
       end_local_dt: { timezone: 'America/Los_Angeles' },
@@ -245,15 +246,44 @@ it('gets the saved result or throws an error', () => {
     },
   };
 
-  console.log(config);
-  expect(saveResponse(surveyName, form, config, opts)).resolves.toMatchObject({
+  await expect(saveResponse(surveyName, form, config, opts)).resolves.toMatchObject({
     label: '1 Personal Care',
     name: 'TimeUseSurvey',
   });
-  expect(saveResponse(surveyName, badForm, config, opts)).resolves.toMatchObject({
+  await expect(saveResponse(surveyName, form, config, {})).resolves.toMatchObject({
+    label: '1 Personal Care',
+    name: 'TimeUseSurvey',
+  });
+  await expect(saveResponse(surveyName, badForm, config, opts)).resolves.toMatchObject({
     message:
       'The times you entered are invalid. Please ensure that the start time is before the end time.',
   });
+
+  //wrong label format
+  const bad_config = {
+    survey_info: {
+      surveys: {
+        TimeUseSurvey: {
+          compatibleWith: 1,
+          formPath:
+            'https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
+          labelTemplate: {
+            en: '{ da, plural, =0 {} other {# Domestic, } }',
+            es: '{ da, plural, =0 {} other {# Actividades domesticas, }}',
+          },
+          labelVars: {
+            da: { key: 'Domestic_activities', type: 'width' },
+          },
+          version: 9,
+        },
+      },
+    },
+  };
+  _test_resetStoredConfig();
+  mockBEMUserCache(bad_config);
+  await expect(saveResponse(surveyName, form, bad_config, opts)).rejects.toThrow(
+    'labelVar type width is not supported!',
+  );
 });
 
 /*
@@ -263,8 +293,8 @@ it('gets the saved result or throws an error', () => {
  * Loading it on demand seems like the way to go. If we choose to experiment
  * with incremental updates, we may want to revisit this.
  */
-it('loads the previous response to a given survey', () => {
-  expect(loadPreviousResponseForSurvey('manual/demographic_survey')).resolves.toMatchObject({
+it('loads the previous response to a given survey', async () => {
+  await expect(loadPreviousResponseForSurvey('manual/demographic_survey')).resolves.toMatchObject({
     data: 'completed',
     time: '01/01/2001',
   });
@@ -275,7 +305,7 @@ it('loads the previous response to a given survey', () => {
  * The version for filtering is specified in enketo survey `compatibleWith` config.
  * The stored survey response version must be greater than or equal to `compatibleWith` to be included.
  */
-it('filters the survey responses by their name and version', () => {
+it('filters the survey responses by their name and version', async () => {
   //no response -> no filtered responses
   expect(filterByNameAndVersion('TimeUseSurvey', [])).resolves.toStrictEqual([]);
 
@@ -295,7 +325,7 @@ it('filters the survey responses by their name and version', () => {
   ];
 
   //one response -> that response
-  expect(filterByNameAndVersion('TimeUseSurvey', response)).resolves.toStrictEqual(response);
+  await expect(filterByNameAndVersion('TimeUseSurvey', response)).resolves.toStrictEqual(response);
 
   const responses = [
     {
@@ -336,6 +366,33 @@ it('filters the survey responses by their name and version', () => {
     },
   ];
 
-  //several responses -> only the one that has a name match
-  expect(filterByNameAndVersion('TimeUseSurvey', responses)).resolves.toStrictEqual(response);
+  //several responses -> only the one that has a name & version match
+  await expect(filterByNameAndVersion('TimeUseSurvey', responses)).resolves.toStrictEqual(response);
+});
+
+it('fetches the survey', async () => {
+  global.fetch = (url: string) =>
+    new Promise((rs, rj) => {
+      setTimeout(() =>
+        rs({
+          text: () =>
+            new Promise((rs, rj) => {
+              let urlList = url.split('.');
+              let urlEnd = urlList[urlList.length - 1];
+              if (urlEnd === 'json') {
+                setTimeout(() => rs('{ "data": "is_json" }'), 100);
+              } else {
+                setTimeout(() => rs('not json'), 100);
+              }
+            }),
+        }),
+      );
+    }) as any;
+  await expect(
+    fetchSurvey(
+      'https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/label_options/example-study-label-options.json',
+    ),
+  ).resolves.toMatchObject({ data: 'is_json' });
+
+  //test for the xml transformer?
 });

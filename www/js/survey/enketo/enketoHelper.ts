@@ -3,7 +3,7 @@ import { transform } from 'enketo-transformer/web';
 import { XMLParser } from 'fast-xml-parser';
 import i18next from 'i18next';
 import MessageFormat from '@messageformat/core';
-import { logDebug, logInfo } from '../../plugin/logger';
+import { logDebug } from '../../plugin/logger';
 import { getConfig } from '../../config/dynamicConfig';
 import { DateTime } from 'luxon';
 import { fetchUrlCached } from '../../services/commHelper';
