@@ -87,17 +87,17 @@ it('resolves the timestamps', () => {
   const missingData =
     '<tag> <Start_date>2016-08-28</Start_date> <End_date>2016-07-25</End_date> <End_time>17:30:31.000-06:00</End_time> </tag>';
   const missDataDoc = xmlParser.parseFromString(missingData, 'text/html');
-  expect(resolveTimestamps(missDataDoc, timelineEntry)).toBeNull();
+  expect(resolveTimestamps(missDataDoc, timelineEntry, () => {})).toBeNull();
   //bad time returns undefined
   const badTimes =
     '<tag> <Start_date>2016-08-28</Start_date> <End_date>2016-07-25</End_date> <Start_time>17:32:32.928-06:00</Start_time> <End_time>17:30:31.000-06:00</End_time> </tag>';
   const badTimeDoc = xmlParser.parseFromString(badTimes, 'text/xml');
-  expect(resolveTimestamps(badTimeDoc, timelineEntry)).toBeUndefined();
+  expect(resolveTimestamps(badTimeDoc, timelineEntry, () => {})).toBeUndefined();
   //if within a minute, timelineEntry timestamps
   const timeEntry =
     '<tag> <Start_date>2016-07-25</Start_date> <End_date>2016-07-25</End_date> <Start_time>17:24:32.928-06:00</Start_time> <End_time>17:30:31.000-06:00</End_time> </tag>';
   const xmlDoc1 = xmlParser.parseFromString(timeEntry, 'text/xml');
-  expect(resolveTimestamps(xmlDoc1, timelineEntry)).toMatchObject({
+  expect(resolveTimestamps(xmlDoc1, timelineEntry, () => {})).toMatchObject({
     start_ts: 1469492672.928242,
     end_ts: 1469493031,
   });
@@ -105,7 +105,7 @@ it('resolves the timestamps', () => {
   const timeSurvey =
     '<tag> <Start_date>2016-07-25</Start_date> <End_date>2016-07-25</End_date> <Start_time>17:22:33.928-06:00</Start_time> <End_time>17:33:33.000-06:00</End_time> </tag>';
   const xmlDoc2 = xmlParser.parseFromString(timeSurvey, 'text/xml');
-  expect(resolveTimestamps(xmlDoc2, timelineEntry)).toMatchObject({
+  expect(resolveTimestamps(xmlDoc2, timelineEntry, () => {})).toMatchObject({
     start_ts: 1469492553.928,
     end_ts: 1469493213,
   });
@@ -205,7 +205,7 @@ it('resolves the label, if no labelVars, returns template', async () => {
  * @returns Promise of the saved result, or an Error if there was a problem
  */
 //   export function saveResponse(surveyName: string, enketoForm: Form, appConfig, opts: SurveyOptions) {
-it('gets the saved result or throws an error', () => {
+it('gets the saved result or throws an error', async () => {
   const surveyName = 'TimeUseSurvey';
   const form = {
     getDataStr: () => {
@@ -251,10 +251,9 @@ it('gets the saved result or throws an error', () => {
     label: '1 Personal Care',
     name: 'TimeUseSurvey',
   });
-  expect(saveResponse(surveyName, badForm, config, opts)).resolves.toMatchObject({
-    message:
-      'The times you entered are invalid. Please ensure that the start time is before the end time.',
-  });
+  expect(async () => await saveResponse(surveyName, badForm, config, opts)).rejects.toEqual(
+    'The times you entered are invalid. Please ensure that the start time is before the end time.',
+  );
 });
 
 /*

@@ -169,10 +169,15 @@ export function getInstanceStr(xmlModel: string, opts?: SurveyOptions): string |
  * resolve timestamps label from the survey response
  * @param {XMLDocument} xmlDoc survey response as XML object
  * @param {object} timelineEntry trip or place object
+ * @param {function} onFail callback function to be called if timestamp validation fails
  * @returns {object} object with `start_ts` and `end_ts`
  *    - null if no timestamps are resolved
  */
-export function resolveTimestamps(xmlDoc: XMLDocument, timelineEntry: TimelineEntry) {
+export function resolveTimestamps(
+  xmlDoc: XMLDocument,
+  timelineEntry: TimelineEntry,
+  onFail: (e: Error) => void,
+) {
   // check for Date and Time fields
   const startDate = xmlDoc.getElementsByTagName('Start_date')?.[0]?.innerHTML;
   let startTime = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
@@ -197,7 +202,8 @@ export function resolveTimestamps(xmlDoc: XMLDocument, timelineEntry: TimelineEn
   let additionEndTs = DateTime.fromISO(endDate + 'T' + endTime, { zone: timezone }).toSeconds();
 
   if (additionStartTs > additionEndTs) {
-    throw new Error(i18next.t('survey.enketo-timestamps-invalid')); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
+    onFail(new Error(i18next.t('survey.enketo-timestamps-invalid'))); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
+    return;
   }
 
   /* Enketo survey time inputs are only precise to the minute, while trips/places are precise to
@@ -243,7 +249,9 @@ export function saveResponse(
       let timestamps: TimestampRange | { ts: number; fmt_time: string } | undefined;
       let match_id: string | undefined;
       if (opts?.timelineEntry) {
-        const resolvedTimestamps = resolveTimestamps(xmlDoc, opts.timelineEntry);
+        const resolvedTimestamps = resolveTimestamps(xmlDoc, opts.timelineEntry, (errOnFail) => {
+          return Promise.reject(errOnFail);
+        });
         if (resolvedTimestamps?.start_ts && resolvedTimestamps?.end_ts) {
           timestamps = resolvedTimestamps;
         } else {
@@ -257,7 +265,6 @@ export function saveResponse(
               : opts.timelineEntry.exit_ts,
           };
         }
-
         // UUID generated using this method https://stackoverflow.com/a/66332305
         match_id = URL.createObjectURL(new Blob([])).slice(-36);
       } else {
