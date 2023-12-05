@@ -20,10 +20,13 @@ jobs:
           node-version: "21"
 
       - name: Install dependencies
+        shell: bash -l {0}
         run: npm install jest
 
       - name: Run Jest tests
-        run: npm run test
+        shell: bash -l {0}
+        run: |
+          npx jest
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
