@@ -47,18 +47,9 @@ export function getFootprintForMetrics(userMetrics, defaultIfMissing = 0) {
   for (let i in userMetrics) {
     let mode = userMetrics[i].key;
 
+    //either the mode is in our custom footprint or it is not
     if (mode in footprint) {
       result += footprint[mode] * mtokm(userMetrics[i].values);
-    } else if (mode == 'IN_VEHICLE') {
-      //this... could be deprecated
-      const sum =
-        footprint['CAR'] +
-        footprint['BUS'] +
-        footprint['LIGHT_RAIL'] +
-        footprint['TRAIN'] +
-        footprint['TRAM'] +
-        footprint['SUBWAY'];
-      result += (sum / 6) * mtokm(userMetrics[i].values);
     } else {
       logWarn(
         `WARNING getFootprintFromMetrics() was requested for an unknown mode: ${mode} metrics JSON: ${JSON.stringify(
