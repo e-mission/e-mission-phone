@@ -150,6 +150,7 @@ export function getFormattedDateAbbr(beginFmtTime?: string, endFmtTime?: string)
  * @returns A human-readable, approximate time range, e.g. "2 hours"
  */
 export function getFormattedTimeRange(beginFmtTime: string, endFmtTime: string) {
+  if (!beginFmtTime || !endFmtTime) return;
   const beginTime = DateTime.fromISO(beginFmtTime, { setZone: true });
   const endTime = DateTime.fromISO(endFmtTime, { setZone: true });
   const range = endTime.diff(beginTime, ['hours', 'minutes']);
