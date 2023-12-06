@@ -3,13 +3,7 @@
 import angular from 'angular';
 
 angular
-  .module('emission.main', [
-    'emission.main.diary',
-    'emission.i18n.utils',
-    'emission.main.metrics.factory',
-    'emission.main.metrics.mappings',
-    'emission.services',
-  ])
+  .module('emission.main', ['emission.main.diary', 'emission.i18n.utils', 'emission.services'])
 
   .config(function ($stateProvider) {
     $stateProvider.state('root.main', {

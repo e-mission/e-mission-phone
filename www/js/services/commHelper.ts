@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import { logDebug } from '../plugin/logger';
+import { ServerConnConfig } from '../types/appConfigTypes';
 
 /**
  * @param url URL endpoint for the request
@@ -129,20 +130,17 @@ export function getMetrics(timeType: 'timestamp' | 'local_date', metricsQuery) {
   });
 }
 
-export function getAggregateData(path: string, data: any) {
+export function getAggregateData(path: string, query, serverConnConfig: ServerConnConfig) {
   return new Promise((rs, rj) => {
-    const fullUrl = `${window['$rootScope'].connectUrl}/${path}`;
-    data['aggregate'] = true;
+    const fullUrl = `${serverConnConfig.connectUrl}/${path}`;
+    query['aggregate'] = true;
 
-    if (window['$rootScope'].aggregateAuth === 'no_auth') {
-      logDebug(
-        `getting aggregate data without user authentication from ${fullUrl} with arguments ${JSON.stringify(
-          data,
-        )}`,
-      );
+    if (serverConnConfig.aggregate_call_auth == 'no_auth') {
+      logDebug(`getting aggregate data without user authentication from ${fullUrl} 
+        with arguments ${JSON.stringify(query)}`);
       const options = {
         method: 'post',
-        data: data,
+        data: query,
         responseType: 'json',
       };
       window['cordova'].plugin.http.sendRequest(
@@ -156,14 +154,9 @@ export function getAggregateData(path: string, data: any) {
         },
       );
     } else {
-      logDebug(
-        `getting aggregate data with user authentication from ${fullUrl} with arguments ${JSON.stringify(
-          data,
-        )}`,
-      );
-      const msgFiller = (message) => {
-        return Object.assign(message, data);
-      };
+      logDebug(`getting aggregate data with user authentication from ${fullUrl} 
+        with arguments ${JSON.stringify(query)}`);
+      const msgFiller = (message) => Object.assign(message, query);
       window['cordova'].plugins.BEMServerComm.pushGetJSON(`/${path}`, msgFiller, rs, rj);
     }
   }).catch((error) => {
