@@ -99,9 +99,9 @@ const getUnprocessedInputQuery = (pipelineRange: TimestampRange) => ({
 
 /**
  * updateUnprocessedInputs is a helper function for updateLocalUnprocessedInputs
- * and updateAllUnprocessedInputs, exported for unit testing.
+ * and updateAllUnprocessedInputs
  */
-export function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
+function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
   return Promise.all([...labelsPromises, ...notesPromises]).then((comboResults) => {
     const labelResults = comboResults.slice(0, labelsPromises.length);
     const notesResults = comboResults.slice(labelsPromises.length).flat(2);
