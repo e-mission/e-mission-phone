@@ -29,6 +29,7 @@ export const mockFile = () => {
   window['cordova'].file = {
     dataDirectory: '../path/to/data/directory',
     applicationStorageDirectory: '../path/to/app/storage/directory',
+    tempDirectory: '../path/to/temp/directory',
   };
 };
 
