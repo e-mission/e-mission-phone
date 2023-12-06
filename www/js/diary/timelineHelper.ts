@@ -318,7 +318,7 @@ const points2TripProps = function (locationPoints) {
     inferred_labels: [],
     locations: locations,
     source: 'unprocessed',
-    start_fmt_time: startTime.toISO,
+    start_fmt_time: startTime.toISO(),
     start_local_dt: dateTime2localdate(startTime, startPoint.metadata.time_zone),
     start_ts: startPoint.data.ts,
     user_input: {},
