@@ -3,6 +3,7 @@ import { getUser, updateUser } from '../services/commHelper';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
 import { DateTime } from 'luxon';
 import i18next from 'i18next';
+import { ReminderSchemeConfig } from '../types/appConfigTypes';
 
 // like python range()
 function range(start, stop, step) {
@@ -162,7 +163,7 @@ const removeEmptyObjects = (list: any[]): any[] => {
 
 // determines when notifications are needed, and schedules them if not already scheduled
 export const updateScheduledNotifs = async (
-  reminderSchemes: object,
+  reminderSchemes: ReminderSchemeConfig,
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,
@@ -236,7 +237,7 @@ interface User {
 }
 
 export const getReminderPrefs = async (
-  reminderSchemes: object,
+  reminderSchemes: ReminderSchemeConfig,
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,
@@ -262,7 +263,7 @@ export const getReminderPrefs = async (
 };
 export const setReminderPrefs = async (
   newPrefs: object,
-  reminderSchemes: object,
+  reminderSchemes: ReminderSchemeConfig,
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,
