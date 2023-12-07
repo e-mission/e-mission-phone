@@ -28,26 +28,7 @@ import {
   verifiabilityForTrip,
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
-import { createMode } from '../../services/commHelper';
-
-// This will be sorted by frequency and createdAt from server
-const DUMMY_CUSTOMIZED_MODE = {
-  'jiji-car': {
-    createdAt: new Date(),
-    frequency: 10,
-    isActive: true,
-  },
-  'jiji-ebike': {
-    createdAt: new Date(),
-    frequency: 10,
-    isActive: true,
-  },
-  longlongtextlonglongtext: {
-    createdAt: new Date(),
-    frequency: 3,
-    isActive: true,
-  },
-};
+import { createMode, getModes } from '../../services/commHelper';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
@@ -55,7 +36,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const appConfig = useAppConfig();
   const { repopulateTimelineEntry, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
   const { height: windowHeight } = useWindowDimensions();
-
+  const [customMode, setCustomMode] = useState({});
   // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
   const [modalVisibleFor, setModalVisibleFor] = useState<
     'MODE' | 'PURPOSE' | 'REPLACED_MODE' | null
@@ -100,7 +81,8 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
       chosenLabel = readableLabelToKey(chosenLabel);
       createMode(chosenLabel)
         .then((res) => {
-          logDebug('Create Mode in CommHelper result ' + JSON.stringify(res));
+          setCustomMode(res['modes']);
+          logDebug('Successfuly stored custom mode ' + JSON.stringify(res));
         })
         .catch((e) => {
           displayErrorMsg(e, 'Create Mode Error');
@@ -121,6 +103,18 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   }
 
   const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap[trip._id.$oid], appConfig);
+
+  useEffect(() => {
+    getModes()
+      .then((res) => {
+        setCustomMode(res);
+        logDebug('Successfully get custom mode ' + JSON.stringify(res));
+      })
+      .catch((e) => {
+        displayErrorMsg(e, 'Get Modes Error');
+      });
+  }, []);
+
   return (
     <>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -188,11 +182,11 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                       style={{ paddingVertical: 2 }}
                     />
                   ))}
-                  {Object.keys(DUMMY_CUSTOMIZED_MODE).map((key, i) => (
+                  {Object.keys(customMode).map((key, i) => (
                     // @ts-ignore
                     <RadioButton.Item
                       key={key + i}
-                      label={key}
+                      label={key.charAt(0).toUpperCase() + key.slice(1)}
                       value={key}
                       style={{ paddingVertical: 2 }}
                     />

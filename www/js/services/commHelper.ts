@@ -230,6 +230,15 @@ export function putOne(key, data) {
   });
 }
 
+export function getModes() {
+  return new Promise((rs, rj) => {
+    window['cordova'].plugins.BEMServerComm.getUserPersonalData('/mode/get', rs, rj);
+  }).catch((error) => {
+    error = 'While getting modes, ' + error;
+    throw error;
+  });
+}
+
 export function createMode(mode) {
   return new Promise((rs, rj) => {
     window['cordova'].plugins.BEMServerComm.postUserPersonalData(
