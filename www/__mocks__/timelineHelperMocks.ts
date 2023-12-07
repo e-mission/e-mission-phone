@@ -189,18 +189,10 @@ export const mockTransitions: Array<BEMData<TripTransition>> = [
 
 const mockFilterLocation: FilteredLocation = {
   accuracy: 0.1,
-  altitude: 100,
-  elapsedRealtimeNanos: 10000,
-  filter: 'time',
-  fmt_time: '',
-  heading: 1.0,
   latitude: 1.0,
-  loc: null,
-  local_dt: null,
   longitude: -1.0,
-  sensed_speed: 0,
   ts: 100,
-};
+} as FilteredLocation;
 let mockFilterLocationTwo = JSON.parse(JSON.stringify(mockFilterLocation));
 mockFilterLocationTwo.ts = 900;
 mockFilterLocationTwo.longitude = 200;
