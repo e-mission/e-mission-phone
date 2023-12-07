@@ -64,28 +64,6 @@ tempMetaData.write_ts = 2;
 tempMetaData.origin_key = '2';
 export const mockMetaDataTwo = tempMetaData;
 
-export const mockUnprocessedTrip: UnprocessedTrip = {
-  _id: { $oid: 'mockUnprocessedTrip' },
-  additions: [],
-  confidence_threshold: 0.0,
-  distance: 1.0,
-  duration: 3.0,
-  end_fmt_time: '',
-  end_loc: { type: '', coordinates: [] },
-  end_local_dt: null,
-  expectation: null,
-  inferred_labels: [],
-  key: 'mockUnprocessedTrip',
-  locations: [],
-  origin_key: '',
-  source: '',
-  start_local_dt: null,
-  start_ts: 0.1,
-  start_loc: { type: '', coordinates: [] },
-  starting_trip: null,
-  user_input: null,
-};
-
 export const mockCompData: ServerResponse<CompositeTrip> = {
   phone_data: [
     {
@@ -200,18 +178,10 @@ export const mockTransitions: Array<ServerData<TripTransition>> = [
 
 const mockFilterLocation: FilteredLocation = {
   accuracy: 0.1,
-  altitude: 100,
-  elapsedRealtimeNanos: 10000,
-  filter: 'time',
-  fmt_time: '',
-  heading: 1.0,
   latitude: 1.0,
-  loc: null,
-  local_dt: null,
   longitude: -1.0,
-  sensed_speed: 0,
   ts: 100,
-};
+} as FilteredLocation;
 let mockFilterLocationTwo = JSON.parse(JSON.stringify(mockFilterLocation));
 mockFilterLocationTwo.ts = 900;
 mockFilterLocationTwo.longitude = 200;
