@@ -1,5 +1,4 @@
-import moment from 'moment';
-import { logDebug, displayError } from '../plugin/logger';
+import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import { getBaseModeByKey, getBaseModeByValue } from './diaryHelper';
 import { getUnifiedDataForInterval } from '../services/unifiedDataLoader';
 import { getRawEntries } from '../services/commHelper';
@@ -331,14 +330,14 @@ const points2TripProps = function (locationPoints: Array<BEMData<FilteredLocatio
     confidence_threshold: 0,
     distance: dists.reduce((a, b) => a + b, 0),
     duration: endPoint.data.ts - startPoint.data.ts,
-    end_fmt_time: endTime.toISO(),
+    end_fmt_time: endTime.toISO() || displayErrorMsg('end_fmt_time: invalid DateTime') || '',
     end_local_dt: dateTime2localdate(endTime, endPoint.metadata.time_zone),
     end_ts: endPoint.data.ts,
     expectation: { to_label: true },
     inferred_labels: [],
     locations: locations,
     source: 'unprocessed',
-    start_fmt_time: startTime.toISO(),
+    start_fmt_time: startTime.toISO() || displayErrorMsg('start_fmt_time: invalid DateTime') || '',
     start_local_dt: dateTime2localdate(startTime, startPoint.metadata.time_zone),
     start_ts: startPoint.data.ts,
     user_input: {},
@@ -350,7 +349,7 @@ const tsEntrySort = function (e1: BEMData<FilteredLocation>, e2: BEMData<Filtere
   return e1.data.ts - e2.data.ts;
 };
 
-const transitionTrip2TripObj = function (trip: Array<any>) {
+function transitionTrip2TripObj(trip: Array<any>): Promise<UnprocessedTrip | undefined> {
   const tripStartTransition = trip[0];
   const tripEndTransition = trip[1];
   const tq = {
@@ -422,7 +421,7 @@ const transitionTrip2TripObj = function (trip: Array<any>) {
       };
     },
   );
-};
+}
 const isStartingTransition = function (transWrapper: BEMData<TripTransition>) {
   if (
     transWrapper.data.transition == 'local.transition.exited_geofence' ||
@@ -558,7 +557,7 @@ export function readUnprocessedTrips(
         logDebug(JSON.stringify(trip, null, 2));
       });
       const tripFillPromises = tripsList.map(transitionTrip2TripObj);
-      return Promise.all(tripFillPromises).then(function (raw_trip_gj_list) {
+      return Promise.all(tripFillPromises).then((rawTripObjs: (UnprocessedTrip | undefined)[]) => {
         // Now we need to link up the trips. linking unprocessed trips
         // to one another is fairly simple, but we need to link the
         // first unprocessed trip to the last processed trip.
@@ -568,27 +567,27 @@ export function readUnprocessedTrips(
         // new chain for now, since this is with unprocessed data
         // anyway.
 
-        logDebug(`mapped trips to trip_gj_list of size ${raw_trip_gj_list.length}`);
-        /* Filtering: we will keep trips that are 1) defined and 2) have a distance >= 100m or duration >= 5 minutes
-              https://github.com/e-mission/e-mission-docs/issues/966#issuecomment-1709112578 */
-        const trip_gj_list = raw_trip_gj_list.filter(
+        logDebug(`mapping trips to tripObjs of size ${rawTripObjs.length}`);
+        /* Filtering: we will keep trips that are 1) defined and 2) have a distance >= 100m,
+          or duration >= 5 minutes
+          https://github.com/e-mission/e-mission-docs/issues/966#issuecomment-1709112578 */
+        const tripObjs = rawTripObjs.filter(
           (trip) => trip && (trip.distance >= 100 || trip.duration >= 300),
         );
-        logDebug(
-          `after filtering undefined and distance < 100, trip_gj_list size = ${trip_gj_list.length}`,
-        );
+        logDebug(`after filtering undefined and distance < 100m, 
+          tripObjs size = ${tripObjs.length}`);
         // Link 0th trip to first, first to second, ...
-        for (let i = 0; i < trip_gj_list.length - 1; i++) {
-          linkTrips(trip_gj_list[i], trip_gj_list[i + 1]);
+        for (let i = 0; i < tripObjs.length - 1; i++) {
+          linkTrips(tripObjs[i], tripObjs[i + 1]);
         }
-        logDebug(`finished linking trips for list of size ${trip_gj_list.length}`);
-        if (lastProcessedTrip && trip_gj_list.length != 0) {
+        logDebug(`finished linking trips for list of size ${tripObjs.length}`);
+        if (lastProcessedTrip && tripObjs.length != 0) {
           // Need to link the entire chain above to the processed data
           logDebug('linking unprocessed and processed trip chains');
-          linkTrips(lastProcessedTrip, trip_gj_list[0]);
+          linkTrips(lastProcessedTrip, tripObjs[0]);
         }
-        logDebug(`Returning final list of size ${trip_gj_list.length}`);
-        return trip_gj_list;
+        logDebug(`Returning final list of size ${tripObjs.length}`);
+        return tripObjs;
       });
     }
   });
