@@ -142,19 +142,21 @@ const ProfileSettings = () => {
       tempUiConfig.opcode.autogen = tempUiConfig?.intro.program_or_study == 'study';
     }
 
-    // Update the scheduled notifs
-    updateScheduledNotifs(
-      tempUiConfig.reminderSchemes,
-      isScheduling,
-      setIsScheduling,
-      scheduledPromise,
-    )
-      .then(() => {
-        logDebug('updated scheduled notifs');
-      })
-      .catch((err) => {
-        displayErrorMsg('Error while updating scheduled notifs', err);
-      });
+    if (tempUiConfig.reminderSchemes) {
+      // Update the scheduled notifs
+      updateScheduledNotifs(
+        tempUiConfig.reminderSchemes,
+        isScheduling,
+        setIsScheduling,
+        scheduledPromise,
+      )
+        .then(() => {
+          logDebug('updated scheduled notifs');
+        })
+        .catch((err) => {
+          displayErrorMsg('Error while updating scheduled notifs', err);
+        });
+    }
 
     // setTemplateText(tempUiConfig.intro.translated_text);
     // console.log("translated text is??", templateText);
