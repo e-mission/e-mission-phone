@@ -39,7 +39,7 @@ type EnketoResponseData = {
   version: number; //survey version
   key?: string; //data key
   xmlResponse: string; //survey response as XML string
-  jsonDocResponse: string; //survey response as JSON object
+  jsonDocResponse: { [k: string]: any }; //survey response as JSON object
 };
 
 type EnketoResponse = {
