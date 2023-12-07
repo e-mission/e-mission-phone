@@ -150,7 +150,7 @@ export function verifiabilityForTrip(trip: CompositeTrip, userInputForTrip?: Use
   return someInferred ? 'can-verify' : allConfirmed ? 'already-verified' : 'cannot-verify';
 }
 
-export function inferFinalLabels(trip: CompositeTrip, userInputForTrip) {
+export function inferFinalLabels(trip: CompositeTrip, userInputForTrip?: UserInputMap) {
   // Deep copy the possibility tuples
   let labelsList: InferredLabels = [];
   if (trip.inferred_labels) {
@@ -165,7 +165,7 @@ export function inferFinalLabels(trip: CompositeTrip, userInputForTrip) {
     const userInput = userInputForTrip?.[inputType];
     if (userInput) {
       const retKey = inputType2retKey(inputType);
-      labelsList = labelsList.filter((item) => item.labels[retKey] == userInput.value);
+      labelsList = labelsList.filter((item) => item.labels[retKey] == userInput.data.label);
     }
   }
 
