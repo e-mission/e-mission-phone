@@ -97,9 +97,9 @@ const getUnprocessedInputQuery = (pipelineRange: TimestampRange) => ({
 
 /**
  * updateUnprocessedInputs is a helper function for updateLocalUnprocessedInputs
- * and updateAllUnprocessedInputs, exported for unit testing.
+ * and updateAllUnprocessedInputs
  */
-export function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
+function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
   return Promise.all([...labelsPromises, ...notesPromises]).then((comboResults) => {
     const labelResults = comboResults.slice(0, labelsPromises.length);
     const notesResults = comboResults.slice(labelsPromises.length).flat(2);
@@ -316,7 +316,7 @@ const points2TripProps = function (locationPoints) {
     inferred_labels: [],
     locations: locations,
     source: 'unprocessed',
-    start_fmt_time: startTime.toISO,
+    start_fmt_time: startTime.toISO(),
     start_local_dt: dateTime2localdate(startTime, startPoint.metadata.time_zone),
     start_ts: startPoint.data.ts,
     user_input: {},

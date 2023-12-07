@@ -4,13 +4,14 @@ import {
   readAllCompositeTrips,
   readUnprocessedTrips,
   compositeTrips2TimelineMap,
-  updateUnprocessedInputs,
   keysForLabelInputs,
+  updateAllUnprocessedInputs,
   updateLocalUnprocessedInputs,
+  unprocessedLabels,
+  unprocessedNotes,
 } from '../js/diary/timelineHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import * as mockTLH from '../__mocks__/timelineHelperMocks';
-import { unprocessedLabels } from '../js/diary/timelineHelper';
 import { GeoJSONData, GeoJSONStyledFeature, UserInputEntry } from '../js/types/diaryTypes';
 
 mockLogger();
@@ -105,114 +106,119 @@ jest.mock('../js/survey/multilabel/confirmHelper', () => ({
   getLabelInputs: jest.fn(() => ['MODE', 'PURPOSE', 'REPLACED_MODE']),
 }));
 
-it('processed empty labels', async () => {
-  await updateUnprocessedInputs([], [], mockTLH.mockConfigNoModeOfStudy);
-  expect(unprocessedLabels).toEqual({});
-});
-
-it('processes some mode and purpose labels after they were just recorded', async () => {
-  // record some labels
-  await window['cordova'].plugins.BEMUserCache.putMessage('manual/mode_confirm', {
-    start_ts: 2,
-    end_ts: 3,
-    label: 'tricycle',
-  });
-  await window['cordova'].plugins.BEMUserCache.putMessage('manual/purpose_confirm', {
-    start_ts: 2,
-    end_ts: 3,
-    label: 'shopping',
+describe('unprocessedLabels, unprocessedNotes', () => {
+  it('has no labels or notes when nothing has been recorded', async () => {
+    await updateAllUnprocessedInputs({ start_ts: 0, end_ts: 99 }, mockTLH.mockConfigNoModeOfStudy);
+    Object.values(unprocessedLabels).forEach((value) => {
+      expect(value).toEqual([]);
+    });
+    expect(unprocessedNotes).toEqual([]);
   });
 
-  // update unprocessed inputs and check that the new labels show up in unprocessedLabels
-  await updateLocalUnprocessedInputs({ start_ts: 2, end_ts: 3 }, mockTLH.mockConfigNoModeOfStudy);
-  expect(unprocessedLabels['MODE'].length).toEqual(1);
-  expect(unprocessedLabels['MODE'][0].data.label).toEqual('tricycle');
-  expect(unprocessedLabels['PURPOSE'].length).toEqual(1);
-  expect(unprocessedLabels['PURPOSE'][0].data.label).toEqual('shopping');
-});
+  it('has some mode and purpose labels after they were just recorded', async () => {
+    // record some labels
+    await window['cordova'].plugins.BEMUserCache.putMessage('manual/mode_confirm', {
+      start_ts: 2,
+      end_ts: 3,
+      label: 'tricycle',
+    });
+    await window['cordova'].plugins.BEMUserCache.putMessage('manual/purpose_confirm', {
+      start_ts: 2,
+      end_ts: 3,
+      label: 'shopping',
+    });
 
-it('processes trip- and place- survey responses after they were just recorded', async () => {
-  // record two survey responses, one for trip_user_input and one for place_user_input
-  const tripSurveyResponse = {
-    start_ts: 4,
-    end_ts: 5,
-    name: 'TripConfirmSurvey', // for now, the name of this survey must be hardcoded (see note in UserInputButton.tsx)
-    version: 1.2,
-    label: '1 foobar',
-    match_id: 'd263935e-9163-4072-9909-9d3e1edb31be',
-    key: 'manual/trip_user_input',
-    xmlResponse: `<data xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" id="snapshot_xml"> <start>2023-12-04T12:12:38.968-05:00</start> <end>2023-12-04T12:12:38.970-05:00</end> <foo>bar</foo> <meta><instanceID>uuid:75dc7b18-2a9d-4356-b66e-d63dfa7568ca</instanceID></meta> </data>`,
-  };
-  const placeSurveyResponse = {
-    ...tripSurveyResponse,
-    start_ts: 5,
-    end_ts: 6,
-    key: 'manual/place_user_input',
-  };
-  await window['cordova'].plugins.BEMUserCache.putMessage(
-    'manual/trip_user_input',
-    tripSurveyResponse,
-  );
-  await window['cordova'].plugins.BEMUserCache.putMessage(
-    'manual/place_user_input',
-    placeSurveyResponse,
-  );
+    // update unprocessed inputs and check that the new labels show up in unprocessedLabels
+    await updateLocalUnprocessedInputs({ start_ts: 2, end_ts: 3 }, mockTLH.mockConfigNoModeOfStudy);
+    expect(unprocessedLabels['MODE'].length).toEqual(1);
+    expect(unprocessedLabels['MODE'][0].data.label).toEqual('tricycle');
+    expect(unprocessedLabels['PURPOSE'].length).toEqual(1);
+    expect(unprocessedLabels['PURPOSE'][0].data.label).toEqual('shopping');
+  });
 
-  // update unprocessed inputs and check that the trip survey response shows up in unprocessedLabels
-  await updateLocalUnprocessedInputs({ start_ts: 4, end_ts: 6 }, mockTLH.mockConfigEnketo);
-  expect(unprocessedLabels['SURVEY'][0].data).toEqual(tripSurveyResponse);
-  // the second response is ignored for now because we haven't enabled place_user_input yet
-  // so the length is only 1
-  expect(unprocessedLabels['SURVEY'].length).toEqual(1);
-});
+  it('has some trip- and place- survey responses after they were just recorded', async () => {
+    // record two survey responses, one for trip_user_input and one for place_user_input
+    const tripSurveyResponse = {
+      start_ts: 4,
+      end_ts: 5,
+      name: 'TripConfirmSurvey', // for now, the name of this survey must be hardcoded (see note in UserInputButton.tsx)
+      version: 1.2,
+      label: '1 foobar',
+      match_id: 'd263935e-9163-4072-9909-9d3e1edb31be',
+      key: 'manual/trip_user_input',
+      xmlResponse: `<data xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" id="snapshot_xml"> <start>2023-12-04T12:12:38.968-05:00</start> <end>2023-12-04T12:12:38.970-05:00</end> <foo>bar</foo> <meta><instanceID>uuid:75dc7b18-2a9d-4356-b66e-d63dfa7568ca</instanceID></meta> </data>`,
+    };
+    const placeSurveyResponse = {
+      ...tripSurveyResponse,
+      start_ts: 5,
+      end_ts: 6,
+      key: 'manual/place_user_input',
+    };
+    await window['cordova'].plugins.BEMUserCache.putMessage(
+      'manual/trip_user_input',
+      tripSurveyResponse,
+    );
+    await window['cordova'].plugins.BEMUserCache.putMessage(
+      'manual/place_user_input',
+      placeSurveyResponse,
+    );
 
-it('processes some trip- and place- level additions after they were just recorded', async () => {
-  // record two additions, one for trip_addition_input and one for place_addition_input
-  const tripAdditionOne = {
-    start_ts: 6,
-    end_ts: 7,
-    key: 'manual/trip_addition_input',
-    data: { foo: 'bar' },
-  };
-  const tripAdditionTwo = {
-    ...tripAdditionOne,
-    data: { foo: 'baz' },
-  };
-  const placeAdditionOne = {
-    ...tripAdditionOne,
-    start_ts: 7,
-    end_ts: 8,
-    key: 'manual/place_addition_input',
-  };
-  const placeAdditionTwo = {
-    ...placeAdditionOne,
-    data: { foo: 'baz' },
-  };
-  Promise.all([
-    window['cordova'].plugins.BEMUserCache.putMessage(
-      'manual/trip_addition_input',
-      tripAdditionOne,
-    ),
-    window['cordova'].plugins.BEMUserCache.putMessage(
-      'manual/place_addition_input',
-      tripAdditionTwo,
-    ),
-    window['cordova'].plugins.BEMUserCache.putMessage(
-      'manual/trip_addition_input',
-      placeAdditionOne,
-    ),
-    window['cordova'].plugins.BEMUserCache.putMessage(
-      'manual/place_addition_input',
-      placeAdditionTwo,
-    ),
-  ]).then(() => {
-    // update unprocessed inputs and check that all additions show up in unprocessedNotes
-    updateLocalUnprocessedInputs({ start_ts: 6, end_ts: 8 }, mockTLH.mockConfigEnketo);
-    expect(unprocessedLabels['NOTES'].length).toEqual(4);
-    expect(unprocessedLabels['NOTES'][0].data).toEqual(tripAdditionOne);
-    expect(unprocessedLabels['NOTES'][1].data).toEqual(tripAdditionTwo);
-    expect(unprocessedLabels['NOTES'][2].data).toEqual(placeAdditionOne);
-    expect(unprocessedLabels['NOTES'][3].data).toEqual(placeAdditionTwo);
+    // update unprocessed inputs and check that the trip survey response shows up in unprocessedLabels
+    await updateAllUnprocessedInputs({ start_ts: 4, end_ts: 6 }, mockTLH.mockConfigEnketo);
+    expect(unprocessedLabels['SURVEY'][0].data).toEqual(tripSurveyResponse);
+    // the second response is ignored for now because we haven't enabled place_user_input yet
+    // so the length is only 1
+    expect(unprocessedLabels['SURVEY'].length).toEqual(1);
+  });
+
+  it('has some trip- and place- level additions after they were just recorded', async () => {
+    // record two additions, one for trip_addition_input and one for place_addition_input
+    const tripAdditionOne = {
+      start_ts: 6,
+      end_ts: 7,
+      key: 'manual/trip_addition_input',
+      data: { foo: 'bar' },
+    };
+    const tripAdditionTwo = {
+      ...tripAdditionOne,
+      data: { foo: 'baz' },
+    };
+    const placeAdditionOne = {
+      ...tripAdditionOne,
+      start_ts: 7,
+      end_ts: 8,
+      key: 'manual/place_addition_input',
+    };
+    const placeAdditionTwo = {
+      ...placeAdditionOne,
+      data: { foo: 'baz' },
+    };
+    Promise.all([
+      window['cordova'].plugins.BEMUserCache.putMessage(
+        'manual/trip_addition_input',
+        tripAdditionOne,
+      ),
+      window['cordova'].plugins.BEMUserCache.putMessage(
+        'manual/place_addition_input',
+        tripAdditionTwo,
+      ),
+      window['cordova'].plugins.BEMUserCache.putMessage(
+        'manual/trip_addition_input',
+        placeAdditionOne,
+      ),
+      window['cordova'].plugins.BEMUserCache.putMessage(
+        'manual/place_addition_input',
+        placeAdditionTwo,
+      ),
+    ]).then(() => {
+      // update unprocessed inputs and check that all additions show up in unprocessedNotes
+      updateAllUnprocessedInputs({ start_ts: 6, end_ts: 8 }, mockTLH.mockConfigEnketo);
+      expect(unprocessedLabels['NOTES'].length).toEqual(4);
+      expect(unprocessedLabels['NOTES'][0].data).toEqual(tripAdditionOne);
+      expect(unprocessedLabels['NOTES'][1].data).toEqual(tripAdditionTwo);
+      expect(unprocessedLabels['NOTES'][2].data).toEqual(placeAdditionOne);
+      expect(unprocessedLabels['NOTES'][3].data).toEqual(placeAdditionTwo);
+    });
   });
 });
 
@@ -222,7 +228,10 @@ jest.mock('../js/services/commHelper', () => ({
   getRawEntries: jest.fn((key, startTs, endTs, valTwo) => {
     if (startTs === mockTLH.fakeStartTsOne) return mockTLH.mockCompData;
     if (startTs == mockTLH.fakeStartTsTwo) return mockTLH.mockCompDataTwo;
-    return {};
+    // the original implementation of `getRawEntries` for all other inputs
+    return jest
+      .requireActual('../js/services/commHelper')
+      .getRawEntries(key, startTs, endTs, valTwo);
   }),
 }));
 
@@ -274,6 +283,10 @@ jest.mock('../js/services/unifiedDataLoader', () => ({
     if (key === 'background/filtered_location') {
       return Promise.resolve(mockTLH.mockFilterLocations);
     }
+    // the original implementation of `getUnifiedDataForInterval` for other keys
+    return jest
+      .requireActual('../js/services/unifiedDataLoader')
+      .getUnifiedDataForInterval(key, tq, combiner);
   }),
 }));
 

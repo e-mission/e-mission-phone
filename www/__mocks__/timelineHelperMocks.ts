@@ -228,12 +228,6 @@ export const mockFilterLocations: Array<ServerData<FilteredLocation>> = [
   },
 ];
 
-export const mockConfigEnketo = {
-  survey_info: {
-    'trip-labels': 'ENKETO',
-    surveys: { TripConfirmSurvey: { compatibleWith: 1.2 } },
-  },
-};
 export const mockConfigModeOfStudy = {
   survey_info: {
     'trip-labels': 'MULTILABEL',
@@ -244,10 +238,14 @@ export const mockConfigModeOfStudy = {
 };
 export const mockConfigNoModeOfStudy = {
   survey_info: {
-    'trip-labels': 'Other',
+    'trip-labels': 'MULTILABEL',
   },
-  intro: {
-    mode_studied: false,
+  intro: {},
+};
+export const mockConfigEnketo = {
+  survey_info: {
+    'trip-labels': 'ENKETO',
+    surveys: { TripConfirmSurvey: { compatibleWith: 1.2 } },
   },
 };
 
