@@ -14,7 +14,8 @@ import {
 } from '../js/survey/multilabel/confirmHelper';
 
 import initializedI18next from '../js/i18nextInit';
-import { CompositeTrip } from '../js/types/diaryTypes';
+import { CompositeTrip, UserInputEntry } from '../js/types/diaryTypes';
+import { UserInputMap } from '../js/diary/LabelTabContext';
 window['i18next'] = initializedI18next;
 mockLogger();
 
@@ -134,9 +135,9 @@ describe('confirmHelper', () => {
 
   it('gives no final inference when there are user labels and no inferred labels', () => {
     const fakeTrip = {} as CompositeTrip;
-    const fakeUserInput = {
-      MODE: labelOptionByValue('bike', 'MODE'),
-      PURPOSE: labelOptionByValue('shopping', 'PURPOSE'),
+    const fakeUserInput: UserInputMap = {
+      MODE: { data: { label: 'bike' } } as UserInputEntry,
+      PURPOSE: { data: { label: 'shopping' } } as UserInputEntry,
     };
     const final = inferFinalLabels(fakeTrip, fakeUserInput);
     expect(final.MODE?.value).toBeUndefined();
@@ -149,8 +150,8 @@ describe('confirmHelper', () => {
       inferred_labels: [{ labels: { mode_confirm: 'walk', purpose_confirm: 'exercise' }, p: 0.9 }],
     } as CompositeTrip;
     const fakeUserInput = {
-      MODE: labelOptionByValue('bike', 'MODE'),
-      PURPOSE: labelOptionByValue('shopping', 'PURPOSE'),
+      MODE: { data: { label: 'bike' } } as UserInputEntry,
+      PURPOSE: { data: { label: 'shopping' } } as UserInputEntry,
     };
     const final = inferFinalLabels(fakeTrip, fakeUserInput);
     expect(final.MODE?.value).toBeUndefined();
@@ -165,7 +166,9 @@ describe('confirmHelper', () => {
         { labels: { mode_confirm: 'walk', purpose_confirm: 'exercise' }, p: 0.9 },
       ],
     } as CompositeTrip;
-    const fakeUserInput = { MODE: labelOptionByValue('bike', 'MODE') };
+    const fakeUserInput = {
+      MODE: { data: { label: 'bike' } } as UserInputEntry,
+    };
     const final = inferFinalLabels(fakeTrip, fakeUserInput);
     expect(final.MODE?.value).toEqual('bike');
     expect(final.PURPOSE?.value).toEqual('shopping');
