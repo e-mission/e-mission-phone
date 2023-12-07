@@ -1,3 +1,4 @@
+import { EnketoUserInputEntry } from '../js/survey/enketo/enketoHelper';
 import {
   fmtTs,
   printUserInput,
@@ -248,7 +249,7 @@ describe('input-matcher', () => {
   });
 
   it('tests getAdditionsForTimelineEntry with invalid additionsList', () => {
-    const additionsList = undefined as unknown as UserInputEntry[];
+    const additionsList = undefined as unknown as EnketoUserInputEntry[];
     const matchingAdditions = getAdditionsForTimelineEntry(trip, nextTrip, additionsList);
     expect(matchingAdditions).toMatchObject([]);
   });

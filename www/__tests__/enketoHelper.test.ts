@@ -5,6 +5,7 @@ import {
   resolveLabel,
   loadPreviousResponseForSurvey,
   saveResponse,
+  EnketoUserInputEntry,
 } from '../js/survey/enketo/enketoHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
@@ -243,7 +244,7 @@ it('gets the saved result or throws an error', async () => {
       end_local_dt: { timezone: 'America/Los_Angeles' },
       start_ts: 1469492672.928242,
       end_ts: 1469493031,
-    },
+    } as CompositeTrip,
   };
 
   console.log(config);
@@ -283,12 +284,12 @@ it('filters the survey responses by their name and version', () => {
     {
       data: {
         label: 'Activity', //display label (this value is use for displaying on the button)
-        ts: '100000000', //the timestamp at which the survey was filled out (in seconds)
+        ts: 100000000, //the timestamp at which the survey was filled out (in seconds)
         fmt_time: '12:36', //the formatted timestamp at which the survey was filled out
         name: 'TimeUseSurvey', //survey name
-        version: '1', //survey version
+        version: 1, //survey version
         xmlResponse: '<this is my xml>', //survey response XML string
-        jsonDocResponse: 'this is my json object', //survey response JSON object
+        jsonDocResponse: { this: 'is my json object' }, //survey response JSON object
       },
       metadata: {},
     },
@@ -301,36 +302,36 @@ it('filters the survey responses by their name and version', () => {
     {
       data: {
         label: 'Activity', //display label (this value is use for displaying on the button)
-        ts: '100000000', //the timestamp at which the survey was filled out (in seconds)
+        ts: 100000000, //the timestamp at which the survey was filled out (in seconds)
         fmt_time: '12:36', //the formatted timestamp at which the survey was filled out
         name: 'TimeUseSurvey', //survey name
-        version: '1', //survey version
+        version: 1, //survey version
         xmlResponse: '<this is my xml>', //survey response XML string
-        jsonDocResponse: 'this is my json object', //survey response JSON object
+        jsonDocResponse: { this: 'is my json object' }, //survey response JSON object
       },
-      metadata: {},
+      metadata: {} as any,
     },
     {
       data: {
         label: 'Activity', //display label (this value is use for displaying on the button)
-        ts: '100000000', //the timestamp at which the survey was filled out (in seconds)
+        ts: 100000000, //the timestamp at which the survey was filled out (in seconds)
         fmt_time: '12:36', //the formatted timestamp at which the survey was filled out
         name: 'OtherSurvey', //survey name
-        version: '1', //survey version
+        version: 1, //survey version
         xmlResponse: '<this is my xml>', //survey response XML string
-        jsonDocResponse: 'this is my json object', //survey response JSON object
+        jsonDocResponse: { this: 'is my json object' }, //survey response JSON object
       },
-      metadata: {},
+      metadata: {} as any,
     },
     {
       data: {
         label: 'Activity', //display label (this value is use for displaying on the button)
-        ts: '100000000', //the timestamp at which the survey was filled out (in seconds)
+        ts: 100000000, //the timestamp at which the survey was filled out (in seconds)
         fmt_time: '12:39', //the formatted timestamp at which the survey was filled out
         name: 'TimeUseSurvey', //survey name
-        version: '0.5', //survey version
+        version: 0.5, //survey version
         xmlResponse: '<this is my xml>', //survey response XML string
-        jsonDocResponse: 'this is my json object', //survey response JSON object
+        jsonDocResponse: { this: 'is my json object' }, //survey response JSON object
       },
       metadata: {},
     },
