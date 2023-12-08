@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { fetchUrlCached } from '../services/commHelper';
 import { storageClear, storageGet, storageSet } from '../plugin/storage';
+import { AppConfig } from '../types/appConfigTypes';
 
 export const CONFIG_PHONE_UI = 'config/app_ui_config';
 export const CONFIG_PHONE_UI_KVSTORE = 'CONFIG_PHONE_UI';
@@ -29,19 +30,20 @@ const _getStudyName = function (connectUrl) {
   return study_name;
 };
 
-const _fillStudyName = function (config) {
-  if (!config.name) {
-    if (config.server) {
-      config.name = _getStudyName(config.server.connectUrl);
-    } else {
-      config.name = 'dev';
-    }
+const _fillStudyName = (config: Partial<AppConfig>): AppConfig => {
+  if (config.name) return config as AppConfig;
+  if (config.server) {
+    return { ...config, name: _getStudyName(config.server.connectUrl) } as AppConfig;
+  } else {
+    return { ...config, name: 'dev' } as AppConfig;
   }
 };
 
-const _backwardsCompatSurveyFill = function (config) {
-  if (!config.survey_info) {
-    config.survey_info = {
+const _backwardsCompatSurveyFill = (config: Partial<AppConfig>): AppConfig => {
+  if (config.survey_info) return config as AppConfig;
+  return {
+    ...config,
+    survey_info: {
       surveys: {
         UserProfileSurvey: {
           formPath: 'json/demo-survey-v2.json',
@@ -55,8 +57,8 @@ const _backwardsCompatSurveyFill = function (config) {
         },
       },
       'trip-labels': 'MULTILABEL',
-    };
-  }
+    },
+  } as AppConfig;
 };
 
 /* Fetch and cache any surveys resources that are referenced by URL in the config,
@@ -76,25 +78,22 @@ const cacheResourcesFromConfig = (config) => {
 };
 
 const readConfigFromServer = async (label) => {
-  const config = await fetchConfig(label);
-  logDebug('Successfully found config, result is ' + JSON.stringify(config).substring(0, 10));
+  const fetchedConfig = await fetchConfig(label);
+  logDebug(`Successfully found config,
+    fetchedConfig = ${JSON.stringify(fetchedConfig).substring(0, 10)}`);
+  const filledConfig = _backwardsCompatSurveyFill(_fillStudyName(fetchedConfig));
+  logDebug(`Applied backwards compat fills, 
+    filledConfig = ${JSON.stringify(filledConfig).substring(0, 10)}`);
 
   // fetch + cache any resources referenced in the config, but don't 'await' them so we don't block
   // the config loading process
-  cacheResourcesFromConfig(config);
+  cacheResourcesFromConfig(filledConfig);
 
-  const connectionURL = config.server ? config.server.connectUrl : 'dev defaults';
-  _fillStudyName(config);
-  _backwardsCompatSurveyFill(config);
-  logDebug(
-    'Successfully downloaded config with version ' +
-      config.version +
-      ' for ' +
-      config.intro.translated_text.en.deployment_name +
-      ' and data collection URL ' +
-      connectionURL,
-  );
-  return config;
+  logDebug(`Successfully read config, returning config with 
+    version = ${filledConfig.version}; 
+    deployment_name = ${filledConfig.intro.translated_text.en.deployment_name}; 
+    connectionURL = ${fetchedConfig.server ? fetchedConfig.server.connectUrl : 'dev defaults'}`);
+  return filledConfig;
 };
 
 const fetchConfig = async (label, alreadyTriedLocal = false) => {
@@ -255,16 +254,16 @@ export function getConfig() {
   return storageGet(CONFIG_PHONE_UI_KVSTORE).then((config) => {
     if (config && Object.keys(config).length) {
       logDebug('Got config from KVStore: ' + JSON.stringify(config));
-      storedConfig = config;
-      return config;
+      storedConfig = _backwardsCompatSurveyFill(config);
+      return storedConfig;
     }
     logDebug('No config found in KVStore, fetching from native storage');
     return window['cordova'].plugins.BEMUserCache.getDocument(CONFIG_PHONE_UI, false).then(
       (config) => {
         if (config && Object.keys(config).length) {
           logDebug('Got config from native storage: ' + JSON.stringify(config));
-          storedConfig = config;
-          return config;
+          storedConfig = _backwardsCompatSurveyFill(config);
+          return storedConfig;
         }
         logWarn('No config found in native storage either. Returning null');
         return null;
