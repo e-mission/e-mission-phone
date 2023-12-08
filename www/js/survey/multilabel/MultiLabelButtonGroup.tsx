@@ -28,7 +28,7 @@ import {
   verifiabilityForTrip,
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
-import { createMode, getModes } from '../../services/commHelper';
+import { updateMode, getModes } from '../../services/commHelper';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
@@ -36,7 +36,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const appConfig = useAppConfig();
   const { repopulateTimelineEntry, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
   const { height: windowHeight } = useWindowDimensions();
-  const [customMode, setCustomMode] = useState({});
+  const [customModes, setCustomModes] = useState({});
   // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
   const [modalVisibleFor, setModalVisibleFor] = useState<
     'MODE' | 'PURPOSE' | 'REPLACED_MODE' | null
@@ -46,7 +46,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     if (otherLabel != null) return 'other';
     return timelineLabelMap[trip._id.$oid]?.[modalVisibleFor]?.value;
   }, [modalVisibleFor, otherLabel]);
-
+  const initialLabel = chosenLabel;
   // to mark 'inferred' labels as 'confirmed'; turn yellow labels blue
   function verifyTrip() {
     const inferredLabelsForTrip = inferFinalLabels(trip, timelineLabelMap[trip._id.$oid]);
@@ -79,9 +79,11 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
       /* Let's make the value for user entered inputs look consistent with our other values
        (i.e. lowercase, and with underscores instead of spaces) */
       chosenLabel = readableLabelToKey(chosenLabel);
-      createMode(chosenLabel)
+    }
+    if (isOther || customModes[initialLabel] || customModes[chosenLabel]) {
+      updateMode(initialLabel, chosenLabel, isOther)
         .then((res) => {
-          setCustomMode(res['modes']);
+          setCustomModes(res['modes']);
           logDebug('Successfuly stored custom mode ' + JSON.stringify(res));
         })
         .catch((e) => {
@@ -93,7 +95,6 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
       end_ts: trip.end_ts,
       label: chosenLabel,
     };
-
     const storageKey = getLabelInputDetails()[inputType].key;
     window['cordova'].plugins.BEMUserCache.putMessage(storageKey, inputDataToStore).then(() => {
       dismiss();
@@ -107,7 +108,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   useEffect(() => {
     getModes()
       .then((res) => {
-        setCustomMode(res);
+        setCustomModes(res);
         logDebug('Successfully get custom mode ' + JSON.stringify(res));
       })
       .catch((e) => {
@@ -182,7 +183,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                       style={{ paddingVertical: 2 }}
                     />
                   ))}
-                  {Object.keys(customMode).map((key, i) => (
+                  {Object.keys(customModes).map((key, i) => (
                     // @ts-ignore
                     <RadioButton.Item
                       key={key + i}

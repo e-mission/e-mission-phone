@@ -239,12 +239,17 @@ export function getModes() {
   });
 }
 
-export function createMode(mode) {
+export function updateMode(oldMode, newMode, isNewModeMustAdded) {
+  const updatedMode = {
+    old_mode: oldMode,
+    new_mode: newMode,
+    is_new_mode_must_added: isNewModeMustAdded,
+  };
   return new Promise((rs, rj) => {
     window['cordova'].plugins.BEMServerComm.postUserPersonalData(
-      '/mode/create',
-      'mode',
-      mode,
+      '/mode/update',
+      'updated_mode',
+      updatedMode,
       rs,
       rj,
     );
