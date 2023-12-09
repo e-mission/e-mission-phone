@@ -11,12 +11,12 @@ export let storedConfig = null;
 export let configChanged = false;
 export const setConfigChanged = (b) => (configChanged = b);
 
-//used test multiple configs, not used outside of test
-export const resetStoredConfig = function () {
+// used to test multiple configs, not used outside of test
+export const _test_resetStoredConfig = () => {
   storedConfig = null;
 };
 
-const _getStudyName = function (connectUrl) {
+function _getStudyName(connectUrl) {
   const orig_host = new URL(connectUrl).hostname;
   const first_domain = orig_host.split('.')[0];
   if (first_domain == 'openpath-stage') {
@@ -28,18 +28,18 @@ const _getStudyName = function (connectUrl) {
   }
   const study_name = first_domain.substr(0, openpath_index);
   return study_name;
-};
+}
 
-const _fillStudyName = (config: Partial<AppConfig>): AppConfig => {
+function _fillStudyName(config: Partial<AppConfig>): AppConfig {
   if (config.name) return config as AppConfig;
   if (config.server) {
     return { ...config, name: _getStudyName(config.server.connectUrl) } as AppConfig;
   } else {
     return { ...config, name: 'dev' } as AppConfig;
   }
-};
+}
 
-const _backwardsCompatSurveyFill = (config: Partial<AppConfig>): AppConfig => {
+function _backwardsCompatSurveyFill(config: Partial<AppConfig>): AppConfig {
   if (config.survey_info) return config as AppConfig;
   return {
     ...config,
@@ -59,13 +59,13 @@ const _backwardsCompatSurveyFill = (config: Partial<AppConfig>): AppConfig => {
       'trip-labels': 'MULTILABEL',
     },
   } as AppConfig;
-};
+}
 
 /* Fetch and cache any surveys resources that are referenced by URL in the config,
   as well as the label_options config if it is present.
   This way they will be available when the user needs them, and we won't have to
   fetch them again unless local storage is cleared. */
-const cacheResourcesFromConfig = (config) => {
+function cacheResourcesFromConfig(config) {
   if (config.survey_info?.surveys) {
     Object.values(config.survey_info.surveys).forEach((survey) => {
       if (!survey?.['formPath']) throw new Error(i18next.t('config.survey-missing-formpath'));
@@ -75,9 +75,9 @@ const cacheResourcesFromConfig = (config) => {
   if (config.label_options) {
     fetchUrlCached(config.label_options);
   }
-};
+}
 
-const readConfigFromServer = async (label) => {
+async function readConfigFromServer(label) {
   const fetchedConfig = await fetchConfig(label);
   logDebug(`Successfully found config,
     fetchedConfig = ${JSON.stringify(fetchedConfig).substring(0, 10)}`);
@@ -94,9 +94,9 @@ const readConfigFromServer = async (label) => {
     deployment_name = ${filledConfig.intro.translated_text.en.deployment_name}; 
     connectionURL = ${fetchedConfig.server ? fetchedConfig.server.connectUrl : 'dev defaults'}`);
   return filledConfig;
-};
+}
 
-const fetchConfig = async (label, alreadyTriedLocal = false) => {
+async function fetchConfig(label, alreadyTriedLocal = false) {
   logDebug('Received request to join ' + label);
   const downloadURL = `https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/${label}.nrel-op.json`;
   if (!__DEV__ || alreadyTriedLocal) {
@@ -115,7 +115,7 @@ const fetchConfig = async (label, alreadyTriedLocal = false) => {
       return fetchConfig(label, true);
     }
   }
-};
+}
 
 /*
  * We want to support both old style and new style tokens.
