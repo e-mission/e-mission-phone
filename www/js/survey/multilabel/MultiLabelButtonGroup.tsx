@@ -80,8 +80,13 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
        (i.e. lowercase, and with underscores instead of spaces) */
       chosenLabel = readableLabelToKey(chosenLabel);
     }
-    
-    if (isOther || customModes.indexOf(initialLabel) > -1 || customModes.indexOf(chosenLabel) > -1) {
+
+    // If a user saves a new mode or makes changes to customized modes, the modes need to be updated.
+    if (
+      isOther ||
+      customModes.indexOf(initialLabel) > -1 ||
+      customModes.indexOf(chosenLabel) > -1
+    ) {
       updateMode(initialLabel, chosenLabel, isOther)
         .then((res) => {
           setCustomModes(res['modes'] as string[]);
@@ -107,7 +112,8 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap[trip._id.$oid], appConfig);
 
   useEffect(() => {
-    if(modalVisibleFor !== "MODE") {
+    // Whenever the modal opens for Mode, retrieve updated modes from the server for synchronized data
+    if (modalVisibleFor !== 'MODE') {
       return;
     }
     getModes()
@@ -118,7 +124,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
       .catch((e) => {
         displayErrorMsg(e, 'Get Modes Error');
       });
-  }, [modalVisibleFor])
+  }, [modalVisibleFor]);
 
   return (
     <>
@@ -167,7 +173,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
           </View>
         )}
       </View>
-      <Modal visible={modalVisibleFor != null} transparent={true}  onDismiss={() => dismiss()}>
+      <Modal visible={modalVisibleFor != null} transparent={true} onDismiss={() => dismiss()}>
         <Dialog visible={modalVisibleFor != null} onDismiss={() => dismiss()}>
           <Pressable>
             <Dialog.Title style={{ elevation: 2 }}>
@@ -179,6 +185,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
               <ScrollView style={{ paddingBottom: 24 }}>
                 <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={chosenLabel}>
                   {labelOptions?.[modalVisibleFor]?.map((o, i) => {
+                    // This code is designed to order the modes as follows: default modes -> customized modes -> other
                     if (o.value === 'other') return;
                     return (
                       // @ts-ignore
