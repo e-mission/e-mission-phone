@@ -36,12 +36,12 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const appConfig = useAppConfig();
   const { repopulateTimelineEntry, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
   const { height: windowHeight } = useWindowDimensions();
-  const [customModes, setCustomModes] = useState({});
   // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
   const [modalVisibleFor, setModalVisibleFor] = useState<
     'MODE' | 'PURPOSE' | 'REPLACED_MODE' | null
   >(null);
   const [otherLabel, setOtherLabel] = useState<string | null>(null);
+  const [customModes, setCustomModes] = useState<string[]>([]);
   const chosenLabel = useMemo<string>(() => {
     if (otherLabel != null) return 'other';
     return timelineLabelMap[trip._id.$oid]?.[modalVisibleFor]?.value;
@@ -80,10 +80,11 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
        (i.e. lowercase, and with underscores instead of spaces) */
       chosenLabel = readableLabelToKey(chosenLabel);
     }
-    if (isOther || customModes[initialLabel] || customModes[chosenLabel]) {
+    
+    if (isOther || customModes.indexOf(initialLabel) > -1 || customModes.indexOf(chosenLabel) > -1) {
       updateMode(initialLabel, chosenLabel, isOther)
         .then((res) => {
-          setCustomModes(res['modes']);
+          setCustomModes(res['modes'] as string[]);
           logDebug('Successfuly stored custom mode ' + JSON.stringify(res));
         })
         .catch((e) => {
@@ -106,15 +107,18 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap[trip._id.$oid], appConfig);
 
   useEffect(() => {
+    if(modalVisibleFor !== "MODE") {
+      return;
+    }
     getModes()
       .then((res) => {
-        setCustomModes(res);
-        logDebug('Successfully get custom mode ' + JSON.stringify(res));
+        setCustomModes(res['modes'] as string[]);
+        logDebug('Successfully get custom mode' + JSON.stringify(res));
       })
       .catch((e) => {
         displayErrorMsg(e, 'Get Modes Error');
       });
-  }, []);
+  }, [modalVisibleFor])
 
   return (
     <>
@@ -163,7 +167,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
           </View>
         )}
       </View>
-      <Modal visible={modalVisibleFor != null} transparent={true} onDismiss={() => dismiss()}>
+      <Modal visible={modalVisibleFor != null} transparent={true}  onDismiss={() => dismiss()}>
         <Dialog visible={modalVisibleFor != null} onDismiss={() => dismiss()}>
           <Pressable>
             <Dialog.Title style={{ elevation: 2 }}>
@@ -174,24 +178,33 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
             <Dialog.Content style={{ maxHeight: windowHeight / 2, paddingBottom: 0 }}>
               <ScrollView style={{ paddingBottom: 24 }}>
                 <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={chosenLabel}>
-                  {labelOptions?.[modalVisibleFor]?.map((o, i) => (
+                  {labelOptions?.[modalVisibleFor]?.map((o, i) => {
+                    if (o.value === 'other') return;
+                    return (
+                      // @ts-ignore
+                      <RadioButton.Item
+                        key={i}
+                        label={t(o.text)}
+                        value={o.value}
+                        style={{ paddingVertical: 2 }}
+                      />
+                    );
+                  })}
+                  {customModes.map((key, i) => (
                     // @ts-ignore
                     <RadioButton.Item
                       key={i}
-                      label={t(o.text)}
-                      value={o.value}
-                      style={{ paddingVertical: 2 }}
-                    />
-                  ))}
-                  {Object.keys(customModes).map((key, i) => (
-                    // @ts-ignore
-                    <RadioButton.Item
-                      key={key + i}
                       label={key.charAt(0).toUpperCase() + key.slice(1)}
                       value={key}
                       style={{ paddingVertical: 2 }}
                     />
                   ))}
+                  <RadioButton.Item
+                    key="Other"
+                    label={t('Other')}
+                    value="other"
+                    style={{ paddingVertical: 2 }}
+                  />
                 </RadioButton.Group>
               </ScrollView>
             </Dialog.Content>
