@@ -2,6 +2,8 @@ import { mockReminders } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 import { logDebug } from '../js/plugin/logger';
 import { DateTime } from 'luxon';
+import { getUser, updateUser } from '../js/services/commHelper';
+import { addStatReading } from '../js/plugin/clientStats';
 import {
   getScheduledNotifs,
   updateScheduledNotifs,
@@ -61,20 +63,11 @@ mockLogger();
 mockReminders();
 
 jest.mock('../js/services/commHelper', () => ({
-  ...jest.requireActual('../js/services/commHelper'),
-  getUser: jest.fn(() =>
-    Promise.resolve({
-      // These values are **important**...
-      //   reminder_assignment: must match a key from the reminder scheme above,
-      //   reminder_join_date: must match the first day of the mocked notifs below in the tests,
-      //   reminder_time_of_day: must match the defaultTime from the chosen reminder_assignment in the reminder scheme above
-      reminder_assignment: 'weekly',
-      reminder_join_date: '2023-11-14',
-      reminder_time_of_day: '21:00',
-    }),
-  ),
-  updateUser: jest.fn(() => Promise.resolve()),
+  getUser: jest.fn(),
+  updateUser: jest.fn(),
 }));
+const mockGetUser = getUser as jest.Mock;
+const mockUpdateUser = updateUser as jest.Mock;
 
 jest.mock('../js/plugin/clientStats', () => ({
   ...jest.requireActual('../js/plugin/clientStats'),
@@ -96,6 +89,8 @@ jest.mock('../js/splash/notifScheduler', () => ({
   areAlreadyScheduled: jest.fn(),
   scheduleNotifs: jest.fn(),
 }));
+
+jest.mock('../js/plugin/clientStats');
 
 describe('getScheduledNotifs', () => {
   it('should resolve with notifications while not actively scheduling', async () => {
@@ -220,6 +215,21 @@ describe('updateScheduledNotifs', () => {
     jest.restoreAllMocks(); // Restore mocked functions after each test
   });
 
+  beforeEach(() => {
+    // mock the getUser function
+    mockGetUser.mockImplementation(() =>
+      Promise.resolve({
+        // These values are **important**...
+        //   reminder_assignment: must match a key from the reminder scheme above,
+        //   reminder_join_date: must match the first day of the mocked notifs below in the tests,
+        //   reminder_time_of_day: must match the defaultTime from the chosen reminder_assignment in the reminder scheme above
+        reminder_assignment: 'weekly',
+        reminder_join_date: '2023-11-14',
+        reminder_time_of_day: '21:00',
+      }),
+    );
+  });
+
   it('should resolve after scheduling notifications', async () => {
     // updateScheduleNotifs arguments
     const reminderSchemes: any = exampleReminderSchemes;
@@ -309,6 +319,53 @@ describe('updateScheduledNotifs', () => {
 });
 
 describe('getReminderPrefs', () => {
+  afterEach(() => {
+    jest.restoreAllMocks(); // Restore mocked functions after each test
+  });
+
+  it('should resolve with newly initialilzed reminder prefs when user does not exist', async () => {
+    // getReminderPrefs arguments
+    const reminderSchemes: any = exampleReminderSchemes;
+    let isScheduling: boolean = true;
+    const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
+    const scheduledPromise: Promise<any> = Promise.resolve();
+    // create the expected result
+    const expectedResult = {
+      reminder_assignment: 'weekly',
+      reminder_join_date: '2023-11-14',
+      reminder_time_of_day: '21:00',
+    };
+
+    // mock the getUser function to return a user that does not exist:
+    // first, as undefined to get the not-yet-created user behavior,
+    // then, as a user with reminder prefs to prevent infinite looping (since updateUser does not update the user)
+    mockGetUser
+      .mockImplementation(() =>
+        Promise.resolve({
+          reminder_assignment: 'weekly',
+          reminder_join_date: '2023-11-14',
+          reminder_time_of_day: '21:00',
+        }),
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          reminder_assignment: undefined,
+          reminder_join_date: undefined,
+          reminder_time_of_day: undefined,
+        }),
+      );
+    // mock addStatReading for the setReminderPrefs portion of getReminderPrefs
+    // typescript causes us to need to use "... as jest.Mock" to mock funcitons that are imported from other files
+    (addStatReading as jest.Mock).mockImplementation(() => Promise.resolve());
+
+    // call the function
+    const { reminder_assignment, reminder_join_date, reminder_time_of_day } =
+      await getReminderPrefs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+
+    expect(logDebug).toHaveBeenCalledWith('User just joined, Initializing reminder prefs');
+    expect(logDebug).toHaveBeenCalledWith('Added reminder prefs to client stats');
+  });
+
   it('should resolve with reminder prefs when user exists', async () => {
     // getReminderPrefs arguments
     const reminderSchemes: any = exampleReminderSchemes;
@@ -321,6 +378,19 @@ describe('getReminderPrefs', () => {
       reminder_join_date: '2023-11-14',
       reminder_time_of_day: '21:00',
     };
+
+    // mock the getUser function
+    mockGetUser.mockImplementation(() =>
+      Promise.resolve({
+        // These values are **important**...
+        //   reminder_assignment: must match a key from the reminder scheme above,
+        //   reminder_join_date: must match the first day of the mocked notifs below in the tests,
+        //   reminder_time_of_day: must match the defaultTime from the chosen reminder_assignment in the reminder scheme above
+        reminder_assignment: 'weekly',
+        reminder_join_date: '2023-11-14',
+        reminder_time_of_day: '21:00',
+      }),
+    );
 
     // call the function
     const { reminder_assignment, reminder_join_date, reminder_time_of_day } =
