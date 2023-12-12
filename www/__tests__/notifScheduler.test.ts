@@ -401,3 +401,53 @@ describe('getReminderPrefs', () => {
     expect(reminder_time_of_day).toEqual(expectedResult.reminder_time_of_day);
   });
 });
+
+describe('setReminderPrefs', () => {
+  afterEach(() => {
+    jest.restoreAllMocks(); // Restore mocked functions after each test
+  });
+
+  beforeEach(() => {
+    // mock the getUser function
+    mockGetUser.mockImplementation(() =>
+      Promise.resolve({
+        // These values are **important**...
+        //   reminder_assignment: must match a key from the reminder scheme above,
+        //   reminder_join_date: must match the first day of the mocked notifs below in the tests,
+        //   reminder_time_of_day: must match the defaultTime from the chosen reminder_assignment in the reminder scheme above
+        reminder_assignment: 'weekly',
+        reminder_join_date: '2023-11-14',
+        reminder_time_of_day: '21:00',
+      }),
+    );
+  });
+
+  it('should resolve with promise that calls updateScheduledNotifs', async () => {
+    // setReminderPrefs arguments
+    const newPrefs: any = {
+      reminder_time_of_day: '21:00',
+    };
+    const reminderSchemes: any = exampleReminderSchemes;
+    let isScheduling: boolean = true;
+    const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
+    const scheduledPromise: Promise<any> = Promise.resolve();
+
+    // mock the updateUser function
+    mockUpdateUser.mockImplementation(() => Promise.resolve());
+
+    // call the function
+    setReminderPrefs(
+      newPrefs,
+      reminderSchemes,
+      isScheduling,
+      setIsScheduling,
+      scheduledPromise,
+    ).then(() => {
+      // in the implementation in ProfileSettings.jsx,
+      // refresNotificationSettings();
+      // would be called next
+    });
+
+    expect(logDebug).toBeCalledWith('Added reminder prefs to client stats');
+  });
+});
