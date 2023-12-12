@@ -81,7 +81,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
       chosenLabel = readableLabelToKey(chosenLabel);
     }
 
-    // If a user saves a new mode or makes changes to customized modes, the modes need to be updated.
+    // If a user saves a new customized mode or makes changes to/from customized modes, the modes need to be updated.
     if (
       isOther ||
       customModes.indexOf(initialLabel) > -1 ||
@@ -110,6 +110,13 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   }
 
   const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap[trip._id.$oid], appConfig);
+
+  // ex) my_car -> My Car
+  const getProcessedText = (key: string): string =>
+    key
+      .split('_')
+      .map((k) => k.charAt(0).toUpperCase() + k.slice(1))
+      .join(' ');
 
   useEffect(() => {
     // Whenever the modal opens for Mode, retrieve updated modes from the server for synchronized data
@@ -201,7 +208,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                     // @ts-ignore
                     <RadioButton.Item
                       key={i}
-                      label={key.charAt(0).toUpperCase() + key.slice(1)}
+                      label={getProcessedText(key)}
                       value={key}
                       style={{ paddingVertical: 2 }}
                     />
