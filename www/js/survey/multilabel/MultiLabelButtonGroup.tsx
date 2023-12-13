@@ -13,6 +13,7 @@ import {
   RadioButton,
   Button,
   TextInput,
+  Divider,
 } from 'react-native-paper';
 import DiaryButton from '../../components/DiaryButton';
 import { useTranslation } from 'react-i18next';
@@ -190,6 +191,9 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
             </Dialog.Title>
             <Dialog.Content style={{ maxHeight: windowHeight / 2, paddingBottom: 0 }}>
               <ScrollView style={{ paddingBottom: 24 }}>
+                <Text style={{ fontSize: 12, color: '#333333', paddingVertical: 4 }}>
+                  Default Mode
+                </Text>
                 <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={chosenLabel}>
                   {labelOptions?.[modalVisibleFor]?.map((o, i) => {
                     // This code is designed to order the modes as follows: default modes -> customized modes -> other
@@ -204,6 +208,14 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                       />
                     );
                   })}
+                  {customModes.length > 0 && (
+                    <>
+                      <Divider style={{ marginVertical: 10 }} />
+                      <Text style={{ fontSize: 12, color: '#333333', paddingVertical: 4 }}>
+                        Custom Mode
+                      </Text>
+                    </>
+                  )}
                   {customModes.map((key, i) => (
                     // @ts-ignore
                     <RadioButton.Item
@@ -213,11 +225,12 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                       style={{ paddingVertical: 2 }}
                     />
                   ))}
+                  <Divider style={{ marginVertical: 10 }} />
                   <RadioButton.Item
                     key="Other"
                     label={t('Other')}
                     value="other"
-                    style={{ paddingVertical: 2 }}
+                    style={{ paddingTop: 10 }}
                   />
                 </RadioButton.Group>
               </ScrollView>
