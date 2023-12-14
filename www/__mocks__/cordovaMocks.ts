@@ -101,6 +101,16 @@ export const mockBEMUserCache = (config?) => {
         }, 100),
       );
     },
+    putRWDocument: (key: string, value: any) => {
+      if (key == 'config/app_ui_config') {
+        return new Promise<void>((rs, rj) =>
+          setTimeout(() => {
+            config = value;
+            rs();
+          }, 100),
+        );
+      }
+    },
     getDocument: (key: string, withMetadata?: boolean) => {
       //returns the config provided as a paramenter to this mock!
       if (key == 'config/app_ui_config') {
