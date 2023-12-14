@@ -52,7 +52,7 @@ function _fillStudyName(config: Partial<AppConfig>): AppConfig {
  * @param config The app config which might be missing 'survey_info'
  * @returns Shallow copy of the app config with the default 'survey_info' filled in if it was missing
  */
-function _backwardsCompatSurveyFill(config: Partial<AppConfig>): AppConfig {
+function _fillSurveyInfo(config: Partial<AppConfig>): AppConfig {
   if (config.survey_info) return config as AppConfig;
   return {
     ...config,
@@ -73,6 +73,13 @@ function _backwardsCompatSurveyFill(config: Partial<AppConfig>): AppConfig {
     },
   } as AppConfig;
 }
+
+/**
+ * @description Fill in any fields that might be missing from the config ('name', 'survey_info') for
+ *  backwards compatibility with old configs
+ */
+const _backwardsCompatFill = (config: Partial<AppConfig>): AppConfig =>
+  _fillSurveyInfo(_fillStudyName(config));
 
 /**
  * @description Fetch and cache any surveys resources that are referenced by URL in the config,
@@ -103,7 +110,7 @@ async function readConfigFromServer(studyLabel: string) {
   const fetchedConfig = await fetchConfig(studyLabel);
   logDebug(`Successfully found config,
     fetchedConfig = ${JSON.stringify(fetchedConfig).substring(0, 10)}`);
-  const filledConfig = _backwardsCompatSurveyFill(_fillStudyName(fetchedConfig));
+  const filledConfig = _backwardsCompatFill(fetchedConfig);
   logDebug(`Applied backwards compat fills, 
     filledConfig = ${JSON.stringify(filledConfig).substring(0, 10)}`);
 
@@ -289,7 +296,7 @@ export function getConfig(): Promise<AppConfig> {
   return storageGet(CONFIG_PHONE_UI_KVSTORE).then((config) => {
     if (config && Object.keys(config).length) {
       logDebug('Got config from KVStore: ' + JSON.stringify(config));
-      storedConfig = _backwardsCompatSurveyFill(config);
+      storedConfig = _backwardsCompatFill(config);
       return storedConfig;
     }
     logDebug('No config found in KVStore, fetching from native storage');
@@ -297,7 +304,7 @@ export function getConfig(): Promise<AppConfig> {
       (config) => {
         if (config && Object.keys(config).length) {
           logDebug('Got config from native storage: ' + JSON.stringify(config));
-          storedConfig = _backwardsCompatSurveyFill(config);
+          storedConfig = _backwardsCompatFill(config);
           return storedConfig;
         }
         logWarn('No config found in native storage either. Returning null');
