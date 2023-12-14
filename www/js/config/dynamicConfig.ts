@@ -113,7 +113,7 @@ async function readConfigFromServer(studyLabel: string) {
 
   logDebug(`Successfully read config, returning config with 
     version = ${filledConfig.version}; 
-    deployment_name = ${filledConfig.intro.translated_text.en.deployment_name}; 
+    deployment_name = ${filledConfig.intro?.translated_text?.en?.deployment_name}; 
     connectionURL = ${fetchedConfig.server ? fetchedConfig.server.connectUrl : 'dev defaults'}`);
   return filledConfig;
 }
@@ -253,12 +253,12 @@ function loadNewConfig(newToken: string, existingVersion?: number): Promise<bool
         })
         .catch((storeError) => {
           displayError(storeError, i18next.t('config.unable-to-store-config'));
-          return false;
+          return Promise.reject(storeError);
         });
     })
     .catch((fetchErr) => {
       displayError(fetchErr, i18next.t('config.unable-download-config'));
-      return false;
+      return Promise.reject(fetchErr);
     });
 }
 
@@ -268,6 +268,7 @@ export function initByUser(urlComponents: { token: string }) {
   try {
     return loadNewConfig(token).catch((fetchErr) => {
       displayError(fetchErr, i18next.t('config.unable-download-config'));
+      return Promise.reject(fetchErr);
     });
   } catch (error) {
     displayError(error, i18next.t('config.invalid-opcode-format'));
