@@ -167,8 +167,9 @@ async function fetchConfig(studyLabel: string, alreadyTriedLocal?: boolean) {
  */
 function extractStudyName(token: string): string {
   const tokenParts = token.split('_');
-  if (tokenParts.length < 3) {
-    // all tokens must have at least nrelop_[study name]_...
+  if (tokenParts.length < 3 || tokenParts.some((part) => part == '')) {
+    // all tokens must have at least nrelop_[studyname]_[usercode]
+    // and neither [studyname] nor [usercode] can be blank
     throw new Error(i18next.t('config.not-enough-parts-old-style', { token: token }));
   }
   if (tokenParts[0] != 'nrelop') {
