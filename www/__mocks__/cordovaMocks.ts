@@ -116,7 +116,7 @@ export const mockBEMUserCache = (config?) => {
         return new Promise<any>((rs, rj) =>
           setTimeout(() => {
             if (config) rs(config);
-            else rj('no config');
+            else rs({}); // return empty object if config is not set
           }, 100),
         );
       } else {
