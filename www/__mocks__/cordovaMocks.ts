@@ -1,5 +1,4 @@
 import packageJsonBuild from '../../package.cordovabuild.json';
-import fakeConfig from './fakeConfig.json';
 
 export const mockCordova = () => {
   window['cordova'] ||= {};
@@ -116,7 +115,8 @@ export const mockBEMUserCache = (config?) => {
       if (key == 'config/app_ui_config') {
         return new Promise<any>((rs, rj) =>
           setTimeout(() => {
-            rs(config || fakeConfig);
+            if (config) rs(config);
+            else rj('no config');
           }, 100),
         );
       } else {
