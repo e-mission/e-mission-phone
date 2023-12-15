@@ -1,5 +1,6 @@
 import { mockReminders } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
+import i18next from 'i18next';
 import { logDebug } from '../js/plugin/logger';
 import { DateTime } from 'luxon';
 import { getUser, updateUser } from '../js/services/commHelper';
@@ -62,6 +63,10 @@ const exampleReminderSchemes = {
 mockLogger();
 mockReminders();
 
+jest.mock('i18next', () => ({
+  resolvedLanguage: 'en',
+}));
+
 jest.mock('../js/services/commHelper', () => ({
   getUser: jest.fn(),
   updateUser: jest.fn(),
@@ -98,12 +103,12 @@ describe('getScheduledNotifs', () => {
     const isScheduling = false;
     const scheduledPromise = Promise.resolve();
     // create the mock notifs from cordova plugin
-    const mockNotifs = [{ trigger: { at: DateTime.now().toMillis() } }];
+    const mockNotifs = [{ trigger: { at: DateTime.now().toJSDate() } }];
     // create the expected result
     const expectedResult = [
       {
-        key: DateTime.fromMillis(mockNotifs[0].trigger.at).toFormat('DDD'),
-        val: DateTime.fromMillis(mockNotifs[0].trigger.at).toFormat('t'),
+        key: DateTime.fromJSDate(mockNotifs[0].trigger.at).toFormat('DDD'),
+        val: DateTime.fromJSDate(mockNotifs[0].trigger.at).toFormat('t'),
       },
     ];
 
@@ -122,12 +127,12 @@ describe('getScheduledNotifs', () => {
     const isScheduling = true;
     const scheduledPromise = Promise.resolve();
     // create the mock notifs from cordova plugin
-    const mockNotifs = [{ trigger: { at: DateTime.now().toMillis() } }];
+    const mockNotifs = [{ trigger: { at: DateTime.now().toJSDate() } }];
     // create the expected result
     const expectedResult = [
       {
-        key: DateTime.fromMillis(mockNotifs[0].trigger.at).toFormat('DDD'),
-        val: DateTime.fromMillis(mockNotifs[0].trigger.at).toFormat('t'),
+        key: DateTime.fromJSDate(mockNotifs[0].trigger.at).toFormat('DDD'),
+        val: DateTime.fromJSDate(mockNotifs[0].trigger.at).toFormat('t'),
       },
     ];
 
@@ -166,36 +171,36 @@ describe('getScheduledNotifs', () => {
     const scheduledPromise = Promise.resolve();
     // create the mock notifs from cordova plugin (greater than 5 notifications)
     const mockNotifs = [
-      { trigger: { at: DateTime.now().toMillis() } },
-      { trigger: { at: DateTime.now().plus({ weeks: 1 }).toMillis() } },
-      { trigger: { at: DateTime.now().plus({ weeks: 2 }).toMillis() } },
-      { trigger: { at: DateTime.now().plus({ weeks: 3 }).toMillis() } },
-      { trigger: { at: DateTime.now().plus({ weeks: 4 }).toMillis() } },
-      { trigger: { at: DateTime.now().plus({ weeks: 5 }).toMillis() } },
-      { trigger: { at: DateTime.now().plus({ weeks: 6 }).toMillis() } },
-      { trigger: { at: DateTime.now().plus({ weeks: 7 }).toMillis() } },
+      { trigger: { at: DateTime.now().toJSDate() } },
+      { trigger: { at: DateTime.now().plus({ weeks: 1 }).toJSDate() } },
+      { trigger: { at: DateTime.now().plus({ weeks: 2 }).toJSDate() } },
+      { trigger: { at: DateTime.now().plus({ weeks: 3 }).toJSDate() } },
+      { trigger: { at: DateTime.now().plus({ weeks: 4 }).toJSDate() } },
+      { trigger: { at: DateTime.now().plus({ weeks: 5 }).toJSDate() } },
+      { trigger: { at: DateTime.now().plus({ weeks: 6 }).toJSDate() } },
+      { trigger: { at: DateTime.now().plus({ weeks: 7 }).toJSDate() } },
     ];
     // create the expected result (only the first 5 notifications)
     const expectedResult = [
       {
-        key: DateTime.fromMillis(mockNotifs[0].trigger.at).toFormat('DDD'),
-        val: DateTime.fromMillis(mockNotifs[0].trigger.at).toFormat('t'),
+        key: DateTime.fromJSDate(mockNotifs[0].trigger.at as Date).toFormat('DDD'),
+        val: DateTime.fromJSDate(mockNotifs[0].trigger.at as Date).toFormat('t'),
       },
       {
-        key: DateTime.fromMillis(mockNotifs[1].trigger.at).toFormat('DDD'),
-        val: DateTime.fromMillis(mockNotifs[1].trigger.at).toFormat('t'),
+        key: DateTime.fromJSDate(mockNotifs[1].trigger.at as Date).toFormat('DDD'),
+        val: DateTime.fromJSDate(mockNotifs[1].trigger.at as Date).toFormat('t'),
       },
       {
-        key: DateTime.fromMillis(mockNotifs[2].trigger.at).toFormat('DDD'),
-        val: DateTime.fromMillis(mockNotifs[2].trigger.at).toFormat('t'),
+        key: DateTime.fromJSDate(mockNotifs[2].trigger.at as Date).toFormat('DDD'),
+        val: DateTime.fromJSDate(mockNotifs[2].trigger.at as Date).toFormat('t'),
       },
       {
-        key: DateTime.fromMillis(mockNotifs[3].trigger.at).toFormat('DDD'),
-        val: DateTime.fromMillis(mockNotifs[3].trigger.at).toFormat('t'),
+        key: DateTime.fromJSDate(mockNotifs[3].trigger.at as Date).toFormat('DDD'),
+        val: DateTime.fromJSDate(mockNotifs[3].trigger.at as Date).toFormat('t'),
       },
       {
-        key: DateTime.fromMillis(mockNotifs[4].trigger.at).toFormat('DDD'),
-        val: DateTime.fromMillis(mockNotifs[4].trigger.at).toFormat('t'),
+        key: DateTime.fromJSDate(mockNotifs[4].trigger.at as Date).toFormat('DDD'),
+        val: DateTime.fromJSDate(mockNotifs[4].trigger.at as Date).toFormat('t'),
       },
     ];
 
@@ -237,7 +242,7 @@ describe('updateScheduledNotifs', () => {
     const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
     const scheduledPromise: Promise<any> = Promise.resolve();
     // create an empty array of mock notifs from cordova plugin
-    const mockNotifs = [];
+    let mockNotifs = [];
 
     // mock the cordova plugin
     jest
@@ -245,17 +250,30 @@ describe('updateScheduledNotifs', () => {
       .mockImplementation((callback) => callback(mockNotifs));
     jest
       .spyOn(window['cordova'].plugins.notification.local, 'cancelAll')
-      .mockImplementation((callback) => callback());
+      .mockImplementation((callback) => {
+        mockNotifs = [];
+        callback();
+      });
     jest
       .spyOn(window['cordova'].plugins.notification.local, 'schedule')
-      .mockImplementation((arg, callback) => callback(arg));
+      .mockImplementation((arg, callback) => {
+        arg.forEach((notif) => {
+          mockNotifs.push(notif);
+        });
+        console.log('called mockNotifs.concat(arg)', mockNotifs);
+        callback(arg);
+      });
     // call the function
     await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+    const scheduledNotifs = await getScheduledNotifs(isScheduling, scheduledPromise);
 
     expect(setIsScheduling).toHaveBeenCalledWith(true);
     expect(logDebug).toHaveBeenCalledWith('After cancelling, there are no scheduled notifications');
-    expect(logDebug).toHaveBeenCalledWith('After scheduling, there are no scheduled notifications');
+    expect(logDebug).toHaveBeenCalledWith(
+      'After scheduling, there are 4 scheduled notifications at 21:00 first is November 19, 2023 at 9:00 PM',
+    );
     expect(setIsScheduling).toHaveBeenCalledWith(false);
+    expect(scheduledNotifs).toHaveLength(4);
   });
 
   it('should resolve without scheduling if notifications are already scheduled', async () => {
@@ -267,10 +285,10 @@ describe('updateScheduledNotifs', () => {
     // create the mock notifs from cordova plugin (must match the notifs that will generate from the reminder scheme above...
     // in this case: exampleReminderSchemes.weekly, because getUser is mocked to return reminder_assignment: 'weekly')
     const mockNotifs = [
-      { trigger: { at: DateTime.fromFormat('2023-11-14 21:00', 'yyyy-MM-dd HH:mm').toMillis() } },
-      { trigger: { at: DateTime.fromFormat('2023-11-15 21:00', 'yyyy-MM-dd HH:mm').toMillis() } },
-      { trigger: { at: DateTime.fromFormat('2023-11-17 21:00', 'yyyy-MM-dd HH:mm').toMillis() } },
-      { trigger: { at: DateTime.fromFormat('2023-11-19 21:00', 'yyyy-MM-dd HH:mm').toMillis() } },
+      { trigger: { at: DateTime.fromFormat('2023-11-14 21:00', 'yyyy-MM-dd HH:mm').toJSDate() } },
+      { trigger: { at: DateTime.fromFormat('2023-11-15 21:00', 'yyyy-MM-dd HH:mm').toJSDate() } },
+      { trigger: { at: DateTime.fromFormat('2023-11-17 21:00', 'yyyy-MM-dd HH:mm').toJSDate() } },
+      { trigger: { at: DateTime.fromFormat('2023-11-19 21:00', 'yyyy-MM-dd HH:mm').toJSDate() } },
     ];
 
     // mock the cordova plugin
