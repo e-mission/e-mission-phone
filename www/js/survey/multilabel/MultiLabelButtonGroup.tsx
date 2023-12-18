@@ -44,11 +44,10 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   >(null);
   const [otherLabel, setOtherLabel] = useState<string | null>(null);
   const [customModes, setCustomModes] = useState<string[]>([]);
-  const chosenLabel = useMemo<string>(() => {
+  const initialLabel = useMemo<string>(() => {
     if (otherLabel != null) return 'other';
     return timelineLabelMap[trip._id.$oid]?.[modalVisibleFor]?.value;
   }, [modalVisibleFor, otherLabel]);
-  const initialLabel = chosenLabel;
   // to mark 'inferred' labels as 'confirmed'; turn yellow labels blue
   function verifyTrip() {
     const inferredLabelsForTrip = inferFinalLabels(trip, timelineLabelMap[trip._id.$oid]);
@@ -75,21 +74,16 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     setOtherLabel(null);
   }
 
-  function store(inputType, chosenLabel, isOther) {
-    if (!chosenLabel) return displayErrorMsg('Label is empty');
+  function store(inputType, newLabel, isOther) {
+    if (!newLabel) return displayErrorMsg('Label is empty');
     if (isOther) {
       /* Let's make the value for user entered inputs look consistent with our other values
        (i.e. lowercase, and with underscores instead of spaces) */
-      chosenLabel = readableLabelToKey(chosenLabel);
+      newLabel = readableLabelToKey(newLabel);
     }
-
     // If a user saves a new customized mode or makes changes to/from customized modes, the modes need to be updated.
-    if (
-      isOther ||
-      customModes.indexOf(initialLabel) > -1 ||
-      customModes.indexOf(chosenLabel) > -1
-    ) {
-      updateUserCustomMode(initialLabel, chosenLabel, isOther)
+    if (isOther || customModes.indexOf(initialLabel) > -1 || customModes.indexOf(newLabel) > -1) {
+      updateUserCustomMode(initialLabel, newLabel, isOther)
         .then((res) => {
           setCustomModes(res['modes'] as string[]);
           logDebug('Successfuly stored custom mode ' + JSON.stringify(res));
@@ -101,7 +95,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     const inputDataToStore = {
       start_ts: trip.start_ts,
       end_ts: trip.end_ts,
-      label: chosenLabel,
+      label: newLabel,
     };
     const storageKey = getLabelInputDetails()[inputType].key;
     window['cordova'].plugins.BEMUserCache.putMessage(storageKey, inputDataToStore).then(() => {
@@ -188,7 +182,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                 <Text style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
                   Default Mode
                 </Text>
-                <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={chosenLabel}>
+                <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={initialLabel}>
                   {labelOptions?.[modalVisibleFor]?.map((o, i) => {
                     const radioItemForOption = (
                       <RadioButton.Item
