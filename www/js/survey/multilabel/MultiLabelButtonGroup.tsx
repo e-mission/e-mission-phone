@@ -190,10 +190,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                 </Text>
                 <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={chosenLabel}>
                   {labelOptions?.[modalVisibleFor]?.map((o, i) => {
-                    // This code is designed to order the modes as follows: default modes -> customized modes -> other
-                    if (o.value === 'other') return;
-                    return (
-                      // @ts-ignore
+                    const radioItemForOption = (
                       <RadioButton.Item
                         key={i}
                         label={t(o.text)}
@@ -201,31 +198,32 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                         style={{ paddingVertical: 2 }}
                       />
                     );
+                    /* if this is the 'other' option and there are some custom modes,
+        show the custom modes section before 'other' */
+                    if (o.value == 'other' && customModes.length) {
+                      return (
+                        <>
+                          <Divider style={{ marginVertical: 10 }} />
+                          <Text
+                            style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
+                            Custom Mode
+                          </Text>
+                          {customModes.map((key, i) => (
+                            <RadioButton.Item
+                              key={i}
+                              label={labelKeyToReadable(key)}
+                              value={key}
+                              style={{ paddingVertical: 2 }}
+                            />
+                          ))}
+                          <Divider style={{ marginVertical: 10 }} />
+                          {radioItemForOption}
+                        </>
+                      );
+                    }
+                    // otherwise, just show the radio item as normal
+                    return radioItemForOption;
                   })}
-                  {customModes.length > 0 && (
-                    <>
-                      <Divider style={{ marginVertical: 10 }} />
-                      <Text style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
-                        Custom Mode
-                      </Text>
-                    </>
-                  )}
-                  {customModes.map((key, i) => (
-                    // @ts-ignore
-                    <RadioButton.Item
-                      key={i}
-                      label={labelKeyToReadable(key)}
-                      value={key}
-                      style={{ paddingVertical: 2 }}
-                    />
-                  ))}
-                  <Divider style={{ marginVertical: 10 }} />
-                  <RadioButton.Item
-                    key="Other"
-                    label={t('Other')}
-                    value="other"
-                    style={{ paddingTop: 10 }}
-                  />
                 </RadioButton.Group>
               </ScrollView>
             </Dialog.Content>
