@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { Modal, StyleSheet, ScrollView } from 'react-native';
+import { Modal, StyleSheet, ScrollView, View, TouchableOpacity } from 'react-native';
 import { Dialog, Button, useTheme, Text, Appbar, IconButton, TextInput } from 'react-native-paper';
 import { getAngularService } from '../angular-react-helper';
 import { useTranslation } from 'react-i18next';
@@ -392,10 +392,29 @@ const ProfileSettings = () => {
       <Appbar.Header
         statusBarHeight={0}
         elevated={true}
-        style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+        style={{ height: 46, backgroundColor: 'white', elevation: 3 }}
+        accessibilityRole='navigation'>
         <Appbar.Content title={t('control.profile-tab')} />
-        <Text>{t('control.log-out')}</Text>
-        <IconButton icon="logout" onPress={() => setLogoutVis(true)}></IconButton>
+        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
+          // onPress={() => setLogoutVis(true)}
+          // accessibilityLabel={`${t('control.log-out')}`}
+          aria-labelledby='logout-group'
+        >
+          {/* <Text accessible={true}>{t('control.log-out')}
+          </Text>
+          <IconButton
+            icon='logout'
+            // onPress={() => setLogoutVis(true)}
+            accessibilityLabel=''
+            accessibilityRole='button'
+          /> */}
+          <Text id='logout-group' accessible={true}>{t('control.log-out')}</Text>
+          <IconButton
+            icon='logout'
+            // accessibilityLabel={t('control.log-out')}
+            accessibilityRole='button'
+          />
+        </TouchableOpacity>
       </Appbar.Header>
 
       <ScrollView>
