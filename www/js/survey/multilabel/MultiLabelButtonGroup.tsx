@@ -180,7 +180,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
             <Dialog.Content style={{ maxHeight: windowHeight / 2, paddingBottom: 0 }}>
               <ScrollView style={{ paddingBottom: 24 }}>
                 <Text style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
-                  Default Mode
+                  {t('trip-confirm.default-mode')}
                 </Text>
                 <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={initialLabel}>
                   {labelOptions?.[modalVisibleFor]?.map((o, i) => {
@@ -200,7 +200,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                           <Divider style={{ marginVertical: 10 }} />
                           <Text
                             style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
-                            Custom Mode
+                            {t('trip-confirm.custom-mode')}
                           </Text>
                           {customModes.map((key, i) => (
                             <RadioButton.Item

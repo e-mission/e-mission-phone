@@ -8,7 +8,9 @@
   "trip-confirm": {
     "services-please-fill-in": "Please fill in the {{text}} not listed.",
     "services-cancel": "Cancel",
-    "services-save": "Save"
+    "services-save": "Save",
+    "default-mode": "Default Mode",
+    "custom-mode": "Custom Mode"
   },
 
   "control": {
