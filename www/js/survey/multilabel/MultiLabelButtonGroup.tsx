@@ -24,6 +24,7 @@ import {
   getLabelInputs,
   inferFinalLabels,
   labelInputDetailsForTrip,
+  labelKeyToReadable,
   labelKeyToRichMode,
   readableLabelToKey,
   verifiabilityForTrip,
@@ -111,13 +112,6 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   }
 
   const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap[trip._id.$oid], appConfig);
-
-  // ex) my_car -> My Car
-  const getProcessedText = (key: string): string =>
-    key
-      .split('_')
-      .map((k) => k.charAt(0).toUpperCase() + k.slice(1))
-      .join(' ');
 
   useEffect(() => {
     // Whenever the modal opens for Mode, retrieve updated modes from the server for synchronized data
@@ -220,7 +214,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                     // @ts-ignore
                     <RadioButton.Item
                       key={i}
-                      label={getProcessedText(key)}
+                      label={labelKeyToReadable(key)}
                       value={key}
                       style={{ paddingVertical: 2 }}
                     />
