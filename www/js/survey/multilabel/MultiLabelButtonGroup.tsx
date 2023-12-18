@@ -185,7 +185,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
             </Dialog.Title>
             <Dialog.Content style={{ maxHeight: windowHeight / 2, paddingBottom: 0 }}>
               <ScrollView style={{ paddingBottom: 24 }}>
-                <Text style={{ fontSize: 12, color: '#333333', paddingVertical: 4 }}>
+                <Text style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
                   Default Mode
                 </Text>
                 <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={chosenLabel}>
@@ -205,7 +205,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                   {customModes.length > 0 && (
                     <>
                       <Divider style={{ marginVertical: 10 }} />
-                      <Text style={{ fontSize: 12, color: '#333333', paddingVertical: 4 }}>
+                      <Text style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
                         Custom Mode
                       </Text>
                     </>
