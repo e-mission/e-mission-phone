@@ -230,7 +230,7 @@ export function putOne(key, data) {
   });
 }
 
-export function getModes() {
+export function getUserCustomModes() {
   return new Promise((rs, rj) => {
     window['cordova'].plugins.BEMServerComm.getUserPersonalData('/mode/get', rs, rj);
   }).catch((error) => {
@@ -239,7 +239,7 @@ export function getModes() {
   });
 }
 
-export function updateMode(oldMode, newMode, isNewModeMustAdded) {
+export function updateUserCustomMode(oldMode, newMode, isNewModeMustAdded) {
   const updatedMode = {
     old_mode: oldMode,
     new_mode: newMode,

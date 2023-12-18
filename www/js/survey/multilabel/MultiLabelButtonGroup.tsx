@@ -30,7 +30,7 @@ import {
   verifiabilityForTrip,
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
-import { updateMode, getModes } from '../../services/commHelper';
+import { getUserCustomModes, updateUserCustomMode } from '../../services/commHelper';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
@@ -89,7 +89,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
       customModes.indexOf(initialLabel) > -1 ||
       customModes.indexOf(chosenLabel) > -1
     ) {
-      updateMode(initialLabel, chosenLabel, isOther)
+      updateUserCustomMode(initialLabel, chosenLabel, isOther)
         .then((res) => {
           setCustomModes(res['modes'] as string[]);
           logDebug('Successfuly stored custom mode ' + JSON.stringify(res));
@@ -118,7 +118,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     if (modalVisibleFor !== 'MODE') {
       return;
     }
-    getModes()
+    getUserCustomModes()
       .then((res) => {
         setCustomModes(res['modes'] as string[]);
         logDebug('Successfully get custom mode' + JSON.stringify(res));
