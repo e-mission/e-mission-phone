@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 import { List, Switch, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
-
 const SettingRow = ({
   textKey,
   iconName = undefined,
@@ -15,23 +14,15 @@ const SettingRow = ({
   const { t } = useTranslation(); // Access translations
   const { colors } = useTheme(); // Get theme colors
 
-
   let rightComponent;
   if (iconName) {
-    rightComponent = (
-      <List.Icon
-        icon={iconName}
-        accessibilityLabel={iconName}
-      />
-    );
+    rightComponent = <List.Icon icon={iconName} accessibilityLabel={iconName} />;
   } else {
     rightComponent = (
       <Switch
         value={switchValue}
         accessibilityLabel={t(textKey)}
-        accessibilityHint={
-          switchValue ? t('Currently enabled') : t('Currently disabled')
-        }
+        accessibilityHint={switchValue ? t('Currently enabled') : t('Currently disabled')}
       />
     );
   }
@@ -42,7 +33,6 @@ const SettingRow = ({
     descriptionText = '';
   }
 
-
   return (
     <List.Item
       style={styles.item(colors.surface)}
@@ -51,14 +41,13 @@ const SettingRow = ({
       description={descriptionText}
       descriptionStyle={descStyle ? descStyle : styles.description}
       descriptionNumberOfLines={4}
-      accessibilityLabel={t(textKey)} 
+      accessibilityLabel={t(textKey)}
       accessibilityRole="button"
       onPress={(e) => action(e)}
       right={() => rightComponent}
     />
   );
 };
-
 
 export const styles = StyleSheet.create({
   item: (surfaceColor) => ({
@@ -75,6 +64,5 @@ export const styles = StyleSheet.create({
     fontSize: 12,
   },
 });
-
 
 export default SettingRow;

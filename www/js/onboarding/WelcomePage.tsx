@@ -100,7 +100,7 @@ const WelcomePage = () => {
       <Surface style={[onboardingStyles.page, { paddingVertical: 0 }]}>
         <View style={s.headerArea(windowWidth, colors)} aria-hidden={true} />
         <IconButton
-          accessibilityLabel="More info" 
+          accessibilityLabel="More info"
           icon="information-variant"
           containerColor={colors.onPrimary}
           iconColor={colors.primary}
@@ -127,18 +127,18 @@ const WelcomePage = () => {
           <View style={s.buttonsSection}>
             <View style={{ width: windowWidth / 2 - 5, paddingHorizontal: 10, gap: 8 }}>
               <View accessibilityRole="button">
-              <WelcomePageButton onPress={scanCode} icon="qrcode">
-                {t('join.scan-code')}
-              </WelcomePageButton>
+                <WelcomePageButton onPress={scanCode} icon="qrcode">
+                  {t('join.scan-code')}
+                </WelcomePageButton>
               </View>
               <Text style={{ textAlign: 'center', margin: 'auto' }}>{t('join.scan-hint')}</Text>
             </View>
             <Divider style={{ width: 2, height: '100%' }} />
             <View style={{ width: windowWidth / 2 - 5, paddingHorizontal: 10, gap: 8 }}>
               <View accessibilityRole="button">
-              <WelcomePageButton onPress={() => setPasteModalVis(true)} icon="content-paste">
-                {t('join.paste-code')}
-              </WelcomePageButton>
+                <WelcomePageButton onPress={() => setPasteModalVis(true)} icon="content-paste">
+                  {t('join.paste-code')}
+                </WelcomePageButton>
               </View>
               <Text style={{ textAlign: 'center', margin: 'auto' }}>{t('join.paste-hint')}</Text>
             </View>
