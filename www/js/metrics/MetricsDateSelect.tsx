@@ -35,10 +35,18 @@ const MetricsDateSelect = ({ dateRange, setDateRange }: Props) => {
 
   const onChoose = useCallback(
     ({ startDate, endDate }) => {
+      const dtStartDate = DateTime.fromJSDate(startDate).startOf('day')
+      let dtEndDate;
+      if(!endDate) { // For when only one day is selected
+        dtEndDate = dtStartDate.endOf('day').minus({minutes: 1});
+      }
+      else {
+        dtEndDate = DateTime.fromJSDate(endDate).startOf('day')
+      }
       setOpen(false);
       setDateRange([
-        DateTime.fromJSDate(startDate).startOf('day'),
-        DateTime.fromJSDate(endDate).startOf('day'),
+        dtStartDate,
+        dtEndDate,
       ]);
     },
     [setOpen, setDateRange],
@@ -64,7 +72,7 @@ const MetricsDateSelect = ({ dateRange, setDateRange }: Props) => {
         mode="range"
         visible={open}
         startDate={dateRangeAsJSDate[0]}
-        endDate={dateRangeAsJSDate[1]}
+        endDate={dateRangeAsJSDate[1] ? dateRangeAsJSDate[1] : dateRangeAsJSDate[0]}
         validRange={{ endDate: todayDate }}
         onDismiss={onDismiss}
         onConfirm={onChoose}
