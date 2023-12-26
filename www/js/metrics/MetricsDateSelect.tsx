@@ -72,7 +72,7 @@ const MetricsDateSelect = ({ dateRange, setDateRange }: Props) => {
         mode="range"
         visible={open}
         startDate={dateRangeAsJSDate[0]}
-        endDate={dateRangeAsJSDate[1] ? dateRangeAsJSDate[1] : dateRangeAsJSDate[0]}
+        endDate={dateRangeAsJSDate[1]}
         validRange={{ endDate: todayDate }}
         onDismiss={onDismiss}
         onConfirm={onChoose}
