@@ -12,7 +12,9 @@
     "serve": "webpack --config webpack.dev.js && concurrently -k \"phonegap --verbose serve\" \"webpack --config webpack.dev.js --watch\"",
     "serve-prod": "webpack --config webpack.prod.js && concurrently -k \"phonegap --verbose serve\" \"webpack --config webpack.prod.js --watch\"",
     "serve-only": "phonegap --verbose serve",
-    "test": "npx jest"
+    "test": "npx jest",
+    "appium-ios": "npx wdio ./e2e-tests/config/ios.config.js --",
+    "appium-android": "npx wdio ./e2e-tests/config/android.config.js --"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
@@ -50,7 +52,15 @@
     "url-loader": "^4.1.1",
     "webpack": "^5.0.1",
     "webpack-cli": "^5.0.1",
-    "prettier": "3.0.3"
+    "prettier": "3.0.3",
+    "@wdio/appium-service": "^8.22.1",
+    "@wdio/cli": "^8.22.1",
+    "@wdio/local-runner": "^8.22.1",
+    "@wdio/mocha-framework": "^8.22.0",
+    "@wdio/spec-reporter": "^8.21.0",
+    "appium": "^2.2.1",
+    "appium-xcuitest-driver": "^5.8.2",
+    "appium-uiautomator2-driver": "^2.34.1"
   },
   "dependencies": {
     "@messageformat/core": "^3.2.0",
