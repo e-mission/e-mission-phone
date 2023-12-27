@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { Dispatch, SetStateAction, createContext } from 'react';
 import { TimelineEntry, UserInputEntry } from '../types/diaryTypes';
 import { LabelOption } from '../survey/multilabel/confirmHelper';
 
@@ -34,6 +34,8 @@ type ContextProps = {
   loadSpecificWeek: any; // TODO
   refresh: any; // TODO
   repopulateTimelineEntry: any; // TODO
+  customModes: string[];
+  setCustomModes: Dispatch<SetStateAction<string[]>>;
 };
 
 export default createContext<ContextProps>(null);

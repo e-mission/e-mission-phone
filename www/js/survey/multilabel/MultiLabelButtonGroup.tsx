@@ -30,24 +30,23 @@ import {
   verifiabilityForTrip,
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
-import { getUserCustomModes, updateUserCustomMode } from '../../services/commHelper';
+import { updateUserCustomMode } from '../../services/commHelper';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const appConfig = useAppConfig();
-  const { repopulateTimelineEntry, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
+  const { repopulateTimelineEntry, labelOptions, timelineLabelMap, customModes, setCustomModes } =
+    useContext(LabelTabContext);
   const { height: windowHeight } = useWindowDimensions();
   // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
   const [modalVisibleFor, setModalVisibleFor] = useState<
     'MODE' | 'PURPOSE' | 'REPLACED_MODE' | null
   >(null);
   const [otherLabel, setOtherLabel] = useState<string | null>(null);
-  const [customModes, setCustomModes] = useState<string[]>([]);
   const initialLabel = useMemo<string>(() => {
-    if (otherLabel != null) return 'other';
     return timelineLabelMap[trip._id.$oid]?.[modalVisibleFor]?.value;
-  }, [modalVisibleFor, otherLabel]);
+  }, [modalVisibleFor]);
   // to mark 'inferred' labels as 'confirmed'; turn yellow labels blue
   function verifyTrip() {
     const inferredLabelsForTrip = inferFinalLabels(trip, timelineLabelMap[trip._id.$oid]);
@@ -83,7 +82,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     }
     // If a user saves a new customized mode or makes changes to/from customized modes, the modes need to be updated.
     if (isOther || customModes.indexOf(initialLabel) > -1 || customModes.indexOf(newLabel) > -1) {
-      updateUserCustomMode(initialLabel, newLabel, isOther)
+      updateUserCustomMode(initialLabel ?? '', newLabel, isOther)
         .then((res) => {
           setCustomModes(res['modes'] as string[]);
           logDebug('Successfuly stored custom mode ' + JSON.stringify(res));
@@ -106,21 +105,6 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   }
 
   const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap[trip._id.$oid], appConfig);
-
-  useEffect(() => {
-    // Whenever the modal opens for Mode, retrieve updated modes from the server for synchronized data
-    if (modalVisibleFor !== 'MODE') {
-      return;
-    }
-    getUserCustomModes()
-      .then((res) => {
-        setCustomModes(res['modes'] as string[]);
-        logDebug('Successfully get custom mode' + JSON.stringify(res));
-      })
-      .catch((e) => {
-        displayErrorMsg(e, 'Get Modes Error');
-      });
-  }, [modalVisibleFor]);
 
   return (
     <>
@@ -194,7 +178,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                     );
                     /* if this is the 'other' option and there are some custom modes,
         show the custom modes section before 'other' */
-                    if (o.value == 'other' && customModes.length) {
+                    if (o.value == 'other' && customModes?.length) {
                       return (
                         <>
                           <Divider style={{ marginVertical: 10 }} />
