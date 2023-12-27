@@ -49,7 +49,8 @@
     "reminders-time-of-day": "Time of Day for Reminders ({{time}})",
     "upcoming-notifications": "Upcoming Notifications",
     "dummy-notification": "Dummy Notification in 5 Seconds",
-    "log-out": "Log Out"
+    "log-out": "Log Out",
+    "edit-custom-modes": "Edit Custom Modes"
   },
 
   "general-settings": {

@@ -422,6 +422,10 @@ const ProfileSettings = () => {
           descStyle={settingStyles.monoDesc}></SettingRow>
         <DemographicsSettingRow></DemographicsSettingRow>
         <SettingRow
+          textKey="control.edit-custom-modes"
+          iconName="label-multiple"
+          action={() => console.log('custom modes')}></SettingRow>
+        <SettingRow
           textKey="control.view-privacy"
           iconName="eye"
           action={() => setPrivacyVis(true)}></SettingRow>
