@@ -31,13 +31,14 @@ import {
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
 import { updateUserCustomMode } from '../../services/commHelper';
+import { AppContext } from '../../App';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const appConfig = useAppConfig();
-  const { repopulateTimelineEntry, labelOptions, timelineLabelMap, customModes, setCustomModes } =
-    useContext(LabelTabContext);
+  const { repopulateTimelineEntry, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
+  const { customModes, setCustomModes } = useContext(AppContext);
   const { height: windowHeight } = useWindowDimensions();
   // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
   const [modalVisibleFor, setModalVisibleFor] = useState<

@@ -19,6 +19,7 @@ import { initPushNotify } from './splash/pushNotifySettings';
 import { initStoreDeviceSettings } from './splash/storeDeviceSettings';
 import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
 import { withErrorBoundary } from './plugin/ErrorBoundary';
+import { getUserCustomModes } from './services/commHelper';
 
 const defaultRoutes = (t) => [
   {
@@ -48,6 +49,7 @@ const App = () => {
   // will remain null while the onboarding state is still being determined
   const [onboardingState, setOnboardingState] = useState<OnboardingState | null>(null);
   const [permissionsPopupVis, setPermissionsPopupVis] = useState(false);
+  const [customModes, setCustomModes] = useState<string[]>([]);
   const appConfig = useAppConfig();
   const permissionStatus = usePermissionStatus();
   const { colors } = useTheme();
@@ -77,6 +79,7 @@ const App = () => {
     initPushNotify();
     initStoreDeviceSettings();
     initRemoteNotifyHandler();
+    getUserCustomModes().then((res) => setCustomModes(res['modes'] as string[]));
   }, [appConfig]);
 
   const appContextValue = {
@@ -87,6 +90,8 @@ const App = () => {
     permissionStatus,
     permissionsPopupVis,
     setPermissionsPopupVis,
+    customModes,
+    setCustomModes,
   };
 
   console.debug('onboardingState in App', onboardingState);

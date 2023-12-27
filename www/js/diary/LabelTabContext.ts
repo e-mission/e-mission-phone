@@ -34,8 +34,6 @@ type ContextProps = {
   loadSpecificWeek: any; // TODO
   refresh: any; // TODO
   repopulateTimelineEntry: any; // TODO
-  customModes: string[];
-  setCustomModes: Dispatch<SetStateAction<string[]>>;
 };
 
 export default createContext<ContextProps>(null);

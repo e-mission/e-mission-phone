@@ -27,7 +27,7 @@ import { fillLocationNamesOfTrip, resetNominatimLimiter } from './addressNamesHe
 import { getLabelOptions } from '../survey/multilabel/confirmHelper';
 import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { useTheme } from 'react-native-paper';
-import { getPipelineRangeTs, getUserCustomModes } from '../services/commHelper';
+import { getPipelineRangeTs } from '../services/commHelper';
 import { mapInputsToTimelineEntries } from '../survey/inputMatcher';
 import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
@@ -56,7 +56,6 @@ const LabelTab = () => {
   const [displayedEntries, setDisplayedEntries] = useState(null);
   const [refreshTime, setRefreshTime] = useState(null);
   const [isLoading, setIsLoading] = useState<string | false>('replace');
-  const [customModes, setCustomModes] = useState<string[]>([]);
 
   const Timeline = getAngularService('Timeline');
 
@@ -66,7 +65,6 @@ const LabelTab = () => {
       if (!appConfig) return;
       showPlaces = appConfig.survey_info?.buttons?.['place-notes'];
       getLabelOptions(appConfig).then((labelOptions) => setLabelOptions(labelOptions));
-      getUserCustomModes().then((res) => setCustomModes(res['modes'] as string[]));
       // we will show filters if 'additions' are not configured
       // https://github.com/e-mission/e-mission-docs/issues/894
       if (appConfig.survey_info?.buttons == undefined) {
@@ -323,8 +321,6 @@ const LabelTab = () => {
     loadSpecificWeek,
     refresh,
     repopulateTimelineEntry,
-    customModes,
-    setCustomModes,
   };
 
   const Tab = createStackNavigator();
