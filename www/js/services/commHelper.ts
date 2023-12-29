@@ -239,6 +239,21 @@ export function getUserCustomModes() {
   });
 }
 
+export function insertUserCustomMode(newMode) {
+  return new Promise((rs, rj) => {
+    window['cordova'].plugins.BEMServerComm.postUserPersonalData(
+      '/mode/insert',
+      'new_mode',
+      newMode,
+      rs,
+      rj,
+    );
+  }).catch((error) => {
+    error = 'While putting one mode, ' + error;
+    throw error;
+  });
+}
+
 export function updateUserCustomMode(oldMode, newMode, isNewModeMustAdded) {
   const updatedMode = {
     old_mode: oldMode,
