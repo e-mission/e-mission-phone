@@ -119,7 +119,8 @@ export function getFormattedDate(beginFmtTime: string, endFmtTime?: string) {
   // We use ddd LL to get Wed, May 3, 2023 or equivalent
   // LL only has the date, month and year
   // LLLL has the day of the week, but also the time
-  return t.locale(i18next.language).format('ddd LL');
+  t.locale(i18next.language);
+  return t.format('ddd LL');
 }
 
 /**
