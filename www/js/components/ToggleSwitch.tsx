@@ -11,6 +11,7 @@ const ToggleSwitch = ({ value, buttons, ...rest }: SegmentedButtonsProps) => {
       buttons={buttons.map((o) => ({
         value: o.value,
         icon: o.icon,
+        accessibilityLabel: o.value,
         uncheckedColor: colors.onSurfaceDisabled,
         showSelectedCheck: true,
         style: {
