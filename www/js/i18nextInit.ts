@@ -21,20 +21,20 @@ const mergeInTranslations = (lang, fallbackLang) => {
       console.warn(`Missing translation for key '${key}'`);
       if (__DEV__) {
         if (typeof value === 'string') {
-          lang[key] = `🌐${value}`
-        } else if (typeof value === 'object') {
+          lang[key] = `🌐${value}`;
+        } else if (typeof value === 'object' && typeof lang[key] === 'object') {
           lang[key] = {};
           mergeInTranslations(lang[key], value);
         }
       } else {
         lang[key] = value;
       }
-    } else if (typeof value === 'object') {
-      mergeInTranslations(lang[key], fallbackLang[key])
+    } else if (typeof value === 'object' && typeof lang[key] === 'object') {
+      mergeInTranslations(lang[key], fallbackLang[key]);
     }
   });
   return lang;
-}
+};
 
 import enJson from '../i18n/en.json';
 import esJson from '../../locales/es/i18n/es.json';
@@ -59,22 +59,24 @@ for (const locale of locales) {
   }
 }
 
-i18next.use(initReactI18next)
-  .init({
-    debug: true,
-    resources: langs,
-    lng: detectedLang,
-    fallbackLng: 'en'
-  });
+i18next.use(initReactI18next).init({
+  debug: true,
+  resources: langs,
+  lng: detectedLang,
+  fallbackLng: 'en',
+});
 
 export default i18next;
 
 // Next, register the translations for react-native-paper-dates
 import { en, es, fr, it, registerTranslation } from 'react-native-paper-dates';
 const rnpDatesLangs = {
-  en, es, fr, it,
+  en,
+  es,
+  fr,
+  it,
   lo: loJson['react-native-paper-dates'] /* Lao translations are not included in the library,
-                                          so we register them from 'lo.json' in /locales */
+                                          so we register them from 'lo.json' in /locales */,
 };
 for (const lang of Object.keys(rnpDatesLangs)) {
   registerTranslation(lang, rnpDatesLangs[lang]);

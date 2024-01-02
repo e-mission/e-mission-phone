@@ -54,7 +54,7 @@
   right: 0;
   top: 0;
   height: 2px;
-  opacity: .45;
+  opacity: 0.45;
   -moz-box-shadow: #29d 1px 0 6px 1px;
   -ms-box-shadow: #29d 1px 0 6px 1px;
   -webkit-box-shadow: #29d 1px 0 6px 1px;
@@ -76,37 +76,67 @@
   width: 14px;
   height: 14px;
 
-  border:  solid 2px transparent;
-  border-top-color:  #29d;
+  border: solid 2px transparent;
+  border-top-color: #29d;
   border-left-color: #29d;
   border-radius: 10px;
 
   -webkit-animation: loading-bar-spinner 400ms linear infinite;
-  -moz-animation:    loading-bar-spinner 400ms linear infinite;
-  -ms-animation:     loading-bar-spinner 400ms linear infinite;
-  -o-animation:      loading-bar-spinner 400ms linear infinite;
-  animation:         loading-bar-spinner 400ms linear infinite;
+  -moz-animation: loading-bar-spinner 400ms linear infinite;
+  -ms-animation: loading-bar-spinner 400ms linear infinite;
+  -o-animation: loading-bar-spinner 400ms linear infinite;
+  animation: loading-bar-spinner 400ms linear infinite;
 }
 
 @-webkit-keyframes loading-bar-spinner {
-  0%   { -webkit-transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
 @-moz-keyframes loading-bar-spinner {
-  0%   { -moz-transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { -moz-transform: rotate(360deg); transform: rotate(360deg); }
+  0% {
+    -moz-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -moz-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
 @-o-keyframes loading-bar-spinner {
-  0%   { -o-transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { -o-transform: rotate(360deg); transform: rotate(360deg); }
+  0% {
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
 @-ms-keyframes loading-bar-spinner {
-  0%   { -ms-transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { -ms-transform: rotate(360deg); transform: rotate(360deg); }
+  0% {
+    -ms-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -ms-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
 @keyframes loading-bar-spinner {
-  0%   { transform: rotate(0deg);   transform: rotate(0deg); }
-  100% { transform: rotate(360deg); transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
 
 .subscription-features tr td {
@@ -256,7 +286,7 @@ body {
 .muted i,
 i.muted {
   opacity: 0.5;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=50)';
   filter: alpha(opacity=50);
 }
 #header-play-button {
@@ -302,13 +332,13 @@ a.h2.accordion {
 a.h2.accordion:before {
   font-family: 'Glyphicons Halflings';
   color: #808080;
-  content: "\e114";
+  content: '\e114';
   margin-right: 0.5em;
 }
 a.h2.accordion.collapsed:before {
   font-family: 'Glyphicons Halflings';
   color: #808080;
-  content: "\e080";
+  content: '\e080';
   margin-right: 0.5em;
 }
 .merch-block {
