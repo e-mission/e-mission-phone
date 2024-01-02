@@ -396,26 +396,14 @@ const ProfileSettings = () => {
         accessibilityRole="navigation">
         <Appbar.Content title={t('control.profile-tab')} />
         <TouchableOpacity
+          onPress={() => setLogoutVis(true)}
           style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
-          // onPress={() => setLogoutVis(true)}
-          // accessibilityLabel={`${t('control.log-out')}`}
-          aria-labelledby="logout-group">
-          {/* <Text accessible={true}>{t('control.log-out')}
-          </Text>
-          <IconButton
-            icon='logout'
-            // onPress={() => setLogoutVis(true)}
-            accessibilityLabel=''
-            accessibilityRole='button'
-          /> */}
-          <Text id="logout-group" accessible={true}>
+          aria-labelledby="logout-group"
+          accessible={true}>
+          <Text id="logout-group" focusable={false}>
             {t('control.log-out')}
           </Text>
-          <IconButton
-            icon="logout"
-            // accessibilityLabel={t('control.log-out')}
-            accessibilityRole="button"
-          />
+          <IconButton aria-hidden={true} icon="logout" />
         </TouchableOpacity>
       </Appbar.Header>
 
