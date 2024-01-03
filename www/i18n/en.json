@@ -10,7 +10,8 @@
     "services-cancel": "Cancel",
     "services-save": "Save",
     "default-mode": "Default Mode",
-    "custom-mode": "Custom Mode"
+    "custom-mode": "Custom Mode",
+    "default-purpose": "Default Purpose"
   },
 
   "control": {

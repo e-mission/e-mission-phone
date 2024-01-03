@@ -82,14 +82,19 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     }
     // If a user saves a new customized mode or makes changes to/from customized modes, the modes need to be updated.
     if (isOther || customModes.indexOf(initialLabel) > -1 || customModes.indexOf(newLabel) > -1) {
-      updateUserCustomMode(initialLabel ?? '', newLabel, isOther)
-        .then((res) => {
-          setCustomModes(res['modes'] as string[]);
-          logDebug('Successfuly stored custom mode ' + JSON.stringify(res));
-        })
-        .catch((e) => {
-          displayErrorMsg(e, 'Create Mode Error');
-        });
+      if (inputType === 'MODE') {
+        updateUserCustomMode(initialLabel ?? '', newLabel, isOther)
+          .then((res) => {
+            setCustomModes(res['modes'] as string[]);
+            logDebug('Successfuly stored custom mode ' + JSON.stringify(res));
+          })
+          .catch((e) => {
+            displayErrorMsg(e, 'Create Mode Error');
+          });
+      }
+      if (inputType === 'PURPOSE') {
+        // TODO : update custom purpose
+      }
     }
     const inputDataToStore = {
       start_ts: trip.start_ts,
@@ -164,7 +169,8 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
             <Dialog.Content style={{ maxHeight: windowHeight / 2, paddingBottom: 0 }}>
               <ScrollView style={{ paddingBottom: 24 }}>
                 <Text style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
-                  {t('trip-confirm.default-mode')}
+                  {modalVisibleFor === 'MODE' && t('trip-confirm.default-mode')}
+                  {modalVisibleFor === 'PURPOSE' && t('trip-confirm.default-purpose')}
                 </Text>
                 <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={initialLabel}>
                   {labelOptions?.[modalVisibleFor]?.map((o, i) => {
@@ -178,7 +184,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                     );
                     /* if this is the 'other' option and there are some custom modes,
         show the custom modes section before 'other' */
-                    if (o.value == 'other' && customModes?.length) {
+                    if (modalVisibleFor == 'MODE' && o.value == 'other' && customModes?.length) {
                       return (
                         <>
                           <Divider style={{ marginVertical: 10 }} />
