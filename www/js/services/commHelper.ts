@@ -230,31 +230,38 @@ export function putOne(key, data) {
   });
 }
 
-export function getUserCustomModes() {
-  return new Promise((rs, rj) => {
-    window['cordova'].plugins.BEMServerComm.getUserPersonalData('/mode/get', rs, rj);
-  }).catch((error) => {
-    error = 'While getting modes, ' + error;
-    throw error;
-  });
-}
-
-export function updateUserCustomMode(oldMode, newMode, isNewModeMustAdded) {
-  const updatedMode = {
-    old_mode: oldMode,
-    new_mode: newMode,
-    is_new_mode_must_added: isNewModeMustAdded,
-  };
+export function getUserCustomLabels(keys) {
   return new Promise((rs, rj) => {
     window['cordova'].plugins.BEMServerComm.postUserPersonalData(
-      '/mode/update',
-      'updated_mode',
-      updatedMode,
+      '/customlabel/get',
+      'keys',
+      keys,
       rs,
       rj,
     );
   }).catch((error) => {
-    error = 'While putting one mode, ' + error;
+    error = 'While getting labels, ' + error;
+    throw error;
+  });
+}
+
+export function updateUserCustomLabel(key, oldLabel, newLabel, isNewLabelMustAdded) {
+  const updatedLabel = {
+    key: key,
+    old_label: oldLabel,
+    new_label: newLabel,
+    is_new_label_must_added: isNewLabelMustAdded,
+  };
+  return new Promise((rs, rj) => {
+    window['cordova'].plugins.BEMServerComm.postUserPersonalData(
+      '/customlabel/update',
+      'updated_label',
+      updatedLabel,
+      rs,
+      rj,
+    );
+  }).catch((error) => {
+    error = 'While putting one label, ' + error;
     throw error;
   });
 }

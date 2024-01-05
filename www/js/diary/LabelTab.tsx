@@ -27,7 +27,7 @@ import { fillLocationNamesOfTrip, resetNominatimLimiter } from './addressNamesHe
 import { getLabelOptions } from '../survey/multilabel/confirmHelper';
 import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { useTheme } from 'react-native-paper';
-import { getPipelineRangeTs, getUserCustomModes } from '../services/commHelper';
+import { getPipelineRangeTs, getUserCustomLabels } from '../services/commHelper';
 import { mapInputsToTimelineEntries } from '../survey/inputMatcher';
 import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
@@ -35,11 +35,13 @@ import LabelTabContext, {
   TimelineLabelMap,
   TimelineMap,
   TimelineNotesMap,
+  CustomLabelKey,
 } from './LabelTabContext';
 
 let showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
 const ONE_WEEK = ONE_DAY * 7; // seconds
+const CUSTOM_LABEL_KEYS = ['mode', 'purpose', 'replaced_mode'];
 
 const LabelTab = () => {
   const appConfig = useAppConfig();
@@ -56,7 +58,7 @@ const LabelTab = () => {
   const [displayedEntries, setDisplayedEntries] = useState(null);
   const [refreshTime, setRefreshTime] = useState(null);
   const [isLoading, setIsLoading] = useState<string | false>('replace');
-  const [customModes, setCustomModes] = useState<string[]>([]);
+  const [customLabel, setCustomLabel] = useState<CustomLabelKey>({});
 
   const Timeline = getAngularService('Timeline');
 
@@ -66,7 +68,7 @@ const LabelTab = () => {
       if (!appConfig) return;
       showPlaces = appConfig.survey_info?.buttons?.['place-notes'];
       getLabelOptions(appConfig).then((labelOptions) => setLabelOptions(labelOptions));
-      getUserCustomModes().then((res) => setCustomModes(res['modes'] as string[]));
+      getUserCustomLabels(CUSTOM_LABEL_KEYS).then((res) => setCustomLabel(res));
       // we will show filters if 'additions' are not configured
       // https://github.com/e-mission/e-mission-docs/issues/894
       if (appConfig.survey_info?.buttons == undefined) {
@@ -323,8 +325,8 @@ const LabelTab = () => {
     loadSpecificWeek,
     refresh,
     repopulateTimelineEntry,
-    customModes,
-    setCustomModes,
+    customLabel,
+    setCustomLabel,
   };
 
   const Tab = createStackNavigator();

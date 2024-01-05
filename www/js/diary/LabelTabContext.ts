@@ -18,6 +18,9 @@ export type TimelineLabelMap = {
 export type TimelineNotesMap = {
   [k: string]: UserInputEntry[];
 };
+export type CustomLabelKey = {
+  [k: string]: string[];
+};
 
 type ContextProps = {
   labelOptions: any;
@@ -34,8 +37,8 @@ type ContextProps = {
   loadSpecificWeek: any; // TODO
   refresh: any; // TODO
   repopulateTimelineEntry: any; // TODO
-  customModes: string[];
-  setCustomModes: Dispatch<SetStateAction<string[]>>;
+  customLabel: CustomLabelKey;
+  setCustomLabel: Dispatch<SetStateAction<CustomLabelKey>>;
 };
 
 export default createContext<ContextProps>(null);

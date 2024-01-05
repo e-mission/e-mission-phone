@@ -30,13 +30,13 @@ import {
   verifiabilityForTrip,
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
-import { updateUserCustomMode } from '../../services/commHelper';
+import { updateUserCustomLabel } from '../../services/commHelper';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const appConfig = useAppConfig();
-  const { repopulateTimelineEntry, labelOptions, timelineLabelMap, customModes, setCustomModes } =
+  const { repopulateTimelineEntry, labelOptions, timelineLabelMap, customLabel, setCustomLabel } =
     useContext(LabelTabContext);
   const { height: windowHeight } = useWindowDimensions();
   // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
@@ -80,21 +80,22 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
        (i.e. lowercase, and with underscores instead of spaces) */
       newLabel = readableLabelToKey(newLabel);
     }
-    // If a user saves a new customized mode or makes changes to/from customized modes, the modes need to be updated.
-    if (isOther || customModes.indexOf(initialLabel) > -1 || customModes.indexOf(newLabel) > -1) {
-      if (inputType === 'MODE') {
-        updateUserCustomMode(initialLabel ?? '', newLabel, isOther)
-          .then((res) => {
-            setCustomModes(res['modes'] as string[]);
-            logDebug('Successfuly stored custom mode ' + JSON.stringify(res));
-          })
-          .catch((e) => {
-            displayErrorMsg(e, 'Create Mode Error');
-          });
-      }
-      if (inputType === 'PURPOSE') {
-        // TODO : update custom purpose
-      }
+    // If a user saves a new customized label or makes changes to/from customized labels, the labels need to be updated.
+    const key = inputType.toLowerCase();
+    if (
+      isOther ||
+      customLabel[key].indexOf(initialLabel) > -1 ||
+      customLabel[key].indexOf(newLabel) > -1
+    ) {
+      updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther)
+        .then((res) => {
+          customLabel[key] = res['label'];
+          setCustomLabel(customLabel);
+          logDebug('Successfuly stored custom label ' + JSON.stringify(res));
+        })
+        .catch((e) => {
+          displayErrorMsg(e, 'Create Label Error');
+        });
     }
     const inputDataToStore = {
       start_ts: trip.start_ts,
@@ -171,6 +172,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                 <Text style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
                   {modalVisibleFor === 'MODE' && t('trip-confirm.default-mode')}
                   {modalVisibleFor === 'PURPOSE' && t('trip-confirm.default-purpose')}
+                  {modalVisibleFor === 'REPLACED_MODE' && t('trip-confirm.default-replace-mode')}
                 </Text>
                 <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={initialLabel}>
                   {labelOptions?.[modalVisibleFor]?.map((o, i) => {
@@ -182,17 +184,20 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                         style={{ paddingVertical: 2 }}
                       />
                     );
-                    /* if this is the 'other' option and there are some custom modes,
-        show the custom modes section before 'other' */
-                    if (modalVisibleFor == 'MODE' && o.value == 'other' && customModes?.length) {
+                    /* if this is the 'other' option and there are some custom labels,
+        show the custom labels section before 'other' */
+                    if (o.value == 'other' && customLabel[modalVisibleFor.toLowerCase()]?.length) {
                       return (
                         <>
                           <Divider style={{ marginVertical: 10 }} />
                           <Text
                             style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
-                            {t('trip-confirm.custom-mode')}
+                            {modalVisibleFor === 'MODE' && t('trip-confirm.custom-mode')}
+                            {modalVisibleFor === 'PURPOSE' && t('trip-confirm.custom-purpose')}
+                            {modalVisibleFor === 'REPLACED_MODE' &&
+                              t('trip-confirm.custom-replace-mode')}
                           </Text>
-                          {customModes.map((key, i) => (
+                          {customLabel[modalVisibleFor.toLowerCase()].map((key, i) => (
                             <RadioButton.Item
                               key={i}
                               label={labelKeyToReadable(key)}
