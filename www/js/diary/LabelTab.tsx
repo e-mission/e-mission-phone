@@ -308,38 +308,38 @@ const LabelTab = () => {
     return chosenLabel ? labelOptionByValue(chosenLabel, labelType) : undefined;
   };
 
-  function addUserInputToEntry(
-    oid: string,
-    userInput: any,
-    inputType: 'label' | 'note',
-    labelKey?: MultilabelKey | 'SURVEY',
-  ) {
+  function addUserInputToEntry(oid: string, userInput: any, inputType: 'label' | 'note') {
     const tlEntry = timelineMap?.get(oid);
-    if (!tlEntry) return displayErrorMsg('Item with oid: ' + oid + ' not found in timeline');
+    if (!pipelineRange || !tlEntry)
+      return displayErrorMsg('Item with oid: ' + oid + ' not found in timeline');
     const nowTs = new Date().getTime() / 1000; // epoch seconds
-    const newInput = { data: userInput, metadata: { write_ts: nowTs } };
     if (inputType == 'label') {
-      if (!labelKey) throw new Error('labelKey must be provided for label input');
+      const newLabels = {};
+      for (const [inputType, labelValue] of Object.entries(userInput)) {
+        newLabels[inputType] = { data: labelValue, metadata: nowTs };
+      }
+      logDebug('LabelTab: newLabels = ' + JSON.stringify(newLabels));
       const newTimelineLabelMap: TimelineLabelMap = {
         ...timelineLabelMap,
         [oid]: {
           ...timelineLabelMap?.[oid],
-          [labelKey]: newInput,
+          ...newLabels,
         },
       };
       setTimelineLabelMap(newTimelineLabelMap);
       setTimeout(() => setLastFilteredTs(new Date().getTime() / 1000), 30000); // wait 30s before reapplying filters
     } else if (inputType == 'note') {
       const notesForEntry = timelineNotesMap?.[oid] || [];
-      notesForEntry.push(newInput as UserInputEntry);
+      const newAddition = { data: userInput, metadata: { write_ts: nowTs } };
+      notesForEntry.push(newAddition as UserInputEntry);
       const newTimelineNotesMap: TimelineNotesMap = {
         ...timelineNotesMap,
         [oid]: getNotDeletedCandidates(notesForEntry),
       };
       setTimelineNotesMap(newTimelineNotesMap);
     }
-    /* we can update unprocessed inputs in the background, without blocking the UI,
-      so this is not 'await'ed */
+    /* We can update unprocessed inputs in the background, without blocking the completion
+      of this function. That is why this is not 'await'ed */
     updateLocalUnprocessedInputs(pipelineRange, appConfig);
   }
 

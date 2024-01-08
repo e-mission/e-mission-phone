@@ -15,7 +15,7 @@ import {
 } from 'react-native-paper';
 import DiaryButton from '../../components/DiaryButton';
 import { useTranslation } from 'react-i18next';
-import LabelTabContext from '../../diary/LabelTabContext';
+import LabelTabContext, { UserInputMap } from '../../diary/LabelTabContext';
 import { displayErrorMsg, logDebug } from '../../plugin/logger';
 import {
   getLabelInputDetails,
@@ -49,21 +49,24 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   // to mark 'inferred' labels as 'confirmed'; turn yellow labels blue
   function verifyTrip() {
     const inferredLabelsForTrip = inferFinalLabels(trip, userInputFor(trip));
+    let labelsToStore;
     for (const inputType of getLabelInputs()) {
       const inferred = inferredLabelsForTrip?.[inputType];
-      // if the is an inferred label that is not already confirmed, confirm it now by storing it
+      // if there is an inferred label that is not already confirmed, confirm it by storing it
       if (inferred?.value && !labelFor(trip, inputType)) {
-        store(inputType, inferred.value, false);
+        labelsToStore = { ...labelsToStore, [inputType]: inferred.value };
       }
     }
+    if (labelsToStore) store(labelsToStore);
   }
 
   function onChooseLabel(chosenValue) {
+    if (!modalVisibleFor) return displayErrorMsg('Cannot choose label when modal not visible');
     logDebug(`onChooseLabel with chosen ${modalVisibleFor} as ${chosenValue}`);
     if (chosenValue == 'other') {
       setOtherLabel('');
     } else {
-      store(modalVisibleFor, chosenValue, false);
+      store({ [modalVisibleFor]: chosenValue });
     }
   }
 
@@ -72,24 +75,34 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     setOtherLabel(null);
   }
 
-  function store(inputType: MultilabelKey | null, chosenLabel, isOther) {
-    if (!inputType || !chosenLabel) return displayErrorMsg('Label is empty');
-    if (isOther) {
-      /* Let's make the value for user entered inputs look consistent with our other values
-       (i.e. lowercase, and with underscores instead of spaces) */
-      chosenLabel = readableLabelToKey(chosenLabel);
-    }
-    const inputDataToStore = {
-      start_ts: trip.start_ts,
-      end_ts: trip.end_ts,
-      label: chosenLabel,
-    };
+  /* Store a batch of one or more inputs to the user cache, dismiss the popup if it was visible,
+    and inform LabelTab of new inputs */
+  function store(inputs: { [k in MultilabelKey]?: string }, isOther?) {
+    if (!Object.keys(inputs).length) return displayErrorMsg('No inputs to store');
+    const inputsToStore: UserInputMap = {};
+    const storePromises: any[] = [];
+    for (let [inputType, chosenLabel] of Object.entries(inputs)) {
+      if (isOther) {
+        /* Let's make the value for user entered inputs look consistent with our other values
+        (i.e. lowercase, and with underscores instead of spaces) */
+        chosenLabel = readableLabelToKey(chosenLabel);
+      }
+      const inputDataToStore = {
+        start_ts: trip.start_ts,
+        end_ts: trip.end_ts,
+        label: chosenLabel,
+      };
+      inputsToStore[inputType] = inputDataToStore;
 
-    const storageKey = getLabelInputDetails()[inputType].key;
-    window['cordova'].plugins.BEMUserCache.putMessage(storageKey, inputDataToStore).then(() => {
+      const storageKey = getLabelInputDetails()[inputType].key;
+      storePromises.push(
+        window['cordova'].plugins.BEMUserCache.putMessage(storageKey, inputDataToStore),
+      );
+    }
+    Promise.all(storePromises).then(() => {
+      logDebug('Successfully stored input data ' + JSON.stringify(inputsToStore));
       dismiss();
-      addUserInputToEntry(trip._id.$oid, inputDataToStore, 'label', inputType);
-      logDebug('Successfully stored input data ' + JSON.stringify(inputDataToStore));
+      addUserInputToEntry(trip._id.$oid, inputsToStore, 'label');
     });
   }
 
@@ -164,7 +177,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                 </RadioButton.Group>
               </ScrollView>
             </Dialog.Content>
-            {otherLabel != null && (
+            {otherLabel != null && modalVisibleFor != null && (
               <>
                 <TextInput
                   label={t('trip-confirm.services-please-fill-in', {
@@ -174,7 +187,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                   onChangeText={(t) => setOtherLabel(t)}
                 />
                 <Dialog.Actions>
-                  <Button onPress={() => store(modalVisibleFor, otherLabel, true)}>
+                  <Button onPress={() => store({ [modalVisibleFor]: otherLabel }, true)}>
                     {t('trip-confirm.services-save')}
                   </Button>
                 </Dialog.Actions>
