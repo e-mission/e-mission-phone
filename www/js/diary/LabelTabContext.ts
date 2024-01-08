@@ -27,12 +27,7 @@ type ContextProps = {
   userInputFor: (tlEntry: TimelineEntry) => UserInputMap | undefined;
   notesFor: (tlEntry: TimelineEntry) => UserInputEntry[] | undefined;
   labelFor: (tlEntry: TimelineEntry, labelType: MultilabelKey) => LabelOption | undefined;
-  addUserInputToEntry: (
-    oid: string,
-    userInput: any,
-    inputType: 'label' | 'note',
-    labelKey?: MultilabelKey | 'SURVEY',
-  ) => void;
+  addUserInputToEntry: (oid: string, userInput: any, inputType: 'label' | 'note') => void;
   displayedEntries: TimelineEntry[] | null;
   filterInputs: any; // TODO
   setFilterInputs: any; // TODO

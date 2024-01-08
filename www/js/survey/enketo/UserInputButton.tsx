@@ -46,7 +46,7 @@ const UserInputButton = ({ timelineEntry }: Props) => {
     if (result) {
       logDebug(`UserInputButton: response was saved, about to addUserInputToEntry; 
         result = ${JSON.stringify(result)}`);
-      addUserInputToEntry(timelineEntry._id.$oid, result, 'label', 'SURVEY');
+      addUserInputToEntry(timelineEntry._id.$oid, { SURVEY: result }, 'label');
     } else {
       displayErrorMsg('UserInputButton: response was not saved, result=', result);
     }
