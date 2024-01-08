@@ -338,6 +338,9 @@ const LabelTab = () => {
       };
       setTimelineNotesMap(newTimelineNotesMap);
     }
+    /* we can update unprocessed inputs in the background, without blocking the UI,
+      so this is not 'await'ed */
+    updateLocalUnprocessedInputs(pipelineRange, appConfig);
   }
 
   const contextVals = {
