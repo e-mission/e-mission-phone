@@ -16,7 +16,7 @@ const SettingRow = ({
 
   let rightComponent;
   if (iconName) {
-    rightComponent = <List.Icon icon={iconName} accessibilityLabel={iconName} />;
+    rightComponent = <List.Icon icon={iconName} aria-hidden={true} />;
   } else {
     rightComponent = (
       <Switch
@@ -41,6 +41,7 @@ const SettingRow = ({
       description={descriptionText}
       descriptionStyle={descStyle ? descStyle : styles.description}
       descriptionNumberOfLines={4}
+      accessible={true}
       accessibilityLabel={t(textKey)}
       accessibilityRole="button"
       onPress={(e) => action(e)}
