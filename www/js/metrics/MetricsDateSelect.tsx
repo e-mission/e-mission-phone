@@ -35,19 +35,24 @@ const MetricsDateSelect = ({ dateRange, setDateRange }: Props) => {
 
   const onChoose = useCallback(
     ({ startDate, endDate }) => {
-      const dtStartDate = DateTime.fromJSDate(startDate).startOf('day')
+      const dtStartDate = DateTime.fromJSDate(startDate).startOf('day');
       let dtEndDate;
-      if(!endDate) { // For when only one day is selected
-        dtEndDate = dtStartDate.endOf('day').minus({minutes: 1});
-      }
-      else {
-        dtEndDate = DateTime.fromJSDate(endDate).startOf('day')
+
+      if (!endDate) {
+        // If no end date selected, pull range from then till present day
+        dtEndDate = DateTime.now();
+      } else if (
+        dtStartDate.toString() === DateTime.fromJSDate(endDate).startOf('day').toString()
+      ) {
+        // For when only one day is selected
+        // NOTE: As written, this technically timestamp will technically fetch _two_ days.
+        // For more info, see: https://github.com/e-mission/e-mission-docs/issues/1027
+        dtEndDate = dtStartDate.endOf('day');
+      } else {
+        dtEndDate = DateTime.fromJSDate(endDate).startOf('day');
       }
       setOpen(false);
-      setDateRange([
-        dtStartDate,
-        dtEndDate,
-      ]);
+      setDateRange([dtStartDate, dtEndDate]);
     },
     [setOpen, setDateRange],
   );
