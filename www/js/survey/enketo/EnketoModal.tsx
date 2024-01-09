@@ -34,7 +34,7 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
         displayErrorMsg(t('survey.enketo-form-errors'));
       }
     } catch (err) {
-      window.alert(err.message);
+      displayError(err);
     }
   }
 
