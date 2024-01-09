@@ -31,13 +31,14 @@ import {
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
 import { updateUserCustomLabel } from '../../services/commHelper';
+import { AppContext } from '../../App';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const appConfig = useAppConfig();
-  const { repopulateTimelineEntry, labelOptions, timelineLabelMap, customLabel, setCustomLabel } =
-    useContext(LabelTabContext);
+  const { repopulateTimelineEntry, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
+  const { customLabel, setCustomLabel } = useContext(AppContext);
   const { height: windowHeight } = useWindowDimensions();
   // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
   const [modalVisibleFor, setModalVisibleFor] = useState<
@@ -89,8 +90,11 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     ) {
       updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther)
         .then((res) => {
-          customLabel[key] = res['label'];
-          setCustomLabel(customLabel);
+          const updatedCustomLabel = {
+            ...customLabel,
+            [key]: res['label'],
+          };
+          setCustomLabel(updatedCustomLabel);
           logDebug('Successfuly stored custom label ' + JSON.stringify(res));
         })
         .catch((e) => {
@@ -111,7 +115,6 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   }
 
   const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap[trip._id.$oid], appConfig);
-
   return (
     <>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>

@@ -19,7 +19,7 @@ import { initPushNotify } from './splash/pushNotifySettings';
 import { initStoreDeviceSettings } from './splash/storeDeviceSettings';
 import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
 import { withErrorBoundary } from './plugin/ErrorBoundary';
-import { getUserCustomModes } from './services/commHelper';
+import { getUserCustomLabels } from './services/commHelper';
 
 const defaultRoutes = (t) => [
   {
@@ -43,13 +43,14 @@ const defaultRoutes = (t) => [
 ];
 
 export const AppContext = createContext<any>({});
+const CUSTOM_LABEL_KEYS = ['mode', 'purpose', 'replaced_mode'];
 
 const App = () => {
   const [index, setIndex] = useState(0);
   // will remain null while the onboarding state is still being determined
   const [onboardingState, setOnboardingState] = useState<OnboardingState | null>(null);
   const [permissionsPopupVis, setPermissionsPopupVis] = useState(false);
-  const [customModes, setCustomModes] = useState<string[]>([]);
+  const [customLabel, setCustomLabel] = useState<string[]>([]);
   const appConfig = useAppConfig();
   const permissionStatus = usePermissionStatus();
   const { colors } = useTheme();
@@ -79,7 +80,7 @@ const App = () => {
     initPushNotify();
     initStoreDeviceSettings();
     initRemoteNotifyHandler();
-    getUserCustomModes().then((res) => setCustomModes(res['modes'] as string[]));
+    getUserCustomLabels(CUSTOM_LABEL_KEYS).then((res) => setCustomLabel(res));
   }, [appConfig]);
 
   const appContextValue = {
@@ -90,8 +91,8 @@ const App = () => {
     permissionStatus,
     permissionsPopupVis,
     setPermissionsPopupVis,
-    customModes,
-    setCustomModes,
+    customLabel,
+    setCustomLabel,
   };
 
   console.debug('onboardingState in App', onboardingState);
