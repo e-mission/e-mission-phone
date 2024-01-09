@@ -36,7 +36,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const appConfig = useAppConfig();
-  const { repopulateTimelineEntry, labelOptions, timelineLabelMap, customLabel, setCustomLabel } =
+  const { repopulateTimelineEntry, labelOptions, timelineLabelMap, customLabelMap, setCustomLabelMap } =
     useContext(LabelTabContext);
   const { height: windowHeight } = useWindowDimensions();
   // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
@@ -84,13 +84,13 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     const key = inputType.toLowerCase();
     if (
       isOther ||
-      customLabel[key].indexOf(initialLabel) > -1 ||
-      customLabel[key].indexOf(newLabel) > -1
+      customLabelMap[key].indexOf(initialLabel) > -1 ||
+      customLabelMap[key].indexOf(newLabel) > -1
     ) {
       updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther)
         .then((res) => {
-          setCustomLabel({
-            ...customLabel,
+          setCustomLabelMap({
+            ...customLabelMap,
             [key]: res['label'],
           });
           logDebug('Successfuly stored custom label ' + JSON.stringify(res));
@@ -191,7 +191,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                     );
                     /* if this is the 'other' option and there are some custom labels,
         show the custom labels section before 'other' */
-                    if (o.value == 'other' && customLabel[modalVisibleFor.toLowerCase()]?.length) {
+                    if (o.value == 'other' && customLabelMap[modalVisibleFor.toLowerCase()]?.length) {
                       return (
                         <>
                           <Divider style={{ marginVertical: 10 }} />
@@ -202,7 +202,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                             {modalVisibleFor === 'REPLACED_MODE' &&
                               t('trip-confirm.custom-replace-mode')}
                           </Text>
-                          {customLabel[modalVisibleFor.toLowerCase()].map((key, i) => (
+                          {customLabelMap[modalVisibleFor.toLowerCase()].map((key, i) => (
                             <RadioButton.Item
                               key={i}
                               label={labelKeyToReadable(key)}

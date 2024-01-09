@@ -35,13 +35,13 @@ import LabelTabContext, {
   TimelineLabelMap,
   TimelineMap,
   TimelineNotesMap,
-  CustomLabelKey,
+  CustomLabelMap,
 } from './LabelTabContext';
 
 let showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
 const ONE_WEEK = ONE_DAY * 7; // seconds
-const CUSTOM_LABEL_KEYS = ['mode', 'purpose', 'replaced_mode'];
+const CUSTOM_LABEL_KEYS_IN_DATABASE = ['mode', 'purpose', 'replaced_mode'];
 
 const LabelTab = () => {
   const appConfig = useAppConfig();
@@ -58,7 +58,7 @@ const LabelTab = () => {
   const [displayedEntries, setDisplayedEntries] = useState(null);
   const [refreshTime, setRefreshTime] = useState(null);
   const [isLoading, setIsLoading] = useState<string | false>('replace');
-  const [customLabel, setCustomLabel] = useState<CustomLabelKey>({});
+  const [customLabelMap, setCustomLabelMap] = useState<CustomLabelMap>({});
 
   const Timeline = getAngularService('Timeline');
 
@@ -68,7 +68,7 @@ const LabelTab = () => {
       if (!appConfig) return;
       showPlaces = appConfig.survey_info?.buttons?.['place-notes'];
       getLabelOptions(appConfig).then((labelOptions) => setLabelOptions(labelOptions));
-      getUserCustomLabels(CUSTOM_LABEL_KEYS).then((res) => setCustomLabel(res));
+      getUserCustomLabels(CUSTOM_LABEL_KEYS_IN_DATABASE).then((res) => setCustomLabelMap(res));
       // we will show filters if 'additions' are not configured
       // https://github.com/e-mission/e-mission-docs/issues/894
       if (appConfig.survey_info?.buttons == undefined) {
@@ -325,8 +325,8 @@ const LabelTab = () => {
     loadSpecificWeek,
     refresh,
     repopulateTimelineEntry,
-    customLabel,
-    setCustomLabel,
+    customLabelMap,
+    setCustomLabelMap,
   };
 
   const Tab = createStackNavigator();
