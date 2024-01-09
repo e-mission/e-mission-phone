@@ -36,8 +36,13 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const appConfig = useAppConfig();
-  const { repopulateTimelineEntry, labelOptions, timelineLabelMap, customLabelMap, setCustomLabelMap } =
-    useContext(LabelTabContext);
+  const {
+    repopulateTimelineEntry,
+    labelOptions,
+    timelineLabelMap,
+    customLabelMap,
+    setCustomLabelMap,
+  } = useContext(LabelTabContext);
   const { height: windowHeight } = useWindowDimensions();
   // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
   const [modalVisibleFor, setModalVisibleFor] = useState<
@@ -176,9 +181,9 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                   {modalVisibleFor === 'PURPOSE' && t('trip-confirm.default-purpose')}
                   {modalVisibleFor === 'REPLACED_MODE' && t('trip-confirm.default-replace-mode')}
                 </Text>
-                {/* if 'other' button is selected and input component shows up, make 'other' radio button filled */}
                 <RadioButton.Group
                   onValueChange={(val) => onChooseLabel(val)}
+                  // if 'other' button is selected and input component shows up, make 'other' radio button filled
                   value={otherLabel !== null ? 'other' : initialLabel}>
                   {labelOptions?.[modalVisibleFor]?.map((o, i) => {
                     const radioItemForOption = (
@@ -191,7 +196,10 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                     );
                     /* if this is the 'other' option and there are some custom labels,
         show the custom labels section before 'other' */
-                    if (o.value == 'other' && customLabelMap[modalVisibleFor.toLowerCase()]?.length) {
+                    if (
+                      o.value == 'other' &&
+                      customLabelMap[modalVisibleFor.toLowerCase()]?.length
+                    ) {
                       return (
                         <>
                           <Divider style={{ marginVertical: 10 }} />
