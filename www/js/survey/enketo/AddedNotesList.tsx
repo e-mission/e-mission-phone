@@ -14,19 +14,26 @@ import { useTranslation } from 'react-i18next';
 import { EnketoUserInputEntry } from './enketoHelper';
 import { logDebug } from '../../plugin/logger';
 
-type EntryWithDisplayDt = EnketoUserInputEntry & { displayDt?: { date: string; time: string } };
 type Props = {
   timelineEntry: any;
-  additionEntries: EntryWithDisplayDt[];
+  additionEntries: EnketoUserInputEntry[];
 };
 const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
   const { t } = useTranslation();
   const { addUserInputToEntry } = useContext(LabelTabContext);
   const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
   const [surveyModalVisible, setSurveyModalVisible] = useState(false);
-  const [editingEntry, setEditingEntry] = useState<EntryWithDisplayDt | null>(null);
+  const [editingEntry, setEditingEntry] = useState<EnketoUserInputEntry | undefined>(undefined);
 
-  function setDisplayDt(entry) {
+  const _cachedDts = {};
+  function getDisplayDt(entry?: EnketoUserInputEntry) {
+    if (!entry) return '';
+
+    // memoization: if we've already calculated the displayDt for this entry, return it from cache
+    const cachedDt = _cachedDts[entry.metadata.write_ts]; // write_ts used as key since it's unique
+    if (cachedDt) return cachedDt;
+
+    // otherwise, calculate it and cache it before returning it
     const timezone =
       timelineEntry.start_local_dt?.timezone ||
       timelineEntry.enter_local_dt?.timezone ||
@@ -48,10 +55,10 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
       .parseZone(stopTs * 1000)
       .tz(timezone)
       .format('LT');
-    return (entry.displayDt = {
-      date: d,
-      time: begin + ' - ' + stop,
-    });
+
+    const dt = { date: d, time: begin + ' - ' + stop };
+    _cachedDts[entry.metadata.write_ts] = dt;
+    return dt;
   }
 
   function deleteEntry(entry) {
@@ -116,10 +123,8 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
                 onPress={() => editEntry(entry)}
                 style={[styles.cell, { flex: 4 }]}
                 textStyle={{ fontSize: 12, lineHeight: 12 }}>
-                <Text style={{ display: 'flex' }}>{entry.displayDt?.date}</Text>
-                <Text style={{ display: 'flex' }}>
-                  {entry.displayDt?.time || (setDisplayDt(entry) && '')}
-                </Text>
+                <Text style={{ display: 'flex' }}>{getDisplayDt(entry)?.date}</Text>
+                <Text style={{ display: 'flex' }}>{getDisplayDt(entry)?.time}</Text>
               </DataTable.Cell>
               <DataTable.Cell
                 onPress={() => confirmDeleteEntry(entry)}
@@ -151,8 +156,8 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
           <Dialog.Title>{t('diary.delete-entry-confirm')}</Dialog.Title>
           <Dialog.Content>
             <Text style={{ fontWeight: 'bold' }}>{editingEntry?.data?.label}</Text>
-            <Text>{editingEntry?.displayDt?.date}</Text>
-            <Text>{editingEntry?.displayDt?.time}</Text>
+            <Text>{getDisplayDt(editingEntry)?.date}</Text>
+            <Text>{getDisplayDt(editingEntry)?.time}</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => deleteEntry(editingEntry)}>Delete</Button>
