@@ -89,8 +89,10 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     ) {
       updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther)
         .then((res) => {
-          customLabel[key] = res['label'];
-          setCustomLabel(customLabel);
+          setCustomLabel({
+            ...customLabel,
+            [key]: res['label'],
+          });
           logDebug('Successfuly stored custom label ' + JSON.stringify(res));
         })
         .catch((e) => {
@@ -174,7 +176,10 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                   {modalVisibleFor === 'PURPOSE' && t('trip-confirm.default-purpose')}
                   {modalVisibleFor === 'REPLACED_MODE' && t('trip-confirm.default-replace-mode')}
                 </Text>
-                <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={initialLabel}>
+                {/* if 'other' button is selected and input component shows up, make 'other' radio button filled */}
+                <RadioButton.Group
+                  onValueChange={(val) => onChooseLabel(val)}
+                  value={otherLabel !== null ? 'other' : initialLabel}>
                   {labelOptions?.[modalVisibleFor]?.map((o, i) => {
                     const radioItemForOption = (
                       <RadioButton.Item
