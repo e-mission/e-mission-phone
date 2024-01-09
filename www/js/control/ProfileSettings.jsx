@@ -33,7 +33,7 @@ import { storageClear } from '../plugin/storage';
 import { getAppVersion } from '../plugin/clientStats';
 import { getConsentDocument } from '../splash/startprefs';
 import { logDebug } from '../plugin/logger';
-import CustomModesSettingRow from './CustomModesSettingRow';
+import CustomLabelSettingRow from './CustomLabelSettingRow';
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -422,7 +422,7 @@ const ProfileSettings = () => {
           desc={authSettings.opcode}
           descStyle={settingStyles.monoDesc}></SettingRow>
         <DemographicsSettingRow></DemographicsSettingRow>
-        <CustomModesSettingRow />
+        <CustomLabelSettingRow />
         <SettingRow
           textKey="control.view-privacy"
           iconName="eye"

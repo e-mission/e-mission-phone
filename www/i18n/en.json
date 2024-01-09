@@ -14,7 +14,8 @@
     "default-purpose": "Default Purpose",
     "custom-purpose": "Custom Purpose",
     "default-replace-mode": "Default Replace Mode",
-    "custom-replace-mode": "Custom Replace Mode"
+    "custom-replace-mode": "Custom Replace Mode",
+    "custom-labels": "Custom Labels"
   },
 
   "control": {
@@ -54,7 +55,7 @@
     "upcoming-notifications": "Upcoming Notifications",
     "dummy-notification": "Dummy Notification in 5 Seconds",
     "log-out": "Log Out",
-    "edit-custom-modes": "Edit Custom Modes"
+    "edit-custom-labels": "Edit Custom Labels"
   },
 
   "general-settings": {

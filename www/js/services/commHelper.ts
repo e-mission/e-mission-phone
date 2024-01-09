@@ -245,17 +245,21 @@ export function getUserCustomLabels(keys) {
   });
 }
 
-export function insertUserCustomMode(newMode) {
+export function insertUserCustomLabel(key, newLabel) {
+  const insertedLabel = {
+    key: key,
+    label: newLabel,
+  };
   return new Promise((rs, rj) => {
     window['cordova'].plugins.BEMServerComm.postUserPersonalData(
-      '/mode/insert',
-      'new_mode',
-      newMode,
+      '/customlabel/insert',
+      'inserted_label',
+      insertedLabel,
       rs,
       rj,
     );
   }).catch((error) => {
-    error = 'While putting one mode, ' + error;
+    error = `While inserting one ${key}, ${error}`;
     throw error;
   });
 }
@@ -276,7 +280,26 @@ export function updateUserCustomLabel(key, oldLabel, newLabel, isNewLabelMustAdd
       rj,
     );
   }).catch((error) => {
-    error = 'While putting one label, ' + error;
+    error = `While updating one ${key}, ${error}`;
+    throw error;
+  });
+}
+
+export function deleteUserCustomLabel(key, newLabel) {
+  const deletedLabel = {
+    key: key,
+    label: newLabel,
+  };
+  return new Promise((rs, rj) => {
+    window['cordova'].plugins.BEMServerComm.postUserPersonalData(
+      '/customlabel/delete',
+      'deleted_label',
+      deletedLabel,
+      rs,
+      rj,
+    );
+  }).catch((error) => {
+    error = `While deleting one ${key}, ${error}`;
     throw error;
   });
 }
