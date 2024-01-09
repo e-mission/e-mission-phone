@@ -61,7 +61,9 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
     return dt;
   }
 
-  function deleteEntry(entry) {
+  function deleteEntry(entry?: EnketoUserInputEntry) {
+    if (!entry) return;
+
     const dataKey = entry.data.key || entry.metadata.key;
     const data = entry.data;
     const index = additionEntries.indexOf(entry);
@@ -74,34 +76,35 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
     return window['cordova'].plugins.BEMUserCache.putMessage(dataKey, data).then(() => {
       additionEntries.splice(index, 1);
       setConfirmDeleteModalVisible(false);
-      setEditingEntry(null);
+      setEditingEntry(undefined);
     });
   }
 
-  function confirmDeleteEntry(entry) {
+  function confirmDeleteEntry(entry: EnketoUserInputEntry) {
     setEditingEntry(entry);
     setConfirmDeleteModalVisible(true);
   }
 
   function dismissConfirmDelete() {
-    setEditingEntry(null);
+    setEditingEntry(undefined);
     setConfirmDeleteModalVisible(false);
   }
 
   function editEntry(entry) {
     setEditingEntry(entry);
+    console.debug('Editing entry is now ', entry);
     setSurveyModalVisible(true);
   }
 
-  async function onEditedResponse(response) {
+  async function onEditedResponse(response: EnketoUserInputEntry) {
     if (!response) return;
     await deleteEntry(editingEntry);
-    setEditingEntry(null);
+    setEditingEntry(undefined);
     addUserInputToEntry(timelineEntry._id.$oid, response, 'note');
   }
 
   function onModalDismiss() {
-    setEditingEntry(null);
+    setEditingEntry(undefined);
     setSurveyModalVisible(false);
   }
 
@@ -144,7 +147,7 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
           opts={{
             timelineEntry,
             prefilledSurveyResponse: editingEntry?.data.xmlResponse,
-            dataKey: editingEntry?.key || editingEntry?.metadata?.key,
+            dataKey: editingEntry?.data?.key || editingEntry?.metadata?.key,
           }}
         />
       )}
