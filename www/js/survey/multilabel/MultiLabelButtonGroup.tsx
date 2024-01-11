@@ -38,7 +38,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const { repopulateTimelineEntry, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
-  const { customLabel, setCustomLabel } = useContext(AppContext);
+  const { customLabelMap, setCustomLabelMap } = useContext(AppContext);
   const { height: windowHeight } = useWindowDimensions();
   // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
   const [modalVisibleFor, setModalVisibleFor] = useState<
@@ -85,16 +85,15 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     const key = inputType.toLowerCase();
     if (
       isOther ||
-      customLabel[key].indexOf(initialLabel) > -1 ||
-      customLabel[key].indexOf(newLabel) > -1
+      customLabelMap[key].indexOf(initialLabel) > -1 ||
+      customLabelMap[key].indexOf(newLabel) > -1
     ) {
       updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther)
         .then((res) => {
-          const updatedCustomLabel = {
-            ...customLabel,
+          setCustomLabelMap({
+            ...customLabelMap,
             [key]: res['label'],
-          };
-          setCustomLabel(updatedCustomLabel);
+          });
           logDebug('Successfuly stored custom label ' + JSON.stringify(res));
         })
         .catch((e) => {
@@ -115,6 +114,8 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   }
 
   const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap[trip._id.$oid], appConfig);
+  const customLabelKeyInDatabase = modalVisibleFor === 'PURPOSE' ? 'purpose' : 'mode';
+
   return (
     <>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -172,12 +173,10 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
             </Dialog.Title>
             <Dialog.Content style={{ maxHeight: windowHeight / 2, paddingBottom: 0 }}>
               <ScrollView style={{ paddingBottom: 24 }}>
-                <Text style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
-                  {modalVisibleFor === 'MODE' && t('trip-confirm.default-mode')}
-                  {modalVisibleFor === 'PURPOSE' && t('trip-confirm.default-purpose')}
-                  {modalVisibleFor === 'REPLACED_MODE' && t('trip-confirm.default-replace-mode')}
-                </Text>
-                <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={initialLabel}>
+                <RadioButton.Group
+                  onValueChange={(val) => onChooseLabel(val)}
+                  // if 'other' button is selected and input component shows up, make 'other' radio button filled
+                  value={otherLabel !== null ? 'other' : initialLabel}>
                   {labelOptions?.[modalVisibleFor]?.map((o, i) => {
                     const radioItemForOption = (
                       <RadioButton.Item
@@ -189,18 +188,17 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                     );
                     /* if this is the 'other' option and there are some custom labels,
         show the custom labels section before 'other' */
-                    if (o.value == 'other' && customLabel[modalVisibleFor.toLowerCase()]?.length) {
+                    if (o.value == 'other' && customLabelMap[customLabelKeyInDatabase]?.length) {
                       return (
                         <>
                           <Divider style={{ marginVertical: 10 }} />
                           <Text
                             style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
-                            {modalVisibleFor === 'MODE' && t('trip-confirm.custom-mode')}
+                            {(modalVisibleFor === 'MODE' || modalVisibleFor === 'REPLACED_MODE') &&
+                              t('trip-confirm.custom-mode')}
                             {modalVisibleFor === 'PURPOSE' && t('trip-confirm.custom-purpose')}
-                            {modalVisibleFor === 'REPLACED_MODE' &&
-                              t('trip-confirm.custom-replace-mode')}
                           </Text>
-                          {customLabel[modalVisibleFor.toLowerCase()].map((key, i) => (
+                          {customLabelMap[customLabelKeyInDatabase].map((key, i) => (
                             <RadioButton.Item
                               key={i}
                               label={labelKeyToReadable(key)}

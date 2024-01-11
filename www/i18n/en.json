@@ -9,13 +9,8 @@
     "services-please-fill-in": "Please fill in the {{text}} not listed.",
     "services-cancel": "Cancel",
     "services-save": "Save",
-    "default-mode": "Default Mode",
     "custom-mode": "Custom Mode",
-    "default-purpose": "Default Purpose",
-    "custom-purpose": "Custom Purpose",
-    "default-replace-mode": "Default Replace Mode",
-    "custom-replace-mode": "Custom Replace Mode",
-    "custom-labels": "Custom Labels"
+    "custom-purpose": "Custom Purpose"
   },
 
   "control": {
