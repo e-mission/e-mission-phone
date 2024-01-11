@@ -9,15 +9,7 @@ import {
   useWindowDimensions,
   ScrollView,
 } from 'react-native';
-import {
-  Icon,
-  TextInput,
-  Dialog,
-  Button,
-  useTheme,
-  Divider,
-  SegmentedButtons,
-} from 'react-native-paper';
+import { Icon, TextInput, Dialog, Button, useTheme, SegmentedButtons } from 'react-native-paper';
 import { AppContext } from '../App';
 import { useTranslation } from 'react-i18next';
 import { deleteUserCustomLabel, insertUserCustomLabel } from '../services/commHelper';
@@ -26,7 +18,7 @@ import { labelKeyToReadable, readableLabelToKey } from '../survey/multilabel/con
 
 const CustomLabelSettingRow = () => {
   const [isCustomLabelModalOpen, setIsCustomLabelModalOpen] = useState(false);
-  const { customLabel, setCustomLabel } = useContext(AppContext);
+  const { customLabelMap, setCustomLabelMap } = useContext(AppContext);
   const [isAddLabelOn, setIsAddLabelOn] = useState(false);
   const [text, setText] = useState('');
   const [key, setKey] = useState('mode');
@@ -35,7 +27,7 @@ const CustomLabelSettingRow = () => {
   const { colors } = useTheme(); // use this to get the theme colors instead of hardcoded #hex colors
   const { height } = useWindowDimensions();
 
-  const labelButton = [
+  const labelKeysButton = [
     {
       value: 'mode',
       label: t('diary.mode'),
@@ -44,42 +36,37 @@ const CustomLabelSettingRow = () => {
       value: 'purpose',
       label: t('diary.purpose'),
     },
-    {
-      value: 'replaced_mode',
-      label: t('diary.replaces'),
-    },
   ];
+
   const onDeleteLabel = async (label) => {
     const processedLabel = readableLabelToKey(label);
     try {
       const res = await deleteUserCustomLabel(key, processedLabel);
       if (res) {
-        const updatedCustomLabel = {
-          ...customLabel,
+        setCustomLabelMap({
+          ...customLabelMap,
           [key]: res['label'],
-        };
-        setCustomLabel(updatedCustomLabel);
+        });
         logDebug(`Successfuly deleted custom ${key}, ${JSON.stringify(res)}`);
       }
     } catch (e) {
-      displayErrorMsg(e, 'Create Mode Error');
+      displayErrorMsg(e, 'Delete Mode Error');
     }
   };
 
   const onSaveLabel = async () => {
     const processedLabel = readableLabelToKey(text);
-    if (customLabel[key].indexOf(processedLabel) > -1) {
+    if (customLabelMap[key].indexOf(processedLabel) > -1) {
       return;
     }
     try {
       const res = await insertUserCustomLabel(key, processedLabel);
       if (res) {
         setText('');
-        const updatedCustomLabel = {
-          ...customLabel,
+        setCustomLabelMap({
+          ...customLabelMap,
           [key]: res['label'],
-        };
-        setCustomLabel(updatedCustomLabel);
+        });
         setIsAddLabelOn(false);
         logDebug(`Successfuly inserted custom ${key}, ${JSON.stringify(res)}`);
       }
@@ -110,7 +97,7 @@ const CustomLabelSettingRow = () => {
               style={{ marginBottom: 10 }}
               value={key}
               onValueChange={setKey}
-              buttons={labelButton}
+              buttons={labelKeysButton}
             />
             {isAddLabelOn && (
               <>
@@ -132,7 +119,7 @@ const CustomLabelSettingRow = () => {
               </>
             )}
             <ScrollView contentContainerStyle={{ height: height / 2 }}>
-              {customLabel[key].map((label, idx) => {
+              {customLabelMap[key].map((label, idx) => {
                 return (
                   <View
                     key={label + idx}

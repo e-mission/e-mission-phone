@@ -10,7 +10,8 @@
     "services-cancel": "Cancel",
     "services-save": "Save",
     "custom-mode": "Custom Mode",
-    "custom-purpose": "Custom Purpose"
+    "custom-purpose": "Custom Purpose",
+    "custom-labels": "Custom Labels"
   },
 
   "control": {
