@@ -41,7 +41,7 @@ import LabelTabContext, {
 let showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
 const ONE_WEEK = ONE_DAY * 7; // seconds
-const CUSTOM_LABEL_KEYS_IN_DATABASE = ['mode', 'purpose', 'replaced_mode'];
+const CUSTOM_LABEL_KEYS_IN_DATABASE = ['mode', 'purpose'];
 
 const LabelTab = () => {
   const appConfig = useAppConfig();
