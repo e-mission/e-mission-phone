@@ -43,14 +43,17 @@ const defaultRoutes = (t) => [
 ];
 
 export const AppContext = createContext<any>({});
-const CUSTOM_LABEL_KEYS = ['mode', 'purpose', 'replaced_mode'];
+const CUSTOM_LABEL_KEYS_IN_DATABASE = ['mode', 'purpose'];
+type CustomLabelMap = {
+  [k: string]: string[];
+};
 
 const App = () => {
   const [index, setIndex] = useState(0);
   // will remain null while the onboarding state is still being determined
   const [onboardingState, setOnboardingState] = useState<OnboardingState | null>(null);
   const [permissionsPopupVis, setPermissionsPopupVis] = useState(false);
-  const [customLabel, setCustomLabel] = useState<string[]>([]);
+  const [customLabelMap, setCustomLabelMap] = useState<CustomLabelMap>({});
   const appConfig = useAppConfig();
   const permissionStatus = usePermissionStatus();
   const { colors } = useTheme();
@@ -80,7 +83,7 @@ const App = () => {
     initPushNotify();
     initStoreDeviceSettings();
     initRemoteNotifyHandler();
-    getUserCustomLabels(CUSTOM_LABEL_KEYS).then((res) => setCustomLabel(res));
+    getUserCustomLabels(CUSTOM_LABEL_KEYS_IN_DATABASE).then((res) => setCustomLabelMap(res));
   }, [appConfig]);
 
   const appContextValue = {
@@ -91,8 +94,8 @@ const App = () => {
     permissionStatus,
     permissionsPopupVis,
     setPermissionsPopupVis,
-    customLabel,
-    setCustomLabel,
+    customLabelMap,
+    setCustomLabelMap,
   };
 
   console.debug('onboardingState in App', onboardingState);
