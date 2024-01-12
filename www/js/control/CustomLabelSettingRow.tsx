@@ -56,7 +56,7 @@ const CustomLabelSettingRow = () => {
 
   const onSaveLabel = async () => {
     const processedLabel = readableLabelToKey(text);
-    if (customLabelMap[key].indexOf(processedLabel) > -1) {
+    if (customLabelMap[key]?.length > 0 && customLabelMap[key].indexOf(processedLabel) > -1) {
       return;
     }
     try {
@@ -103,7 +103,7 @@ const CustomLabelSettingRow = () => {
               <>
                 <TextInput
                   label={t('trip-confirm.services-please-fill-in', {
-                    text: 'mode',
+                    text: key,
                   })}
                   value={text}
                   onChangeText={setText}
@@ -119,18 +119,19 @@ const CustomLabelSettingRow = () => {
               </>
             )}
             <ScrollView contentContainerStyle={{ height: height / 2 }}>
-              {customLabelMap[key].map((label, idx) => {
-                return (
-                  <View
-                    key={label + idx}
-                    style={[styles.itemWrapper, { borderBottomColor: colors.outline }]}>
-                    <Text>{labelKeyToReadable(label)}</Text>
-                    <TouchableOpacity onPress={() => onDeleteLabel(label)}>
-                      <Icon source="trash-can" size={20} />
-                    </TouchableOpacity>
-                  </View>
-                );
-              })}
+              {customLabelMap[key]?.length > 0 &&
+                customLabelMap[key].map((label, idx) => {
+                  return (
+                    <View
+                      key={label + idx}
+                      style={[styles.itemWrapper, { borderBottomColor: colors.outline }]}>
+                      <Text>{labelKeyToReadable(label)}</Text>
+                      <TouchableOpacity onPress={() => onDeleteLabel(label)}>
+                        <Icon source="trash-can" size={20} />
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
             </ScrollView>
           </Dialog.Content>
           <Dialog.Actions>
