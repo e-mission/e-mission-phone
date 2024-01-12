@@ -5,14 +5,17 @@
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
 
 type ObjectId = { $oid: string };
-type ConfirmedPlace = {
+export type ConfirmedPlace = {
   _id: ObjectId;
   additions: UserInputEntry[];
   cleaned_place: ObjectId;
   ending_trip: ObjectId;
-  enter_fmt_time: string; // ISO string 2023-10-31T12:00:00.000-04:00
+  enter_fmt_time: string; // ISO string e.g. 2023-10-31T12:00:00.000-04:00
   enter_local_dt: LocalDt;
   enter_ts: number; // Unix timestamp
+  exit_fmt_time: string; // ISO string e.g. 2023-10-31T12:00:00.000-04:00
+  exit_local_dt: LocalDt;
+  exit_ts: number; // Unix timestamp
   key: string;
   location: { type: string; coordinates: number[] };
   origin_key: string;
@@ -39,7 +42,7 @@ export type CompositeTrip = {
   confirmed_trip: ObjectId;
   distance: number;
   duration: number;
-  end_confirmed_place: ConfirmedPlace;
+  end_confirmed_place: ServerData<ConfirmedPlace>;
   end_fmt_time: string;
   end_loc: { type: string; coordinates: number[] };
   end_local_dt: LocalDt;
@@ -56,7 +59,7 @@ export type CompositeTrip = {
   raw_trip: ObjectId;
   sections: any[]; // TODO
   source: string;
-  start_confirmed_place: ConfirmedPlace;
+  start_confirmed_place: ServerData<ConfirmedPlace>;
   start_fmt_time: string;
   start_loc: { type: string; coordinates: number[] };
   start_local_dt: LocalDt;
@@ -75,6 +78,11 @@ export type CompositeTrip = {
 /* The 'timeline' for a user is a list of their trips and places,
  so a 'timeline entry' is either a trip or a place. */
 export type TimelineEntry = ConfirmedPlace | CompositeTrip;
+
+/* Type guard to disambiguate timeline entries as either trips or places
+  If it has a 'start_ts' and 'end_ts', it's a trip. Else, it's a place. */
+export const isTrip = (entry: TimelineEntry): entry is CompositeTrip =>
+  entry.hasOwnProperty('start_ts') && entry.hasOwnProperty('end_ts');
 
 /* These properties aren't received from the server, but are derived from the above properties.
   They are used in the UI to display trip/place details and are computed by the useDerivedProperties hook. */
