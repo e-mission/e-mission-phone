@@ -78,7 +78,7 @@ const CustomLabelSettingRow = () => {
   return (
     <>
       <SettingRow
-        textKey="control.edit-custom-labels"
+        textKey="control.manage-custom-labels"
         iconName="label-multiple"
         action={() => setIsCustomLabelModalOpen(true)}></SettingRow>
       <Modal
