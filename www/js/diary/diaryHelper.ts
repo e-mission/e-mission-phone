@@ -2,6 +2,7 @@
 // these functions are being gradually migrated out of services.js
 
 import moment from 'moment';
+import i18next from 'i18next';
 import { DateTime } from 'luxon';
 import { LabelOptions, readableLabelToKey } from '../survey/multilabel/confirmHelper';
 import { CompositeTrip } from '../types/diaryTypes';
@@ -118,6 +119,7 @@ export function getFormattedDate(beginFmtTime: string, endFmtTime?: string) {
   // We use ddd LL to get Wed, May 3, 2023 or equivalent
   // LL only has the date, month and year
   // LLLL has the day of the week, but also the time
+  t.locale(i18next.language);
   return t.format('ddd LL');
 }
 
