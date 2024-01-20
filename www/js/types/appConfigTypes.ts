@@ -20,7 +20,7 @@ export type EnketoSurveyConfig = {
   [surveyName: string]: {
     formPath: string;
     labelTemplate: { [lang: string]: string };
-    labelVars: { [activity: string]: { [key: string]: string; type: string } };
+    labelVars?: { [activity: string]: { [key: string]: string; type: string } };
     version: number;
     compatibleWith: number;
     dataKey?: string;

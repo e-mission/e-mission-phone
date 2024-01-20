@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { logDebug } from '../plugin/logger';
+import { displayError, logDebug } from '../plugin/logger';
 import { ServerConnConfig } from '../types/appConfigTypes';
 
 /**
@@ -12,12 +12,16 @@ export async function fetchUrlCached(url) {
     logDebug(`fetchUrlCached: found cached data for url ${url}, returning`);
     return Promise.resolve(stored);
   }
-  logDebug(`fetchUrlCached: found no cached data for url ${url}, fetching`);
-  const response = await fetch(url);
-  const text = await response.text();
-  localStorage.setItem(url, text);
-  logDebug(`fetchUrlCached: fetched data for url ${url}, returning`);
-  return text;
+  try {
+    logDebug(`fetchUrlCached: found no cached data for url ${url}, fetching`);
+    const response = await fetch(url);
+    const text = await response.text();
+    localStorage.setItem(url, text);
+    logDebug(`fetchUrlCached: fetched data for url ${url}, returning`);
+    return text;
+  } catch (e) {
+    displayError(e, `While fetching ${url}`);
+  }
 }
 
 export function getRawEntries(
