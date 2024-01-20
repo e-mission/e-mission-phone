@@ -7,6 +7,7 @@ export type AppConfig = {
     'trip-labels': 'MULTILABEL' | 'ENKETO';
     surveys: EnketoSurveyConfig;
   };
+  reminderSchemes?: ReminderSchemeConfig;
   [k: string]: any; // TODO fill in all the other fields
 };
 
@@ -19,9 +20,22 @@ export type EnketoSurveyConfig = {
   [surveyName: string]: {
     formPath: string;
     labelTemplate: { [lang: string]: string };
-    labelVars: { [activity: string]: { [key: string]: string; type: string } };
+    labelVars?: { [activity: string]: { [key: string]: string; type: string } };
     version: number;
     compatibleWith: number;
     dataKey?: string;
+  };
+};
+
+export type ReminderSchemeConfig = {
+  [schemeName: string]: {
+    title: { [lang: string]: string };
+    message: { [lang: string]: string };
+    schedule: {
+      start: number;
+      end: number;
+      intervalInDays: number;
+    }[];
+    defaultTime: string; // format is HH:MM in 24 hour time
   };
 };

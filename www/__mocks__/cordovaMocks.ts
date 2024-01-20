@@ -1,11 +1,20 @@
 import packageJsonBuild from '../../package.cordovabuild.json';
-import fakeConfig from './fakeConfig.json';
 
 export const mockCordova = () => {
   window['cordova'] ||= {};
   window['cordova'].platformId ||= 'ios';
   window['cordova'].platformVersion ||= packageJsonBuild.dependencies['cordova-ios'];
   window['cordova'].plugins ||= {};
+};
+
+export const mockReminders = () => {
+  window['cordova'] ||= {};
+  window['cordova'].plugins ||= {};
+  window['cordova'].plugins.notification ||= {};
+  window['cordova'].plugins.notification.local ||= {};
+  window['cordova'].plugins.notification.local.getScheduled ||= () => [];
+  window['cordova'].plugins.notification.local.cancelAll ||= () => {};
+  window['cordova'].plugins.notification.local.schedule ||= () => {};
 };
 
 export const mockDevice = () => {
@@ -29,6 +38,7 @@ export const mockFile = () => {
   window['cordova'].file = {
     dataDirectory: '../path/to/data/directory',
     applicationStorageDirectory: '../path/to/app/storage/directory',
+    tempDirectory: '../path/to/temp/directory',
   };
 };
 
@@ -119,13 +129,23 @@ export const mockBEMUserCache = (config?) => {
         }, 100),
       );
       // Used for getUnifiedDataForInterval
+    putRWDocument: (key: string, value: any) => {
+      if (key == 'config/app_ui_config') {
+        return new Promise<void>((rs, rj) =>
+          setTimeout(() => {
+            config = value;
+            rs();
+          }, 100),
+        );
+      }
     },
     getDocument: (key: string, withMetadata?: boolean) => {
       //returns the config provided as a paramenter to this mock!
       if (key == 'config/app_ui_config') {
         return new Promise<any>((rs, rj) =>
           setTimeout(() => {
-            rs(config || fakeConfig);
+            if (config) rs(config);
+            else rs({}); // return empty object if config is not set
           }, 100),
         );
       } else {
