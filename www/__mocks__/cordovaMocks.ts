@@ -128,7 +128,7 @@ export const mockBEMUserCache = (config?) => {
           );
         }, 100),
       );
-      // Used for getUnifiedDataForInterval
+    },  // Used for getUnifiedDataForInterval
     putRWDocument: (key: string, value: any) => {
       if (key == 'config/app_ui_config') {
         return new Promise<void>((rs, rj) =>
