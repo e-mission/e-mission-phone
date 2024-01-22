@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Modal, StyleSheet, ScrollView, View, TouchableOpacity } from 'react-native';
-import { Dialog, Button, useTheme, Text, Appbar, IconButton, TextInput } from 'react-native-paper';
+import {
+  Dialog,
+  Button,
+  useTheme,
+  Text,
+  Appbar,
+  IconButton,
+  TextInput,
+  List,
+} from 'react-native-paper';
 import { getAngularService } from '../angular-react-helper';
 import { useTranslation } from 'react-i18next';
 import ExpansionSection from './ExpandMenu';
@@ -395,16 +404,16 @@ const ProfileSettings = () => {
         style={{ height: 46, backgroundColor: 'white', elevation: 3 }}
         accessibilityRole="navigation">
         <Appbar.Content title={t('control.profile-tab')} />
-        <TouchableOpacity
-          onPress={() => setLogoutVis(true)}
+        <List.Item
           style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
-          aria-labelledby="logout-group"
-          accessible={true}>
-          <Text id="logout-group" focusable={false}>
-            {t('control.log-out')}
-          </Text>
-          <IconButton aria-hidden={true} icon="logout" />
-        </TouchableOpacity>
+          title={t('control.log-out')}
+          titleStyle={{ fontSize: 14, color: 'black', paddingEnd: 5 }}
+          accessible={true}
+          accessibilityLabel={t('control.log-out')}
+          accessibilityRole="button"
+          onPress={() => setLogoutVis(true)}
+          right={() => <List.Icon icon="logout" aria-hidden={true} />}
+        />
       </Appbar.Header>
 
       <ScrollView>
