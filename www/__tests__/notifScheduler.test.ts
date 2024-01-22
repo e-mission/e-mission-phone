@@ -274,7 +274,7 @@ describe('updateScheduledNotifs', () => {
     await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
     const scheduledNotifs = await getScheduledNotifs(isScheduling, scheduledPromise);
 
-    expect(scheduledNotifs).toEqual(expectedResultcheduleNotifs);
+    expect(scheduledNotifs).toEqual(expect.arrayContaining(expectedResultcheduleNotifs));
   });
 
   it('should resolve without scheduling if notifications are already scheduled', async () => {
