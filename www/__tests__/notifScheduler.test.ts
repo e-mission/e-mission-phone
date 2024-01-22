@@ -265,14 +265,17 @@ describe('updateScheduledNotifs', () => {
       });
     // call the function
     console.log('test log: before calling updateScheduledNotifs', mockNotifs);
+    console.log('test log: before calling updateScheduledNotifs', isScheduling);
 
     await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
 
     console.log('test log: after calling updateScheduledNotifs', mockNotifs);
+    console.log('test log: after calling updateScheduledNotifs', isScheduling);
 
     const scheduledNotifs = await getScheduledNotifs(isScheduling, scheduledPromise);
 
     console.log('test log: after calling getScheduleNotifs', mockNotifs);
+    console.log('test log: after calling getScheduleNotifs', isScheduling);
 
     expect(setIsScheduling).toHaveBeenCalledWith(true);
     expect(logDebug).toHaveBeenCalledWith('After cancelling, there are no scheduled notifications');
