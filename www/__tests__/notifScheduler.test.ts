@@ -245,10 +245,10 @@ describe('updateScheduledNotifs', () => {
     let mockNotifs = [];
     // create the expected result
     const expectedResultcheduleNotifs = [
-      { key: 'November 19, 2023', val: '9:00 PM' },
-      { key: 'November 17, 2023', val: '9:00 PM' },
-      { key: 'November 15, 2023', val: '9:00 PM' },
-      { key: 'November 14, 2023', val: '9:00 PM' },
+      { key: 'November 19, 2023', val: '9:00 PM' },
+      { key: 'November 17, 2023', val: '9:00 PM' },
+      { key: 'November 15, 2023', val: '9:00 PM' },
+      { key: 'November 14, 2023', val: '9:00 PM' },
     ];
 
     // mock the cordova plugin
@@ -274,7 +274,11 @@ describe('updateScheduledNotifs', () => {
     await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
     const scheduledNotifs = await getScheduledNotifs(isScheduling, scheduledPromise);
 
-    expect(scheduledNotifs).toEqual(expect.arrayContaining(expectedResultcheduleNotifs));
+    expect(scheduledNotifs).toHaveLength(4);
+    expect(scheduledNotifs[0].key).toEqual(expectedResultcheduleNotifs[0].key);
+    expect(scheduledNotifs[1].key).toEqual(expectedResultcheduleNotifs[1].key);
+    expect(scheduledNotifs[2].key).toEqual(expectedResultcheduleNotifs[2].key);
+    expect(scheduledNotifs[3].key).toEqual(expectedResultcheduleNotifs[3].key);
   });
 
   it('should resolve without scheduling if notifications are already scheduled', async () => {
