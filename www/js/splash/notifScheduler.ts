@@ -79,7 +79,12 @@ export const getScheduledNotifs = function (isScheduling: boolean, scheduledProm
         anywhere from 0-n of the scheduled notifs are displayed 
         if actively scheduling, wait for the scheduledPromise to resolve before fetching prevents such errors
         */
+    console.log('test log: isScheduling during getScheduledNotifs', isScheduling);
+    console.log('test log: scheduledPromise during getScheduledNotifs', scheduledPromise);
     if (isScheduling) {
+      console.log(
+        'test log: requesting fetch while still actively scheduling, waiting on scheduledPromise',
+      );
       logDebug('requesting fetch while still actively scheduling, waiting on scheduledPromise');
       scheduledPromise.then(() => {
         getNotifs().then((notifs: object[]) => {
@@ -87,6 +92,7 @@ export const getScheduledNotifs = function (isScheduling: boolean, scheduledProm
         });
       });
     } else {
+      console.log('test log: not actively scheduling, fetching');
       getNotifs().then((notifs: object[]) => {
         resolve(notifs);
       });

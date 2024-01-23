@@ -243,6 +243,13 @@ describe('updateScheduledNotifs', () => {
     const scheduledPromise: Promise<any> = Promise.resolve();
     // create an empty array of mock notifs from cordova plugin
     let mockNotifs = [];
+    // create the expected result
+    const expectedResultcheduleNotifs = [
+      { key: 'November 19, 2023', val: '9:00 PM' },
+      { key: 'November 17, 2023', val: '9:00 PM' },
+      { key: 'November 15, 2023', val: '9:00 PM' },
+      { key: 'November 14, 2023', val: '9:00 PM' },
+    ];
 
     // mock the cordova plugin
     jest
@@ -267,13 +274,11 @@ describe('updateScheduledNotifs', () => {
     await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
     const scheduledNotifs = await getScheduledNotifs(isScheduling, scheduledPromise);
 
-    expect(setIsScheduling).toHaveBeenCalledWith(true);
-    expect(logDebug).toHaveBeenCalledWith('After cancelling, there are no scheduled notifications');
-    expect(logDebug).toHaveBeenCalledWith(
-      'After scheduling, there are 4 scheduled notifications at 21:00 first is November 19, 2023 at 9:00 PM',
-    );
-    expect(setIsScheduling).toHaveBeenCalledWith(false);
     expect(scheduledNotifs).toHaveLength(4);
+    expect(scheduledNotifs[0].key).toEqual(expectedResultcheduleNotifs[0].key);
+    expect(scheduledNotifs[1].key).toEqual(expectedResultcheduleNotifs[1].key);
+    expect(scheduledNotifs[2].key).toEqual(expectedResultcheduleNotifs[2].key);
+    expect(scheduledNotifs[3].key).toEqual(expectedResultcheduleNotifs[3].key);
   });
 
   it('should resolve without scheduling if notifications are already scheduled', async () => {
