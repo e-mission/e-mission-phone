@@ -1,8 +1,8 @@
 export type ServerResponse<Type> = {
-  phone_data: Array<ServerData<Type>>;
+  phone_data: Array<BEMData<Type>>;
 };
 
-export type ServerData<Type> = {
+export type BEMData<Type> = {
   data: Type;
   metadata: MetaData;
   key?: string;

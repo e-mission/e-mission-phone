@@ -2,7 +2,7 @@ import { displayError, logDebug } from '../plugin/logger';
 import { getBaseModeByKey, getBaseModeByValue } from './diaryHelper';
 import { getUnifiedDataForInterval } from '../services/unifiedDataLoader';
 import { getRawEntries } from '../services/commHelper';
-import { ServerResponse, ServerData } from '../types/serverData';
+import { ServerResponse, BEMData } from '../types/serverData';
 import L from 'leaflet';
 import { DateTime } from 'luxon';
 import {
@@ -253,7 +253,7 @@ const locations2GeojsonTrajectory = (
 // DB entries retrieved from the server have '_id', 'metadata', and 'data' fields.
 // This function returns a shallow copy of the obj, which flattens the
 // 'data' field into the top level, while also including '_id' and 'metadata.key'
-const unpackServerData = (obj: ServerData<any>) => ({
+const unpackServerData = (obj: BEMData<any>) => ({
   ...obj.data,
   _id: obj._id,
   key: obj.metadata.key,
@@ -296,7 +296,7 @@ const dateTime2localdate = function (currtime: DateTime, tz: string) {
   };
 };
 
-const points2TripProps = function (locationPoints: Array<ServerData<FilteredLocation>>) {
+const points2TripProps = function (locationPoints: Array<BEMData<FilteredLocation>>) {
   const startPoint = locationPoints[0];
   const endPoint = locationPoints[locationPoints.length - 1];
   const tripAndSectionId = `unprocessed_${startPoint.data.ts}_${endPoint.data.ts}`;
@@ -348,7 +348,7 @@ const points2TripProps = function (locationPoints: Array<ServerData<FilteredLoca
   };
 };
 
-const tsEntrySort = function (e1: ServerData<FilteredLocation>, e2: ServerData<FilteredLocation>) {
+const tsEntrySort = function (e1: BEMData<FilteredLocation>, e2: BEMData<FilteredLocation>) {
   // compare timestamps
   return e1.data.ts - e2.data.ts;
 };
@@ -369,7 +369,7 @@ const transitionTrip2TripObj = function (trip: Array<any>) {
   );
   const getSensorData = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
   return getUnifiedDataForInterval('background/filtered_location', tq, getSensorData).then(
-    function (locationList: Array<ServerData<FilteredLocation>>) {
+    function (locationList: Array<BEMData<FilteredLocation>>) {
       if (locationList.length == 0) {
         return undefined;
       }
@@ -426,7 +426,7 @@ const transitionTrip2TripObj = function (trip: Array<any>) {
     },
   );
 };
-const isStartingTransition = function (transWrapper: ServerData<TripTransition>) {
+const isStartingTransition = function (transWrapper: BEMData<TripTransition>) {
   if (
     transWrapper.data.transition == 'local.transition.exited_geofence' ||
     transWrapper.data.transition == 'T_EXITED_GEOFENCE' ||
@@ -437,7 +437,7 @@ const isStartingTransition = function (transWrapper: ServerData<TripTransition>)
   return false;
 };
 
-const isEndingTransition = function (transWrapper: ServerData<TripTransition>) {
+const isEndingTransition = function (transWrapper: BEMData<TripTransition>) {
   // Logger.log("isEndingTransition: transWrapper.data.transition = "+transWrapper.data.transition);
   if (
     transWrapper.data.transition == 'T_TRIP_ENDED' ||
@@ -465,7 +465,7 @@ const isEndingTransition = function (transWrapper: ServerData<TripTransition>) {
  *
  * Let's abstract this out into our own minor state machine.
  */
-const transitions2Trips = function (transitionList: Array<ServerData<TripTransition>>) {
+const transitions2Trips = function (transitionList: Array<BEMData<TripTransition>>) {
   let inTrip = false;
   const tripList = [];
   let currStartTransitionIndex = -1;
@@ -548,7 +548,7 @@ export function readUnprocessedTrips(
   );
   const getMessageMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
   return getUnifiedDataForInterval('statemachine/transition', tq, getMessageMethod).then(function (
-    transitionList: Array<ServerData<TripTransition>>,
+    transitionList: Array<BEMData<TripTransition>>,
   ) {
     if (transitionList.length == 0) {
       logDebug('No unprocessed trips. yay!');

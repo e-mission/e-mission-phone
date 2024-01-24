@@ -1,4 +1,4 @@
-import { MetaData, ServerData, ServerResponse } from '../js/types/serverData';
+import { MetaData, BEMData, ServerResponse } from '../js/types/serverData';
 import {
   CompositeTrip,
   ConfirmedPlace,
@@ -168,7 +168,7 @@ export const mockCompDataTwo = {
   phone_data: [mockCompData.phone_data[0], newPhoneData],
 };
 
-export const mockTransitions: Array<ServerData<TripTransition>> = [
+export const mockTransitions: Array<BEMData<TripTransition>> = [
   {
     data: {
       // mock of a startTransition
@@ -208,7 +208,7 @@ mockFilterLocationTwo.ts = 900;
 mockFilterLocationTwo.longitude = 200;
 mockFilterLocationTwo.longitude = -200;
 
-export const mockFilterLocations: Array<ServerData<FilteredLocation>> = [
+export const mockFilterLocations: Array<BEMData<FilteredLocation>> = [
   {
     data: mockFilterLocation,
     metadata: mockMetaData,
