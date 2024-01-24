@@ -6,6 +6,7 @@ import { DateTime } from 'luxon';
 import { CompositeTrip } from '../types/diaryTypes';
 import { LabelOptions } from '../types/labelTypes';
 import humanizeDuration from 'humanize-duration';
+import { AppConfig } from '../types/appConfigTypes';
 
 export const modeColors = {
   pink: '#c32e85', // oklch(56% 0.2 350)     // e-car
@@ -84,7 +85,7 @@ export function getBaseModeByValue(value, labelOptions: LabelOptions) {
   return getBaseModeByKey(modeOption?.baseMode || 'OTHER');
 }
 
-export function getBaseModeByText(text, labelOptions: LabelOptions) {
+export function getBaseModeByText(text: string, labelOptions: LabelOptions) {
   const modeOption = labelOptions?.MODE?.find((opt) => opt.text == text);
   return getBaseModeByKey(modeOption?.baseMode || 'OTHER');
 }
@@ -178,7 +179,7 @@ export function getDetectedModes(trip: CompositeTrip) {
     }));
 }
 
-export function getFormattedSectionProperties(trip, ImperialConfig) {
+export function getFormattedSectionProperties(trip: CompositeTrip, ImperialConfig: AppConfig) {
   return trip.sections?.map((s) => ({
     startTime: getLocalTimeString(s.start_local_dt),
     duration: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
@@ -189,7 +190,7 @@ export function getFormattedSectionProperties(trip, ImperialConfig) {
   }));
 }
 
-export function getLocalTimeString(dt) {
+export function getLocalTimeString(dt: DateTime) {
   if (!dt) return;
   const dateTime = DateTime.fromObject({
     hour: dt.hour,

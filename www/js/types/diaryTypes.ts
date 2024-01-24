@@ -38,7 +38,7 @@ export type ConfirmedPlace = {
 
 export type TripTransition = {
   currstate: string;
-  transition: string;
+  transition: string | number;
   ts: number;
 };
 
@@ -60,7 +60,7 @@ export type UnprocessedTrip = {
   end_fmt_time: string;
   /* While the end_loc & start_loc objects are similar to GeoJSON's `Point` object, 
     they lack the additional GeoJSONObject methods, so `Point` cannot be used here. */
-  end_loc: { type: string; coordinates: any[] };
+  end_loc: { type: string; coordinates: number[] };
   end_local_dt: LocalDt;
   expectation: any; // TODO "{to_label: boolean}"
   inferred_labels: any[]; // TODO
@@ -70,7 +70,7 @@ export type UnprocessedTrip = {
   source: string;
   start_local_dt: LocalDt;
   start_ts: number;
-  start_loc: { type: string; coordinates: any[] };
+  start_loc: { type: string; coordinates: number[] };
   starting_trip?: any;
   user_input: UserInput;
 };
@@ -88,7 +88,7 @@ export type CompositeTrip = {
   duration: number;
   end_confirmed_place: ServerData<ConfirmedPlace>;
   end_fmt_time: string;
-  end_loc: Geometry;
+  end_loc: { type: string; coordinates: number[] };
   end_local_dt: LocalDt;
   end_place: ObjectId;
   end_ts: number;
@@ -105,7 +105,7 @@ export type CompositeTrip = {
   source: string;
   start_confirmed_place: ServerData<ConfirmedPlace>;
   start_fmt_time: string;
-  start_loc: Geometry;
+  start_loc: { type: string; coordinates: number[] };
   start_local_dt: LocalDt;
   start_place: ObjectId;
   start_ts: number;

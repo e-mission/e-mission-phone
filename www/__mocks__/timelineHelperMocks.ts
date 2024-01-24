@@ -7,6 +7,7 @@ import {
   UnprocessedTrip,
 } from '../js/types/diaryTypes';
 import { LabelOptions } from '../js/types/labelTypes';
+import { AppConfig } from '../js/types/appConfigTypes';
 
 const mockMetaData: MetaData = {
   write_ts: 1,
@@ -27,32 +28,24 @@ export const mockLabelOptions: LabelOptions = {
 
 const mockConfirmedPlaceData: ConfirmedPlace = {
   source: 'DwellSegmentationTimeFilter',
+  key: null,
+  origin_key: null,
   location: {
     type: 'Point',
     coordinates: [-122.0876886, 37.3887767],
   },
-  cleaned_place: {
-    $oid: '6553c3a0f27f16fbf9d1def1',
-  },
+  cleaned_place: null,
   additions: [],
   user_input: {},
   enter_fmt_time: '2015-07-22T08:14:53.881000-07:00',
   exit_fmt_time: '2015-07-22T08:14:53.881000-07:00',
-  starting_trip: {
-    $oid: '6553c3a1f27f16fbf9d1df15',
-  },
-  ending_trip: {
-    $oid: '6553c3a1f27f16fbf9d1df15',
-  },
+  starting_trip: null,
+  ending_trip: null,
   enter_local_dt: null,
   exit_local_dt: null,
   raw_places: [
-    {
-      $oid: '6553c39df27f16fbf9d1dcef',
-    },
-    {
-      $oid: '6553c39df27f16fbf9d1dcef',
-    },
+    null,
+    null,
   ],
   enter_ts: 1437578093.881,
   exit_ts: 1437578093.881,
@@ -226,24 +219,36 @@ export const mockFilterLocations: Array<ServerData<FilteredLocation>> = [
   },
 ];
 
-export const mockConfigModeOfStudy = {
+export const mockConfigModeOfStudy: AppConfig = {
+  server: null,
   survey_info: {
     'trip-labels': 'MULTILABEL',
+    surveys: null,
   },
   intro: {
     mode_studied: 'sample_study',
   },
 };
-export const mockConfigNoModeOfStudy = {
+export const mockConfigNoModeOfStudy: AppConfig = {
+  server: null,
   survey_info: {
     'trip-labels': 'MULTILABEL',
+    surveys: null,
   },
   intro: {},
 };
-export const mockConfigEnketo = {
+export const mockConfigEnketo: AppConfig = {
+  server: null,
   survey_info: {
     'trip-labels': 'ENKETO',
-    surveys: { TripConfirmSurvey: { compatibleWith: 1.2 } },
+    surveys: { 
+      TripConfirmSurvey: { 
+        compatibleWith: 1.2,
+        formPath: null,
+        labelTemplate: null,
+        version: null,
+      },
+    },
   },
 };
 

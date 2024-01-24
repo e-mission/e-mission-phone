@@ -10,20 +10,26 @@ import {
   TripTransition,
   TimelineEntry,
   GeoJSONData,
-  UnprocessedTrip,
   FilteredLocation,
   TimestampRange,
+  CompositeTrip,
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
 import { filterByNameAndVersion } from '../survey/enketo/enketoHelper';
+import { AppConfig } from '../types/appConfigTypes';
+import { Point, Feature } from 'geojson';
 
 const cachedGeojsons: Map<string, GeoJSONData> = new Map();
 
 /**
  * @description Gets a formatted GeoJSON object for a trip, including the start and end places and the trajectory.
  */
-export function useGeojsonForTrip(trip, labelOptions: LabelOptions, labeledMode?: Boolean) {
+export function useGeojsonForTrip(
+  trip: CompositeTrip,
+  labelOptions: LabelOptions,
+  labeledMode?: Boolean,
+) {
   if (!trip) return;
   const gjKey = `trip-${trip._id.$oid}-${labeledMode || 'detected'}`;
   if (cachedGeojsons.has(gjKey)) {
@@ -65,7 +71,7 @@ export function useGeojsonForTrip(trip, labelOptions: LabelOptions, labeledMode?
  * @param unpackPlaces whether to unpack the start and end places of each composite trip into the Map
  * @returns a Map() of timeline items, by id
  */
-export function compositeTrips2TimelineMap(ctList: any[], unpackPlaces?: boolean) {
+export function compositeTrips2TimelineMap(ctList: Array<any>, unpackPlaces?: boolean) {
   const timelineEntriesMap = new Map();
   ctList.forEach((cTrip) => {
     if (unpackPlaces) {
@@ -101,7 +107,11 @@ const getUnprocessedInputQuery = (pipelineRange: TimestampRange) => ({
  * updateUnprocessedInputs is a helper function for updateLocalUnprocessedInputs
  * and updateAllUnprocessedInputs
  */
-function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
+function updateUnprocessedInputs(
+  labelsPromises: Array<Promise<any>>,
+  notesPromises: Array<Promise<any>>,
+  appConfig: AppConfig,
+) {
   return Promise.all([...labelsPromises, ...notesPromises]).then((comboResults) => {
     const labelResults = comboResults.slice(0, labelsPromises.length);
     const notesResults = comboResults.slice(labelsPromises.length).flat(2);
@@ -129,7 +139,10 @@ function updateUnprocessedInputs(labelsPromises, notesPromises, appConfig) {
  *     for which travel data has been processed through the pipeline on the server
  *  @param appConfig the app configuration
  */
-export async function updateLocalUnprocessedInputs(pipelineRange: TimestampRange, appConfig) {
+export async function updateLocalUnprocessedInputs(
+  pipelineRange: TimestampRange,
+  appConfig: AppConfig,
+) {
   const BEMUserCache = window['cordova'].plugins.BEMUserCache;
   const tq = getUnprocessedInputQuery(pipelineRange);
   const labelsPromises = keysForLabelInputs(appConfig).map((key) =>
@@ -148,7 +161,10 @@ export async function updateLocalUnprocessedInputs(pipelineRange: TimestampRange
  *     for which travel data has been processed through the pipeline on the server
  * @param appConfig the app configuration
  */
-export async function updateAllUnprocessedInputs(pipelineRange: TimestampRange, appConfig) {
+export async function updateAllUnprocessedInputs(
+  pipelineRange: TimestampRange,
+  appConfig: AppConfig,
+) {
   const tq = getUnprocessedInputQuery(pipelineRange);
   const getMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
   const labelsPromises = keysForLabelInputs(appConfig).map((key) =>
@@ -160,7 +176,7 @@ export async function updateAllUnprocessedInputs(pipelineRange: TimestampRange, 
   await updateUnprocessedInputs(labelsPromises, notesPromises, appConfig);
 }
 
-export function keysForLabelInputs(appConfig) {
+export function keysForLabelInputs(appConfig: AppConfig) {
   if (appConfig.survey_info?.['trip-labels'] == 'ENKETO') {
     return ['manual/trip_user_input'];
   } else {
@@ -168,7 +184,7 @@ export function keysForLabelInputs(appConfig) {
   }
 }
 
-function keysForNotesInputs(appConfig) {
+function keysForNotesInputs(appConfig: AppConfig) {
   const notesKeys = [];
   if (appConfig.survey_info?.buttons?.['trip-notes']) notesKeys.push('manual/trip_addition_input');
   if (appConfig.survey_info?.buttons?.['place-notes'])
@@ -181,7 +197,10 @@ function keysForNotesInputs(appConfig) {
  * @param featureType a string describing the feature, e.g. "start_place"
  * @returns a GeoJSON feature with type "Point", the given location's coordinates and the given feature type
  */
-const location2GeojsonPoint = (locationPoint: any, featureType: string) => ({
+const location2GeojsonPoint = (
+  locationPoint: { type: string; coordinates: number[] },
+  featureType: string,
+): Feature => ({
   type: 'Feature',
   geometry: {
     type: 'Point',
@@ -198,7 +217,11 @@ const location2GeojsonPoint = (locationPoint: any, featureType: string) => ({
  * @param trajectoryColor The color to use for the whole trajectory, if any. Otherwise, a color will be lookup up for the sensed mode of each section.
  * @returns for each section of the trip, a GeoJSON feature with type "LineString" and an array of coordinates.
  */
-const locations2GeojsonTrajectory = (trip, locationList, trajectoryColor?) => {
+const locations2GeojsonTrajectory = (
+  trip: CompositeTrip,
+  locationList: Array<Point>,
+  trajectoryColor?: string,
+) => {
   let sectionsPoints;
   if (!trip.sections) {
     // this is a unimodal trip so we put all the locations in one section
@@ -237,7 +260,7 @@ const unpackServerData = (obj: ServerData<any>) => ({
   origin_key: obj.metadata.origin_key || obj.metadata.key,
 });
 
-export const readAllCompositeTrips = function (startTs: number, endTs: number) {
+export function readAllCompositeTrips(startTs: number, endTs: number) {
   const readPromises = [getRawEntries(['analysis/composite_trip'], startTs, endTs, 'data.end_ts')];
   return Promise.all(readPromises)
     .then(([ctList]: [ServerResponse<TimelineEntry>]) => {
@@ -256,7 +279,7 @@ export const readAllCompositeTrips = function (startTs: number, endTs: number) {
       displayError(err, 'while reading confirmed trips');
       return [];
     });
-};
+}
 const dateTime2localdate = function (currtime: DateTime, tz: string) {
   return {
     timezone: tz,
@@ -273,7 +296,7 @@ const dateTime2localdate = function (currtime: DateTime, tz: string) {
   };
 };
 
-const points2TripProps = function (locationPoints) {
+const points2TripProps = function (locationPoints: Array<ServerData<FilteredLocation>>) {
   const startPoint = locationPoints[0];
   const endPoint = locationPoints[locationPoints.length - 1];
   const tripAndSectionId = `unprocessed_${startPoint.data.ts}_${endPoint.data.ts}`;
@@ -324,12 +347,13 @@ const points2TripProps = function (locationPoints) {
     user_input: {},
   };
 };
-const tsEntrySort = function (e1, e2) {
+
+const tsEntrySort = function (e1: ServerData<FilteredLocation>, e2: ServerData<FilteredLocation>) {
   // compare timestamps
   return e1.data.ts - e2.data.ts;
 };
 
-const transitionTrip2TripObj = function (trip) {
+const transitionTrip2TripObj = function (trip: Array<any>) {
   const tripStartTransition = trip[0];
   const tripEndTransition = trip[1];
   const tq = {
@@ -402,7 +426,7 @@ const transitionTrip2TripObj = function (trip) {
     },
   );
 };
-const isStartingTransition = function (transWrapper) {
+const isStartingTransition = function (transWrapper: ServerData<TripTransition>) {
   if (
     transWrapper.data.transition == 'local.transition.exited_geofence' ||
     transWrapper.data.transition == 'T_EXITED_GEOFENCE' ||
@@ -413,7 +437,7 @@ const isStartingTransition = function (transWrapper) {
   return false;
 };
 
-const isEndingTransition = function (transWrapper) {
+const isEndingTransition = function (transWrapper: ServerData<TripTransition>) {
   // Logger.log("isEndingTransition: transWrapper.data.transition = "+transWrapper.data.transition);
   if (
     transWrapper.data.transition == 'T_TRIP_ENDED' ||
@@ -511,7 +535,11 @@ const linkTrips = function (trip1, trip2) {
   trip2.enter_ts = trip1.exit_ts;
 };
 
-export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip) {
+export function readUnprocessedTrips(
+  startTs: number,
+  endTs: number,
+  lastProcessedTrip: CompositeTrip,
+) {
   const tq = { key: 'write_ts', startTs, endTs };
   logDebug(
     'about to query for unprocessed trips from ' +
@@ -533,7 +561,7 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
         logDebug(JSON.stringify(trip, null, 2));
       });
       const tripFillPromises = tripsList.map(transitionTrip2TripObj);
-      return Promise.all(tripFillPromises).then(function (raw_trip_gj_list: UnprocessedTrip[]) {
+      return Promise.all(tripFillPromises).then(function (raw_trip_gj_list) {
         // Now we need to link up the trips. linking unprocessed trips
         // to one another is fairly simple, but we need to link the
         // first unprocessed trip to the last processed trip.
@@ -567,4 +595,4 @@ export const readUnprocessedTrips = function (startTs, endTs, lastProcessedTrip)
       });
     }
   });
-};
+}
