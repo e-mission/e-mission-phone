@@ -54,7 +54,7 @@ tempMetaData.write_ts = 2;
 tempMetaData.origin_key = '2';
 export const mockMetaDataTwo = tempMetaData;
 
-export const mockUnprocessedTrip: UnprocessedTrip = {
+export const mockUnprocessedTrip = {
   _id: { $oid: 'mockUnprocessedTrip' },
   additions: [],
   confidence_threshold: 0.0,
@@ -62,19 +62,14 @@ export const mockUnprocessedTrip: UnprocessedTrip = {
   duration: 3.0,
   end_fmt_time: '',
   end_loc: { type: 'Point', coordinates: [] },
-  end_local_dt: null,
-  expectation: null,
   inferred_labels: [],
   key: 'mockUnprocessedTrip',
   locations: [],
   origin_key: '',
   source: '',
-  start_local_dt: null,
   start_ts: 0.1,
   start_loc: { type: 'Point', coordinates: [] },
-  starting_trip: null,
-  user_input: null,
-};
+} as unknown as UnprocessedTrip;
 
 export const mockCompData: ServerResponse<CompositeTrip> = {
   phone_data: [
@@ -210,38 +205,31 @@ export const mockFilterLocations: Array<BEMData<FilteredLocation>> = [
   },
 ];
 
-export const mockConfigModeOfStudy: AppConfig = {
-  server: null,
+export const mockConfigModeOfStudy = {
   survey_info: {
     'trip-labels': 'MULTILABEL',
-    surveys: null,
   },
   intro: {
     mode_studied: 'sample_study',
   },
-};
-export const mockConfigNoModeOfStudy: AppConfig = {
-  server: null,
+} as AppConfig;
+export const mockConfigNoModeOfStudy = {
   survey_info: {
     'trip-labels': 'MULTILABEL',
-    surveys: null,
   },
   intro: {},
-};
-export const mockConfigEnketo: AppConfig = {
-  server: null,
+} as AppConfig;
+export const mockConfigEnketo = {
   survey_info: {
     'trip-labels': 'ENKETO',
     surveys: {
       TripConfirmSurvey: {
         compatibleWith: 1.2,
-        formPath: null,
-        labelTemplate: null,
-        version: null,
       },
     },
   },
-};
+  intro: {},
+} as unknown as AppConfig;
 
 // Used by jest.mocks() to return a various mocked objects.
 export const fakeStartTsOne = -14576291;

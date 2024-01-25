@@ -38,7 +38,7 @@ export function useGeojsonForTrip(
   }
 
   const trajectoryColor =
-    (labeledMode && getBaseModeByValue(labeledMode, labelOptions)?.color) || null;
+    (labeledMode && getBaseModeByValue(labeledMode, labelOptions)?.color) || undefined;
 
   logDebug("Reading trip's " + trip.locations.length + ' location points at ' + new Date());
   var features = [

@@ -52,7 +52,7 @@ export type LocationCoord = {
 
 type CompTripLocations = {
   loc: {
-    coordinates: [number, number]; // [1,2.3]
+    coordinates: number[]; // e.g. [1, 2.3]
   };
   speed: number;
   ts: number;
