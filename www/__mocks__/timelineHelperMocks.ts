@@ -43,10 +43,7 @@ const mockConfirmedPlaceData: ConfirmedPlace = {
   ending_trip: null,
   enter_local_dt: null,
   exit_local_dt: null,
-  raw_places: [
-    null,
-    null,
-  ],
+  raw_places: [null, null],
   enter_ts: 1437578093.881,
   exit_ts: 1437578093.881,
 };
@@ -241,8 +238,8 @@ export const mockConfigEnketo: AppConfig = {
   server: null,
   survey_info: {
     'trip-labels': 'ENKETO',
-    surveys: { 
-      TripConfirmSurvey: { 
+    surveys: {
+      TripConfirmSurvey: {
         compatibleWith: 1.2,
         formPath: null,
         labelTemplate: null,
