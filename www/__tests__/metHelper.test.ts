@@ -4,8 +4,9 @@ import { mockLogger } from '../__mocks__/globalMocks';
 import fakeLabels from '../__mocks__/fakeLabels.json';
 import { getConfig } from '../js/config/dynamicConfig';
 import { initCustomDatasetHelper } from '../js/metrics/customMetricsHelper';
+import fakeConfig from '../__mocks__/fakeConfig.json';
 
-mockBEMUserCache();
+mockBEMUserCache(fakeConfig);
 mockLogger();
 
 global.fetch = (url: string) =>

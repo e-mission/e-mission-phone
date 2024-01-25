@@ -33,7 +33,7 @@ const calcNotifTimes = (scheme, dayZeroDate, timeOfDay): DateTime[] => {
 // returns true if all expected times are already scheduled
 const areAlreadyScheduled = (notifs: any[], expectedTimes: DateTime[]) => {
   for (const t of expectedTimes) {
-    if (!notifs.some((n) => DateTime.fromMillis(n.trigger.at).equals(t))) {
+    if (!notifs.some((n) => DateTime.fromJSDate(n.trigger.at).equals(t))) {
       return false;
     }
   }
@@ -54,12 +54,12 @@ const areAlreadyScheduled = (notifs: any[], expectedTimes: DateTime[]) => {
 function debugGetScheduled(prefix) {
   window['cordova'].plugins.notification.local.getScheduled((notifs) => {
     if (!notifs?.length) return logDebug(`${prefix}, there are no scheduled notifications`);
-    const time = DateTime.fromMillis(notifs?.[0].trigger.at).toFormat('HH:mm');
+    const time = DateTime.fromJSDate(notifs[0].trigger.at).toFormat('HH:mm');
     //was in plugin, changed to scheduler
     let scheduledNotifs: { key: string; val: string }[] = [];
     scheduledNotifs = notifs.map((n) => {
-      const time = DateTime.fromMillis(n.trigger.at).toFormat('t');
-      const date = DateTime.fromMillis(n.trigger.at).toFormat('DDD');
+      const date = DateTime.fromJSDate(n.trigger.at).toFormat('DDD');
+      const time = DateTime.fromJSDate(n.trigger.at).toFormat('t');
       return {
         key: date,
         val: time,
@@ -79,7 +79,12 @@ export const getScheduledNotifs = function (isScheduling: boolean, scheduledProm
         anywhere from 0-n of the scheduled notifs are displayed 
         if actively scheduling, wait for the scheduledPromise to resolve before fetching prevents such errors
         */
+    console.log('test log: isScheduling during getScheduledNotifs', isScheduling);
+    console.log('test log: scheduledPromise during getScheduledNotifs', scheduledPromise);
     if (isScheduling) {
+      console.log(
+        'test log: requesting fetch while still actively scheduling, waiting on scheduledPromise',
+      );
       logDebug('requesting fetch while still actively scheduling, waiting on scheduledPromise');
       scheduledPromise.then(() => {
         getNotifs().then((notifs: object[]) => {
@@ -87,6 +92,7 @@ export const getScheduledNotifs = function (isScheduling: boolean, scheduledProm
         });
       });
     } else {
+      console.log('test log: not actively scheduling, fetching');
       getNotifs().then((notifs: object[]) => {
         resolve(notifs);
       });
@@ -109,8 +115,8 @@ const getNotifs = function () {
       const notifSubset = notifs.slice(0, 5); //prevent near-infinite listing
       let scheduledNotifs: { key: string; val: string }[] = [];
       scheduledNotifs = notifSubset.map((n) => {
-        const time: string = DateTime.fromMillis(n.trigger.at).toFormat('t');
-        const date: string = DateTime.fromMillis(n.trigger.at).toFormat('DDD');
+        const time: string = DateTime.fromJSDate(n.trigger.at).toFormat('t');
+        const date: string = DateTime.fromJSDate(n.trigger.at).toFormat('DDD');
         return {
           key: date,
           val: time,

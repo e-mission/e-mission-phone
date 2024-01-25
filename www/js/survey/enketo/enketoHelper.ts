@@ -116,12 +116,12 @@ let _config: EnketoSurveyConfig;
  * @param {AppConfig} appConfig the dynamic config file for the app
  * @return {Promise<EnketoResponse[]>} filtered survey responses
  */
-export const filterByNameAndVersion = (name: string, responses: EnketoResponse[], appConfig) =>
-  responses.filter(
+export function filterByNameAndVersion(name: string, responses: EnketoResponse[], appConfig) {
+  return responses.filter(
     (r) =>
       r.data.name === name && r.data.version >= appConfig.survey_info.surveys[name].compatibleWith,
   );
-
+}
 /**
  * resolve a label for the survey response
  * @param {string} name survey name

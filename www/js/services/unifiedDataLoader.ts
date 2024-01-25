@@ -1,12 +1,12 @@
 import { getRawEntries } from './commHelper';
-import { ServerResponse, ServerData, TimeQuery } from '../types/serverData';
+import { ServerResponse, BEMData, TimeQuery } from '../types/serverData';
 
 /**
  * removeDup is a helper function for combinedPromises
  * @param list An array of values from a BEMUserCache promise
  * @returns an array with duplicate values removed
  */
-export const removeDup = function (list: Array<ServerData<any>>) {
+export const removeDup = function (list: Array<BEMData<any>>) {
   return list.filter(function (value, i, array) {
     const firstIndexOfValue = array.findIndex(function (element) {
       return element.metadata.write_ts == value.metadata.write_ts;

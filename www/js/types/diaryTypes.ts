@@ -4,8 +4,8 @@
 
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
 import { MultilabelKey } from './labelTypes';
-import { ServerData, LocalDt } from './serverData';
-import { FeatureCollection, Feature, Geometry } from 'geojson';
+import { BEMData, LocalDt } from './serverData';
+import { FeatureCollection, Feature, Geometry, Point } from 'geojson';
 
 type ObjectId = { $oid: string };
 
@@ -41,7 +41,7 @@ export type ConfirmedPlace = {
 
 export type TripTransition = {
   currstate: string;
-  transition: string;
+  transition: string | number;
   ts: number;
 };
 
@@ -66,9 +66,7 @@ export type UnprocessedTrip = {
   distance: number;
   duration: number;
   end_fmt_time: string;
-  /* While the end_loc & start_loc objects are similar to GeoJSON's `Point` object, 
-    they lack the additional GeoJSONObject methods, so `Point` cannot be used here. */
-  end_loc: { type: string; coordinates: any[] };
+  end_loc: Point;
   end_local_dt: LocalDt;
   expectation: any; // TODO "{to_label: boolean}"
   inferred_labels: any[]; // TODO
@@ -78,7 +76,7 @@ export type UnprocessedTrip = {
   source: string;
   start_local_dt: LocalDt;
   start_ts: number;
-  start_loc: { type: string; coordinates: any[] };
+  start_loc: Point;
   starting_trip?: any;
   user_input: UserInput;
 };
@@ -94,9 +92,9 @@ export type CompositeTrip = {
   confirmed_trip: ObjectId;
   distance: number;
   duration: number;
-  end_confirmed_place: ServerData<ConfirmedPlace>;
+  end_confirmed_place: BEMData<ConfirmedPlace>;
   end_fmt_time: string;
-  end_loc: Geometry;
+  end_loc: Point;
   end_local_dt: LocalDt;
   end_place: ObjectId;
   end_ts: number;
@@ -111,9 +109,9 @@ export type CompositeTrip = {
   raw_trip: ObjectId;
   sections: any[]; // TODO
   source: string;
-  start_confirmed_place: ServerData<ConfirmedPlace>;
+  start_confirmed_place: BEMData<ConfirmedPlace>;
   start_fmt_time: string;
-  start_loc: Geometry;
+  start_loc: Point;
   start_local_dt: LocalDt;
   start_place: ObjectId;
   start_ts: number;

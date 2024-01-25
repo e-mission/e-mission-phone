@@ -7,6 +7,7 @@ export type AppConfig = {
   survey_info: {
     'trip-labels': 'MULTILABEL' | 'ENKETO';
     surveys: EnketoSurveyConfig;
+    buttons?: any;
   };
   reminderSchemes?: ReminderSchemeConfig;
   [k: string]: any; // TODO fill in all the other fields
@@ -36,7 +37,7 @@ export type EnketoSurveyConfig = {
   [surveyName: string]: {
     formPath: string;
     labelTemplate: { [lang: string]: string };
-    labelVars: { [activity: string]: { [key: string]: string; type: string } };
+    labelVars?: { [activity: string]: { [key: string]: string; type: string } };
     version: number;
     compatibleWith: number;
     dataKey?: string;

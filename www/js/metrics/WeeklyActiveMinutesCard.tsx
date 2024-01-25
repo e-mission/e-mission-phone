@@ -24,12 +24,13 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
     ACTIVE_MODES.forEach((mode) => {
       const prevSum = prevWeek?.reduce((acc, day) => acc + (day[`label_${mode}`] || 0), 0);
       if (prevSum) {
-        const xLabel = `Previous Week\n(${formatDateRangeOfDays(prevWeek)})`; // TODO: i18n
+        // `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`
+        const xLabel = `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(prevWeek)})`;
         records.push({ label: labelKeyToRichMode(mode), x: xLabel, y: prevSum / 60 });
       }
       const recentSum = recentWeek?.reduce((acc, day) => acc + (day[`label_${mode}`] || 0), 0);
       if (recentSum) {
-        const xLabel = `Past Week\n(${formatDateRangeOfDays(recentWeek)})`; // TODO: i18n
+        const xLabel = `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(recentWeek)})`;
         records.push({ label: labelKeyToRichMode(mode), x: xLabel, y: recentSum / 60 });
       }
     });

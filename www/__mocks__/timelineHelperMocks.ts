@@ -1,4 +1,4 @@
-import { LocalDt, MetaData, ServerData, ServerResponse } from '../js/types/serverData';
+import { MetaData, BEMData, ServerResponse } from '../js/types/serverData';
 import {
   CompositeTrip,
   ConfirmedPlace,
@@ -7,6 +7,7 @@ import {
   UnprocessedTrip,
 } from '../js/types/diaryTypes';
 import { LabelOptions } from '../js/types/labelTypes';
+import { AppConfig } from '../js/types/appConfigTypes';
 
 const mockMetaData: MetaData = {
   write_ts: 1,
@@ -27,33 +28,22 @@ export const mockLabelOptions: LabelOptions = {
 
 const mockConfirmedPlaceData = {
   source: 'DwellSegmentationTimeFilter',
+  key: null,
+  origin_key: null,
   location: {
     type: 'Point',
     coordinates: [-122.0876886, 37.3887767],
   },
-  cleaned_place: {
-    $oid: '6553c3a0f27f16fbf9d1def1',
-  },
+  cleaned_place: null,
   additions: [],
   user_input: {},
   enter_fmt_time: '2015-07-22T08:14:53.881000-07:00',
   exit_fmt_time: '2015-07-22T08:14:53.881000-07:00',
-  starting_trip: {
-    $oid: '6553c3a1f27f16fbf9d1df15',
-  },
-  ending_trip: {
-    $oid: '6553c3a1f27f16fbf9d1df15',
-  },
+  starting_trip: null,
+  ending_trip: null,
   enter_local_dt: null,
   exit_local_dt: null,
-  raw_places: [
-    {
-      $oid: '6553c39df27f16fbf9d1dcef',
-    },
-    {
-      $oid: '6553c39df27f16fbf9d1dcef',
-    },
-  ],
+  raw_places: [null, null],
   enter_ts: 1437578093.881,
   exit_ts: 1437578093.881,
 } as unknown as ConfirmedPlace;
@@ -63,6 +53,28 @@ let tempMetaData = JSON.parse(JSON.stringify(mockMetaData));
 tempMetaData.write_ts = 2;
 tempMetaData.origin_key = '2';
 export const mockMetaDataTwo = tempMetaData;
+
+export const mockUnprocessedTrip: UnprocessedTrip = {
+  _id: { $oid: 'mockUnprocessedTrip' },
+  additions: [],
+  confidence_threshold: 0.0,
+  distance: 1.0,
+  duration: 3.0,
+  end_fmt_time: '',
+  end_loc: { type: 'Point', coordinates: [] },
+  end_local_dt: null,
+  expectation: null,
+  inferred_labels: [],
+  key: 'mockUnprocessedTrip',
+  locations: [],
+  origin_key: '',
+  source: '',
+  start_local_dt: null,
+  start_ts: 0.1,
+  start_loc: { type: 'Point', coordinates: [] },
+  starting_trip: null,
+  user_input: null,
+};
 
 export const mockCompData: ServerResponse<CompositeTrip> = {
   phone_data: [
@@ -155,7 +167,7 @@ export const mockCompDataTwo = {
   phone_data: [mockCompData.phone_data[0], newPhoneData],
 };
 
-export const mockTransitions: Array<ServerData<TripTransition>> = [
+export const mockTransitions: Array<BEMData<TripTransition>> = [
   {
     data: {
       // mock of a startTransition
@@ -187,7 +199,7 @@ mockFilterLocationTwo.ts = 900;
 mockFilterLocationTwo.longitude = 200;
 mockFilterLocationTwo.longitude = -200;
 
-export const mockFilterLocations: Array<ServerData<FilteredLocation>> = [
+export const mockFilterLocations: Array<BEMData<FilteredLocation>> = [
   {
     data: mockFilterLocation,
     metadata: mockMetaData,
@@ -198,24 +210,36 @@ export const mockFilterLocations: Array<ServerData<FilteredLocation>> = [
   },
 ];
 
-export const mockConfigModeOfStudy = {
+export const mockConfigModeOfStudy: AppConfig = {
+  server: null,
   survey_info: {
     'trip-labels': 'MULTILABEL',
+    surveys: null,
   },
   intro: {
     mode_studied: 'sample_study',
   },
 };
-export const mockConfigNoModeOfStudy = {
+export const mockConfigNoModeOfStudy: AppConfig = {
+  server: null,
   survey_info: {
     'trip-labels': 'MULTILABEL',
+    surveys: null,
   },
   intro: {},
 };
-export const mockConfigEnketo = {
+export const mockConfigEnketo: AppConfig = {
+  server: null,
   survey_info: {
     'trip-labels': 'ENKETO',
-    surveys: { TripConfirmSurvey: { compatibleWith: 1.2 } },
+    surveys: {
+      TripConfirmSurvey: {
+        compatibleWith: 1.2,
+        formPath: null,
+        labelTemplate: null,
+        version: null,
+      },
+    },
   },
 };
 
