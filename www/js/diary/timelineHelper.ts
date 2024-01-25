@@ -197,10 +197,7 @@ function keysForNotesInputs(appConfig: AppConfig) {
  * @param featureType a string describing the feature, e.g. "start_place"
  * @returns a GeoJSON feature with type "Point", the given location's coordinates and the given feature type
  */
-const location2GeojsonPoint = (
-  locationPoint: Point,
-  featureType: string,
-): Feature => ({
+const location2GeojsonPoint = (locationPoint: Point, featureType: string): Feature => ({
   type: 'Feature',
   geometry: {
     type: 'Point',
