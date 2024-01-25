@@ -198,7 +198,7 @@ function keysForNotesInputs(appConfig: AppConfig) {
  * @returns a GeoJSON feature with type "Point", the given location's coordinates and the given feature type
  */
 const location2GeojsonPoint = (
-  locationPoint: { type: string; coordinates: number[] },
+  locationPoint: Point,
   featureType: string,
 ): Feature => ({
   type: 'Feature',

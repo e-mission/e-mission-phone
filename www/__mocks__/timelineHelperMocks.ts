@@ -60,7 +60,7 @@ export const mockUnprocessedTrip: UnprocessedTrip = {
   distance: 1.0,
   duration: 3.0,
   end_fmt_time: '',
-  end_loc: { type: '', coordinates: [] },
+  end_loc: { type: 'Point', coordinates: [] },
   end_local_dt: null,
   expectation: null,
   inferred_labels: [],
@@ -70,7 +70,7 @@ export const mockUnprocessedTrip: UnprocessedTrip = {
   source: '',
   start_local_dt: null,
   start_ts: 0.1,
-  start_loc: { type: '', coordinates: [] },
+  start_loc: { type: 'Point', coordinates: [] },
   starting_trip: null,
   user_input: null,
 };
