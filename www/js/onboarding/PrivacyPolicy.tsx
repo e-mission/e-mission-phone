@@ -3,10 +3,12 @@ import { StyleSheet, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import useAppConfig from '../useAppConfig';
 import { getTemplateText } from './StudySummary';
+import { useTheme } from 'react-native-paper';
 
 const PrivacyPolicy = () => {
   const { t, i18n } = useTranslation();
   const appConfig = useAppConfig();
+  const { colors } = useTheme();
 
   let opCodeText;
   if (appConfig?.opcode?.autogen) {
@@ -66,34 +68,44 @@ const PrivacyPolicy = () => {
       <Text>{'\n'}</Text>
       <Text style={styles.text}>{t('consent-text.what.demographics')}</Text>
       <Text>{'\n'}</Text>
-      <Text style={styles.text}>{t('consent-text.what.on-nrel-site')}</Text>
-      {/* Linking is broken, look into enabling after migration
-                <Text style={styles.text}>
-                    {t('consent-text.what.open-source-data')}
-                    <Text
-                        style={styles.hyperlinkStyle(colors.primary)}
-                        onPress={() => {
-                            Linking.openURL('https://github.com/e-mission/e-mission-data-collection.git');
-                        }}>
-                        {' '}https://github.com/e-mission/e-mission-data-collection.git{' '}
-                    </Text>
-                    {t('consent-text.what.open-source-analysis')}
-                    <Text
-                        style={styles.hyperlinkStyle(colors.primary)}
-                        onPress={() => {
-                            Linking.openURL('https://github.com/e-mission/e-mission-server.git');
-                        }}>
-                        {' '}https://github.com/e-mission/e-mission-server.git{' '}
-                    </Text>
-                    {t('consent-text.what.open-source-dashboard')}
-                    <Text
-                        style={styles.hyperlinkStyle(colors.primary)}
-                        onPress={() => {
-                            Linking.openURL('https://github.com/e-mission/em-public-dashboard.git');
-                        }}>
-                        {' '}https://github.com/e-mission/em-public-dashboard.git{' '}
-                    </Text>
-                </Text> */}
+      <Text style={styles.text}>
+        {t('consent-text.what.open-source-data')}
+        <Text
+          style={styles.hyperlinkStyle(colors.primary)}
+          onPress={() => {
+            window['cordova'].InAppBrowser.open(
+              'https://github.com/e-mission/e-mission-data-collection.git',
+              '_system',
+            );
+          }}>
+          {' '}
+          https://github.com/e-mission/e-mission-data-collection.git{' '}
+        </Text>
+        {t('consent-text.what.open-source-analysis')}
+        <Text
+          style={styles.hyperlinkStyle(colors.primary)}
+          onPress={() => {
+            window['cordova'].InAppBrowser.open(
+              'https://github.com/e-mission/e-mission-server.git',
+              '_system',
+            );
+          }}>
+          {' '}
+          https://github.com/e-mission/e-mission-server.git{' '}
+        </Text>
+        {t('consent-text.what.open-source-dashboard')}
+        <Text
+          style={styles.hyperlinkStyle(colors.primary)}
+          onPress={() => {
+            window['cordova'].InAppBrowser.open(
+              'https://github.com/e-mission/em-public-dashboard.git',
+              '_system',
+            );
+          }}>
+          {' '}
+          https://github.com/e-mission/em-public-dashboard.git.{' '}
+        </Text>
+      </Text>
       <Text>{'\n'}</Text>
 
       <Text style={styles.header}>{t('consent-text.opcode.header')}</Text>
@@ -115,31 +127,38 @@ const PrivacyPolicy = () => {
       <Text>{'\n'}</Text>
       <Text style={styles.text}>
         {t('consent-text.who-sees.TSDC-info')}
-        {/* Linking is broken, look into enabling after migration
-                    <Text
-                        style={styles.hyperlinkStyle(colors.primary)}
-                        onPress={() => {
-                            Linking.openURL('https://nrel.gov/tsdc');
-                        }}>
-                        {t('consent-text.who-sees.on-website')}
-                    </Text>
-                    {t('consent-text.who-sees.and-in')}
-                    <Text
-                        style={styles.hyperlinkStyle(colors.primary)}
-                        onPress={() => {
-                            Linking.openURL('https://www.sciencedirect.com/science/article/pii/S2352146515002999');
-                        }}>
-                        {t('consent-text.who-sees.this-pub')}
-                    </Text>
-                    {t('consent-text.who-sees.and')}
-                    <Text
-                        style={styles.hyperlinkStyle(colors.primary)}
-                        onPress={() => {
-                            Linking.openURL('https://www.nrel.gov/docs/fy18osti/70723.pdf');
-                        }}>
-                        {t('consent-text.who-sees.fact-sheet')}
-                    </Text> */}
-        <Text style={styles.text}>{t('consent-text.who-sees.on-nrel-site')}</Text>
+        <Text
+          style={styles.hyperlinkStyle(colors.primary)}
+          onPress={() => {
+            window['cordova'].InAppBrowser.open(
+              'https://www.nrel.gov/transportation/secure-transportation-data/',
+              '_system',
+            );
+          }}>
+          {t('consent-text.who-sees.on-website')}
+        </Text>
+        {t('consent-text.who-sees.and-in')}
+        <Text
+          style={styles.hyperlinkStyle(colors.primary)}
+          onPress={() => {
+            window['cordova'].InAppBrowser.open(
+              'https://www.sciencedirect.com/science/article/pii/S2352146515002999',
+              '_system',
+            );
+          }}>
+          {t('consent-text.who-sees.this-pub')}
+        </Text>
+        {t('consent-text.who-sees.and')}
+        <Text
+          style={styles.hyperlinkStyle(colors.primary)}
+          onPress={() => {
+            window['cordova'].InAppBrowser.open(
+              'https://www.nrel.gov/docs/fy18osti/70723.pdf',
+              '_system',
+            );
+          }}>
+          {t('consent-text.who-sees.fact-sheet') + '.'}
+        </Text>
       </Text>
       <Text>{'\n'}</Text>
 
@@ -148,15 +167,7 @@ const PrivacyPolicy = () => {
       <Text>{'\n'}</Text>
       <Text style={styles.text}>
         {t('consent-text.rights.destroy-data-pt1')}
-        {/* Linking is broken, look into enabling after migration
-                    <Text
-                        style={styles.hyperlinkStyle(colors.primary)}
-                        onPress={() => {
-                            Linking.openURL("mailto:k.shankari@nrel.gov");
-                        }}>
-                        k.shankari@nrel.gov
-                    </Text> */}
-        <Text style={styles.text}>(k.shankari@nrel.gov)</Text>
+        <Text>{'(k.shankari@nrel.gov)'}</Text>
         {t('consent-text.rights.destroy-data-pt2')}
       </Text>
       <Text>{'\n'}</Text>

@@ -307,7 +307,7 @@ it('loads the previous response to a given survey', async () => {
  */
 it('filters the survey responses by their name and version', async () => {
   //no response -> no filtered responses
-  expect(filterByNameAndVersion('TimeUseSurvey', [])).resolves.toStrictEqual([]);
+  expect(filterByNameAndVersion('TimeUseSurvey', [], fakeConfig)).toStrictEqual([]);
 
   const response = [
     {

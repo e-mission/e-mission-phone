@@ -1,10 +1,12 @@
 // here we have some helper functions used throughout the label tab
 // these functions are being gradually migrated out of services.js
 
-import moment from 'moment';
+import i18next from 'i18next';
 import { DateTime } from 'luxon';
-import { LabelOptions, readableLabelToKey } from '../survey/multilabel/confirmHelper';
 import { CompositeTrip } from '../types/diaryTypes';
+import { LabelOptions } from '../types/labelTypes';
+import humanizeDuration from 'humanize-duration';
+import { AppConfig } from '../types/appConfigTypes';
 
 export const modeColors = {
   pink: '#c32e85', // oklch(56% 0.2 350)     // e-car
@@ -83,7 +85,7 @@ export function getBaseModeByValue(value, labelOptions: LabelOptions) {
   return getBaseModeByKey(modeOption?.baseMode || 'OTHER');
 }
 
-export function getBaseModeByText(text, labelOptions: LabelOptions) {
+export function getBaseModeByText(text: string, labelOptions: LabelOptions) {
   const modeOption = labelOptions?.MODE?.find((opt) => opt.text == text);
   return getBaseModeByKey(modeOption?.baseMode || 'OTHER');
 }
@@ -97,8 +99,8 @@ export function getBaseModeByText(text, labelOptions: LabelOptions) {
 export function isMultiDay(beginFmtTime: string, endFmtTime: string) {
   if (!beginFmtTime || !endFmtTime) return false;
   return (
-    moment.parseZone(beginFmtTime).format('YYYYMMDD') !=
-    moment.parseZone(endFmtTime).format('YYYYMMDD')
+    DateTime.fromISO(beginFmtTime, { setZone: true }).toFormat('YYYYMMDD') !=
+    DateTime.fromISO(endFmtTime, { setZone: true }).toFormat('YYYYMMDD')
   );
 }
 
@@ -114,11 +116,15 @@ export function getFormattedDate(beginFmtTime: string, endFmtTime?: string) {
     return `${getFormattedDate(beginFmtTime)} - ${getFormattedDate(endFmtTime)}`;
   }
   // only one day given, or both are the same day
-  const t = moment.parseZone(beginFmtTime || endFmtTime);
-  // We use ddd LL to get Wed, May 3, 2023 or equivalent
-  // LL only has the date, month and year
-  // LLLL has the day of the week, but also the time
-  return t.format('ddd LL');
+  const t = DateTime.fromISO(beginFmtTime || endFmtTime, { setZone: true });
+  // We use toLocale to get Wed May 3, 2023 or equivalent,
+  const tConversion = t.toLocaleString({
+    weekday: 'short',
+    month: 'long',
+    day: '2-digit',
+    year: 'numeric',
+  });
+  return tConversion;
 }
 
 /**
@@ -144,9 +150,14 @@ export function getFormattedDateAbbr(beginFmtTime: string, endFmtTime?: string) 
  */
 export function getFormattedTimeRange(beginFmtTime: string, endFmtTime: string) {
   if (!beginFmtTime || !endFmtTime) return;
-  const beginMoment = moment.parseZone(beginFmtTime);
-  const endMoment = moment.parseZone(endFmtTime);
-  return endMoment.to(beginMoment, true);
+  const beginTime = DateTime.fromISO(beginFmtTime, { setZone: true });
+  const endTime = DateTime.fromISO(endFmtTime, { setZone: true });
+  const range = endTime.diff(beginTime, ['hours', 'minutes']);
+  return humanizeDuration(range.as('milliseconds'), {
+    language: i18next.language,
+    largest: 1,
+    round: true,
+  });
 }
 
 /**
@@ -168,7 +179,7 @@ export function getDetectedModes(trip: CompositeTrip) {
     }));
 }
 
-export function getFormattedSectionProperties(trip, ImperialConfig) {
+export function getFormattedSectionProperties(trip: CompositeTrip, ImperialConfig: AppConfig) {
   return trip.sections?.map((s) => ({
     startTime: getLocalTimeString(s.start_local_dt),
     duration: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
@@ -179,10 +190,11 @@ export function getFormattedSectionProperties(trip, ImperialConfig) {
   }));
 }
 
-export function getLocalTimeString(dt) {
+export function getLocalTimeString(dt: DateTime) {
   if (!dt) return;
-  /* correcting the date of the processed trips knowing that local_dt months are from 1 -> 12
-    and for the moment function they need to be between 0 -> 11 */
-  const mdt = { ...dt, month: dt.month - 1 };
-  return moment(mdt).format('LT');
+  const dateTime = DateTime.fromObject({
+    hour: dt.hour,
+    minute: dt.minute,
+  });
+  return dateTime.toLocaleString(DateTime.TIME_SIMPLE);
 }
