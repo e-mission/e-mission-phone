@@ -8,6 +8,7 @@ import { LabelOptions } from '../types/labelTypes';
 import { LocalDt } from '../types/serverData';
 import humanizeDuration from 'humanize-duration';
 import { AppConfig } from '../types/appConfigTypes';
+import { ImperialConfig } from '../config/useImperialConfig';
 
 export const modeColors = {
   pink: '#c32e85', // oklch(56% 0.2 350)     // e-car
@@ -180,12 +181,12 @@ export function getDetectedModes(trip: CompositeTrip) {
     }));
 }
 
-export function getFormattedSectionProperties(trip: CompositeTrip, ImperialConfig: AppConfig) {
+export function getFormattedSectionProperties(trip: CompositeTrip, imperialConfig: ImperialConfig) {
   return trip.sections?.map((s) => ({
     startTime: getLocalTimeString(s.start_local_dt),
     duration: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
-    distance: ImperialConfig.getFormattedDistance(s.distance),
-    distanceSuffix: ImperialConfig.distanceSuffix,
+    distance: imperialConfig.getFormattedDistance(s.distance),
+    distanceSuffix: imperialConfig.distanceSuffix,
     icon: getBaseModeByKey(s.sensed_mode_str)?.icon,
     color: getBaseModeByKey(s.sensed_mode_str)?.color || '#333',
   }));

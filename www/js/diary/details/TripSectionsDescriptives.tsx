@@ -34,9 +34,9 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
         startTime: displayStartTime,
         duration: displayTime,
         distance: formattedDistance,
+        distanceSuffix,
         color: baseMode.color,
         icon: baseMode.icon,
-        text: showLabeledMode && labeledModeForTrip?.text, // label text only shown for labeled trips
       },
     ];
   }
@@ -68,9 +68,9 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
               iconColor={colors.onPrimary}
               containerColor={section.color}
             />
-            {section.text && (
+            {showLabeledMode && labeledModeForTrip && (
               <Text variant="labelSmall" numberOfLines={2} style={{ textAlign: 'center' }}>
-                {section.text}
+                {labeledModeForTrip.text}
               </Text>
             )}
           </View>

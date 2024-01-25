@@ -534,7 +534,7 @@ const linkTrips = function (trip1, trip2) {
 export function readUnprocessedTrips(
   startTs: number,
   endTs: number,
-  lastProcessedTrip: CompositeTrip,
+  lastProcessedTrip?: CompositeTrip,
 ) {
   const tq = { key: 'write_ts', startTs, endTs };
   logDebug(

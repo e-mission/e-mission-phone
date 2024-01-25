@@ -35,7 +35,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const { height: windowHeight } = useWindowDimensions();
   const appConfig = useAppConfig();
   const { tripId, flavoredTheme } = route.params;
-  const trip = timelineMap?.get(tripId);
+  const trip = timelineMap?.get(tripId) as CompositeTrip;
   const { colors } = flavoredTheme || useTheme();
   const { displayDate, displayStartTime, displayEndTime } = useDerivedProperties(trip);
   const [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);

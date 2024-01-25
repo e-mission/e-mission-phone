@@ -39,8 +39,8 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
       timelineEntry.enter_local_dt?.timezone ||
       timelineEntry.end_local_dt?.timezone ||
       timelineEntry.exit_local_dt?.timezone;
-    const beginTs = entry.data.start_ts || entry.data.enter_ts;
-    const stopTs = entry.data.end_ts || entry.data.exit_ts;
+    const beginTs = entry.data.start_ts;
+    const stopTs = entry.data.end_ts;
     let d;
     if (isMultiDay(beginTs, stopTs)) {
       const beginTsZoned = moment.parseZone(beginTs * 1000).tz(timezone);

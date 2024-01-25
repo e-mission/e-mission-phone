@@ -317,6 +317,7 @@ export function loadPreviousResponseForSurvey(dataKey: string) {
 
 export async function fetchSurvey(url: string) {
   const responseText = await fetchUrlCached(url);
+  if (!responseText) return;
   try {
     return JSON.parse(responseText);
   } catch (e) {

@@ -14,6 +14,7 @@ import moment from 'moment';
 import LabelTabContext from '../../diary/LabelTabContext';
 import EnketoModal from './EnketoModal';
 import { displayErrorMsg, logDebug } from '../../plugin/logger';
+import { isTrip } from '../../types/diaryTypes';
 
 type Props = {
   timelineEntry: any;
@@ -45,8 +46,8 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
   };
   // return a dictionary of fields we want to prefill, using start/enter and end/exit times
   function getPrefillTimes() {
-    let begin = timelineEntry.start_ts || timelineEntry.enter_ts;
-    let stop = timelineEntry.end_ts || timelineEntry.exit_ts;
+    let begin = isTrip(timelineEntry) ? timelineEntry.start_ts : timelineEntry.enter_ts;
+    let stop = isTrip(timelineEntry) ? timelineEntry.end_ts : timelineEntry.exit_ts;
 
     // if addition(s) already present on this timeline entry, `begin` where the last one left off
     notesFor(timelineEntry)?.forEach((a) => {

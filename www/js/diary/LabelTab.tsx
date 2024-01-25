@@ -37,7 +37,7 @@ import LabelTabContext, {
 } from './LabelTabContext';
 import { readAllCompositeTrips, readUnprocessedTrips } from './timelineHelper';
 import { LabelOptions, MultilabelKey } from '../types/labelTypes';
-import { TimelineEntry, TimestampRange, UserInputEntry } from '../types/diaryTypes';
+import { CompositeTrip, TimelineEntry, TimestampRange, UserInputEntry } from '../types/diaryTypes';
 
 let showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -273,11 +273,12 @@ const LabelTab = () => {
     let readUnprocessedPromise;
     if (endTs >= pipelineRange.end_ts) {
       const nowTs = new Date().getTime() / 1000;
-      const lastProcessedTrip =
-        timelineMap &&
-        [...timelineMap?.values()]
+      let lastProcessedTrip: CompositeTrip | undefined;
+      if (timelineMap) {
+        lastProcessedTrip = [...timelineMap?.values()]
           .reverse()
-          .find((trip) => trip.origin_key.includes('confirmed_trip'));
+          .find((trip) => trip.origin_key.includes('trip')) as CompositeTrip;
+      }
       readUnprocessedPromise = readUnprocessedTrips(pipelineRange.end_ts, nowTs, lastProcessedTrip);
     } else {
       readUnprocessedPromise = Promise.resolve([]);

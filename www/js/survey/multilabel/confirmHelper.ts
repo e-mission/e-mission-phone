@@ -15,15 +15,19 @@ export async function getLabelOptions(appConfigParam?) {
   if (labelOptions) return labelOptions;
   if (appConfig.label_options) {
     const labelOptionsJson = await fetchUrlCached(appConfig.label_options);
-    logDebug(`label_options found in config, using dynamic label options 
-      at ${appConfig.label_options}`);
-    labelOptions = JSON.parse(labelOptionsJson) as LabelOptions;
+    if (labelOptionsJson) {
+      logDebug(`label_options found in config, using dynamic label options 
+        at ${appConfig.label_options}`);
+      labelOptions = JSON.parse(labelOptionsJson) as LabelOptions;
+    }
   } else {
     const defaultLabelOptionsURL = 'json/label-options.json.sample';
     logDebug(`No label_options found in config, using default label options 
       at ${defaultLabelOptionsURL}`);
     const defaultLabelOptionsJson = await fetchUrlCached(defaultLabelOptionsURL);
-    labelOptions = JSON.parse(defaultLabelOptionsJson) as LabelOptions;
+    if (defaultLabelOptionsJson) {
+      labelOptions = JSON.parse(defaultLabelOptionsJson) as LabelOptions;
+    }
   }
   /* fill in the translations to the 'text' fields of the labelOptions,
     according to the current language */
