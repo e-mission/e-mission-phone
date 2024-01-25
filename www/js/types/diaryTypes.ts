@@ -19,6 +19,7 @@ type UserInput = {
 };
 
 export type ConfirmedPlace = {
+  _id: ObjectId;
   additions: UserInputEntry[];
   cleaned_place: ObjectId;
   duration: number;
@@ -42,6 +43,11 @@ export type TripTransition = {
   currstate: string;
   transition: string | number;
   ts: number;
+};
+
+export type LocationCoord = {
+  type: string; // e.x., "Point"
+  coordinates: [number, number];
 };
 
 type CompTripLocations = {
@@ -116,8 +122,6 @@ export type CompositeTrip = {
  so a 'timeline entry' is either a trip or a place. */
 export type TimelineEntry = ConfirmedPlace | CompositeTrip;
 
-export type TimestampRange = { start_ts: number; end_ts: number };
-
 /* Type guard to disambiguate timeline entries as either trips or places
   If it has a 'start_ts' and 'end_ts', it's a trip. Else, it's a place. */
 export const isTrip = (entry: TimelineEntry): entry is CompositeTrip =>
@@ -184,7 +188,7 @@ export type Location = {
   latitude: number;
   fmt_time: string; // ISO
   mode: number;
-  loc: Geometry;
+  loc: LocationCoord;
   ts: number; // Unix
   altitude: number;
   distance: number;
@@ -193,14 +197,14 @@ export type Location = {
 // used in readAllCompositeTrips
 export type SectionData = {
   end_ts: number; // Unix time, e.x. 1696352498.804
-  end_loc: Geometry;
+  end_loc: LocationCoord;
   start_fmt_time: string; // ISO time
   end_fmt_time: string;
   trip_id: ObjectId;
   sensed_mode: number;
   source: string; // e.x., "SmoothedHighConfidenceMotion"
   start_ts: number; // Unix
-  start_loc: Geometry;
+  start_loc: LocationCoord;
   cleaned_section: ObjectId;
   start_local_dt: LocalDt;
   end_local_dt: LocalDt;

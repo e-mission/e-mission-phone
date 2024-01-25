@@ -53,6 +53,6 @@ export type ReminderSchemesConfig = {
       end?: number;
       intervalInDays: number;
     }[];
-    defaultTime: string;
+    defaultTime?: string; // format is HH:MM in 24 hour time
   };
 };

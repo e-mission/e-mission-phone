@@ -32,6 +32,7 @@ import { storageClear } from '../plugin/storage';
 import { getAppVersion } from '../plugin/clientStats';
 import { getConsentDocument } from '../splash/startprefs';
 import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
+import { fetchOPCode, getSettings } from '../services/controlHelper';
 import {
   updateScheduledNotifs,
   getScheduledNotifs,
@@ -39,7 +40,6 @@ import {
   setReminderPrefs,
 } from '../splash/notifScheduler';
 import { DateTime } from 'luxon';
-import { fetchOPCode, getSettings } from '../services/controlHelper';
 import { AppConfig } from '../types/appConfigTypes';
 
 //any pure functions can go outside

@@ -301,8 +301,7 @@ const points2TripProps = function (locationPoints: Array<BEMData<FilteredLocatio
 
   const speeds: number[] = [];
   const dists: number[] = [];
-  let loc;
-  let locLatLng: LatLng;
+  let loc, locLatLng: LatLng;
   locationPoints.forEach((pt) => {
     const ptLatLng = L.latLng([pt.data.latitude, pt.data.longitude]);
     if (loc) {

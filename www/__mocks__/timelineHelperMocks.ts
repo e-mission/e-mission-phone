@@ -47,6 +47,7 @@ const mockConfirmedPlaceData = {
   enter_ts: 1437578093.881,
   exit_ts: 1437578093.881,
 } as unknown as ConfirmedPlace;
+
 // using parse/stringify to deep copy & populate data
 let tempMetaData = JSON.parse(JSON.stringify(mockMetaData));
 tempMetaData.write_ts = 2;
