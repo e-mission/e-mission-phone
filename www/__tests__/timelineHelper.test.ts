@@ -91,6 +91,9 @@ describe('compositeTrips2TimelineMap', () => {
   it('Works with a list of len >= 1, with flag', () => {
     testValue = compositeTrips2TimelineMap(tripListTwo, true);
     expect(testValue.size).toBe(6);
+    for (const [key,value] of Object.entries(testValue)) {
+      expect(value).toBe(tripListTwo[0][key] || tripListTwo[1][key])
+    }
   });
 });
 
