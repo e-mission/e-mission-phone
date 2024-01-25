@@ -367,6 +367,7 @@
     "welcome-to-app": "Welcome to <b>{{appName}}!</b>",
     "app-name": "NREL OpenPATH",
     "to-proceed-further": "To proceed further, please scan or paste an access code that has been provided by your program administrator through a website, email, text message, or printout.",
+    "op-acc-link": "Link to Open-Access study",
     "code-hint": "The code begins with ‘nrelop’ and may be in barcode or text format.",
     "scan-code": "Scan code",
     "paste-code": "Paste code",
@@ -380,7 +381,8 @@
     "all-green-status": "Make sure that all status checks are green",
     "dont-force-kill": "Do not force kill the app",
     "background-restrictions": "On Samsung and Huwaei phones, make sure that background restrictions are turned off",
-    "close": "Close"
+    "close": "Close",
+    "open-access-study": "Link to Open Access Study"
   },
   "config": {
     "unable-read-saved-config": "Unable to read saved config",
