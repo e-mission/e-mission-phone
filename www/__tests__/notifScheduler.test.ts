@@ -63,6 +63,10 @@ const exampleReminderSchemes = {
 mockLogger();
 mockReminders();
 
+jest.mock('i18next', () => ({
+  resolvedLanguage: 'en',
+}));
+
 jest.mock('../js/services/commHelper', () => ({
   ...jest.requireActual('../js/services/commHelper'),
   getUser: jest.fn(() =>

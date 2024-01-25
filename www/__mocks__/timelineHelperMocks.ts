@@ -75,7 +75,7 @@ export const mockUnprocessedTrip: UnprocessedTrip = {
   user_input: null,
 };
 
-export const mockCompData = {
+export const mockCompData: ServerResponse<CompositeTrip> = {
   phone_data: [
     {
       data: {

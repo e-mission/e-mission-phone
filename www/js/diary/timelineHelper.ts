@@ -13,6 +13,7 @@ import {
   FilteredLocation,
   TimestampRange,
   CompositeTrip,
+  UnprocessedTrip,
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
@@ -461,9 +462,9 @@ const isEndingTransition = function (transWrapper: BEMData<TripTransition>) {
  *
  * Let's abstract this out into our own minor state machine.
  */
-const transitions2Trips = function (transitionList: Array<ServerData<TripTransition>>) {
+const transitions2Trips = function (transitionList: Array<BEMData<TripTransition>>) {
   let inTrip = false;
-  const tripList: [ServerData<TripTransition>, ServerData<TripTransition>][] = [];
+  const tripList: [BEMData<TripTransition>, BEMData<TripTransition>][] = [];
   let currStartTransitionIndex = -1;
   let currEndTransitionIndex = -1;
   let processedUntil = 0;
