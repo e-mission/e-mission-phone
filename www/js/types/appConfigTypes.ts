@@ -9,7 +9,7 @@ export type AppConfig = {
     surveys: EnketoSurveyConfig;
     buttons?: any;
   };
-  reminderSchemes?: ReminderSchemeConfig;
+  reminderSchemes?: ReminderSchemesConfig;
   [k: string]: any; // TODO fill in all the other fields
 };
 
