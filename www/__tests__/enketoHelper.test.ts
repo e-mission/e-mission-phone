@@ -276,7 +276,7 @@ it('loads the previous response to a given survey', () => {
  */
 it('filters the survey responses by their name and version', () => {
   //no response -> no filtered responses
-  expect(filterByNameAndVersion('TimeUseSurvey', [])).resolves.toStrictEqual([]);
+  expect(filterByNameAndVersion('TimeUseSurvey', [], fakeConfig)).toStrictEqual([]);
 
   const response = [
     {
@@ -294,7 +294,7 @@ it('filters the survey responses by their name and version', () => {
   ];
 
   //one response -> that response
-  expect(filterByNameAndVersion('TimeUseSurvey', response)).resolves.toStrictEqual(response);
+  expect(filterByNameAndVersion('TimeUseSurvey', response, fakeConfig)).toStrictEqual(response);
 
   const responses = [
     {
@@ -336,5 +336,5 @@ it('filters the survey responses by their name and version', () => {
   ];
 
   //several responses -> only the one that has a name match
-  expect(filterByNameAndVersion('TimeUseSurvey', responses)).resolves.toStrictEqual(response);
+  expect(filterByNameAndVersion('TimeUseSurvey', responses, fakeConfig)).toStrictEqual(response);
 });

@@ -1,10 +1,10 @@
 import { mockLogger } from '../__mocks__/globalMocks';
 import { removeDup, combinedPromises } from '../js/services/unifiedDataLoader';
-import { ServerData } from '../js/types/serverData';
+import { BEMData } from '../js/types/serverData';
 
 mockLogger();
 
-const testOne: ServerData<any> = {
+const testOne: BEMData<any> = {
   data: '',
   metadata: {
     key: '',
@@ -42,7 +42,7 @@ describe('removeDup can', () => {
 });
 
 // combinedPromises tests
-const promiseGenerator = (values: Array<ServerData<any>>) => {
+const promiseGenerator = (values: Array<BEMData<any>>) => {
   return Promise.resolve(values);
 };
 const badPromiseGenerator = (input: string) => {

@@ -36,6 +36,7 @@ import LabelTabContext, {
   TimelineMap,
   TimelineNotesMap,
 } from './LabelTabContext';
+import { readAllCompositeTrips, readUnprocessedTrips } from './timelineHelper';
 
 let showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -56,8 +57,6 @@ const LabelTab = () => {
   const [displayedEntries, setDisplayedEntries] = useState(null);
   const [refreshTime, setRefreshTime] = useState(null);
   const [isLoading, setIsLoading] = useState<string | false>('replace');
-
-  const Timeline = getAngularService('Timeline');
 
   // initialization, once the appConfig is loaded
   useEffect(() => {
@@ -231,7 +230,7 @@ const LabelTab = () => {
       });
     const readTimelineMap = compositeTrips2TimelineMap(tripsRead, showPlaces);
     logDebug(`LabelTab: after composite trips converted, 
-      readTimelineMap = ${JSON.stringify(readTimelineMap)}`);
+      readTimelineMap = ${[...readTimelineMap.entries()]}`);
     if (mode == 'append') {
       setTimelineMap(new Map([...timelineMap, ...readTimelineMap]));
     } else if (mode == 'prepend') {
@@ -246,7 +245,7 @@ const LabelTab = () => {
   async function fetchTripsInRange(startTs: number, endTs: number) {
     if (!pipelineRange.start_ts) return logWarn('No pipelineRange yet - early return');
     logDebug('LabelTab: fetchTripsInRange from ' + startTs + ' to ' + endTs);
-    const readCompositePromise = Timeline.readAllCompositeTrips(startTs, endTs);
+    const readCompositePromise = readAllCompositeTrips(startTs, endTs);
     let readUnprocessedPromise;
     if (endTs >= pipelineRange.end_ts) {
       const nowTs = new Date().getTime() / 1000;
@@ -255,11 +254,7 @@ const LabelTab = () => {
         [...timelineMap?.values()]
           .reverse()
           .find((trip) => trip.origin_key.includes('confirmed_trip'));
-      readUnprocessedPromise = Timeline.readUnprocessedTrips(
-        pipelineRange.end_ts,
-        nowTs,
-        lastProcessedTrip,
-      );
+      readUnprocessedPromise = readUnprocessedTrips(pipelineRange.end_ts, nowTs, lastProcessedTrip);
     } else {
       readUnprocessedPromise = Promise.resolve([]);
     }
