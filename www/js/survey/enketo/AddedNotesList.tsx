@@ -90,7 +90,7 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
 
   function editEntry(entry) {
     setEditingEntry(entry);
-    console.debug('Editing entry is now ', entry);
+    logDebug('editingEntry = ' + JSON.stringify(entry));
     setSurveyModalVisible(true);
   }
 

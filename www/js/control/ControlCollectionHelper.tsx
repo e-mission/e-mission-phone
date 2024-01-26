@@ -4,7 +4,7 @@ import { Dialog, Button, Switch, Text, useTheme, TextInput } from 'react-native-
 import { useTranslation } from 'react-i18next';
 import ActionMenu from '../components/ActionMenu';
 import { settingStyles } from './ProfileSettings';
-import { displayError } from '../plugin/logger';
+import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 
 type collectionConfig = {
   is_duty_cycling: boolean;
@@ -27,7 +27,7 @@ export async function forceTransition(transition) {
     window.alert('success -> ' + result);
   } catch (err) {
     window.alert('error -> ' + err);
-    console.log('error forcing state', err);
+    displayError(err, 'error forcing state');
   }
 }
 
@@ -48,7 +48,6 @@ export async function isMediumAccuracy() {
     return undefined; // config not loaded when loading ui, set default as false
   } else {
     const v = await accuracy2String(config);
-    console.log('window platform is', window['cordova'].platformId);
     if (window['cordova'].platformId == 'ios') {
       return (
         v != 'kCLLocationAccuracyBestForNavigation' &&
@@ -58,7 +57,7 @@ export async function isMediumAccuracy() {
     } else if (window['cordova'].platformId == 'android') {
       return v != 'PRIORITY_HIGH_ACCURACY';
     } else {
-      window.alert('Emission does not support this platform');
+      displayErrorMsg('Emission does not support this platform: ' + window['cordova'].platformId);
     }
   }
 }
@@ -82,7 +81,7 @@ export async function helperToggleLowAccuracy() {
   }
   try {
     let set = await setConfig(tempConfig);
-    console.log('setConfig Sucess');
+    logDebug('setConfig Sucess');
   } catch (err) {
     displayError(err, 'Error while setting collection config');
   }
@@ -159,7 +158,7 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
    */
 
   async function saveAndReload() {
-    console.log('new config = ', localConfig);
+    logDebug('new config = ' + JSON.stringify(localConfig));
     try {
       let set = await setConfig(localConfig);
       setEditVis(false);

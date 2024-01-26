@@ -1,3 +1,5 @@
+import { displayError } from '../plugin/logger';
+
 type UrlComponents = {
   [key: string]: string;
 };
@@ -16,7 +18,7 @@ export function onLaunchCustomURL(
       urlComponents[key] = value;
     }
     handler(url, urlComponents);
-  } catch {
-    console.log('not a valid url');
+  } catch (err) {
+    displayError(err, 'onLaunchCustomURL: not a valid URL');
   }
 }

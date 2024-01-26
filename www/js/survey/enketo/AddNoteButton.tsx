@@ -83,7 +83,7 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
 
   function launchAddNoteSurvey() {
     const surveyName = notesConfig.surveyName;
-    console.log('About to launch survey ', surveyName);
+    logDebug(`AddNoteButton: about to launch survey ${surveyName}`);
     setPrefillTimes(getPrefillTimes());
     setModalVisible(true);
   }

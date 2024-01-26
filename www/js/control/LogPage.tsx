@@ -6,6 +6,7 @@ import { FlashList } from '@shopify/flash-list';
 import { DateTime } from 'luxon';
 import AlertBar from './AlertBar';
 import { sendEmail } from './emailService';
+import { displayError, logDebug } from '../plugin/logger';
 
 type loadStats = { currentStart: number; gotMaxIndex: boolean; reachedEnd: boolean };
 
@@ -31,7 +32,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
   async function refreshEntries() {
     try {
       let maxIndex = await window['Logger'].getMaxIndex();
-      console.log('maxIndex = ' + maxIndex);
+      logDebug('Logger maxIndex = ' + maxIndex);
       let tempStats = {} as loadStats;
       tempStats.currentStart = maxIndex;
       tempStats.gotMaxIndex = true;
@@ -40,7 +41,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
       setEntries([]);
     } catch (error) {
       let errorString = t('errors.while-max-index') + JSON.stringify(error, null, 2);
-      console.log(errorString);
+      displayError(error, errorString);
       setMaxMessage(errorString);
       setMaxErrorVis(true);
     } finally {
@@ -62,17 +63,16 @@ const LogPage = ({ pageVis, setPageVis }) => {
   }
 
   async function addEntries() {
-    console.log('calling addEntries');
     setIsFetching(true);
     let start = loadStats?.currentStart ? loadStats.currentStart : 0; //set a default start to prevent initial fetch error
     try {
       let entryList = await window['Logger'].getMessagesFromIndex(start, RETRIEVE_COUNT);
       processEntries(entryList);
-      console.log('entry list size = ' + entries.length);
+      logDebug('addEntries: entry list size = ' + entries.length);
       setIsFetching(false);
     } catch (error) {
       let errStr = t('errors.while-log-messages') + JSON.stringify(error, null, 2);
-      console.log(errStr);
+      displayError(error, errStr);
       setLogMessage(errStr);
       setLogErrorVis(true);
       setIsFetching(false);
@@ -87,11 +87,11 @@ const LogPage = ({ pageVis, setPageVis }) => {
       tempEntries.push(e);
     });
     if (entryList.length == 0) {
-      console.log('Reached the end of the scrolling');
+      logDebug('LogPage reached the end of the scrolling');
       tempLoadStats.reachedEnd = true;
     } else {
       tempLoadStats.currentStart = entryList[entryList.length - 1].ID;
-      console.log('new start index = ' + loadStats?.currentStart);
+      logDebug('LogPage new start index = ' + loadStats?.currentStart);
     }
     setEntries([...entries].concat(tempEntries)); //push the new entries onto the list
     setLoadStats(tempLoadStats);

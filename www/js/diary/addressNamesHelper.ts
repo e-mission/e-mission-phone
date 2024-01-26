@@ -67,7 +67,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
       }
     } catch (error) {
-      console.error(error);
+      displayError(error);
     }
   }
   return [storedValue, setValue];
@@ -110,15 +110,11 @@ async function fetchNominatimLocName(loc_geojson) {
   const coordsStr = loc_geojson.coordinates.toString();
   const cachedResponse = localStorage.getItem(coordsStr);
   if (cachedResponse) {
-    console.log(
-      'fetchNominatimLocName: found cached response for ',
-      coordsStr,
-      cachedResponse,
-      'skipping fetch',
-    );
+    logDebug(`fetchNominatimLocName: found cached response for ${coordsStr} = 
+      ${cachedResponse}, skipping fetch`);
     return;
   }
-  console.log('Getting location name for ', coordsStr);
+  logDebug('Getting location name for ' + JSON.stringify(coordsStr));
   const url =
     'https://nominatim.openstreetmap.org/reverse?format=json&lat=' +
     loc_geojson.coordinates[1] +

@@ -66,9 +66,8 @@ function debugGetScheduled(prefix) {
       };
     });
     //have the list of scheduled show up in this log
-    logDebug(
-      `${prefix}, there are ${notifs.length} scheduled notifications at ${time} first is ${scheduledNotifs[0].key} at ${scheduledNotifs[0].val}`,
-    );
+    logDebug(`${prefix}, there are ${notifs.length} scheduled notifications at ${time}; 
+      first is ${scheduledNotifs[0].key} at ${scheduledNotifs[0].val}`);
   });
 }
 
@@ -79,12 +78,7 @@ export function getScheduledNotifs(isScheduling: boolean, scheduledPromise: Prom
         anywhere from 0-n of the scheduled notifs are displayed 
         if actively scheduling, wait for the scheduledPromise to resolve before fetching prevents such errors
         */
-    console.log('test log: isScheduling during getScheduledNotifs', isScheduling);
-    console.log('test log: scheduledPromise during getScheduledNotifs', scheduledPromise);
     if (isScheduling) {
-      console.log(
-        'test log: requesting fetch while still actively scheduling, waiting on scheduledPromise',
-      );
       logDebug('requesting fetch while still actively scheduling, waiting on scheduledPromise');
       scheduledPromise.then(() => {
         getNotifs().then((notifs) => {
@@ -92,7 +86,6 @@ export function getScheduledNotifs(isScheduling: boolean, scheduledPromise: Prom
         });
       });
     } else {
-      console.log('test log: not actively scheduling, fetching');
       getNotifs().then((notifs) => {
         resolve(notifs);
       });

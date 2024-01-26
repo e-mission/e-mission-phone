@@ -83,10 +83,8 @@ function getUnifiedValue(key) {
         // both values are present, but they are different
         console.assert(
           ls_stored_val != null && uc_stored_val != null,
-          'ls_stored_val =' +
-            JSON.stringify(ls_stored_val) +
-            'uc_stored_val =' +
-            JSON.stringify(uc_stored_val),
+          `ls_stored_val = ${JSON.stringify(ls_stored_val)}; 
+            uc_stored_val = ${JSON.stringify(uc_stored_val)}`,
         );
         logWarn(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
                     ls_stored_val = ${JSON.stringify(ls_stored_val)}.
@@ -145,25 +143,21 @@ function findMissing(fromKeys: any[], toKeys: any[]) {
 }
 
 export function storageSyncLocalAndNative() {
-  console.log('STORAGE_PLUGIN: Called syncAllWebAndNativeValues ');
+  logDebug('STORAGE_PLUGIN: Called syncAllWebAndNativeValues');
   const syncKeys = window['cordova'].plugins.BEMUserCache.listAllLocalStorageKeys().then(
     (nativeKeys) => {
-      console.log('STORAGE_PLUGIN: native plugin returned');
       const webKeys = Object.keys(localStorage);
       // I thought about iterating through the lists and copying over
       // only missing values, etc but `getUnifiedValue` already does
       // that, and we don't need to copy it
       // so let's just find all the missing values and read them
-      logDebug('STORAGE_PLUGIN: Comparing web keys ' + webKeys + ' with ' + nativeKeys);
+      logDebug(`STORAGE_PLUGIN: native keys returned = ${JSON.stringify(nativeKeys)}; 
+        comparing against webKeys = ${JSON.stringify(webKeys)}`);
       let [foundNative, missingNative] = findMissing(webKeys, nativeKeys);
       let [foundWeb, missingWeb] = findMissing(nativeKeys, webKeys);
-      logDebug(
-        'STORAGE_PLUGIN: Found native keys ' +
-          foundNative +
-          ' missing native keys ' +
-          missingNative,
-      );
-      logDebug('STORAGE_PLUGIN: Found web keys ' + foundWeb + ' missing web keys ' + missingWeb);
+      logDebug(`STORAGE_PLUGIN:
+        Found native keys = ${foundNative}; Missing native keys = ${missingNative}; 
+        Found web keys = ${foundWeb}; Missing web keys = ${missingWeb}`);
       const allMissing = missingNative.concat(missingWeb);
       logDebug('STORAGE_PLUGIN: Syncing all missing keys ' + allMissing);
       allMissing.forEach(getUnifiedValue);

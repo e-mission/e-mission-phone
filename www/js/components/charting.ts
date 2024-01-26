@@ -1,6 +1,7 @@
 import color from 'color';
 import { getBaseModeByKey } from '../diary/diaryHelper';
 import { readableLabelToKey } from '../survey/multilabel/confirmHelper';
+import { logDebug } from '../plugin/logger';
 
 export const defaultPalette = [
   '#c95465', // red oklch(60% 0.15 14)
@@ -49,11 +50,9 @@ export function getChartHeight(
 
 function getBarHeight(stacks) {
   let totalHeight = 0;
-  console.log('ctx stacks', stacks.x);
   for (let val in stacks.x) {
     if (!val.startsWith('_')) {
       totalHeight += stacks.x[val];
-      console.log('ctx added ', val);
     }
   }
   return totalHeight;
@@ -82,14 +81,7 @@ function createDiagonalPattern(color = 'black') {
 export function getMeteredBackgroundColor(meter, currDataset, barCtx, colors, darken = 0) {
   if (!barCtx || !currDataset) return;
   let bar_height = getBarHeight(barCtx.parsed._stacks);
-  console.debug(
-    'bar height for',
-    barCtx.raw.y,
-    ' is ',
-    bar_height,
-    'which in chart is',
-    currDataset,
-  );
+  logDebug(`bar height for ${barCtx.raw.y} is ${bar_height} which in chart is ${currDataset}`);
   let meteredColor;
   if (bar_height > meter.high) meteredColor = colors.danger;
   else if (bar_height > meter.middle) meteredColor = colors.warn;

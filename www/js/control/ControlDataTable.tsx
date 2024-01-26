@@ -3,7 +3,6 @@ import { DataTable } from 'react-native-paper';
 
 // val with explicit call toString() to resolve bool values not showing
 const ControlDataTable = ({ controlData }) => {
-  console.log('Printing data trying to tabulate', controlData);
   return (
     //rows require unique keys!
     <DataTable style={styles.table}>

@@ -69,7 +69,6 @@ export function readConsentState() {
   return fetch('json/startupConfig.json')
     .then((response) => response.json())
     .then((startupConfigResult) => {
-      console.log(startupConfigResult);
       _req_consent = startupConfigResult.emSensorDataCollectionProtocol;
       logDebug('required consent version = ' + JSON.stringify(_req_consent));
       return storageGet(DATA_COLLECTION_CONSENTED_PROTOCOL);

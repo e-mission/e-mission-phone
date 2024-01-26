@@ -18,7 +18,7 @@ On dev builds, the fallback translation is prefixed with a globe emoji so it's e
 function mergeInTranslations(lang, fallbackLang) {
   Object.entries(fallbackLang).forEach(([key, value]) => {
     if (lang[key] === undefined) {
-      console.warn(`Missing translation for key '${key}'`);
+      logWarn(`Missing translation for key '${key}'`);
       if (__DEV__) {
         if (typeof value === 'string') {
           lang[key] = `🌐${value}`;
@@ -66,6 +66,7 @@ export default i18next;
 
 // Next, register the translations for react-native-paper-dates
 import { en, es, fr, it, registerTranslation } from 'react-native-paper-dates';
+import { logWarn } from './plugin/logger';
 const rnpDatesLangs = {
   en,
   es,

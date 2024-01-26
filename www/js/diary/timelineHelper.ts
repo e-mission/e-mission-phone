@@ -351,12 +351,10 @@ function transitionTrip2TripObj(trip: Array<any>): Promise<UnprocessedTrip | und
     startTs: tripStartTransition.data.ts,
     endTs: tripEndTransition.data.ts,
   };
-  logDebug(
-    'About to pull location data for range ' +
-      DateTime.fromSeconds(tripStartTransition.data.ts).toLocaleString(DateTime.DATETIME_MED) +
-      ' to ' +
-      DateTime.fromSeconds(tripEndTransition.data.ts).toLocaleString(DateTime.DATETIME_MED),
-  );
+  logDebug(`About to pull location data for range: 
+    ${DateTime.fromSeconds(tripStartTransition.data.ts).toLocaleString(DateTime.DATETIME_MED)} 
+     to 
+    ${DateTime.fromSeconds(tripEndTransition.data.ts).toLocaleString(DateTime.DATETIME_MED)}`);
   const getSensorData = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
   return getUnifiedDataForInterval('background/filtered_location', tq, getSensorData).then(
     (locationList: Array<BEMData<FilteredLocation>>) => {
@@ -375,12 +373,8 @@ function transitionTrip2TripObj(trip: Array<any>): Promise<UnprocessedTrip | und
 
       const tripStartPoint = filteredLocationList[0];
       const tripEndPoint = filteredLocationList[filteredLocationList.length - 1];
-      logDebug(
-        'tripStartPoint = ' +
-          JSON.stringify(tripStartPoint) +
-          'tripEndPoint = ' +
-          JSON.stringify(tripEndPoint),
-      );
+      logDebug(`tripStartPoint = ${tripStartPoint.data.ts} 
+        tripEndPoint = ${tripEndPoint.data.ts}`);
       // if we get a list but our start and end are undefined
       // let's print out the complete original list to get a clue
       // this should help with debugging
@@ -388,12 +382,8 @@ function transitionTrip2TripObj(trip: Array<any>): Promise<UnprocessedTrip | und
       // if it ever occurs again
       if (tripStartPoint === undefined || tripEndPoint === undefined) {
         logDebug('BUG 417 check: locationList = ' + JSON.stringify(locationList));
-        logDebug(
-          'transitions: start = ' +
-            JSON.stringify(tripStartTransition.data) +
-            ' end = ' +
-            JSON.stringify(tripEndTransition.data.ts),
-        );
+        logDebug(`transitions: start = ${JSON.stringify(tripStartTransition.data)}; 
+          end = ${JSON.stringify(tripEndTransition.data)}`);
       }
 
       const tripProps = points2TripProps(filteredLocationList);
@@ -471,9 +461,8 @@ function transitions2Trips(transitionList: Array<BEMData<TripTransition>>) {
       } else {
         currStartTransitionIndex = processedUntil + foundStartTransitionIndex;
         processedUntil = currStartTransitionIndex;
-        logDebug(
-          'Unprocessed trip started at ' + JSON.stringify(transitionList[currStartTransitionIndex]),
-        );
+        logDebug(`'Unprocessed trip started at: 
+          ${JSON.stringify(transitionList[currStartTransitionIndex])}`);
         inTrip = true;
       }
     } else {
@@ -481,22 +470,16 @@ function transitions2Trips(transitionList: Array<BEMData<TripTransition>>) {
         .slice(processedUntil)
         .findIndex(isEndingTransition);
       if (foundEndTransitionIndex == -1) {
-        logDebug(
-          "Can't find end for trip starting at " +
-            JSON.stringify(transitionList[currStartTransitionIndex]) +
-            ' dropping it',
-        );
+        logDebug(`Can't find end for trip starting at: 
+          ${JSON.stringify(transitionList[currStartTransitionIndex])} - dropping it`);
         processedUntil = transitionList.length;
       } else {
         currEndTransitionIndex = processedUntil + foundEndTransitionIndex;
         processedUntil = currEndTransitionIndex;
         logDebug(`currEndTransitionIndex ${currEndTransitionIndex}`);
-        logDebug(
-          'Unprocessed trip starting at ' +
-            JSON.stringify(transitionList[currStartTransitionIndex]) +
-            ' ends at ' +
-            JSON.stringify(transitionList[currEndTransitionIndex]),
-        );
+        logDebug(`Unprocessed trip, 
+          starting at: ${JSON.stringify(transitionList[currStartTransitionIndex])}; 
+          ends at: ${JSON.stringify(transitionList[currEndTransitionIndex])}`);
         tripList.push([
           transitionList[currStartTransitionIndex],
           transitionList[currEndTransitionIndex],
@@ -528,11 +511,7 @@ export function readUnprocessedTrips(
   lastProcessedTrip?: CompositeTrip,
 ) {
   const tq = { key: 'write_ts', startTs, endTs };
-  logDebug(
-    'about to query for unprocessed trips from ' +
-      DateTime.fromSeconds(tq.startTs).toLocaleString(DateTime.DATETIME_MED) +
-      DateTime.fromSeconds(tq.endTs).toLocaleString(DateTime.DATETIME_MED),
-  );
+  logDebug(`about to query for unprocessed trips from ${tq.startTs} to ${tq.endTs}`);
   const getMessageMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
   return getUnifiedDataForInterval('statemachine/transition', tq, getMessageMethod).then(
     (transitionList: Array<BEMData<TripTransition>>) => {

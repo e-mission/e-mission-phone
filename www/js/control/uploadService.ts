@@ -19,7 +19,6 @@ async function getUploadConfig() {
         let response = await fetch('json/uploadConfig.json.sample');
         let uploadConfig = await response.json();
         logDebug('default uploadConfigString = ' + JSON.stringify(uploadConfig['url']));
-        console.log('default uploadConfigString = ' + JSON.stringify(uploadConfig['url']));
         url.push(uploadConfig['url']);
         resolve(url);
       } catch (err) {
@@ -41,32 +40,30 @@ function onUploadError(err) {
 function readDBFile(parentDir, database, callbackFn) {
   return new Promise((resolve, reject) => {
     window['resolveLocalFileSystemURL'](parentDir, (fs) => {
-      console.log('resolving file system as ', fs);
+      logDebug('resolving file system as ' + JSON.stringify(fs));
       fs.filesystem.root.getFile(
         fs.fullPath + database,
         null,
         (fileEntry) => {
-          console.log(fileEntry);
+          logDebug('fileEntry = ' + JSON.stringify(fileEntry));
           fileEntry.file((file) => {
-            console.log(file);
+            logDebug('file = ' + JSON.stringify(file));
             const reader = new FileReader();
 
             reader.onprogress = (report) => {
-              console.log('Current progress is ' + JSON.stringify(report));
+              logDebug('Current progress is ' + JSON.stringify(report));
               if (callbackFn != undefined) {
                 callbackFn((report.loaded * 100) / report.total);
               }
             };
 
             reader.onerror = (error) => {
-              console.log(this.error);
+              logDebug('Error while reading file ' + JSON.stringify(this.error));
               reject({ error: { message: this.error } });
             };
 
             reader.onload = () => {
-              console.log(
-                'Successful file read with ' + this.result?.['byteLength'] + ' characters',
-              );
+              logDebug('Successful file read with ' + this.result?.['byteLength'] + ' characters');
               resolve(new DataView(this.result as ArrayBuffer));
             };
 
@@ -106,7 +103,7 @@ export async function uploadFile(database, reason) {
     logInfo('Going to upload ' + database);
     try {
       let binString: any = await readDBFile(parentDir, database, undefined);
-      console.log('Uploading file of size ' + binString['byteLength']);
+      logDebug('Uploading file of size ' + binString['byteLength']);
       const params = {
         reason: reason,
         tz: Intl.DateTimeFormat().resolvedOptions().timeZone,

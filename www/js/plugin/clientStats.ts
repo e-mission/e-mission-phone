@@ -1,4 +1,4 @@
-import { displayErrorMsg } from './logger';
+import { displayErrorMsg, logDebug } from './logger';
 
 const CLIENT_TIME = 'stats/client_time';
 const CLIENT_ERROR = 'stats/client_error';
@@ -40,6 +40,7 @@ async function getStatsEvent(name: string, reading: any) {
 export async function addStatReading(name: string, reading: any) {
   const db = window['cordova']?.plugins?.BEMUserCache;
   const event = await getStatsEvent(name, reading);
+  logDebug('addStatReading: adding CLIENT_TIME event: ' + JSON.stringify(event));
   if (db) return db.putMessage(CLIENT_TIME, event);
   displayErrorMsg('addStatReading: db is not defined');
 }
@@ -47,6 +48,7 @@ export async function addStatReading(name: string, reading: any) {
 export async function addStatEvent(name: string) {
   const db = window['cordova']?.plugins?.BEMUserCache;
   const event = await getStatsEvent(name, null);
+  logDebug('addStatEvent: adding CLIENT_NAV_EVENT event: ' + JSON.stringify(event));
   if (db) return db.putMessage(CLIENT_NAV_EVENT, event);
   displayErrorMsg('addStatEvent: db is not defined');
 }
@@ -54,6 +56,7 @@ export async function addStatEvent(name: string) {
 export async function addStatError(name: string, errorStr: string) {
   const db = window['cordova']?.plugins?.BEMUserCache;
   const event = await getStatsEvent(name, errorStr);
+  logDebug('addStatError: adding CLIENT_ERROR event: ' + JSON.stringify(event));
   if (db) return db.putMessage(CLIENT_ERROR, event);
   displayErrorMsg('addStatError: db is not defined');
 }

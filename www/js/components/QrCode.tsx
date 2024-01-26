@@ -4,7 +4,7 @@ we can remove this wrapper and just use the QRCode component directly */
 
 import React from 'react';
 import QRCode from 'react-qr-code';
-import { logWarn } from '../plugin/logger';
+import { logDebug, logWarn } from '../plugin/logger';
 
 export function shareQR(message) {
   /*code adapted from demo of react-qr-code*/
@@ -29,11 +29,13 @@ export function shareQR(message) {
     window['plugins'].socialsharing.shareWithOptions(
       prepopulateQRMessage,
       (result) => {
-        console.log('Share completed? ' + result.completed); // On Android apps mostly return false even while it's true
-        console.log('Shared to app: ' + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+        // On Android apps mostly return completed=false even while it's true
+        // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+        logDebug(`socialsharing: share completed? ' + ${result.completed}; 
+          shared to app: ${result.app}`);
       },
       (msg) => {
-        console.log('Sharing failed with message: ' + msg);
+        logWarn('socialsharing: failed with message: ' + msg);
       },
     );
   };

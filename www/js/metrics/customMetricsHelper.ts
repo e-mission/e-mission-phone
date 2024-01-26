@@ -45,7 +45,6 @@ function populateCustomMETs() {
         // we assume that they specify -1 instead, and we will
         // map -1 to Number.MAX_VALUE here by iterating over all the ranges
         for (const rangeName in currMET) {
-          // console.log("Handling range ", rangeName);
           currMET[rangeName].range = currMET[rangeName].range.map((i) =>
             i == -1 ? Number.MAX_VALUE : i,
           );

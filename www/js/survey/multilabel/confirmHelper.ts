@@ -92,18 +92,12 @@ export function labelInputDetailsForTrip(userInputForTrip, appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;
   if (appConfig.intro.mode_studied) {
     if (userInputForTrip?.['MODE']?.value == appConfig.intro.mode_studied) {
-      logDebug(
-        'Found trip labeled with mode of study ' +
-          appConfig.intro.mode_studied +
-          '. Needs REPLACED_MODE',
-      );
+      logDebug(`Found trip labeled with mode of study, ${appConfig.intro.mode_studied}. 
+        Needs REPLACED_MODE`);
       return getLabelInputDetails();
     } else {
-      logDebug(
-        'Found trip not labeled with mode of study ' +
-          appConfig.intro.mode_studied +
-          ". Doesn't need REPLACED_MODE",
-      );
+      logDebug(`Found trip not labeled with mode of study, ${appConfig.intro.mode_studied}. 
+        Doesn't need REPLACED_MODE`);
       return baseLabelInputDetails;
     }
   } else {

@@ -59,10 +59,10 @@ const WelcomePage = () => {
   function scanCode() {
     window['cordova'].plugins.barcodeScanner.scan(
       (result) => {
-        console.debug('scanned code', result);
+        logDebug('scanCode: scanned ' + JSON.stringify(result));
         let code = getCode(result);
         if (code != false) {
-          console.log('found code', code);
+          logDebug('scanCode: found code ' + code);
           loginWithToken(code);
         } else {
           displayError(result.text, 'invalid study reference');
@@ -83,7 +83,7 @@ const WelcomePage = () => {
         }
       })
       .catch((err) => {
-        console.error('Error logging in with token', err);
+        displayError(err, 'Error logging in with token');
         setExistingToken('');
       });
   }

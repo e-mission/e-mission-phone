@@ -92,8 +92,6 @@ const App = () => {
     setPermissionsPopupVis,
   };
 
-  console.debug('onboardingState in App', onboardingState);
-
   let appContent;
   if (onboardingState == null) {
     // if onboarding state is not yet determined, show a loading spinner

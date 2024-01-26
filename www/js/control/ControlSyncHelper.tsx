@@ -44,8 +44,6 @@ export const ForceSyncRow = ({ getState }) => {
   async function forceSync() {
     try {
       let addedEvent = await addStatEvent(statKeys.BUTTON_FORCE_SYNC);
-      console.log('Added ' + statKeys.BUTTON_FORCE_SYNC + ' event');
-
       let sync = await forcePluginSync();
       /*
        * Change to sensorKey to "background/location" after fixing issues
@@ -198,7 +196,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
    * Functions to edit and save values
    */
   async function saveAndReload() {
-    console.log('new config = ' + localConfig);
+    logDebug('saveAndReload: new config = ' + JSON.stringify(localConfig));
     try {
       let set = setConfig(localConfig);
       //NOTE -- we need to make sure we update these settings in ProfileSettings :) -- getting rid of broadcast handling for migration!!
@@ -212,7 +210,6 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
         curr_sync_interval: (localConfig as syncConfig).sync_interval,
       });
     } catch (err) {
-      console.log('error with setting sync config', err);
       displayError(err, 'Error while setting sync config');
     }
   }

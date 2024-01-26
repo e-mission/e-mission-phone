@@ -31,9 +31,7 @@ const launchWebpage = (url) => window['cordova'].InAppBrowser.open(url, '_blank'
  */
 function onCloudNotifEvent(event) {
   const data = event.detail;
-  addStatEvent(statKeys.NOTIFICATION_OPEN).then(() => {
-    console.log('Added ' + statKeys.NOTIFICATION_OPEN + ' event. Data = ' + JSON.stringify(data));
-  });
+  addStatEvent(statKeys.NOTIFICATION_OPEN);
   logDebug('data = ' + JSON.stringify(data));
   if (
     data.additionalData &&

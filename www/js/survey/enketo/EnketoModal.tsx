@@ -5,7 +5,7 @@ import { ModalProps } from 'react-native-paper';
 import useAppConfig from '../../useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { SurveyOptions, fetchSurvey, getInstanceStr, saveResponse } from './enketoHelper';
-import { displayError, displayErrorMsg } from '../../plugin/logger';
+import { displayError, displayErrorMsg, logDebug } from '../../plugin/logger';
 
 type Props = Omit<ModalProps, 'children'> & {
   surveyName: string;
@@ -40,9 +40,9 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
 
   // init logic: retrieve form -> inject into DOM -> initialize Enketo -> show modal
   function initSurvey() {
-    console.debug('Loading survey', surveyName);
+    logDebug('EnketoModal: loading survey ' + surveyName);
     const formPath = appConfig.survey_info?.surveys?.[surveyName]?.formPath;
-    if (!formPath) return console.error('No form path found for survey', surveyName);
+    if (!formPath) return displayErrorMsg('No form path found for survey ' + surveyName);
 
     fetchSurvey(formPath).then(({ form, model }) => {
       surveyJson.current = { form, model };
@@ -62,7 +62,7 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
 
   useEffect(() => {
     if (!rest.visible) return;
-    if (!appConfig) return console.error('App config not loaded yet');
+    if (!appConfig) return displayErrorMsg('App config not loaded yet');
     initSurvey();
   }, [appConfig, rest.visible]);
 

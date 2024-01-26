@@ -104,25 +104,23 @@ export function validUserInputForTimelineEntry(
         endChecks = true; // so we will just skip the end check
       } else {
         endChecks = userInput.data.end_ts <= nextEntryEnd;
-        logDebug(
-          `Second level of end checks when the next trip is defined(${userInput.data.end_ts} <= ${nextEntryEnd}) ${endChecks}`,
-        );
+        logDebug(`Second level of end checks when the next trip is defined, 
+          (${userInput.data.end_ts} <= ${nextEntryEnd}), 
+          endChecks = ${endChecks}`);
       }
     } else {
       // next trip is not defined, last trip
       endChecks = userInput.data.end_local_dt?.day == userInput.data.start_local_dt?.day;
       logDebug('Second level of end checks for the last trip of the day');
-      logDebug(
-        `compare ${userInput.data.end_local_dt?.day} with ${userInput.data.start_local_dt?.day} ${endChecks}`,
-      );
+      logDebug(`compare ${userInput.data.end_local_dt?.day} with ${userInput.data.start_local_dt?.day}; 
+        endChecks = ${endChecks}`);
     }
     if (endChecks) {
       // If we have flipped the values, check to see that there is sufficient overlap
       const overlapDuration =
         Math.min(userInput.data.end_ts, entryEnd) - Math.max(userInput.data.start_ts, entryStart);
-      logDebug(
-        `Flipped endCheck, overlap(${overlapDuration})/trip(${tlEntry.duration} (${overlapDuration} / ${tlEntry.duration})`,
-      );
+      logDebug(`Flipped endCheck, overlapDuration / tlEntry.duration is 
+        ${overlapDuration} / ${tlEntry.duration} = ${overlapDuration / tlEntry.duration}`);
       endChecks = overlapDuration / tlEntry.duration > 0.5;
     }
   }
@@ -131,7 +129,7 @@ export function validUserInputForTimelineEntry(
 
 // parallels get_not_deleted_candidates() in trip_queries.py
 export function getNotDeletedCandidates(candidates: UserInputEntry[]): UserInputEntry[] {
-  console.log('getNotDeletedCandidates called with ' + candidates.length + ' candidates');
+  logDebug('getNotDeletedCandidates called with ' + candidates.length + ' candidates');
 
   // We want to retain all ACTIVE entries that have not been DELETED
   const allActiveList = candidates.filter((c) => !c.data.status || c.data.status == 'ACTIVE');
@@ -140,8 +138,9 @@ export function getNotDeletedCandidates(candidates: UserInputEntry[]): UserInput
     .map((c) => c.data['match_id']);
   const notDeletedActive = allActiveList.filter((c) => !allDeletedIds.includes(c.data['match_id']));
 
-  console.log(`Found ${allActiveList.length} active entries, ${allDeletedIds.length} deleted entries ->
-                    ${notDeletedActive.length} non deleted active entries`);
+  logDebug(`Found ${allActiveList.length} active entries; 
+    ${allDeletedIds.length} deleted entries -> 
+    ${notDeletedActive.length} non-deleted active entries`);
 
   return notDeletedActive;
 }
@@ -157,7 +156,7 @@ export function getUserInputForTimelineEntry(
     return undefined;
   }
 
-  if (logsEnabled) console.log(`Input list = ${userInputList.map(printUserInput)}`);
+  if (logsEnabled) logDebug(`Input list = ${userInputList.map(printUserInput)}`);
 
   // undefined !== true, so this covers the label view case as well
   const potentialCandidates = userInputList.filter((ui) =>
@@ -171,11 +170,8 @@ export function getUserInputForTimelineEntry(
   }
 
   if (potentialCandidates.length === 1) {
-    logDebug(
-      `In getUserInputForTimelineEntry, one potential candidate, returning  ${printUserInput(
-        potentialCandidates[0],
-      )}`,
-    );
+    logDebug(`In getUserInputForTimelineEntry, one potential candidate, 
+      returning ${printUserInput(potentialCandidates[0])}`);
     return potentialCandidates[0];
   }
 
@@ -209,7 +205,7 @@ export function getAdditionsForTimelineEntry(
     validUserInputForTimelineEntry(entry, nextEntry, ui, logsEnabled),
   );
 
-  if (logsEnabled) console.log(`Matching Addition list ${matchingAdditions.map(printUserInput)}`);
+  if (logsEnabled) logDebug(`Matching Addition list ${matchingAdditions.map(printUserInput)}`);
 
   return matchingAdditions;
 }
@@ -242,9 +238,8 @@ export function getUniqueEntries(combinedList) {
           `${JSON.stringify(existingVal)} vs ${JSON.stringify(e)}`,
         );
       } else {
-        console.log(
-          `Found two entries with match_id ${existingVal.data.match_id} but they are identical`,
-        );
+        logDebug(`Found two entries with match_id ${existingVal.data.match_id}, 
+          but they are identical`);
       }
     } else {
       uniqueMap.set(e.data.match_id, e);

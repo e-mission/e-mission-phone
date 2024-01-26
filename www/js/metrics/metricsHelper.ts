@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import { formatForDisplay } from '../config/useImperialConfig';
 import { DayOfMetricData } from './metricsTypes';
+import { logDebug } from '../plugin/logger';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];
@@ -86,7 +87,8 @@ export function calculatePercentChange(pastWeekRange, previousWeekRange) {
 }
 
 export function parseDataFromMetrics(metrics, population) {
-  console.log('Called parseDataFromMetrics on ', metrics);
+  logDebug(`parseDataFromMetrics: metrics = ${JSON.stringify(metrics)}; 
+    population = ${population}`);
   let mode_bins: { [k: string]: [number, number, string][] } = {};
   metrics?.forEach((metric) => {
     let onFootVal = 0;
@@ -115,7 +117,7 @@ export function parseDataFromMetrics(metrics, population) {
       //this section handles user lables, assuming 'label_' prefix
       if (field.startsWith('label_')) {
         let actualMode = field.slice(6, field.length); //remove prefix
-        console.log('Mapped field ' + field + ' to mode ' + actualMode);
+        logDebug('Mapped field ' + field + ' to mode ' + actualMode);
         if (!(actualMode in mode_bins)) {
           mode_bins[actualMode] = [];
         }
@@ -137,7 +139,7 @@ export function parseDataFromMetrics(metrics, population) {
 
 export type MetricsSummary = { key: string; values: number };
 export function generateSummaryFromData(modeMap, metric) {
-  console.log('Invoked getSummaryDataRaw on ', modeMap, 'with', metric);
+  logDebug(`Invoked getSummaryDataRaw on ${JSON.stringify(modeMap)} with ${metric}`);
 
   let summaryMap: MetricsSummary[] = [];
 
@@ -175,19 +177,12 @@ export function isCustomLabels(modeMap) {
   const distanceKeys = modeMap.map((e) => e.key);
   const isSensedKeys = distanceKeys.map(isSensed);
   const isCustomKeys = distanceKeys.map(isCustom);
-  console.log(
-    'Checking metric keys',
-    distanceKeys,
-    ' sensed ',
-    isSensedKeys,
-    ' custom ',
-    isCustomKeys,
-  );
+  logDebug(`Checking metric keys ${distanceKeys}; sensed ${isSensedKeys}; custom ${isCustomKeys}`);
   const isAllCustomForMetric = isAllCustom(isSensedKeys, isCustomKeys);
   metricSummaryChecksSensed.push(!isAllCustomForMetric);
   metricSummaryChecksCustom.push(!!isAllCustomForMetric);
-
-  console.log('overall custom/not results for each metric = ', metricSummaryChecksCustom);
+  logDebug(`overall custom/not results for each metric 
+    is ${JSON.stringify(metricSummaryChecksCustom)}`);
   return isAllCustom(metricSummaryChecksSensed, metricSummaryChecksCustom);
 }
 

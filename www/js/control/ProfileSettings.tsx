@@ -158,14 +158,12 @@ const ProfileSettings = () => {
         });
     }
 
-    // setTemplateText(tempUiConfig.intro.translated_text);
-    // console.log("translated text is??", templateText);
     setUiConfig(tempUiConfig);
     refreshScreen();
   }
 
   async function refreshCollectSettings() {
-    console.debug('about to refreshCollectSettings, collectSettings = ', collectSettings);
+    logDebug('refreshCollectSettings: collectSettings = ' + JSON.stringify(collectSettings));
     const newCollectSettings: any = {};
 
     // // refresh collect plugin configuration
@@ -190,17 +188,15 @@ const ProfileSettings = () => {
   useEffect(() => {
     if (editCollectionVis == false) {
       setTimeout(() => {
-        console.log('closed editor, time to refresh collect');
+        logDebug('closed editor, time to refreshCollectSettings');
         refreshCollectSettings();
       }, 1000);
     }
   }, [editCollectionVis]);
 
   async function refreshNotificationSettings() {
-    logDebug(
-      'about to refreshNotificationSettings, notificationSettings = ' +
-        JSON.stringify(notificationSettings),
-    );
+    logDebug(`about to refreshNotificationSettings, 
+      notificationSettings = ${JSON.stringify(notificationSettings)}`);
     const newNotificationSettings: any = {};
 
     if (uiConfig?.reminderSchemes) {
@@ -212,12 +208,8 @@ const ProfileSettings = () => {
       let resultList = await Promise.all(promiseList);
       const prefs = resultList[0];
       const scheduledNotifs = resultList[1];
-      logDebug(
-        'prefs and scheduled notifs\n' +
-          JSON.stringify(prefs) +
-          '\n-\n' +
-          JSON.stringify(scheduledNotifs),
-      );
+      logDebug(`prefs - scheduled notifs: 
+        ${JSON.stringify(prefs)}\n - \n${JSON.stringify(scheduledNotifs)}`);
 
       const m = DateTime.fromFormat(prefs.reminder_time_of_day, 'HH:mm');
       newNotificationSettings.prefReminderTimeVal = m.toJSDate();
@@ -226,22 +218,17 @@ const ProfileSettings = () => {
       newNotificationSettings.scheduledNotifs = scheduledNotifs;
     }
 
-    logDebug(
-      'notification settings before and after\n' +
-        JSON.stringify(notificationSettings) +
-        '\n-\n' +
-        JSON.stringify(newNotificationSettings),
-    );
+    logDebug(`notification settings before - after: 
+      ${JSON.stringify(notificationSettings)} - ${JSON.stringify(newNotificationSettings)}`);
     setNotificationSettings(newNotificationSettings);
   }
 
   async function getSyncSettings() {
-    console.log('getting sync settings');
     const newSyncSettings: any = {};
     getHelperSyncSettings().then((showConfig) => {
       newSyncSettings.show_config = showConfig;
       setSyncSettings(newSyncSettings);
-      console.log('sync settings are ', syncSettings);
+      logDebug('sync settings are: ' + JSON.stringify(syncSettings));
     });
   }
 
@@ -254,8 +241,8 @@ const ProfileSettings = () => {
     getSettings().then(
       (response) => {
         const newConnectSettings: any = {};
+        logDebug('getConnectURL: got response.connectUrl = ' + response.connectUrl);
         newConnectSettings.url = response.connectUrl;
-        console.log(response);
         setConnectSettings(newConnectSettings);
       },
       (error) => {
@@ -333,14 +320,14 @@ const ProfileSettings = () => {
   //for now, use window.cordova.platformId
 
   function parseState(state) {
-    console.log('state in parse state is', state);
+    logDebug(`parseState: state = ${state}; 
+      platformId = ${window['cordova'].platformId}`);
     if (state) {
-      console.log('state in parse state exists', window['cordova'].platformId);
       if (window['cordova'].platformId == 'android') {
-        console.log('ANDROID state in parse state is', state.substring(12));
+        logDebug('platform ANDROID; parsed state will be ' + state.substring(12));
         return state.substring(12);
       } else if (window['cordova'].platformId == 'ios') {
-        console.log('IOS state in parse state is', state.substring(6));
+        logDebug('platform IOS; parsed state will be ' + state.substring(6));
         return state.substring(6);
       }
     }
@@ -349,7 +336,7 @@ const ProfileSettings = () => {
   async function invalidateCache() {
     window['cordova'].plugins.BEMUserCache.invalidateAllCache().then(
       (result) => {
-        console.log('invalidate result', result);
+        logDebug('invalidateCache: result = ' + JSON.stringify(result));
         setCacheResult(result);
         setInvalidateSuccessVis(true);
       },
@@ -384,7 +371,6 @@ const ProfileSettings = () => {
   //conditional creation of setting sections
 
   let logUploadSection;
-  console.debug('appConfg: support_upload:', appConfig?.profile_controls?.support_upload);
   if (appConfig?.profile_controls?.support_upload) {
     logUploadSection = (
       <SettingRow
@@ -409,7 +395,7 @@ const ProfileSettings = () => {
         <SettingRow
           textKey="control.upcoming-notifications"
           iconName="bell-check"
-          action={() => console.log('')}></SettingRow>
+          action={() => {}}></SettingRow>
         <ControlDataTable controlData={notificationSettings.scheduledNotifs}></ControlDataTable>
       </>
     );
@@ -507,7 +493,7 @@ const ProfileSettings = () => {
         <SettingRow
           textKey="control.app-version"
           iconName="application"
-          action={() => console.log('')}
+          action={() => {}}
           desc={appVersion.current}></SettingRow>
       </ScrollView>
 

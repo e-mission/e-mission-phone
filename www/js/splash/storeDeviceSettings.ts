@@ -36,17 +36,12 @@ function storeDeviceSettings() {
  * @param event that called this function
  */
 function onConsentEvent(event) {
-  console.log(
-    'got consented event ' +
-      JSON.stringify(event['name']) +
-      ' with data ' +
-      JSON.stringify(event.detail),
-  );
+  logDebug(`got consented event ${JSON.stringify(event['name'])} 
+    with data ${JSON.stringify(event.detail)}`);
   readIntroDone().then(async (isIntroDone) => {
     if (isIntroDone) {
-      logDebug(
-        'intro is done -> reconsent situation, we already have a token -> store device settings',
-      );
+      logDebug(`intro is done -> reconsent situation, 
+        we already have a token -> store device settings`);
       await storeDeviceSettings();
     }
   });
@@ -70,7 +65,7 @@ export function initStoreDeviceSettings() {
   readConsentState()
     .then(isConsented)
     .then(async (consentState) => {
-      console.log('found consent', consentState);
+      logDebug(`found consent: ${consentState}`);
       if (consentState == true) {
         await storeDeviceSettings();
       } else {
