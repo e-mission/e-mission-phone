@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon';
 import { formatForDisplay } from '../config/useImperialConfig';
 import { DayOfMetricData } from './metricsTypes';
-import moment from 'moment';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];
@@ -128,7 +127,7 @@ export function parseDataFromMetrics(metrics, population) {
         mode_bins[actualMode].push([
           metric.ts,
           Math.round(metricToValue(population, metric, field)),
-          moment(metric.fmt_time).format(),
+          DateTime.fromISO(metric.fmt_time).toISO() as string,
         ]);
       }
     }

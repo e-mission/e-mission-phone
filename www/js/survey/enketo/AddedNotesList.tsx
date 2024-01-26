@@ -3,7 +3,7 @@
 */
 
 import React, { useContext, useState } from 'react';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { Modal } from 'react-native';
 import { Text, Button, DataTable, Dialog } from 'react-native-paper';
 import LabelTabContext from '../../diary/LabelTabContext';
@@ -41,20 +41,18 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
       timelineEntry.exit_local_dt?.timezone;
     const beginTs = entry.data.start_ts;
     const stopTs = entry.data.end_ts;
+    const beginIso = DateTime.fromSeconds(beginTs).setZone(timezone).toISO() || undefined;
+    const stopIso = DateTime.fromSeconds(stopTs).setZone(timezone).toISO() || undefined;
     let d;
-    if (isMultiDay(beginTs, stopTs)) {
-      const beginTsZoned = moment.parseZone(beginTs * 1000).tz(timezone);
-      const stopTsZoned = moment.parseZone(stopTs * 1000).tz(timezone);
-      d = getFormattedDateAbbr(beginTsZoned.toISOString(), stopTsZoned.toISOString());
+    if (isMultiDay(beginIso, stopIso)) {
+      d = getFormattedDateAbbr(beginIso, stopIso);
     }
-    const begin = moment
-      .parseZone(beginTs * 1000)
-      .tz(timezone)
-      .format('LT');
-    const stop = moment
-      .parseZone(stopTs * 1000)
-      .tz(timezone)
-      .format('LT');
+    const begin = DateTime.fromSeconds(beginTs)
+      .setZone(timezone)
+      .toLocaleString(DateTime.TIME_SIMPLE);
+    const stop = DateTime.fromSeconds(stopTs)
+      .setZone(timezone)
+      .toLocaleString(DateTime.TIME_SIMPLE);
 
     const dt = { date: d, time: begin + ' - ' + stop };
     _cachedDts[entry.metadata.write_ts] = dt;

@@ -56,11 +56,10 @@ module.exports = {
     ],
   },
   plugins: [
-    // to load jQuery and moment globally
+    // to load jQuery globally
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
-      moment: 'moment',
       L: 'leaflet',
     }),
     new webpack.DefinePlugin({

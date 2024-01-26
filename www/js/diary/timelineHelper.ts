@@ -280,9 +280,6 @@ const dateTime2localdate = function (currtime: DateTime, tz: string) {
   return {
     timezone: tz,
     year: currtime.year,
-    //the months of the draft trips match the one format needed for
-    //moment function however now that is modified we need to also
-    //modify the months value here
     month: currtime.month,
     day: currtime.day,
     weekday: currtime.weekday,

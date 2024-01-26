@@ -6,10 +6,10 @@ import { settingStyles } from './ProfileSettings';
 import ActionMenu from '../components/ActionMenu';
 import SettingRow from './SettingRow';
 import AlertBar from './AlertBar';
-import moment from 'moment';
 import { addStatEvent, statKeys } from '../plugin/clientStats';
 import { updateUser } from '../services/commHelper';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
+import { DateTime } from 'luxon';
 
 /*
  * BEGIN: Simple read/write wrappers
@@ -120,7 +120,7 @@ export const ForceSyncRow = ({ getState }) => {
       entry_data['curr_state'] = getOngoingTransitionState();
     }
     entry_data['transition'] = transKey;
-    entry_data['ts'] = moment().unix();
+    entry_data['ts'] = DateTime.now().toSeconds();
     return entry_data;
   }
 

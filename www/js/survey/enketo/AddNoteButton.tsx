@@ -10,7 +10,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import DiaryButton from '../../components/DiaryButton';
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import LabelTabContext from '../../diary/LabelTabContext';
 import EnketoModal from './EnketoModal';
 import { displayErrorMsg, logDebug } from '../../plugin/logger';
@@ -59,24 +59,24 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
       timelineEntry.enter_local_dt?.timezone ||
       timelineEntry.end_local_dt?.timezone ||
       timelineEntry.exit_local_dt?.timezone;
-    const momentBegin = begin ? moment(begin * 1000).tz(timezone) : null;
-    const momentStop = stop ? moment(stop * 1000).tz(timezone) : null;
+    const beginDt = begin ? DateTime.fromSeconds(begin).setZone(timezone) : null;
+    const stopDt = stop ? DateTime.fromSeconds(stop).setZone(timezone) : null;
 
     // the current, local time offset (e.g. -07:00)
-    const currOffset = moment().toISOString(true).slice(-6);
+    const currOffset = DateTime.now().toISO()?.slice(-6);
     const prefillTimes: PrefillTimes = {};
 
     // enketo requires dates as YYYY-MM-DD, and times as HH:mm:ss.SSS+/-HH:mm
     // some may be left blank, if the timelineEntry doesn't have them
-    if (momentBegin) {
-      prefillTimes.Start_date = momentBegin.format('YYYY-MM-DD');
-      prefillTimes.Start_time = momentBegin.format('HH:mm:ss.SSS') + currOffset;
-    } else if (momentStop) {
-      prefillTimes.Start_date = momentStop.format('YYYY-MM-DD');
+    if (beginDt) {
+      prefillTimes.Start_date = beginDt.toFormat('yyyy-MM-dd');
+      prefillTimes.Start_time = beginDt.toFormat('HH:mm:ss.SSS') + currOffset;
+    } else if (stopDt) {
+      prefillTimes.Start_date = stopDt.toFormat('yyyy-MM-dd');
     }
-    if (momentStop) {
-      prefillTimes.End_date = momentStop.format('YYYY-MM-DD');
-      prefillTimes.End_time = momentStop.format('HH:mm:ss.SSS') + currOffset;
+    if (stopDt) {
+      prefillTimes.End_date = stopDt.toFormat('yyyy-MM-dd');
+      prefillTimes.End_time = stopDt.toFormat('HH:mm:ss.SSS') + currOffset;
     }
     return prefillTimes;
   }

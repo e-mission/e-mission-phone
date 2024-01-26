@@ -10,7 +10,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import useAppConfig from '../useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { invalidateMaps } from '../components/LeafletView';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import LabelListScreen from './list/LabelListScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 import LabelScreenDetails from './details/LabelDetailsScreen';
@@ -222,13 +222,13 @@ const LabelTab = () => {
     }
   }
 
-  async function loadSpecificWeek(day: string) {
+  async function loadSpecificWeek(day: Date) {
     try {
       logDebug('LabelTab: loadSpecificWeek for day ' + day);
       if (!isLoading) setIsLoading('replace');
       resetNominatimLimiter();
-      const threeDaysBefore = moment(day).subtract(3, 'days').unix();
-      const threeDaysAfter = moment(day).add(3, 'days').unix();
+      const threeDaysBefore = DateTime.fromJSDate(day).minus({ days: 3 }).toSeconds();
+      const threeDaysAfter = DateTime.fromJSDate(day).plus({ days: 3 }).toSeconds();
       const [ctList, utList] = await fetchTripsInRange(threeDaysBefore, threeDaysAfter);
       handleFetchedTrips(ctList, utList, 'replace');
       setQueriedRange({ start_ts: threeDaysBefore, end_ts: threeDaysAfter });

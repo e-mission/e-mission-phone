@@ -3,7 +3,7 @@ import { View, StyleSheet, SafeAreaView, Modal } from 'react-native';
 import { useTheme, Appbar, IconButton, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { sendEmail } from './emailService';
 
 const SensedPage = ({ pageVis, setPageVis }) => {
@@ -24,10 +24,9 @@ const SensedPage = ({ pageVis, setPageVis }) => {
       let entryList = await userCacheFn(userCacheKey, true);
       let tempEntries: any[] = [];
       entryList.forEach((entry) => {
-        entry.metadata.write_fmt_time = moment
-          .unix(entry.metadata.write_ts)
-          .tz(entry.metadata.time_zone)
-          .format('llll');
+        entry.metadata.write_fmt_time = DateTime.fromSeconds(entry.metadata.write_ts)
+          .setZone(entry.metadata.time_zone)
+          .toLocaleString(DateTime.DATETIME_MED);
         entry.data = JSON.stringify(entry.data, null, 2);
         tempEntries.push(entry);
       });

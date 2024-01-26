@@ -3,9 +3,6 @@ import { createRoot } from 'react-dom/client';
 import { Provider as PaperProvider } from 'react-native-paper';
 
 import './css/style.css';
-
-import 'moment';
-import 'moment-timezone';
 import 'chartjs-adapter-luxon';
 
 import initializedI18next from './js/i18nextInit';
