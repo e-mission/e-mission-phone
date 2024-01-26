@@ -56,10 +56,8 @@ module.exports = {
     ],
   },
   plugins: [
-    // to load jQuery globally
+    // to load Leaflet globally
     new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
       L: 'leaflet',
     }),
     new webpack.DefinePlugin({
