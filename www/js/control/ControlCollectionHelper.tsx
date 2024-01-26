@@ -92,9 +92,12 @@ export async function helperToggleLowAccuracy() {
  * Simple read/write wrappers
  */
 
-export const getState = function () {
-  return window['cordova'].plugins.BEMDataCollection.getState();
-};
+export const getState = () => window['cordova'].plugins.BEMDataCollection.getState();
+const setConfig = (config) => window['cordova'].plugins.BEMDataCollection.setConfig(config);
+const getConfig = () => window['cordova'].plugins.BEMDataCollection.getConfig();
+const getAccuracyOptions = () => window['cordova'].plugins.BEMDataCollection.getAccuracyOptions();
+export const forceTransitionWrapper = (transition) =>
+  window['cordova'].plugins.BEMDataCollection.forceTransition(transition);
 
 export async function getHelperCollectionSettings() {
   let promiseList: Promise<any>[] = [];
@@ -106,22 +109,7 @@ export async function getHelperCollectionSettings() {
   return formatConfigForDisplay(tempConfig, tempAccuracyOptions);
 }
 
-const setConfig = function (config) {
-  return window['cordova'].plugins.BEMDataCollection.setConfig(config);
-};
-
-const getConfig = function () {
-  return window['cordova'].plugins.BEMDataCollection.getConfig();
-};
-const getAccuracyOptions = function () {
-  return window['cordova'].plugins.BEMDataCollection.getAccuracyOptions();
-};
-
-export const forceTransitionWrapper = function (transition) {
-  return window['cordova'].plugins.BEMDataCollection.forceTransition(transition);
-};
-
-const formatConfigForDisplay = function (config, accuracyOptions) {
+function formatConfigForDisplay(config, accuracyOptions) {
   const retVal: { key: string; val: string }[] = [];
   for (let prop in config) {
     if (prop == 'accuracy') {
@@ -135,7 +123,7 @@ const formatConfigForDisplay = function (config, accuracyOptions) {
     }
   }
   return retVal;
-};
+}
 
 const ControlCollectionHelper = ({ editVis, setEditVis }) => {
   const { colors } = useTheme();
@@ -158,13 +146,13 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
     getCollectionSettings();
   }, [editVis]);
 
-  const formatAccuracyForActions = function (accuracyOptions) {
+  function formatAccuracyForActions(accuracyOptions) {
     let tempAccuracyActions: AccuracyAction[] = [];
     for (var name in accuracyOptions) {
       tempAccuracyActions.push({ text: name, value: accuracyOptions[name] });
     }
     return tempAccuracyActions;
-  };
+  }
 
   /*
    * Functions to edit and save values
@@ -180,23 +168,23 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
     }
   }
 
-  const onToggle = function (config_key) {
+  function onToggle(config_key) {
     let tempConfig = { ...localConfig } as collectionConfig;
     tempConfig[config_key] = !(localConfig as collectionConfig)[config_key];
     setLocalConfig(tempConfig);
-  };
+  }
 
-  const onChooseAccuracy = function (accuracyOption) {
+  function onChooseAccuracy(accuracyOption) {
     let tempConfig = { ...localConfig } as collectionConfig;
     tempConfig.accuracy = accuracyOption.value;
     setLocalConfig(tempConfig);
-  };
+  }
 
-  const onChangeText = function (newText, config_key) {
+  function onChangeText(newText, config_key) {
     let tempConfig = { ...localConfig } as collectionConfig;
     tempConfig[config_key] = parseInt(newText);
     setLocalConfig(tempConfig);
-  };
+  }
 
   /*ios vs android*/
   let filterComponent;

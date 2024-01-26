@@ -12,19 +12,16 @@ const EPOCH_MAXIMUM = 2 ** 31 - 1;
 export const fmtTs = (ts_in_secs: number, tz: string): false | string | null =>
   ts_in_secs && tz ? DateTime.fromSeconds(ts_in_secs, { zone: tz }).toISO() : null;
 
-export const printUserInput = (ui: UserInputEntry): string => `${fmtTs(
-  ui.data.start_ts,
-  ui.metadata.time_zone,
-)} (${ui.data.start_ts}) -> 
-${fmtTs(ui.data.end_ts, ui.metadata.time_zone)} (${ui.data.end_ts}) ${ui.data.label} logged at ${
-  ui.metadata.write_ts
-}`;
+export const printUserInput = (ui: UserInputEntry): string =>
+  `${fmtTs(ui.data.start_ts, ui.metadata.time_zone)} (${ui.data.start_ts}) -> 
+  ${fmtTs(ui.data.end_ts, ui.metadata.time_zone)} (${ui.data.end_ts}), 
+  ${ui.data.label}, logged at ${ui.metadata.write_ts}`;
 
-export const validUserInputForDraftTrip = (
+export function validUserInputForDraftTrip(
   trip: CompositeTrip,
   userInput: UserInputEntry,
   logsEnabled: boolean,
-): boolean => {
+): boolean {
   if (logsEnabled) {
     logDebug(`Draft trip:
             comparing user = ${fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)}
@@ -43,14 +40,14 @@ export const validUserInputForDraftTrip = (
       -(userInput.data.start_ts - trip.start_ts) <= 15 * 60) &&
     userInput.data.end_ts <= trip.end_ts
   );
-};
+}
 
-export const validUserInputForTimelineEntry = (
+export function validUserInputForTimelineEntry(
   tlEntry: TimelineEntry,
   nextEntry: TimelineEntry | null,
   userInput: UserInputEntry,
   logsEnabled: boolean,
-): boolean => {
+): boolean {
   if (!tlEntry.origin_key) return false;
   if (tlEntry.origin_key.includes('UNPROCESSED'))
     return validUserInputForDraftTrip(tlEntry as CompositeTrip, userInput, logsEnabled);
@@ -130,10 +127,10 @@ export const validUserInputForTimelineEntry = (
     }
   }
   return startChecks && endChecks;
-};
+}
 
 // parallels get_not_deleted_candidates() in trip_queries.py
-export const getNotDeletedCandidates = (candidates: UserInputEntry[]): UserInputEntry[] => {
+export function getNotDeletedCandidates(candidates: UserInputEntry[]): UserInputEntry[] {
   console.log('getNotDeletedCandidates called with ' + candidates.length + ' candidates');
 
   // We want to retain all ACTIVE entries that have not been DELETED
@@ -147,13 +144,13 @@ export const getNotDeletedCandidates = (candidates: UserInputEntry[]): UserInput
                     ${notDeletedActive.length} non deleted active entries`);
 
   return notDeletedActive;
-};
+}
 
-export const getUserInputForTimelineEntry = (
+export function getUserInputForTimelineEntry(
   entry: TimelineEntry,
   nextEntry: TimelineEntry | null,
   userInputList: UserInputEntry[],
-): undefined | UserInputEntry => {
+): undefined | UserInputEntry {
   const logsEnabled = userInputList?.length < 20;
   if (userInputList === undefined) {
     logDebug('In getUserInputForTimelineEntry, no user input, returning undefined');
@@ -191,14 +188,14 @@ export const getUserInputForTimelineEntry = (
   logDebug('Returning mostRecentEntry ' + printUserInput(mostRecentEntry));
 
   return mostRecentEntry;
-};
+}
 
 // return array of matching additions for a trip or place
-export const getAdditionsForTimelineEntry = (
+export function getAdditionsForTimelineEntry(
   entry: TimelineEntry,
   nextEntry: TimelineEntry | null,
   additionsList: EnketoUserInputEntry[],
-): UserInputEntry[] => {
+): UserInputEntry[] {
   const logsEnabled = additionsList?.length < 20;
 
   if (additionsList === undefined) {
@@ -215,9 +212,9 @@ export const getAdditionsForTimelineEntry = (
   if (logsEnabled) console.log(`Matching Addition list ${matchingAdditions.map(printUserInput)}`);
 
   return matchingAdditions;
-};
+}
 
-export const getUniqueEntries = (combinedList) => {
+export function getUniqueEntries(combinedList) {
   /* we should not get any non-ACTIVE entries here 
     since we have run filtering algorithms on both the phone and the server */
   const allDeleted = combinedList.filter((c) => c.data.status && c.data.status == 'DELETED');
@@ -254,7 +251,7 @@ export const getUniqueEntries = (combinedList) => {
     }
   });
   return Array.from(uniqueMap.values());
-};
+}
 
 /**
  * @param allEntries the array of timeline entries to map inputs to

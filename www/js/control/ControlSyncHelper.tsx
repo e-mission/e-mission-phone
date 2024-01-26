@@ -14,25 +14,17 @@ import { DateTime } from 'luxon';
 /*
  * BEGIN: Simple read/write wrappers
  */
-export function forcePluginSync() {
-  return window['cordova'].plugins.BEMServerSync.forceSync();
-}
+export const forcePluginSync = () => window['cordova'].plugins.BEMServerSync.forceSync();
+const setConfig = (config) => window['cordova'].plugins.BEMServerSync.setConfig(config);
+const getConfig = () => window['cordova'].plugins.BEMServerSync.getConfig();
 
-const formatConfigForDisplay = (configToFormat) => {
+function formatConfigForDisplay(configToFormat) {
   const formatted: any[] = [];
   for (let prop in configToFormat) {
     formatted.push({ key: prop, val: configToFormat[prop] });
   }
   return formatted;
-};
-
-const setConfig = function (config) {
-  return window['cordova'].plugins.BEMServerSync.setConfig(config);
-};
-
-const getConfig = function () {
-  return window['cordova'].plugins.BEMServerSync.getConfig();
-};
+}
 
 export async function getHelperSyncSettings() {
   let tempConfig = await getConfig();
@@ -68,9 +60,7 @@ export const ForceSyncRow = ({ getState }) => {
 
       // If everything has been pushed, we should
       // have no more trip end transitions left
-      let isTripEnd = function (entry) {
-        return entry.metadata == getEndTransitionKey();
-      };
+      let isTripEnd = (entry) => entry.metadata == getEndTransitionKey();
       let syncLaunchedCalls = sensorDataList.filter(isTripEnd);
       let syncPending = syncLaunchedCalls.length > 0;
       logDebug(`sensorDataList.length = ${sensorDataList.length}, 
@@ -88,29 +78,29 @@ export const ForceSyncRow = ({ getState }) => {
     }
   }
 
-  const getStartTransitionKey = function () {
+  function getStartTransitionKey() {
     if (window['cordova'].platformId == 'android') {
       return 'local.transition.exited_geofence';
     } else if (window['cordova'].platformId == 'ios') {
       return 'T_EXITED_GEOFENCE';
     }
-  };
+  }
 
-  const getEndTransitionKey = function () {
+  function getEndTransitionKey() {
     if (window['cordova'].platformId == 'android') {
       return 'local.transition.stopped_moving';
     } else if (window['cordova'].platformId == 'ios') {
       return 'T_TRIP_ENDED';
     }
-  };
+  }
 
-  const getOngoingTransitionState = function () {
+  function getOngoingTransitionState() {
     if (window['cordova'].platformId == 'android') {
       return 'local.state.ongoing_trip';
     } else if (window['cordova'].platformId == 'ios') {
       return 'STATE_ONGOING_TRIP';
     }
-  };
+  }
 
   async function getTransition(transKey) {
     var entry_data = {};
@@ -226,17 +216,17 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
       displayError(err, 'Error while setting sync config');
     }
   }
-  const onChooseInterval = function (interval) {
+  function onChooseInterval(interval) {
     let tempConfig = { ...localConfig } as syncConfig;
     tempConfig.sync_interval = interval.value;
     setLocalConfig(tempConfig);
-  };
+  }
 
-  const onTogglePush = function () {
+  function onTogglePush() {
     let tempConfig = { ...localConfig } as syncConfig;
     tempConfig.ios_use_remote_push = !(localConfig as syncConfig).ios_use_remote_push;
     setLocalConfig(tempConfig);
-  };
+  }
 
   /*
    * configure the UI

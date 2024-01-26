@@ -14,7 +14,7 @@ function range(start, stop, step) {
 }
 
 // returns an array of DateTime objects, for all times that notifications should be sent
-const calcNotifTimes = (scheme, dayZeroDate, timeOfDay): DateTime[] => {
+function calcNotifTimes(scheme, dayZeroDate, timeOfDay): DateTime[] {
   const notifTimes: DateTime[] = [];
   for (const s of scheme.schedule) {
     // the days to send notifications, as integers, relative to day zero
@@ -28,17 +28,17 @@ const calcNotifTimes = (scheme, dayZeroDate, timeOfDay): DateTime[] => {
     }
   }
   return notifTimes;
-};
+}
 
 // returns true if all expected times are already scheduled
-const areAlreadyScheduled = (notifs: any[], expectedTimes: DateTime[]) => {
+function areAlreadyScheduled(notifs: any[], expectedTimes: DateTime[]) {
   for (const t of expectedTimes) {
     if (!notifs.some((n) => DateTime.fromJSDate(n.trigger.at).equals(t))) {
       return false;
     }
   }
   return true;
-};
+}
 
 /* remove notif actions as they do not work, can restore post routing migration */
 // const setUpActions = () => {
@@ -73,7 +73,7 @@ function debugGetScheduled(prefix) {
 }
 
 //new method to fetch notifications
-export const getScheduledNotifs = function (isScheduling: boolean, scheduledPromise: Promise<any>) {
+export function getScheduledNotifs(isScheduling: boolean, scheduledPromise: Promise<any>) {
   return new Promise<ScheduledNotif[]>((resolve, reject) => {
     /* if the notifications are still in active scheduling it causes problems
         anywhere from 0-n of the scheduled notifs are displayed 
@@ -98,11 +98,11 @@ export const getScheduledNotifs = function (isScheduling: boolean, scheduledProm
       });
     }
   });
-};
+}
 
 type ScheduledNotif = { key: string; val: string };
 //get scheduled notifications from cordova plugin and format them
-const getNotifs = function () {
+function getNotifs() {
   return new Promise<ScheduledNotif[]>((resolve, reject) => {
     window['cordova'].plugins.notification.local.getScheduled((notifs: any[]) => {
       if (!notifs?.length) {
@@ -126,10 +126,10 @@ const getNotifs = function () {
       resolve(scheduledNotifs);
     });
   });
-};
+}
 
 // schedules the notifications using the cordova plugin
-const scheduleNotifs = (scheme, notifTimes: DateTime[], setIsScheduling: Function) => {
+function scheduleNotifs(scheme, notifTimes: DateTime[], setIsScheduling: Function) {
   return new Promise<void>((rs) => {
     setIsScheduling(true);
     const localeCode = i18next.language;
@@ -162,19 +162,17 @@ const scheduleNotifs = (scheme, notifTimes: DateTime[], setIsScheduling: Functio
       });
     });
   });
-};
+}
 
-const removeEmptyObjects = (list: any[]): any[] => {
-  return list.filter((n) => Object.keys(n).length !== 0);
-};
+const removeEmptyObjects = (list: any[]): any[] => list.filter((n) => Object.keys(n).length !== 0);
 
 // determines when notifications are needed, and schedules them if not already scheduled
-export const updateScheduledNotifs = async (
+export async function updateScheduledNotifs(
   reminderSchemes: ReminderSchemesConfig,
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,
-): Promise<void> => {
+): Promise<void> {
   const { reminder_assignment, reminder_join_date, reminder_time_of_day } = await getReminderPrefs(
     reminderSchemes,
     isScheduling,
@@ -212,13 +210,13 @@ export const updateScheduledNotifs = async (
       }
     });
   });
-};
+}
 
 /* Randomly assign a scheme, set the join date to today,
     and use the default time of day from config (or noon if not specified)
    This is only called once when the user first joins the study
 */
-const initReminderPrefs = (reminderSchemes: object): object => {
+function initReminderPrefs(reminderSchemes: object): object {
   // randomly assign from the schemes listed in config
   const schemes = Object.keys(reminderSchemes);
   const randAssignment: string = schemes[Math.floor(Math.random() * schemes.length)];
@@ -229,7 +227,7 @@ const initReminderPrefs = (reminderSchemes: object): object => {
     reminder_join_date: todayDate,
     reminder_time_of_day: defaultTime,
   };
-};
+}
 
 /* EXAMPLE VALUES - present in user profile object
     reminder_assignment: 'passive',
@@ -243,12 +241,12 @@ interface User {
   reminder_time_of_day: string;
 }
 
-export const getReminderPrefs = async (
+export async function getReminderPrefs(
   reminderSchemes: ReminderSchemesConfig,
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,
-): Promise<User> => {
+): Promise<User> {
   const userPromise = getUser();
   const user = (await userPromise) as User;
   if (user?.reminder_assignment && user?.reminder_join_date && user?.reminder_time_of_day) {
@@ -267,14 +265,15 @@ export const getReminderPrefs = async (
     scheduledPromise,
   );
   return { ...user, ...initPrefs }; // user profile + the new prefs
-};
-export const setReminderPrefs = async (
+}
+
+export async function setReminderPrefs(
   newPrefs: object,
   reminderSchemes: ReminderSchemesConfig,
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,
-): Promise<void> => {
+): Promise<void> {
   await updateUser(newPrefs);
   const updatePromise = new Promise<void>((resolve, reject) => {
     //enforcing update before moving on
@@ -298,4 +297,4 @@ export const setReminderPrefs = async (
     },
   );
   return updatePromise;
-};
+}

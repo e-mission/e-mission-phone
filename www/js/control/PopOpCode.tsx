@@ -15,11 +15,11 @@ const PopOpCode = ({ visibilityValue, tokenURL, action, setVis }) => {
 
   const [copyAlertVis, setCopyAlertVis] = useState(false);
 
-  const copyText = function (textToCopy) {
+  function copyText(textToCopy) {
     navigator.clipboard.writeText(textToCopy).then(() => {
       setCopyAlertVis(true);
     });
-  };
+  }
 
   let copyButton;
   if (window['cordova'].platformId == 'ios') {

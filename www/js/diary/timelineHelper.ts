@@ -213,11 +213,11 @@ const location2GeojsonPoint = (locationPoint: Point, featureType: string): Featu
  * @param trajectoryColor The color to use for the whole trajectory, if any. Otherwise, a color will be lookup up for the sensed mode of each section.
  * @returns for each section of the trip, a GeoJSON feature with type "LineString" and an array of coordinates.
  */
-const locations2GeojsonTrajectory = (
+function locations2GeojsonTrajectory(
   trip: CompositeTrip,
   locationList: Array<Point>,
   trajectoryColor?: string,
-) => {
+) {
   let sectionsPoints;
   if (!trip.sections) {
     // this is a unimodal trip so we put all the locations in one section
@@ -244,7 +244,7 @@ const locations2GeojsonTrajectory = (
       },
     };
   });
-};
+}
 
 // DB entries retrieved from the server have '_id', 'metadata', and 'data' fields.
 // This function returns a shallow copy of the obj, which flattens the
@@ -276,20 +276,19 @@ export function readAllCompositeTrips(startTs: number, endTs: number) {
       return [];
     });
 }
-const dateTime2localdate = function (currtime: DateTime, tz: string) {
-  return {
-    timezone: tz,
-    year: currtime.year,
-    month: currtime.month,
-    day: currtime.day,
-    weekday: currtime.weekday,
-    hour: currtime.hour,
-    minute: currtime.minute,
-    second: currtime.second,
-  };
-};
 
-const points2TripProps = function (locationPoints: Array<BEMData<FilteredLocation>>) {
+const dateTime2localdate = (currtime: DateTime, tz: string) => ({
+  timezone: tz,
+  year: currtime.year,
+  month: currtime.month,
+  day: currtime.day,
+  weekday: currtime.weekday,
+  hour: currtime.hour,
+  minute: currtime.minute,
+  second: currtime.second,
+});
+
+function points2TripProps(locationPoints: Array<BEMData<FilteredLocation>>) {
   const startPoint = locationPoints[0];
   const endPoint = locationPoints[locationPoints.length - 1];
   const tripAndSectionId = `unprocessed_${startPoint.data.ts}_${endPoint.data.ts}`;
@@ -339,12 +338,10 @@ const points2TripProps = function (locationPoints: Array<BEMData<FilteredLocatio
     start_ts: startPoint.data.ts,
     user_input: {},
   };
-};
+}
 
-const tsEntrySort = function (e1: BEMData<FilteredLocation>, e2: BEMData<FilteredLocation>) {
-  // compare timestamps
-  return e1.data.ts - e2.data.ts;
-};
+const tsEntrySort = (e1: BEMData<FilteredLocation>, e2: BEMData<FilteredLocation>) =>
+  e1.data.ts - e2.data.ts; // compare timestamps
 
 function transitionTrip2TripObj(trip: Array<any>): Promise<UnprocessedTrip | undefined> {
   const tripStartTransition = trip[0];
@@ -362,17 +359,13 @@ function transitionTrip2TripObj(trip: Array<any>): Promise<UnprocessedTrip | und
   );
   const getSensorData = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
   return getUnifiedDataForInterval('background/filtered_location', tq, getSensorData).then(
-    function (locationList: Array<BEMData<FilteredLocation>>) {
+    (locationList: Array<BEMData<FilteredLocation>>) => {
       if (locationList.length == 0) {
         return undefined;
       }
       const sortedLocationList = locationList.sort(tsEntrySort);
-      const retainInRange = function (loc) {
-        return (
-          tripStartTransition.data.ts <= loc.data.ts && loc.data.ts <= tripEndTransition.data.ts
-        );
-      };
-
+      const retainInRange = (loc) =>
+        tripStartTransition.data.ts <= loc.data.ts && loc.data.ts <= tripEndTransition.data.ts;
       const filteredLocationList = sortedLocationList.filter(retainInRange);
 
       // Fix for https://github.com/e-mission/e-mission-docs/issues/417
@@ -419,7 +412,8 @@ function transitionTrip2TripObj(trip: Array<any>): Promise<UnprocessedTrip | und
     },
   );
 }
-const isStartingTransition = function (transWrapper: BEMData<TripTransition>) {
+
+function isStartingTransition(transWrapper: BEMData<TripTransition>) {
   if (
     transWrapper.data.transition == 'local.transition.exited_geofence' ||
     transWrapper.data.transition == 'T_EXITED_GEOFENCE' ||
@@ -428,9 +422,9 @@ const isStartingTransition = function (transWrapper: BEMData<TripTransition>) {
     return true;
   }
   return false;
-};
+}
 
-const isEndingTransition = function (transWrapper: BEMData<TripTransition>) {
+function isEndingTransition(transWrapper: BEMData<TripTransition>) {
   // Logger.log("isEndingTransition: transWrapper.data.transition = "+transWrapper.data.transition);
   if (
     transWrapper.data.transition == 'T_TRIP_ENDED' ||
@@ -442,7 +436,7 @@ const isEndingTransition = function (transWrapper: BEMData<TripTransition>) {
   }
   // Logger.log("Returning false");
   return false;
-};
+}
 /*
  * This is going to be a bit tricky. As we can see from
  * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163,
@@ -458,7 +452,7 @@ const isEndingTransition = function (transWrapper: BEMData<TripTransition>) {
  *
  * Let's abstract this out into our own minor state machine.
  */
-const transitions2Trips = function (transitionList: Array<BEMData<TripTransition>>) {
+function transitions2Trips(transitionList: Array<BEMData<TripTransition>>) {
   let inTrip = false;
   const tripList: [BEMData<TripTransition>, BEMData<TripTransition>][] = [];
   let currStartTransitionIndex = -1;
@@ -512,9 +506,9 @@ const transitions2Trips = function (transitionList: Array<BEMData<TripTransition
     }
   }
   return tripList;
-};
+}
 
-const linkTrips = function (trip1, trip2) {
+function linkTrips(trip1, trip2) {
   // complete trip1
   trip1.starting_trip = { $oid: trip2.id };
   trip1.exit_fmt_time = trip2.enter_fmt_time;
@@ -526,7 +520,7 @@ const linkTrips = function (trip1, trip2) {
   trip2.enter_fmt_time = trip1.exit_fmt_time;
   trip2.enter_local_dt = trip1.exit_local_dt;
   trip2.enter_ts = trip1.exit_ts;
-};
+}
 
 export function readUnprocessedTrips(
   startTs: number,
@@ -540,52 +534,54 @@ export function readUnprocessedTrips(
       DateTime.fromSeconds(tq.endTs).toLocaleString(DateTime.DATETIME_MED),
   );
   const getMessageMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
-  return getUnifiedDataForInterval('statemachine/transition', tq, getMessageMethod).then(function (
-    transitionList: Array<BEMData<TripTransition>>,
-  ) {
-    if (transitionList.length == 0) {
-      logDebug('No unprocessed trips. yay!');
-      return [];
-    } else {
-      logDebug(`Found ${transitionList.length} transitions. yay!`);
-      const tripsList = transitions2Trips(transitionList);
-      logDebug(`Mapped into ${tripsList.length} trips. yay!`);
-      tripsList.forEach(function (trip) {
-        logDebug(JSON.stringify(trip, null, 2));
-      });
-      const tripFillPromises = tripsList.map(transitionTrip2TripObj);
-      return Promise.all(tripFillPromises).then((rawTripObjs: (UnprocessedTrip | undefined)[]) => {
-        // Now we need to link up the trips. linking unprocessed trips
-        // to one another is fairly simple, but we need to link the
-        // first unprocessed trip to the last processed trip.
-        // This might be challenging if we don't have any processed
-        // trips for the day. I don't want to go back forever until
-        // I find a trip. So if this is the first trip, we will start a
-        // new chain for now, since this is with unprocessed data
-        // anyway.
+  return getUnifiedDataForInterval('statemachine/transition', tq, getMessageMethod).then(
+    (transitionList: Array<BEMData<TripTransition>>) => {
+      if (transitionList.length == 0) {
+        logDebug('No unprocessed trips. yay!');
+        return [];
+      } else {
+        logDebug(`Found ${transitionList.length} transitions. yay!`);
+        const tripsList = transitions2Trips(transitionList);
+        logDebug(`Mapped into ${tripsList.length} trips. yay!`);
+        tripsList.forEach((trip) => {
+          logDebug(JSON.stringify(trip, null, 2));
+        });
+        const tripFillPromises = tripsList.map(transitionTrip2TripObj);
+        return Promise.all(tripFillPromises).then(
+          (rawTripObjs: (UnprocessedTrip | undefined)[]) => {
+            // Now we need to link up the trips. linking unprocessed trips
+            // to one another is fairly simple, but we need to link the
+            // first unprocessed trip to the last processed trip.
+            // This might be challenging if we don't have any processed
+            // trips for the day. I don't want to go back forever until
+            // I find a trip. So if this is the first trip, we will start a
+            // new chain for now, since this is with unprocessed data
+            // anyway.
 
-        logDebug(`mapping trips to tripObjs of size ${rawTripObjs.length}`);
-        /* Filtering: we will keep trips that are 1) defined and 2) have a distance >= 100m,
+            logDebug(`mapping trips to tripObjs of size ${rawTripObjs.length}`);
+            /* Filtering: we will keep trips that are 1) defined and 2) have a distance >= 100m,
           or duration >= 5 minutes
           https://github.com/e-mission/e-mission-docs/issues/966#issuecomment-1709112578 */
-        const tripObjs = rawTripObjs.filter(
-          (trip) => trip && (trip.distance >= 100 || trip.duration >= 300),
-        );
-        logDebug(`after filtering undefined and distance < 100m, 
+            const tripObjs = rawTripObjs.filter(
+              (trip) => trip && (trip.distance >= 100 || trip.duration >= 300),
+            );
+            logDebug(`after filtering undefined and distance < 100m, 
           tripObjs size = ${tripObjs.length}`);
-        // Link 0th trip to first, first to second, ...
-        for (let i = 0; i < tripObjs.length - 1; i++) {
-          linkTrips(tripObjs[i], tripObjs[i + 1]);
-        }
-        logDebug(`finished linking trips for list of size ${tripObjs.length}`);
-        if (lastProcessedTrip && tripObjs.length != 0) {
-          // Need to link the entire chain above to the processed data
-          logDebug('linking unprocessed and processed trip chains');
-          linkTrips(lastProcessedTrip, tripObjs[0]);
-        }
-        logDebug(`Returning final list of size ${tripObjs.length}`);
-        return tripObjs;
-      });
-    }
-  });
+            // Link 0th trip to first, first to second, ...
+            for (let i = 0; i < tripObjs.length - 1; i++) {
+              linkTrips(tripObjs[i], tripObjs[i + 1]);
+            }
+            logDebug(`finished linking trips for list of size ${tripObjs.length}`);
+            if (lastProcessedTrip && tripObjs.length != 0) {
+              // Need to link the entire chain above to the processed data
+              logDebug('linking unprocessed and processed trip chains');
+              linkTrips(lastProcessedTrip, tripObjs[0]);
+            }
+            logDebug(`Returning final list of size ${tripObjs.length}`);
+            return tripObjs;
+          },
+        );
+      }
+    },
+  );
 }

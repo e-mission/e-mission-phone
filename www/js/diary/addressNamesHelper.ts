@@ -58,7 +58,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
 
   LocalStorageObserver.subscribe(key, setStoredValue);
 
-  const setValue = (value: T) => {
+  function setValue(value: T) {
     try {
       const valueToStore = value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
@@ -69,7 +69,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     } catch (error) {
       console.error(error);
     }
-  };
+  }
   return [storedValue, setValue];
 }
 

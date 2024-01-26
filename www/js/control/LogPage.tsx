@@ -52,14 +52,14 @@ const LogPage = ({ pageVis, setPageVis }) => {
     return loadStats?.gotMaxIndex && !loadStats?.reachedEnd;
   }, [loadStats]);
 
-  const clear = function () {
+  function clear() {
     window?.['Logger'].clearAll();
     window?.['Logger'].log(
       window['Logger'].LEVEL_INFO,
       'Finished clearing entries from unified log',
     );
     refreshEntries();
-  };
+  }
 
   async function addEntries() {
     console.log('calling addEntries');
@@ -79,7 +79,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
     }
   }
 
-  const processEntries = function (entryList) {
+  function processEntries(entryList) {
     let tempEntries: any[] = [];
     let tempLoadStats: loadStats = { ...loadStats } as loadStats;
     entryList.forEach((e) => {
@@ -95,11 +95,11 @@ const LogPage = ({ pageVis, setPageVis }) => {
     }
     setEntries([...entries].concat(tempEntries)); //push the new entries onto the list
     setLoadStats(tempLoadStats);
-  };
+  }
 
-  const emailLog = function () {
+  function emailLog() {
     sendEmail('loggerDB');
-  };
+  }
 
   const separator = () => <View style={{ height: 8 }} />;
   const logItem = ({ item: logItem }) => (

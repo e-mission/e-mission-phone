@@ -9,7 +9,7 @@ import LoadMoreButton from './LoadMoreButton';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../components/Icon';
 
-const renderCard = ({ item: listEntry }) => {
+function renderCard({ item: listEntry }) {
   if (listEntry.origin_key.includes('trip')) {
     return <TripCard trip={listEntry} />;
   } else if (listEntry.origin_key.includes('place')) {
@@ -19,7 +19,7 @@ const renderCard = ({ item: listEntry }) => {
   } else {
     throw new Error(`Unknown listEntry type: ${JSON.stringify(listEntry)}`);
   }
-};
+}
 
 const separator = () => <View style={{ height: 8 }} />;
 const bigSpinner = <ActivityIndicator size="large" style={{ margin: 15 }} />;

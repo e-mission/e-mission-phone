@@ -292,12 +292,12 @@ export function saveResponse(
     .then((data) => data);
 }
 
-const _getMostRecent = (responses) => {
+function _getMostRecent(responses) {
   responses.sort((a, b) => a.metadata.write_ts < b.metadata.write_ts);
   logDebug(`_getMostRecent: first response is ${responses[0]}; 
                             last response is ${responses.slice(-1)[0]}`);
   return responses[0];
-};
+}
 
 /*
  * We retrieve all the records every time instead of caching because of the

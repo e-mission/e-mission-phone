@@ -2,12 +2,10 @@ type UrlComponents = {
   [key: string]: string;
 };
 
-type OnLaunchCustomURL = (
+export function onLaunchCustomURL(
   rawUrl: string,
-  callback: (url: string, urlComponents: UrlComponents) => void,
-) => void;
-
-export const onLaunchCustomURL: OnLaunchCustomURL = (rawUrl, handler) => {
+  handler: (url: string, urlComponents: UrlComponents) => void,
+) {
   try {
     const url = rawUrl.split('//')[1];
     const [route, paramString] = url.split('?');
@@ -21,4 +19,4 @@ export const onLaunchCustomURL: OnLaunchCustomURL = (rawUrl, handler) => {
   } catch {
     console.log('not a valid url');
   }
-};
+}

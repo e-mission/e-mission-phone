@@ -189,7 +189,7 @@ const ProfileSettings = () => {
   //ensure ui table updated when editor closes
   useEffect(() => {
     if (editCollectionVis == false) {
-      setTimeout(function () {
+      setTimeout(() => {
         console.log('closed editor, time to refresh collect');
         refreshCollectSettings();
       }, 1000);
@@ -238,7 +238,7 @@ const ProfileSettings = () => {
   async function getSyncSettings() {
     console.log('getting sync settings');
     const newSyncSettings: any = {};
-    getHelperSyncSettings().then(function (showConfig) {
+    getHelperSyncSettings().then((showConfig) => {
       newSyncSettings.show_config = showConfig;
       setSyncSettings(newSyncSettings);
       console.log('sync settings are ', syncSettings);
@@ -252,13 +252,13 @@ const ProfileSettings = () => {
 
   async function getConnectURL() {
     getSettings().then(
-      function (response) {
+      (response) => {
         const newConnectSettings: any = {};
         newConnectSettings.url = response.connectUrl;
         console.log(response);
         setConnectSettings(newConnectSettings);
       },
-      function (error) {
+      (error) => {
         displayError(error, 'While getting connect url');
       },
     );
@@ -324,7 +324,7 @@ const ProfileSettings = () => {
 
   async function toggleLowAccuracy() {
     let toggle = await helperToggleLowAccuracy();
-    setTimeout(function () {
+    setTimeout(() => {
       refreshCollectSettings();
     }, 1500);
   }
@@ -348,12 +348,12 @@ const ProfileSettings = () => {
 
   async function invalidateCache() {
     window['cordova'].plugins.BEMUserCache.invalidateAllCache().then(
-      function (result) {
+      (result) => {
         console.log('invalidate result', result);
         setCacheResult(result);
         setInvalidateSuccessVis(true);
       },
-      function (error) {
+      (error) => {
         displayError(error, 'while invalidating cache, error->');
       },
     );
@@ -362,7 +362,7 @@ const ProfileSettings = () => {
   //in ProfileSettings in DevZone (above two functions are helpers)
   async function checkConsent() {
     getConsentDocument().then(
-      function (resultDoc) {
+      (resultDoc) => {
         setConsentDoc(resultDoc);
         logDebug(`In profile settings, consent doc found = ${JSON.stringify(resultDoc)}`);
         if (resultDoc == null) {
@@ -371,7 +371,7 @@ const ProfileSettings = () => {
           setConsentVis(true);
         }
       },
-      function (error) {
+      (error) => {
         displayError(error, 'Error reading consent document from cache');
       },
     );

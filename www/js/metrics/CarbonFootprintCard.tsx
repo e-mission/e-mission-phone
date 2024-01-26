@@ -19,7 +19,7 @@ import {
 } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
-import ChangeIndicator from './ChangeIndicator';
+import ChangeIndicator, { CarbonChange } from './ChangeIndicator';
 import color from 'color';
 import { useAppTheme } from '../appTheme';
 
@@ -28,7 +28,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
   const { colors } = useAppTheme();
   const { t } = useTranslation();
 
-  const [emissionsChange, setEmissionsChange] = useState({});
+  const [emissionsChange, setEmissionsChange] = useState<CarbonChange>(undefined);
 
   const userCarbonRecords = useMemo(() => {
     if (userMetrics?.distance?.length) {

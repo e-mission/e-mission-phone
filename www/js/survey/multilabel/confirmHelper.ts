@@ -116,23 +116,23 @@ export const getLabelInputs = () => Object.keys(getLabelInputDetails()) as Multi
 export const getBaseLabelInputs = () => Object.keys(baseLabelInputDetails) as MultilabelKey[];
 
 /** @description replace all underscores with spaces, and capitalizes the first letter of each word */
-export const labelKeyToReadable = (otherValue: string) => {
+export function labelKeyToReadable(otherValue: string) {
   const words = otherValue.replace(/_/g, ' ').trim().split(' ');
   if (words.length == 0) return '';
   return words.map((word) => word[0].toUpperCase() + word.slice(1)).join(' ');
-};
+}
 
 /** @description replaces all spaces with underscores, and lowercases the string */
 export const readableLabelToKey = (otherText: string) =>
   otherText.trim().replace(/ /g, '_').toLowerCase();
 
-export const getFakeEntry = (otherValue): Partial<LabelOption> | undefined => {
+export function getFakeEntry(otherValue): Partial<LabelOption> | undefined {
   if (!otherValue) return undefined;
   return {
     text: labelKeyToReadable(otherValue),
     value: otherValue,
   };
-};
+}
 
 export const labelKeyToRichMode = (labelKey: string) =>
   labelOptionByValue(labelKey, 'MODE')?.text || labelKeyToReadable(labelKey);

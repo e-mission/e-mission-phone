@@ -53,7 +53,7 @@ const usePermissionStatus = () => {
   //using this function to update checks rather than mutate
   //this cues React to update UI
   function updateCheck(newObject) {
-    var tempList = [...checkList]; //make a copy rather than mutate
+    const tempList = [...checkList]; //make a copy rather than mutate
     //update the visiblility pieces here, rather than mutating
     newObject.statusIcon = iconMap(newObject.statusState);
     newObject.statusColor = colorMap(newObject.statusState);
@@ -92,7 +92,7 @@ const usePermissionStatus = () => {
   }
 
   function setupAndroidLocChecks() {
-    let fixSettings = function () {
+    let fixSettings = () => {
       console.log('Fix and refresh location settings');
       return checkOrFix(
         locSettingsCheck,
@@ -100,7 +100,7 @@ const usePermissionStatus = () => {
         true,
       );
     };
-    let checkSettings = function () {
+    let checkSettings = () => {
       console.log('Refresh location settings');
       return checkOrFix(
         locSettingsCheck,
@@ -108,7 +108,7 @@ const usePermissionStatus = () => {
         false,
       );
     };
-    let fixPerms = function () {
+    let fixPerms = () => {
       console.log('fix and refresh location permissions');
       return checkOrFix(
         locPermissionsCheck,
@@ -120,7 +120,7 @@ const usePermissionStatus = () => {
         }
       });
     };
-    let checkPerms = function () {
+    let checkPerms = () => {
       console.log('fix and refresh location permissions');
       return checkOrFix(
         locPermissionsCheck,
@@ -163,7 +163,7 @@ const usePermissionStatus = () => {
   }
 
   function setupIOSLocChecks() {
-    let fixSettings = function () {
+    let fixSettings = () => {
       console.log('Fix and refresh location settings');
       return checkOrFix(
         locSettingsCheck,
@@ -171,7 +171,7 @@ const usePermissionStatus = () => {
         true,
       );
     };
-    let checkSettings = function () {
+    let checkSettings = () => {
       console.log('Refresh location settings');
       return checkOrFix(
         locSettingsCheck,
@@ -179,7 +179,7 @@ const usePermissionStatus = () => {
         false,
       );
     };
-    let fixPerms = function () {
+    let fixPerms = () => {
       console.log('fix and refresh location permissions');
       return checkOrFix(
         locPermissionsCheck,
@@ -191,7 +191,7 @@ const usePermissionStatus = () => {
         }
       });
     };
-    let checkPerms = function () {
+    let checkPerms = () => {
       console.log('fix and refresh location permissions');
       return checkOrFix(
         locPermissionsCheck,
@@ -226,7 +226,7 @@ const usePermissionStatus = () => {
 
   function setupAndroidFitnessChecks() {
     if (window['device'].version.split('.')[0] >= 10) {
-      let fixPerms = function () {
+      let fixPerms = () => {
         console.log('fix and refresh fitness permissions');
         return checkOrFix(
           fitnessPermissionsCheck,
@@ -238,7 +238,7 @@ const usePermissionStatus = () => {
           }
         });
       };
-      let checkPerms = function () {
+      let checkPerms = () => {
         console.log('fix and refresh fitness permissions');
         return checkOrFix(
           fitnessPermissionsCheck,
@@ -260,7 +260,7 @@ const usePermissionStatus = () => {
   }
 
   function setupIOSFitnessChecks() {
-    let fixPerms = function () {
+    let fixPerms = () => {
       console.log('fix and refresh fitness permissions');
       return checkOrFix(
         fitnessPermissionsCheck,
@@ -272,7 +272,7 @@ const usePermissionStatus = () => {
         }
       });
     };
-    let checkPerms = function () {
+    let checkPerms = () => {
       console.log('fix and refresh fitness permissions');
       return checkOrFix(
         fitnessPermissionsCheck,
@@ -293,7 +293,7 @@ const usePermissionStatus = () => {
   }
 
   function setupAndroidNotificationChecks() {
-    let fixPerms = function () {
+    let fixPerms = () => {
       console.log('fix and refresh notification permissions');
       return checkOrFix(
         appAndChannelNotificationsCheck,
@@ -301,7 +301,7 @@ const usePermissionStatus = () => {
         true,
       );
     };
-    let checkPerms = function () {
+    let checkPerms = () => {
       console.log('fix and refresh notification permissions');
       return checkOrFix(
         appAndChannelNotificationsCheck,
@@ -321,7 +321,7 @@ const usePermissionStatus = () => {
   }
 
   function setupAndroidBackgroundRestrictionChecks() {
-    let fixPerms = function () {
+    let fixPerms = () => {
       console.log('fix and refresh backgroundRestriction permissions');
       return checkOrFix(
         unusedAppsUnrestrictedCheck,
@@ -329,7 +329,7 @@ const usePermissionStatus = () => {
         true,
       );
     };
-    let checkPerms = function () {
+    let checkPerms = () => {
       console.log('fix and refresh backgroundRestriction permissions');
       return checkOrFix(
         unusedAppsUnrestrictedCheck,
@@ -337,7 +337,7 @@ const usePermissionStatus = () => {
         false,
       );
     };
-    let fixBatteryOpt = function () {
+    let fixBatteryOpt = () => {
       console.log('fix and refresh battery optimization permissions');
       return checkOrFix(
         ignoreBatteryOptCheck,
@@ -345,7 +345,7 @@ const usePermissionStatus = () => {
         true,
       );
     };
-    let checkBatteryOpt = function () {
+    let checkBatteryOpt = () => {
       console.log('fix and refresh battery optimization permissions');
       return checkOrFix(
         ignoreBatteryOptCheck,
@@ -425,7 +425,7 @@ const usePermissionStatus = () => {
     refreshAllChecks(checkList);
   }
 
-  useAppStateChange(function () {
+  useAppStateChange(() => {
     console.log('PERMISSION CHECK: app has resumed, should refresh');
     refreshAllChecks(checkList);
   });

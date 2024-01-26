@@ -12,10 +12,6 @@ const SensedPage = ({ pageVis, setPageVis }) => {
 
   const [entries, setEntries] = useState<any[]>([]);
 
-  const emailCache = function () {
-    sendEmail('userCacheDB');
-  };
-
   async function updateEntries() {
     //hardcoded function and keys after eliminating bit-rotted options
     let userCacheFn = window['cordova'].plugins.BEMUserCache.getAllMessages;
@@ -66,7 +62,7 @@ const SensedPage = ({ pageVis, setPageVis }) => {
         <View
           style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
           <IconButton icon="refresh" onPress={() => updateEntries()} />
-          <IconButton icon="email" onPress={() => emailCache()} />
+          <IconButton icon="email" onPress={() => sendEmail('userCacheDB')} />
         </View>
 
         <FlashList

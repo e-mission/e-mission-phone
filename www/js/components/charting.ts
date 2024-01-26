@@ -170,7 +170,7 @@ export function darkenOrLighten(baseColor: string, change: number) {
  * @param colors an array of colors, each of which is an array of [key, color string]
  * @returns an object mapping keys to colors, with duplicates darkened/lightened to be distinguishable
  */
-export const dedupColors = (colors: string[][]) => {
+export function dedupColors(colors: string[][]) {
   const dedupedColors = {};
   const maxAdjustment = 0.7; // more than this is too drastic and the colors approach black/white
   for (const [key, clr] of colors) {
@@ -187,4 +187,4 @@ export const dedupColors = (colors: string[][]) => {
     }
   }
   return dedupedColors;
-};
+}

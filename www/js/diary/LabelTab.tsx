@@ -249,9 +249,7 @@ const LabelTab = () => {
     tripsRead
       .slice()
       .reverse()
-      .forEach(function (trip, index) {
-        fillLocationNamesOfTrip(trip);
-      });
+      .forEach((trip, index) => fillLocationNamesOfTrip(trip));
     const readTimelineMap = compositeTrips2TimelineMap(tripsRead, showPlaces);
     logDebug(`LabelTab: after composite trips converted, 
       readTimelineMap = ${[...readTimelineMap.entries()]}`);

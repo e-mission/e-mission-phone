@@ -1,19 +1,19 @@
 import { addStatReading, statKeys } from './clientStats';
 import { logDebug, logWarn } from './logger';
 
-const mungeValue = (key, value) => {
+function mungeValue(key, value) {
   let store_val = value;
   if (typeof value != 'object') {
     store_val = {};
     store_val[key] = value;
   }
   return store_val;
-};
+}
 
 /*
  * If a non-JSON object was munged for storage, unwrap it.
  */
-const unmungeValue = (key, retData) => {
+function unmungeValue(key, retData) {
   if (retData?.[key]) {
     // it must have been a simple data type that we munged upfront
     return retData[key];
@@ -21,25 +21,25 @@ const unmungeValue = (key, retData) => {
     // it must have been an object
     return retData;
   }
-};
+}
 
-const localStorageSet = (key: string, value: { [k: string]: any }) => {
+function localStorageSet(key: string, value: { [k: string]: any }) {
   //checking for a value to prevent storing undefined
   //case where local was null and native was undefined stored "undefined"
   //see discussion: https://github.com/e-mission/e-mission-phone/pull/1072#discussion_r1373753945
   if (value) {
     localStorage.setItem(key, JSON.stringify(value));
   }
-};
+}
 
-const localStorageGet = (key: string) => {
+function localStorageGet(key: string) {
   const value = localStorage.getItem(key);
   if (value) {
     return JSON.parse(value);
   } else {
     return null;
   }
-};
+}
 
 /* We redundantly store data in both local and native storage. This function checks
     both for a value. If a value is present in only one, it copies it to the other and returns it.

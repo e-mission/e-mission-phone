@@ -37,7 +37,7 @@ const WelcomePage = () => {
   const [infoPopupVis, setInfoPopupVis] = useState(false);
   const [existingToken, setExistingToken] = useState('');
 
-  const getCode = function (result) {
+  function getCode(result) {
     let url = new window.URL(result.text);
     let notCancelled = result.cancelled == false;
     let isQR = result.format == 'QR_CODE';
@@ -45,27 +45,20 @@ const WelcomePage = () => {
     let hasToken = url.searchParams.has('token');
     let code = url.searchParams.get('token');
 
-    logDebug(
-      'QR code ' +
-        result.text +
-        ' checks: cancel, format, prefix, params, code ' +
-        notCancelled +
-        isQR +
-        hasPrefix +
-        hasToken +
-        code,
-    );
+    logDebug(`QR code ${result.text} checks: 
+      cancel, format, prefix, params, code: 
+      ${notCancelled}, ${isQR}, ${hasPrefix}, ${hasToken}, ${code}`);
 
     if (notCancelled && isQR && hasPrefix && hasToken) {
       return code;
     } else {
       return false;
     }
-  };
+  }
 
-  const scanCode = function () {
+  function scanCode() {
     window['cordova'].plugins.barcodeScanner.scan(
-      function (result) {
+      (result) => {
         console.debug('scanned code', result);
         let code = getCode(result);
         if (code != false) {
@@ -75,11 +68,11 @@ const WelcomePage = () => {
           displayError(result.text, 'invalid study reference');
         }
       },
-      function (error) {
+      (error) => {
         displayError(error, 'Scanning failed: ');
       },
     );
-  };
+  }
 
   function loginWithToken(token) {
     initByUser({ token })

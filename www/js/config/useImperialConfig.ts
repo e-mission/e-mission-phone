@@ -20,23 +20,23 @@ const MPS_TO_KMPH = 3.6;
     e.g. "7.02 km", "11.3 mph"
   - if value < 1, round to 2 decimal places
     e.g. "0.07 mi", "0.75 km" */
-export const formatForDisplay = (value: number): string => {
+export function formatForDisplay(value: number): string {
   let opts: Intl.NumberFormatOptions = {};
   if (value >= 100) opts.maximumFractionDigits = 0;
   else if (value >= 1) opts.maximumSignificantDigits = 3;
   else opts.maximumFractionDigits = 2;
   return Intl.NumberFormat(i18next.language, opts).format(value);
-};
+}
 
-export const convertDistance = (distMeters: number, imperial: boolean): number => {
+export function convertDistance(distMeters: number, imperial: boolean): number {
   if (imperial) return (distMeters / 1000) * KM_TO_MILES;
   return distMeters / 1000;
-};
+}
 
-export const convertSpeed = (speedMetersPerSec: number, imperial: boolean): number => {
+export function convertSpeed(speedMetersPerSec: number, imperial: boolean): number {
   if (imperial) return speedMetersPerSec * MPS_TO_KMPH * KM_TO_MILES;
   return speedMetersPerSec * MPS_TO_KMPH;
-};
+}
 
 export function useImperialConfig(): ImperialConfig {
   const appConfig = useAppConfig();

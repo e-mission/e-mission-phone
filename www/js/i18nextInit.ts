@@ -15,7 +15,7 @@ On dev builds, the fallback translation is prefixed with a globe emoji so it's e
   and we can fix it. On prod builds, we'll just show the English string. */
 
 /* any strings defined in fallbackLang but not in lang will be merged into lang, recursively */
-const mergeInTranslations = (lang, fallbackLang) => {
+function mergeInTranslations(lang, fallbackLang) {
   Object.entries(fallbackLang).forEach(([key, value]) => {
     if (lang[key] === undefined) {
       console.warn(`Missing translation for key '${key}'`);
@@ -34,7 +34,7 @@ const mergeInTranslations = (lang, fallbackLang) => {
     }
   });
   return lang;
-};
+}
 
 import enJson from '../i18n/en.json';
 import esJson from '../../locales/es/i18n/es.json';

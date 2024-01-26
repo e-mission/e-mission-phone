@@ -23,16 +23,13 @@ TODO: Potentially unify with the survey URL loading
  * @function launches a webpage
  * @param url to open in the browser
  */
-const launchWebpage = function (url) {
-  // THIS LINE FOR inAppBrowser
-  let iab = window['cordova'].InAppBrowser.open(url, '_blank', options);
-};
+const launchWebpage = (url) => window['cordova'].InAppBrowser.open(url, '_blank', options);
 
 /**
- * @callback for cloud notification event
+ * @description callback for cloud notification event
  * @param event that triggered this call
  */
-const onCloudNotifEvent = (event) => {
+function onCloudNotifEvent(event) {
   const data = event.detail;
   addStatEvent(statKeys.NOTIFICATION_OPEN).then(() => {
     console.log('Added ' + statKeys.NOTIFICATION_OPEN + ' event. Data = ' + JSON.stringify(data));
@@ -64,12 +61,12 @@ const onCloudNotifEvent = (event) => {
       }
     }
   }
-};
+}
 
 /**
  * @function initializes the remote notification handling
  * subscribes to cloud notification event
  */
-export const initRemoteNotifyHandler = function () {
+export function initRemoteNotifyHandler() {
   subscribe(EVENTS.CLOUD_NOTIFICATION_EVENT, onCloudNotifEvent);
-};
+}

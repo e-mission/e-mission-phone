@@ -16,7 +16,7 @@ import { displayErrorMsg } from '../plugin/logger';
 import i18next from 'i18next';
 
 let preloadedResponsePromise: Promise<any>;
-export const preloadDemoSurveyResponse = () => {
+export function preloadDemoSurveyResponse() {
   if (!preloadedResponsePromise) {
     if (!registerUserDone) {
       displayErrorMsg(i18next.t('errors.not-registered-cant-contact'));
@@ -25,7 +25,7 @@ export const preloadDemoSurveyResponse = () => {
     preloadedResponsePromise = loadPreviousResponseForSurvey(DEMOGRAPHIC_SURVEY_DATAKEY);
   }
   return preloadedResponsePromise;
-};
+}
 
 const SurveyPage = () => {
   const { t } = useTranslation();

@@ -5,7 +5,7 @@ import i18next from 'i18next';
  * @returns A promise that resolves with an upload URL or rejects with an error
  */
 async function getUploadConfig() {
-  return new Promise<string[]>(async function (resolve, reject) {
+  return new Promise<string[]>(async (resolve, reject) => {
     logInfo('About to get email config');
     let url: string[] = [];
     try {
@@ -39,31 +39,31 @@ function onUploadError(err) {
 }
 
 function readDBFile(parentDir, database, callbackFn) {
-  return new Promise(function (resolve, reject) {
-    window['resolveLocalFileSystemURL'](parentDir, function (fs) {
+  return new Promise((resolve, reject) => {
+    window['resolveLocalFileSystemURL'](parentDir, (fs) => {
       console.log('resolving file system as ', fs);
       fs.filesystem.root.getFile(
         fs.fullPath + database,
         null,
         (fileEntry) => {
           console.log(fileEntry);
-          fileEntry.file(function (file) {
+          fileEntry.file((file) => {
             console.log(file);
             var reader = new FileReader();
 
-            reader.onprogress = function (report) {
+            reader.onprogress = (report) => {
               console.log('Current progress is ' + JSON.stringify(report));
               if (callbackFn != undefined) {
                 callbackFn((report.loaded * 100) / report.total);
               }
             };
 
-            reader.onerror = function (error) {
+            reader.onerror = (error) => {
               console.log(this.error);
               reject({ error: { message: this.error } });
             };
 
-            reader.onload = function () {
+            reader.onload = () => {
               console.log(
                 'Successful file read with ' + this.result?.['byteLength'] + ' characters',
               );
