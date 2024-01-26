@@ -41,23 +41,23 @@ function onCloudNotifEvent(event) {
     data.additionalData.payload.alert_type
   ) {
     if (data.additionalData.payload.alert_type == 'website') {
-      var webpage_spec = data.additionalData.payload.spec;
-      if (webpage_spec && webpage_spec.url && webpage_spec.url.startsWith('https://')) {
-        launchWebpage(webpage_spec.url);
+      const webpageSpec = data.additionalData.payload.spec;
+      if (webpageSpec?.url?.startsWith('https://')) {
+        launchWebpage(webpageSpec.url);
       } else {
         displayErrorMsg(
-          JSON.stringify(webpage_spec),
+          JSON.stringify(webpageSpec),
           'webpage was not specified correctly. spec is ',
         );
       }
     }
     if (data.additionalData.payload.alert_type == 'popup') {
-      var popup_spec = data.additionalData.payload.spec;
-      if (popup_spec && popup_spec.title && popup_spec.text) {
+      const popupSpec = data.additionalData.payload.spec;
+      if (popupSpec?.title && popupSpec?.text) {
         /* TODO: replace popup with something with better UI */
-        window.alert(popup_spec.title + ' ' + popup_spec.text);
+        window.alert(popupSpec.title + ' ' + popupSpec.text);
       } else {
-        displayErrorMsg(JSON.stringify(popup_spec), 'popup was not specified correctly. spec is ');
+        displayErrorMsg(JSON.stringify(popupSpec), 'popup was not specified correctly. spec is ');
       }
     }
   }

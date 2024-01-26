@@ -21,7 +21,7 @@ export function shareQR(message) {
     ctx.drawImage(img, 0, 0);
     const pngFile = canvas.toDataURL('image/png');
 
-    var prepopulateQRMessage = {};
+    const prepopulateQRMessage = {};
     prepopulateQRMessage['files'] = [pngFile];
     prepopulateQRMessage['url'] = message;
     prepopulateQRMessage['message'] = message; //text saved to files with image!

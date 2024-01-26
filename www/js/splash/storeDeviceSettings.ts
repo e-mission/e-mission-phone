@@ -10,17 +10,14 @@ import { subscribe, EVENTS, unsubscribe } from '../customEventHandler';
  * @returns promise to updateUser in comm settings with device info
  */
 function storeDeviceSettings() {
-  var lang = i18next.resolvedLanguage;
-  var manufacturer = window['device'].manufacturer;
-  var osver = window['device'].version;
   return window['cordova'].getAppVersion
     .getVersionNumber()
     .then((appver) => {
-      var updateJSON = {
-        phone_lang: lang,
+      const updateJSON = {
+        phone_lang: i18next.language,
         curr_platform: window['cordova'].platformId,
-        manufacturer: manufacturer,
-        client_os_version: osver,
+        manufacturer: window['device'].manufacturer,
+        client_os_version: window['device'].version,
         client_app_version: appver,
       };
       logDebug('About to update profile with settings = ' + JSON.stringify(updateJSON));

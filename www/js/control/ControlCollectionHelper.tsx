@@ -32,9 +32,9 @@ export async function forceTransition(transition) {
 }
 
 async function accuracy2String(config) {
-  var accuracy = config.accuracy;
+  const accuracy = config.accuracy;
   let accuracyOptions = await getAccuracyOptions();
-  for (var k in accuracyOptions) {
+  for (let k in accuracyOptions) {
     if (accuracyOptions[k] == accuracy) {
       return k;
     }
@@ -47,7 +47,7 @@ export async function isMediumAccuracy() {
   if (!config || config == null) {
     return undefined; // config not loaded when loading ui, set default as false
   } else {
-    var v = await accuracy2String(config);
+    const v = await accuracy2String(config);
     console.log('window platform is', window['cordova'].platformId);
     if (window['cordova'].platformId == 'ios') {
       return (
@@ -148,7 +148,7 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
 
   function formatAccuracyForActions(accuracyOptions) {
     let tempAccuracyActions: AccuracyAction[] = [];
-    for (var name in accuracyOptions) {
+    for (let name in accuracyOptions) {
       tempAccuracyActions.push({ text: name, value: accuracyOptions[name] });
     }
     return tempAccuracyActions;

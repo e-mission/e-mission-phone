@@ -21,7 +21,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
   const [logMessage, setLogMessage] = useState<string>('');
   const [isFetching, setIsFetching] = useState<boolean>(false);
 
-  var RETRIEVE_COUNT = 100;
+  const RETRIEVE_COUNT = 100;
 
   //when opening the modal, load the entries
   useEffect(() => {

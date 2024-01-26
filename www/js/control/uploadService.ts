@@ -49,7 +49,7 @@ function readDBFile(parentDir, database, callbackFn) {
           console.log(fileEntry);
           fileEntry.file((file) => {
             console.log(file);
-            var reader = new FileReader();
+            const reader = new FileReader();
 
             reader.onprogress = (report) => {
               console.log('Current progress is ' + JSON.stringify(report));
@@ -93,7 +93,7 @@ const sendToServer = function upload(url, binArray, params) {
 export async function uploadFile(database, reason) {
   try {
     let uploadConfig = await getUploadConfig();
-    var parentDir = 'unknown';
+    let parentDir = 'unknown';
 
     if (window['cordova'].platformId.toLowerCase() == 'android') {
       parentDir = window['cordova'].file.applicationStorageDirectory + '/databases';

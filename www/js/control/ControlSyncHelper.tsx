@@ -52,7 +52,7 @@ export const ForceSyncRow = ({ getState }) => {
        * with getLastSensorData and getLastMessages in the usercache
        * See https://github.com/e-mission/e-mission-phone/issues/279 for details
        */
-      var sensorKey = 'statemachine/transition';
+      const sensorKey = 'statemachine/transition';
       let sensorDataList = await window['cordova'].plugins.BEMUserCache.getAllMessages(
         sensorKey,
         true,
@@ -103,7 +103,7 @@ export const ForceSyncRow = ({ getState }) => {
   }
 
   async function getTransition(transKey) {
-    var entry_data = {};
+    const entry_data = {};
     const curr_state = await getState();
     entry_data['curr_state'] = curr_state;
     if (transKey == getEndTransitionKey()) {
@@ -117,7 +117,7 @@ export const ForceSyncRow = ({ getState }) => {
   async function endForceSync() {
     /* First, quickly start and end the trip. Let's listen to the promise
      * result for start so that we ensure ordering */
-    var sensorKey = 'statemachine/transition';
+    const sensorKey = 'statemachine/transition';
     let entry_data = await getTransition(getStartTransitionKey());
     let messagePut = await window['cordova'].plugins.BEMUserCache.putMessage(sensorKey, entry_data);
     entry_data = await getTransition(getEndTransitionKey());
