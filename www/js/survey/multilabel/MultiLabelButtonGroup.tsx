@@ -3,7 +3,6 @@
   Next to the buttons is a small checkmark icon, which marks inferrel labels as confirmed */
 
 import React, { useContext, useEffect, useState, useMemo } from 'react';
-import { getAngularService } from '../../angular-react-helper';
 import { View, Modal, ScrollView, Pressable, useWindowDimensions } from 'react-native';
 import {
   IconButton,
@@ -16,54 +15,58 @@ import {
 } from 'react-native-paper';
 import DiaryButton from '../../components/DiaryButton';
 import { useTranslation } from 'react-i18next';
-import LabelTabContext from '../../diary/LabelTabContext';
+import LabelTabContext, { UserInputMap } from '../../diary/LabelTabContext';
 import { displayErrorMsg, logDebug } from '../../plugin/logger';
 import {
   getLabelInputDetails,
   getLabelInputs,
   inferFinalLabels,
   labelInputDetailsForTrip,
+  labelKeyToReadable,
   labelKeyToRichMode,
   readableLabelToKey,
   verifiabilityForTrip,
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
+import { MultilabelKey } from '../../types/labelTypes';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const appConfig = useAppConfig();
-  const { repopulateTimelineEntry, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
+  const { labelOptions, labelFor, userInputFor, addUserInputToEntry } = useContext(LabelTabContext);
   const { height: windowHeight } = useWindowDimensions();
 
-  // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
-  const [modalVisibleFor, setModalVisibleFor] = useState<
-    'MODE' | 'PURPOSE' | 'REPLACED_MODE' | null
-  >(null);
+  // modal visible for which input type? (MODE or PURPOSE or REPLACED_MODE, null if not visible)
+  const [modalVisibleFor, setModalVisibleFor] = useState<MultilabelKey | null>(null);
   const [otherLabel, setOtherLabel] = useState<string | null>(null);
-  const chosenLabel = useMemo<string>(() => {
+  const chosenLabel = useMemo<string | null>(() => {
+    if (modalVisibleFor == null) return null;
     if (otherLabel != null) return 'other';
-    return timelineLabelMap[trip._id.$oid]?.[modalVisibleFor]?.value;
+    return labelFor(trip, modalVisibleFor)?.value || null;
   }, [modalVisibleFor, otherLabel]);
 
   // to mark 'inferred' labels as 'confirmed'; turn yellow labels blue
   function verifyTrip() {
-    const inferredLabelsForTrip = inferFinalLabels(trip, timelineLabelMap[trip._id.$oid]);
+    const inferredLabelsForTrip = inferFinalLabels(trip, userInputFor(trip));
+    let labelsToStore;
     for (const inputType of getLabelInputs()) {
       const inferred = inferredLabelsForTrip?.[inputType];
-      // if the is an inferred label that is not already confirmed, confirm it now by storing it
-      if (inferred?.value && !timelineLabelMap[trip._id.$oid]?.[inputType]) {
-        store(inputType, inferred.value, false);
+      // if there is an inferred label that is not already confirmed, confirm it by storing it
+      if (inferred?.value && !labelFor(trip, inputType)) {
+        labelsToStore = { ...labelsToStore, [inputType]: inferred.value };
       }
     }
+    if (labelsToStore) store(labelsToStore);
   }
 
   function onChooseLabel(chosenValue) {
+    if (!modalVisibleFor) return displayErrorMsg('Cannot choose label when modal not visible');
     logDebug(`onChooseLabel with chosen ${modalVisibleFor} as ${chosenValue}`);
     if (chosenValue == 'other') {
       setOtherLabel('');
     } else {
-      store(modalVisibleFor, chosenValue, false);
+      store({ [modalVisibleFor]: chosenValue });
     }
   }
 
@@ -72,38 +75,46 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     setOtherLabel(null);
   }
 
-  function store(inputType, chosenLabel, isOther) {
-    if (!chosenLabel) return displayErrorMsg('Label is empty');
-    if (isOther) {
-      /* Let's make the value for user entered inputs look consistent with our other values
-       (i.e. lowercase, and with underscores instead of spaces) */
-      chosenLabel = readableLabelToKey(chosenLabel);
-    }
-    const inputDataToStore = {
-      start_ts: trip.start_ts,
-      end_ts: trip.end_ts,
-      label: chosenLabel,
-    };
+  /* Store a batch of one or more inputs to the user cache, dismiss the popup if it was visible,
+    and inform LabelTab of new inputs */
+  function store(inputs: { [k in MultilabelKey]?: string }, isOther?) {
+    if (!Object.keys(inputs).length) return displayErrorMsg('No inputs to store');
+    const inputsToStore: UserInputMap = {};
+    const storePromises: any[] = [];
+    for (let [inputType, chosenLabel] of Object.entries(inputs)) {
+      if (isOther) {
+        /* Let's make the value for user entered inputs look consistent with our other values
+        (i.e. lowercase, and with underscores instead of spaces) */
+        chosenLabel = readableLabelToKey(chosenLabel);
+      }
+      const inputDataToStore = {
+        start_ts: trip.start_ts,
+        end_ts: trip.end_ts,
+        label: chosenLabel,
+      };
+      inputsToStore[inputType] = inputDataToStore;
 
-    const storageKey = getLabelInputDetails()[inputType].key;
-    window['cordova'].plugins.BEMUserCache.putMessage(storageKey, inputDataToStore).then(() => {
+      const storageKey = getLabelInputDetails()[inputType].key;
+      storePromises.push(
+        window['cordova'].plugins.BEMUserCache.putMessage(storageKey, inputDataToStore),
+      );
+    }
+    Promise.all(storePromises).then(() => {
+      logDebug('Successfully stored input data ' + JSON.stringify(inputsToStore));
       dismiss();
-      repopulateTimelineEntry(trip._id.$oid);
-      logDebug('Successfully stored input data ' + JSON.stringify(inputDataToStore));
+      addUserInputToEntry(trip._id.$oid, inputsToStore, 'label');
     });
   }
 
-  const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap[trip._id.$oid], appConfig);
+  const tripInputDetails = labelInputDetailsForTrip(userInputFor(trip), appConfig);
   return (
     <>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1, flexDirection: buttonsInline ? 'row' : 'column', columnGap: 8 }}>
           {Object.keys(tripInputDetails).map((key, i) => {
             const input = tripInputDetails[key];
-            const inputIsConfirmed = timelineLabelMap[trip._id.$oid]?.[input.name];
-            const inputIsInferred = inferFinalLabels(trip, timelineLabelMap[trip._id.$oid])[
-              input.name
-            ];
+            const inputIsConfirmed = labelFor(trip, input.name);
+            const inputIsInferred = inferFinalLabels(trip, userInputFor(trip))[input.name];
             let fillColor, textColor, borderColor;
             if (inputIsConfirmed) {
               fillColor = colors.primary;
@@ -128,7 +139,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
             );
           })}
         </View>
-        {verifiabilityForTrip(trip, timelineLabelMap[trip._id.$oid]) == 'can-verify' && (
+        {verifiabilityForTrip(trip, userInputFor(trip)) == 'can-verify' && (
           <View style={{ marginTop: 16 }}>
             <IconButton
               icon="check-bold"
@@ -151,20 +162,22 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
             </Dialog.Title>
             <Dialog.Content style={{ maxHeight: windowHeight / 2, paddingBottom: 0 }}>
               <ScrollView style={{ paddingBottom: 24 }}>
-                <RadioButton.Group onValueChange={(val) => onChooseLabel(val)} value={chosenLabel}>
-                  {labelOptions?.[modalVisibleFor]?.map((o, i) => (
-                    // @ts-ignore
-                    <RadioButton.Item
-                      key={i}
-                      label={t(o.text)}
-                      value={o.value}
-                      style={{ paddingVertical: 2 }}
-                    />
-                  ))}
+                <RadioButton.Group
+                  onValueChange={(val) => onChooseLabel(val)}
+                  value={chosenLabel || ''}>
+                  {modalVisibleFor &&
+                    labelOptions?.[modalVisibleFor]?.map((o, i) => (
+                      <RadioButton.Item
+                        key={i}
+                        label={o.text || labelKeyToReadable(o.value)}
+                        value={o.value}
+                        style={{ paddingVertical: 2 }}
+                      />
+                    ))}
                 </RadioButton.Group>
               </ScrollView>
             </Dialog.Content>
-            {otherLabel != null && (
+            {otherLabel != null && modalVisibleFor != null && (
               <>
                 <TextInput
                   label={t('trip-confirm.services-please-fill-in', {
@@ -174,7 +187,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                   onChangeText={(t) => setOtherLabel(t)}
                 />
                 <Dialog.Actions>
-                  <Button onPress={() => store(modalVisibleFor, otherLabel, true)}>
+                  <Button onPress={() => store({ [modalVisibleFor]: otherLabel }, true)}>
                     {t('trip-confirm.services-save')}
                   </Button>
                 </Dialog.Actions>

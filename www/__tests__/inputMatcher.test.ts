@@ -1,3 +1,4 @@
+import { EnketoUserInputEntry } from '../js/survey/enketo/enketoHelper';
 import {
   fmtTs,
   printUserInput,
@@ -38,7 +39,7 @@ describe('input-matcher', () => {
         key: 'manual/mode_confirm',
       },
       key: 'manual/place',
-    };
+    } as UserInputEntry;
     trip = {
       key: 'FOO',
       origin_key: 'FOO',
@@ -47,7 +48,7 @@ describe('input-matcher', () => {
       enter_ts: 1437605000,
       exit_ts: 1437605000,
       duration: 100,
-    };
+    } as unknown as CompositeTrip;
     nextTrip = {
       key: 'BAR',
       origin_key: 'BAR',
@@ -56,7 +57,7 @@ describe('input-matcher', () => {
       enter_ts: 1437607000,
       exit_ts: 1437607000,
       duration: 100,
-    };
+    } as unknown as CompositeTrip;
     // mock Logger
     window['Logger'] = { log: console.log };
   });
@@ -128,7 +129,7 @@ describe('input-matcher', () => {
       enter_ts: 1,
       exit_ts: 1,
       duration: 1,
-    };
+    } as unknown as TimelineEntry;
     const invalidTimelineEntry = validUserInputForTimelineEntry(
       invalidTlEntry,
       null,
@@ -166,7 +167,7 @@ describe('input-matcher', () => {
         key: 'manual/mode_confirm',
       },
       key: 'manual/place',
-    };
+    } as UserInputEntry;
     const candidates = [activeTrip, deletedTrip];
     const validCandidates = getNotDeletedCandidates(candidates);
 
@@ -191,7 +192,7 @@ describe('input-matcher', () => {
         key: 'manual/mode_confirm',
         type: 'message',
       },
-    };
+    } as unknown as UserInputEntry;
     const userInputWriteSecond = {
       data: {
         end_ts: 1437598393,
@@ -207,7 +208,7 @@ describe('input-matcher', () => {
         key: 'manual/mode_confirm',
         type: 'message',
       },
-    };
+    } as unknown as UserInputEntry;
     const userInputWriteThird = {
       data: {
         end_ts: 1437604764,
@@ -223,7 +224,7 @@ describe('input-matcher', () => {
         key: 'manual/mode_confirm',
         type: 'message',
       },
-    };
+    } as unknown as UserInputEntry;
 
     // make the linst unsorted and then check if userInputWriteThird(latest one) is return output
     const userInputList = [userInputWriteSecond, userInputWriteThird, userInputWriteFirst];
@@ -232,7 +233,7 @@ describe('input-matcher', () => {
   });
 
   it('tests getUserInputForTrip with invalid userInputList', () => {
-    const userInputList = undefined;
+    const userInputList = undefined as unknown as UserInputEntry[];
     const mostRecentEntry = getUserInputForTimelineEntry(trip, nextTrip, userInputList);
     expect(mostRecentEntry).toBe(undefined);
   });
@@ -248,7 +249,7 @@ describe('input-matcher', () => {
   });
 
   it('tests getAdditionsForTimelineEntry with invalid additionsList', () => {
-    const additionsList = undefined;
+    const additionsList = undefined as unknown as EnketoUserInputEntry[];
     const matchingAdditions = getAdditionsForTimelineEntry(trip, nextTrip, additionsList);
     expect(matchingAdditions).toMatchObject([]);
   });

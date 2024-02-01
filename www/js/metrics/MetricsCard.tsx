@@ -13,8 +13,8 @@ import { useTranslation } from 'react-i18next';
 
 type Props = {
   cardTitle: string;
-  userMetricsDays: DayOfMetricData[];
-  aggMetricsDays: DayOfMetricData[];
+  userMetricsDays?: DayOfMetricData[];
+  aggMetricsDays?: DayOfMetricData[];
   axisUnits: string;
   unitFormatFn?: (val: number) => string | number;
 };
@@ -43,11 +43,13 @@ const MetricsCard = ({
       const labels = getLabelsForDay(day);
       labels.forEach((label) => {
         const rawVal = day[`label_${label}`];
-        records.push({
-          label: labelKeyToRichMode(label),
-          x: unitFormatFn ? unitFormatFn(rawVal) : rawVal,
-          y: day.ts * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
-        });
+        if (rawVal) {
+          records.push({
+            label: labelKeyToRichMode(label),
+            x: unitFormatFn ? unitFormatFn(rawVal) : rawVal,
+            y: day.ts * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
+          });
+        }
       });
     });
     // sort records (affects the order they appear in the chart legend)
@@ -60,6 +62,7 @@ const MetricsCard = ({
   }, [metricDataDays, viewMode]);
 
   const cardSubtitleText = useMemo(() => {
+    if (!metricDataDays) return;
     const groupText =
       populationMode == 'user' ? t('main-metrics.user-totals') : t('main-metrics.group-totals');
     return `${groupText} (${formatDateRangeOfDays(metricDataDays)})`;

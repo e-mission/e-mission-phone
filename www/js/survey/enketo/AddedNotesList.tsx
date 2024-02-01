@@ -3,7 +3,7 @@
 */
 
 import React, { useContext, useState } from 'react';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { Modal } from 'react-native';
 import { Text, Button, DataTable, Dialog } from 'react-native-paper';
 import LabelTabContext from '../../diary/LabelTabContext';
@@ -11,85 +11,98 @@ import { getFormattedDateAbbr, isMultiDay } from '../../diary/diaryHelper';
 import { Icon } from '../../components/Icon';
 import EnketoModal from './EnketoModal';
 import { useTranslation } from 'react-i18next';
+import { EnketoUserInputEntry } from './enketoHelper';
+import { logDebug } from '../../plugin/logger';
 
 type Props = {
   timelineEntry: any;
-  additionEntries: any[];
+  additionEntries: EnketoUserInputEntry[];
 };
 const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
   const { t } = useTranslation();
-  const { repopulateTimelineEntry } = useContext(LabelTabContext);
+  const { addUserInputToEntry } = useContext(LabelTabContext);
   const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
   const [surveyModalVisible, setSurveyModalVisible] = useState(false);
-  const [editingEntry, setEditingEntry] = useState(null);
+  const [editingEntry, setEditingEntry] = useState<EnketoUserInputEntry | undefined>(undefined);
 
-  function setDisplayDt(entry) {
+  const _cachedDts = {};
+  function getDisplayDt(entry?: EnketoUserInputEntry) {
+    if (!entry) return '';
+
+    // memoization: if we've already calculated the displayDt for this entry, return it from cache
+    const cachedDt = _cachedDts[entry.metadata.write_ts]; // write_ts used as key since it's unique
+    if (cachedDt) return cachedDt;
+
+    // otherwise, calculate it and cache it before returning it
     const timezone =
       timelineEntry.start_local_dt?.timezone ||
       timelineEntry.enter_local_dt?.timezone ||
       timelineEntry.end_local_dt?.timezone ||
       timelineEntry.exit_local_dt?.timezone;
-    const beginTs = entry.data.start_ts || entry.data.enter_ts;
-    const stopTs = entry.data.end_ts || entry.data.exit_ts;
+    const beginTs = entry.data.start_ts;
+    const stopTs = entry.data.end_ts;
+    const beginIso = DateTime.fromSeconds(beginTs).setZone(timezone).toISO() || undefined;
+    const stopIso = DateTime.fromSeconds(stopTs).setZone(timezone).toISO() || undefined;
     let d;
-    if (isMultiDay(beginTs, stopTs)) {
-      const beginTsZoned = moment.parseZone(beginTs * 1000).tz(timezone);
-      const stopTsZoned = moment.parseZone(stopTs * 1000).tz(timezone);
-      d = getFormattedDateAbbr(beginTsZoned.toISOString(), stopTsZoned.toISOString());
+    if (isMultiDay(beginIso, stopIso)) {
+      d = getFormattedDateAbbr(beginIso, stopIso);
     }
-    const begin = moment
-      .parseZone(beginTs * 1000)
-      .tz(timezone)
-      .format('LT');
-    const stop = moment
-      .parseZone(stopTs * 1000)
-      .tz(timezone)
-      .format('LT');
-    return (entry.displayDt = {
-      date: d,
-      time: begin + ' - ' + stop,
-    });
+    const begin = DateTime.fromSeconds(beginTs)
+      .setZone(timezone)
+      .toLocaleString(DateTime.TIME_SIMPLE);
+    const stop = DateTime.fromSeconds(stopTs)
+      .setZone(timezone)
+      .toLocaleString(DateTime.TIME_SIMPLE);
+
+    const dt = { date: d, time: begin + ' - ' + stop };
+    _cachedDts[entry.metadata.write_ts] = dt;
+    return dt;
   }
 
-  function deleteEntry(entry) {
-    console.log('Deleting entry', entry);
+  function deleteEntry(entry?: EnketoUserInputEntry) {
+    if (!entry) return;
 
-    const dataKey = entry.key || entry.metadata.key;
+    const dataKey = entry.data.key || entry.metadata.key;
     const data = entry.data;
     const index = additionEntries.indexOf(entry);
     data.status = 'DELETED';
 
+    logDebug(`Deleting entry ${JSON.stringify(entry)} 
+      with dataKey ${dataKey}; 
+      index = ${index}`);
+
     return window['cordova'].plugins.BEMUserCache.putMessage(dataKey, data).then(() => {
       additionEntries.splice(index, 1);
       setConfirmDeleteModalVisible(false);
-      setEditingEntry(null);
+      setEditingEntry(undefined);
     });
   }
 
-  function confirmDeleteEntry(entry) {
+  function confirmDeleteEntry(entry: EnketoUserInputEntry) {
     setEditingEntry(entry);
     setConfirmDeleteModalVisible(true);
   }
 
   function dismissConfirmDelete() {
-    setEditingEntry(null);
+    setEditingEntry(undefined);
     setConfirmDeleteModalVisible(false);
   }
 
   function editEntry(entry) {
     setEditingEntry(entry);
+    console.debug('Editing entry is now ', entry);
     setSurveyModalVisible(true);
   }
 
-  async function onEditedResponse(response) {
+  async function onEditedResponse(response: EnketoUserInputEntry) {
     if (!response) return;
     await deleteEntry(editingEntry);
-    setEditingEntry(null);
-    repopulateTimelineEntry(timelineEntry._id.$oid);
+    setEditingEntry(undefined);
+    addUserInputToEntry(timelineEntry._id.$oid, response, 'note');
   }
 
   function onModalDismiss() {
-    setEditingEntry(null);
+    setEditingEntry(undefined);
     setSurveyModalVisible(false);
   }
 
@@ -111,10 +124,8 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
                 onPress={() => editEntry(entry)}
                 style={[styles.cell, { flex: 4 }]}
                 textStyle={{ fontSize: 12, lineHeight: 12 }}>
-                <Text style={{ display: 'flex' }}>{entry.displayDt?.date}</Text>
-                <Text style={{ display: 'flex' }}>
-                  {entry.displayDt?.time || setDisplayDt(entry)}
-                </Text>
+                <Text style={{ display: 'flex' }}>{getDisplayDt(entry)?.date}</Text>
+                <Text style={{ display: 'flex' }}>{getDisplayDt(entry)?.time}</Text>
               </DataTable.Cell>
               <DataTable.Cell
                 onPress={() => confirmDeleteEntry(entry)}
@@ -125,17 +136,19 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
           );
         })}
       </DataTable>
-      <EnketoModal
-        visible={surveyModalVisible}
-        onDismiss={onModalDismiss}
-        onResponseSaved={onEditedResponse}
-        surveyName={editingEntry?.data.name}
-        opts={{
-          timelineEntry,
-          prefilledSurveyResponse: editingEntry?.data.xmlResponse,
-          dataKey: editingEntry?.key || editingEntry?.metadata?.key,
-        }}
-      />
+      {editingEntry && (
+        <EnketoModal
+          visible={surveyModalVisible}
+          onDismiss={onModalDismiss}
+          onResponseSaved={onEditedResponse}
+          surveyName={editingEntry.data.name}
+          opts={{
+            timelineEntry,
+            prefilledSurveyResponse: editingEntry?.data.xmlResponse,
+            dataKey: editingEntry?.data?.key || editingEntry?.metadata?.key,
+          }}
+        />
+      )}
       <Modal
         visible={confirmDeleteModalVisible}
         transparent={true}
@@ -144,8 +157,8 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
           <Dialog.Title>{t('diary.delete-entry-confirm')}</Dialog.Title>
           <Dialog.Content>
             <Text style={{ fontWeight: 'bold' }}>{editingEntry?.data?.label}</Text>
-            <Text>{editingEntry?.displayDt?.date}</Text>
-            <Text>{editingEntry?.displayDt?.time}</Text>
+            <Text>{getDisplayDt(editingEntry)?.date}</Text>
+            <Text>{getDisplayDt(editingEntry)?.time}</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={() => deleteEntry(editingEntry)}>Delete</Button>

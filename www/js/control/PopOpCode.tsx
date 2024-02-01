@@ -17,12 +17,12 @@ const PopOpCode = ({ visibilityValue, tokenURL, action, setVis }) => {
 
   const copyText = function (textToCopy) {
     navigator.clipboard.writeText(textToCopy).then(() => {
-      setCopyAlertvis(true);
+      setCopyAlertVis(true);
     });
   };
 
   let copyButton;
-  if (window.cordova.platformId == 'ios') {
+  if (window['cordova'].platformId == 'ios') {
     copyButton = (
       <IconButton
         icon="content-copy"

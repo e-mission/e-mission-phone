@@ -8,7 +8,7 @@
 
 import React, { useEffect, useState, useMemo, useContext } from 'react';
 import { StyleSheet } from 'react-native';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import LabelTabContext from '../LabelTabContext';
 import { DatePickerModal } from 'react-native-paper-dates';
 import { Text, Divider, useTheme } from 'react-native-paper';
@@ -22,7 +22,7 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
   const { colors } = useTheme();
   const [open, setOpen] = React.useState(false);
   const [dateRange, setDateRange] = useState([null, null]);
-  const [selDate, setSelDate] = useState(null);
+  const [selDate, setSelDate] = useState<Date>(new Date());
   const minMaxDates = useMemo(() => {
     if (!pipelineRange) return { startDate: new Date(), endDate: new Date() };
     return {
@@ -34,11 +34,13 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
   useEffect(() => {
     if (!tsRange.oldestTs) return;
     const displayStartTs = Math.max(tsRange.oldestTs, pipelineRange.start_ts);
-    const displayStartDate = moment.unix(displayStartTs).format('L');
+    const displayStartDate = DateTime.fromSeconds(displayStartTs).toLocaleString(
+      DateTime.DATE_SHORT,
+    );
 
     let displayEndDate;
     if (tsRange.latestTs < pipelineRange.end_ts) {
-      displayEndDate = moment.unix(tsRange.latestTs).format('L');
+      displayEndDate = DateTime.fromSeconds(tsRange.latestTs).toLocaleString(DateTime.DATE_SHORT);
     }
     setDateRange([displayStartDate, displayEndDate]);
 

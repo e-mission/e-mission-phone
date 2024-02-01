@@ -11,22 +11,24 @@ import { getBaseModeByText } from '../diary/diaryHelper';
 const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = (typeof ACTIVE_MODES)[number];
 
-type Props = { userMetrics: MetricsData };
+type Props = { userMetrics?: MetricsData };
 const DailyActiveMinutesCard = ({ userMetrics }: Props) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
   const dailyActiveMinutesRecords = useMemo(() => {
-    const records = [];
+    const records: { label: string; x: string; y: number }[] = [];
     const recentDays = userMetrics?.duration?.slice(-14);
     recentDays?.forEach((day) => {
       ACTIVE_MODES.forEach((mode) => {
         const activeSeconds = day[`label_${mode}`];
-        records.push({
-          label: labelKeyToRichMode(mode),
-          x: day.ts * 1000, // vertical chart, milliseconds on X axis
-          y: activeSeconds && activeSeconds / 60, // minutes on Y axis
-        });
+        if (activeSeconds) {
+          records.push({
+            label: labelKeyToRichMode(mode),
+            x: `${day.ts * 1000}`, // vertical chart, milliseconds on X axis
+            y: activeSeconds && activeSeconds / 60, // minutes on Y axis
+          });
+        }
       });
     });
     return records as { label: ActiveMode; x: string; y: number }[];

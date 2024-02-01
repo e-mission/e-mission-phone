@@ -1,4 +1,4 @@
-import { MetaData, BEMData, ServerResponse } from '../js/types/serverData';
+import { LocalDt, MetaData, BEMData, ServerResponse } from '../js/types/serverData';
 import {
   CompositeTrip,
   ConfirmedPlace,
@@ -15,7 +15,7 @@ const mockMetaData: MetaData = {
   platform: 'test',
   time_zone: 'America/Los_Angeles',
   write_fmt_time: '1969-07-16T07:01:49.000Z',
-  write_local_dt: null,
+  write_local_dt: null as any,
   origin_key: '1',
 };
 
@@ -24,9 +24,9 @@ export const mockLabelOptions: LabelOptions = {
   PURPOSE: null,
   REPLACED_MODE: null,
   translations: null,
-};
+} as unknown as LabelOptions;
 
-const mockConfirmedPlaceData: ConfirmedPlace = {
+const mockConfirmedPlaceData = {
   source: 'DwellSegmentationTimeFilter',
   key: null,
   origin_key: null,
@@ -46,14 +46,15 @@ const mockConfirmedPlaceData: ConfirmedPlace = {
   raw_places: [null, null],
   enter_ts: 1437578093.881,
   exit_ts: 1437578093.881,
-};
+} as unknown as ConfirmedPlace;
+
 // using parse/stringify to deep copy & populate data
 let tempMetaData = JSON.parse(JSON.stringify(mockMetaData));
 tempMetaData.write_ts = 2;
 tempMetaData.origin_key = '2';
 export const mockMetaDataTwo = tempMetaData;
 
-export const mockUnprocessedTrip: UnprocessedTrip = {
+export const mockUnprocessedTrip = {
   _id: { $oid: 'mockUnprocessedTrip' },
   additions: [],
   confidence_threshold: 0.0,
@@ -61,19 +62,14 @@ export const mockUnprocessedTrip: UnprocessedTrip = {
   duration: 3.0,
   end_fmt_time: '',
   end_loc: { type: 'Point', coordinates: [] },
-  end_local_dt: null,
-  expectation: null,
   inferred_labels: [],
   key: 'mockUnprocessedTrip',
   locations: [],
   origin_key: '',
   source: '',
-  start_local_dt: null,
   start_ts: 0.1,
   start_loc: { type: 'Point', coordinates: [] },
-  starting_trip: null,
-  user_input: null,
-};
+} as unknown as UnprocessedTrip;
 
 export const mockCompData: ServerResponse<CompositeTrip> = {
   phone_data: [
@@ -152,7 +148,8 @@ export const mockCompData: ServerResponse<CompositeTrip> = {
       metadata: mockMetaData,
     },
   ],
-};
+} as unknown as ServerResponse<CompositeTrip>;
+
 // Setup for second mockData
 let newPhoneData = JSON.parse(JSON.stringify(mockCompData.phone_data[0]));
 newPhoneData.data._id.$oid = 'mockDataTwo';
@@ -188,18 +185,10 @@ export const mockTransitions: Array<BEMData<TripTransition>> = [
 
 const mockFilterLocation: FilteredLocation = {
   accuracy: 0.1,
-  altitude: 100,
-  elapsedRealtimeNanos: 10000,
-  filter: 'time',
-  fmt_time: '',
-  heading: 1.0,
   latitude: 1.0,
-  loc: null,
-  local_dt: null,
   longitude: -1.0,
-  sensed_speed: 0,
   ts: 100,
-};
+} as FilteredLocation;
 let mockFilterLocationTwo = JSON.parse(JSON.stringify(mockFilterLocation));
 mockFilterLocationTwo.ts = 900;
 mockFilterLocationTwo.longitude = 200;
@@ -216,38 +205,31 @@ export const mockFilterLocations: Array<BEMData<FilteredLocation>> = [
   },
 ];
 
-export const mockConfigModeOfStudy: AppConfig = {
-  server: null,
+export const mockConfigModeOfStudy = {
   survey_info: {
     'trip-labels': 'MULTILABEL',
-    surveys: null,
   },
   intro: {
     mode_studied: 'sample_study',
   },
-};
-export const mockConfigNoModeOfStudy: AppConfig = {
-  server: null,
+} as AppConfig;
+export const mockConfigNoModeOfStudy = {
   survey_info: {
     'trip-labels': 'MULTILABEL',
-    surveys: null,
   },
   intro: {},
-};
-export const mockConfigEnketo: AppConfig = {
-  server: null,
+} as AppConfig;
+export const mockConfigEnketo = {
   survey_info: {
     'trip-labels': 'ENKETO',
     surveys: {
       TripConfirmSurvey: {
         compatibleWith: 1.2,
-        formPath: null,
-        labelTemplate: null,
-        version: null,
       },
     },
   },
-};
+  intro: {},
+} as unknown as AppConfig;
 
 // Used by jest.mocks() to return a various mocked objects.
 export const fakeStartTsOne = -14576291;

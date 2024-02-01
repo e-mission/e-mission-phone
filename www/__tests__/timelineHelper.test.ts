@@ -12,7 +12,7 @@ import {
 } from '../js/diary/timelineHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import * as mockTLH from '../__mocks__/timelineHelperMocks';
-import { GeoJSONData, GeoJSONStyledFeature, UserInputEntry } from '../js/types/diaryTypes';
+import { GeoJSONData, GeoJSONStyledFeature } from '../js/types/diaryTypes';
 
 mockLogger();
 mockAlert();
@@ -28,7 +28,7 @@ afterAll(() => {
 
 describe('useGeojsonForTrip', () => {
   it('work with an empty input', () => {
-    const testVal = useGeojsonForTrip(null, null, null);
+    const testVal = useGeojsonForTrip({} as any, {} as any);
     expect(testVal).toBeFalsy;
   });
 
@@ -46,7 +46,8 @@ describe('useGeojsonForTrip', () => {
     const testValue = useGeojsonForTrip(
       mockTLH.mockCompDataTwo.phone_data[1].data,
       mockTLH.mockLabelOptions,
-    );
+    ) as GeoJSONData;
+    expect(testValue).toBeTruthy;
     checkGeojson(testValue);
     expect(testValue.data.features.length).toBe(3);
   });
@@ -293,14 +294,14 @@ jest.mock('../js/services/unifiedDataLoader', () => ({
 }));
 
 it('works when there are no unprocessed trips...', async () => {
-  expect(readUnprocessedTrips(-1, -1, null)).resolves.toEqual([]);
+  expect(readUnprocessedTrips(-1, -1, {} as any)).resolves.toEqual([]);
 });
 
 it('works when there are one or more unprocessed trips...', async () => {
   const testValueOne = await readUnprocessedTrips(
     mockTLH.fakeStartTsOne,
     mockTLH.fakeEndTsOne,
-    null,
+    {} as any,
   );
   expect(testValueOne.length).toEqual(1);
   expect(testValueOne[0]).toEqual(

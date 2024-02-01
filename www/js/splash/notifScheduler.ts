@@ -3,7 +3,7 @@ import { getUser, updateUser } from '../services/commHelper';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
 import { DateTime } from 'luxon';
 import i18next from 'i18next';
-import { ReminderSchemeConfig } from '../types/appConfigTypes';
+import { ReminderSchemesConfig } from '../types/appConfigTypes';
 
 // like python range()
 function range(start, stop, step) {
@@ -56,7 +56,7 @@ function debugGetScheduled(prefix) {
     if (!notifs?.length) return logDebug(`${prefix}, there are no scheduled notifications`);
     const time = DateTime.fromJSDate(notifs[0].trigger.at).toFormat('HH:mm');
     //was in plugin, changed to scheduler
-    let scheduledNotifs = [];
+    let scheduledNotifs: { key: string; val: string }[] = [];
     scheduledNotifs = notifs.map((n) => {
       const date = DateTime.fromJSDate(n.trigger.at).toFormat('DDD');
       const time = DateTime.fromJSDate(n.trigger.at).toFormat('t');
@@ -74,7 +74,7 @@ function debugGetScheduled(prefix) {
 
 //new method to fetch notifications
 export const getScheduledNotifs = function (isScheduling: boolean, scheduledPromise: Promise<any>) {
-  return new Promise((resolve, reject) => {
+  return new Promise<ScheduledNotif[]>((resolve, reject) => {
     /* if the notifications are still in active scheduling it causes problems
         anywhere from 0-n of the scheduled notifs are displayed 
         if actively scheduling, wait for the scheduledPromise to resolve before fetching prevents such errors
@@ -87,22 +87,23 @@ export const getScheduledNotifs = function (isScheduling: boolean, scheduledProm
       );
       logDebug('requesting fetch while still actively scheduling, waiting on scheduledPromise');
       scheduledPromise.then(() => {
-        getNotifs().then((notifs: object[]) => {
+        getNotifs().then((notifs) => {
           resolve(notifs);
         });
       });
     } else {
       console.log('test log: not actively scheduling, fetching');
-      getNotifs().then((notifs: object[]) => {
+      getNotifs().then((notifs) => {
         resolve(notifs);
       });
     }
   });
 };
 
+type ScheduledNotif = { key: string; val: string };
 //get scheduled notifications from cordova plugin and format them
 const getNotifs = function () {
-  return new Promise((resolve, reject) => {
+  return new Promise<ScheduledNotif[]>((resolve, reject) => {
     window['cordova'].plugins.notification.local.getScheduled((notifs: any[]) => {
       if (!notifs?.length) {
         logDebug('there are no notifications');
@@ -113,7 +114,7 @@ const getNotifs = function () {
       }
 
       const notifSubset = notifs.slice(0, 5); //prevent near-infinite listing
-      let scheduledNotifs = [];
+      let scheduledNotifs: ScheduledNotif[] = [];
       scheduledNotifs = notifSubset.map((n) => {
         const time: string = DateTime.fromJSDate(n.trigger.at).toFormat('t');
         const date: string = DateTime.fromJSDate(n.trigger.at).toFormat('DDD');
@@ -131,7 +132,7 @@ const getNotifs = function () {
 const scheduleNotifs = (scheme, notifTimes: DateTime[], setIsScheduling: Function) => {
   return new Promise<void>((rs) => {
     setIsScheduling(true);
-    const localeCode = i18next.resolvedLanguage;
+    const localeCode = i18next.language;
     const nots = notifTimes.map((n) => {
       const nDate = n.toJSDate();
       const seconds = nDate.getTime() / 1000; // the id must be in seconds, otherwise the sorting won't work
@@ -169,7 +170,7 @@ const removeEmptyObjects = (list: any[]): any[] => {
 
 // determines when notifications are needed, and schedules them if not already scheduled
 export const updateScheduledNotifs = async (
-  reminderSchemes: ReminderSchemeConfig,
+  reminderSchemes: ReminderSchemesConfig,
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,
@@ -243,7 +244,7 @@ interface User {
 }
 
 export const getReminderPrefs = async (
-  reminderSchemes: ReminderSchemeConfig,
+  reminderSchemes: ReminderSchemesConfig,
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,
@@ -269,7 +270,7 @@ export const getReminderPrefs = async (
 };
 export const setReminderPrefs = async (
   newPrefs: object,
-  reminderSchemes: ReminderSchemeConfig,
+  reminderSchemes: ReminderSchemesConfig,
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,

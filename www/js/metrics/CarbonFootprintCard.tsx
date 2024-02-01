@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View } from 'react-native';
-import { Card, Text, useTheme } from 'react-native-paper';
+import { Card, Text } from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardStyles } from './MetricsTab';
 import {
@@ -15,21 +15,23 @@ import {
   calculatePercentChange,
   segmentDaysByWeeks,
   isCustomLabels,
+  MetricsSummary,
 } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 import ChangeIndicator from './ChangeIndicator';
 import color from 'color';
+import { useAppTheme } from '../appTheme';
 
-type Props = { userMetrics: MetricsData; aggMetrics: MetricsData };
+type Props = { userMetrics?: MetricsData; aggMetrics?: MetricsData };
 const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
-  const { colors } = useTheme();
+  const { colors } = useAppTheme();
   const { t } = useTranslation();
 
   const [emissionsChange, setEmissionsChange] = useState({});
 
   const userCarbonRecords = useMemo(() => {
-    if (userMetrics?.distance?.length > 0) {
+    if (userMetrics?.distance?.length) {
       //separate data into weeks
       const [thisWeekDistance, lastWeekDistance] = segmentDaysByWeeks(userMetrics?.distance, 2);
 
@@ -50,7 +52,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
       );
 
       //setting up data to be displayed
-      let graphRecords = [];
+      let graphRecords: { label: string; x: number | string; y: number | string }[] = [];
 
       //calculate low-high and format range for prev week, if exists (14 days ago -> 8 days ago)
       let userPrevWeek;
@@ -104,7 +106,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
   }, [userMetrics?.distance]);
 
   const groupCarbonRecords = useMemo(() => {
-    if (aggMetrics?.distance?.length > 0) {
+    if (aggMetrics?.distance?.length) {
       //separate data into weeks
       const thisWeekDistance = segmentDaysByWeeks(aggMetrics?.distance, 1)[0];
       console.log('testing agg metrics', aggMetrics, thisWeekDistance);
@@ -114,20 +116,17 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
 
       // Issue 422:
       // https://github.com/e-mission/e-mission-docs/issues/422
-      let aggCarbonData = [];
-      for (var i in aggThisWeekSummary) {
+      let aggCarbonData: MetricsSummary[] = [];
+      for (let i in aggThisWeekSummary) {
         aggCarbonData.push(aggThisWeekSummary[i]);
         if (isNaN(aggCarbonData[i].values)) {
-          console.warn(
-            'WARNING in calculating groupCarbonRecords: value is NaN for mode ' +
-              aggCarbonData[i].key +
-              ', changing to 0',
-          );
+          console.warn(`WARNING in calculating groupCarbonRecords: value is NaN for mode 
+            ${aggCarbonData[i].key}, changing to 0`);
           aggCarbonData[i].values = 0;
         }
       }
 
-      let groupRecords = [];
+      let groupRecords: { label: string; x: number | string; y: number | string }[] = [];
 
       let aggCarbon = {
         low: getFootprintForMetrics(aggCarbonData, 0),
@@ -150,7 +149,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
   }, [aggMetrics]);
 
   const chartData = useMemo(() => {
-    let tempChartData = [];
+    let tempChartData: { label: string; x: number | string; y: number | string }[] = [];
     if (userCarbonRecords?.length) {
       tempChartData = tempChartData.concat(userCarbonRecords);
     }
@@ -163,6 +162,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
   }, [userCarbonRecords, groupCarbonRecords]);
 
   const cardSubtitleText = useMemo(() => {
+    if (!aggMetrics?.distance?.length) return;
     const recentEntries = segmentDaysByWeeks(aggMetrics?.distance, 2)
       .reverse()
       .flat();

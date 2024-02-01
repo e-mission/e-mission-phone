@@ -1,20 +1,16 @@
 import { logDebug, displayErrorMsg } from '../plugin/logger';
 import { DateTime } from 'luxon';
-import { CompositeTrip, TimelineEntry, UserInputEntry } from '../types/diaryTypes';
+import { CompositeTrip, ConfirmedPlace, TimelineEntry, UserInputEntry } from '../types/diaryTypes';
 import { keysForLabelInputs, unprocessedLabels, unprocessedNotes } from '../diary/timelineHelper';
-import {
-  LabelOption,
-  MultilabelKey,
-  getLabelInputDetails,
-  inputType2retKey,
-  labelOptionByValue,
-} from './multilabel/confirmHelper';
+import { getLabelInputDetails, inputType2retKey } from './multilabel/confirmHelper';
 import { TimelineLabelMap, TimelineNotesMap } from '../diary/LabelTabContext';
+import { MultilabelKey } from '../types/labelTypes';
+import { EnketoUserInputEntry } from './enketo/enketoHelper';
 
 const EPOCH_MAXIMUM = 2 ** 31 - 1;
 
-export const fmtTs = (ts_in_secs: number, tz: string): string | null =>
-  DateTime.fromSeconds(ts_in_secs, { zone: tz }).toISO();
+export const fmtTs = (ts_in_secs: number, tz: string): false | string | null =>
+  ts_in_secs && tz ? DateTime.fromSeconds(ts_in_secs, { zone: tz }).toISO() : null;
 
 export const printUserInput = (ui: UserInputEntry): string => `${fmtTs(
   ui.data.start_ts,
@@ -57,7 +53,7 @@ export const validUserInputForTimelineEntry = (
 ): boolean => {
   if (!tlEntry.origin_key) return false;
   if (tlEntry.origin_key.includes('UNPROCESSED'))
-    return validUserInputForDraftTrip(tlEntry, userInput, logsEnabled);
+    return validUserInputForDraftTrip(tlEntry as CompositeTrip, userInput, logsEnabled);
 
   /* Place-level inputs always have a key starting with 'manual/place', and
         trip-level inputs never have a key starting with 'manual/place'
@@ -67,8 +63,8 @@ export const validUserInputForTimelineEntry = (
 
   if (entryIsPlace !== isPlaceInput) return false;
 
-  let entryStart = tlEntry.start_ts || tlEntry.enter_ts;
-  let entryEnd = tlEntry.end_ts || tlEntry.exit_ts;
+  let entryStart = (tlEntry as CompositeTrip).start_ts || (tlEntry as ConfirmedPlace).enter_ts;
+  let entryEnd = (tlEntry as CompositeTrip).end_ts || (tlEntry as ConfirmedPlace).exit_ts;
 
   if (!entryStart && entryEnd) {
     /* if a place has no enter time, this is the first start_place of the first composite trip object
@@ -104,7 +100,8 @@ export const validUserInputForTimelineEntry = (
 
   if (startChecks && !endChecks) {
     if (nextEntry) {
-      const nextEntryEnd = nextEntry.end_ts || nextEntry.exit_ts;
+      const nextEntryEnd =
+        (nextEntry as CompositeTrip).end_ts || (nextEntry as ConfirmedPlace).exit_ts;
       if (!nextEntryEnd) {
         // the last place will not have an exit_ts
         endChecks = true; // so we will just skip the end check
@@ -116,10 +113,10 @@ export const validUserInputForTimelineEntry = (
       }
     } else {
       // next trip is not defined, last trip
-      endChecks = userInput.data.end_local_dt.day == userInput.data.start_local_dt.day;
+      endChecks = userInput.data.end_local_dt?.day == userInput.data.start_local_dt?.day;
       logDebug('Second level of end checks for the last trip of the day');
       logDebug(
-        `compare ${userInput.data.end_local_dt.day} with ${userInput.data.start_local_dt.day} ${endChecks}`,
+        `compare ${userInput.data.end_local_dt?.day} with ${userInput.data.start_local_dt?.day} ${endChecks}`,
       );
     }
     if (endChecks) {
@@ -200,7 +197,7 @@ export const getUserInputForTimelineEntry = (
 export const getAdditionsForTimelineEntry = (
   entry: TimelineEntry,
   nextEntry: TimelineEntry | null,
-  additionsList: UserInputEntry[],
+  additionsList: EnketoUserInputEntry[],
 ): UserInputEntry[] => {
   const logsEnabled = additionsList?.length < 20;
 
@@ -279,7 +276,7 @@ export function mapInputsToTimelineEntries(
         tlEntry,
         nextEntry,
         unprocessedLabels['SURVEY'],
-      );
+      ) as EnketoUserInputEntry;
       if (userInputForTrip) {
         timelineLabelMap[tlEntry._id.$oid] = { SURVEY: userInputForTrip };
       } else {
@@ -295,36 +292,37 @@ export function mapInputsToTimelineEntries(
     } else {
       // MULTILABEL configuration: use the label inputs from the labelOptions to determine which
       // keys to look for in the unprocessedInputs
-      const labelsForTrip: { [k: string]: LabelOption } = {};
+      const labelsForTrip: { [k: string]: UserInputEntry | undefined } = {};
       Object.keys(getLabelInputDetails()).forEach((label: MultilabelKey) => {
         // Check unprocessed labels first since they are more recent
         const userInputForTrip = getUserInputForTimelineEntry(
           tlEntry,
           nextEntry,
           unprocessedLabels[label],
-        );
+        ) as UserInputEntry;
         if (userInputForTrip) {
-          labelsForTrip[label] = labelOptionByValue(userInputForTrip.data.label, label);
+          labelsForTrip[label] = userInputForTrip;
         } else {
           const processedLabelValue = tlEntry.user_input?.[inputType2retKey(label)];
-          labelsForTrip[label] = labelOptionByValue(processedLabelValue, label);
+          if (processedLabelValue) {
+            // TODO: when we unify the user input types on the server, we can remove this 'any' cast
+            labelsForTrip[label] = { data: { label: processedLabelValue } } as any;
+          }
         }
       });
       if (Object.keys(labelsForTrip).length) {
         timelineLabelMap[tlEntry._id.$oid] = labelsForTrip;
       }
     }
-  });
 
-  if (
-    appConfig?.survey_info?.buttons?.['trip-notes'] ||
-    appConfig?.survey_info?.buttons?.['place-notes']
-  ) {
-    // trip-level or place-level notes are configured, so we need to match additions too
-    allEntries.forEach((tlEntry, i) => {
+    if (
+      appConfig?.survey_info?.buttons?.['trip-notes'] ||
+      appConfig?.survey_info?.buttons?.['place-notes']
+    ) {
+      // trip-level or place-level notes are configured, so we need to match additions too
       /* With additions/notes, we can have multiple entries for a single trip or place.
-        So, we will read both the processed additions and unprocessed additions
-        and merge them together, removing duplicates. */
+          So, we will read both the processed additions and unprocessed additions
+          and merge them together, removing duplicates. */
       const nextEntry = i + 1 < allEntries.length ? allEntries[i + 1] : null;
       const unprocessedAdditions = getAdditionsForTimelineEntry(
         tlEntry,
@@ -339,8 +337,8 @@ export function mapInputsToTimelineEntries(
       if (mergedAdditions?.length) {
         timelineNotesMap[tlEntry._id.$oid] = mergedAdditions;
       }
-    });
-  }
+    }
+  });
 
   return [timelineLabelMap, timelineNotesMap];
 }

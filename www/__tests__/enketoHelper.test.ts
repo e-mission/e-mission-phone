@@ -5,6 +5,7 @@ import {
   resolveLabel,
   loadPreviousResponseForSurvey,
   saveResponse,
+  EnketoUserInputEntry,
 } from '../js/survey/enketo/enketoHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
@@ -12,6 +13,8 @@ import { getConfig, _test_resetStoredConfig } from '../../www/js/config/dynamicC
 import fakeConfig from '../__mocks__/fakeConfig.json';
 
 import initializedI18next from '../js/i18nextInit';
+import { CompositeTrip } from '../js/types/diaryTypes';
+import { AppConfig } from '../js/types/appConfigTypes';
 window['i18next'] = initializedI18next;
 
 mockBEMUserCache(fakeConfig);
@@ -63,7 +66,7 @@ it('gets the model response, if avaliable, or returns null', () => {
   };
 
   //if no xmlModel, returns null
-  expect(getInstanceStr(null, opts)).toBe(null);
+  expect(getInstanceStr('', opts)).toBe(null);
   //if there is a prefilled survey, return it
   expect(getInstanceStr(xmlModel, opts)).toBe(filled);
   //if there is a model and fields, return prefilled
@@ -79,23 +82,23 @@ it('resolves the timestamps', () => {
     end_local_dt: { timezone: 'America/Los_Angeles' },
     start_ts: 1469492672.928242,
     end_ts: 1469493031,
-  };
+  } as CompositeTrip;
 
   //missing data returns null
   const missingData =
     '<tag> <Start_date>2016-08-28</Start_date> <End_date>2016-07-25</End_date> <End_time>17:30:31.000-06:00</End_time> </tag>';
   const missDataDoc = xmlParser.parseFromString(missingData, 'text/html');
-  expect(resolveTimestamps(missDataDoc, timelineEntry)).toBeNull();
+  expect(resolveTimestamps(missDataDoc, timelineEntry, () => {})).toBeNull();
   //bad time returns undefined
   const badTimes =
     '<tag> <Start_date>2016-08-28</Start_date> <End_date>2016-07-25</End_date> <Start_time>17:32:32.928-06:00</Start_time> <End_time>17:30:31.000-06:00</End_time> </tag>';
   const badTimeDoc = xmlParser.parseFromString(badTimes, 'text/xml');
-  expect(resolveTimestamps(badTimeDoc, timelineEntry)).toBeUndefined();
+  expect(resolveTimestamps(badTimeDoc, timelineEntry, () => {})).toBeUndefined();
   //if within a minute, timelineEntry timestamps
   const timeEntry =
     '<tag> <Start_date>2016-07-25</Start_date> <End_date>2016-07-25</End_date> <Start_time>17:24:32.928-06:00</Start_time> <End_time>17:30:31.000-06:00</End_time> </tag>';
   const xmlDoc1 = xmlParser.parseFromString(timeEntry, 'text/xml');
-  expect(resolveTimestamps(xmlDoc1, timelineEntry)).toMatchObject({
+  expect(resolveTimestamps(xmlDoc1, timelineEntry, () => {})).toMatchObject({
     start_ts: 1469492672.928242,
     end_ts: 1469493031,
   });
@@ -103,7 +106,7 @@ it('resolves the timestamps', () => {
   const timeSurvey =
     '<tag> <Start_date>2016-07-25</Start_date> <End_date>2016-07-25</End_date> <Start_time>17:22:33.928-06:00</Start_time> <End_time>17:33:33.000-06:00</End_time> </tag>';
   const xmlDoc2 = xmlParser.parseFromString(timeSurvey, 'text/xml');
-  expect(resolveTimestamps(xmlDoc2, timelineEntry)).toMatchObject({
+  expect(resolveTimestamps(xmlDoc2, timelineEntry, () => {})).toMatchObject({
     start_ts: 1469492553.928,
     end_ts: 1469493213,
   });
@@ -203,7 +206,7 @@ it('resolves the label, if no labelVars, returns template', async () => {
  * @returns Promise of the saved result, or an Error if there was a problem
  */
 //   export function saveResponse(surveyName: string, enketoForm: Form, appConfig, opts: SurveyOptions) {
-it('gets the saved result or throws an error', () => {
+it('gets the saved result or throws an error', async () => {
   const surveyName = 'TimeUseSurvey';
   const form = {
     getDataStr: () => {
@@ -235,13 +238,13 @@ it('gets the saved result or throws an error', () => {
         },
       },
     },
-  };
+  } as unknown as AppConfig;
   const opts = {
     timelineEntry: {
       end_local_dt: { timezone: 'America/Los_Angeles' },
       start_ts: 1469492672.928242,
       end_ts: 1469493031,
-    },
+    } as CompositeTrip,
   };
 
   console.log(config);
@@ -249,10 +252,9 @@ it('gets the saved result or throws an error', () => {
     label: '1 Personal Care',
     name: 'TimeUseSurvey',
   });
-  expect(saveResponse(surveyName, badForm, config, opts)).resolves.toMatchObject({
-    message:
-      'The times you entered are invalid. Please ensure that the start time is before the end time.',
-  });
+  expect(async () => await saveResponse(surveyName, badForm, config, opts)).rejects.toEqual(
+    'The times you entered are invalid. Please ensure that the start time is before the end time.',
+  );
 });
 
 /*
@@ -282,12 +284,12 @@ it('filters the survey responses by their name and version', () => {
     {
       data: {
         label: 'Activity', //display label (this value is use for displaying on the button)
-        ts: '100000000', //the timestamp at which the survey was filled out (in seconds)
+        ts: 100000000, //the timestamp at which the survey was filled out (in seconds)
         fmt_time: '12:36', //the formatted timestamp at which the survey was filled out
         name: 'TimeUseSurvey', //survey name
-        version: '1', //survey version
+        version: 1, //survey version
         xmlResponse: '<this is my xml>', //survey response XML string
-        jsonDocResponse: 'this is my json object', //survey response JSON object
+        jsonDocResponse: { this: 'is my json object' }, //survey response JSON object
       },
       metadata: {},
     },
@@ -300,36 +302,36 @@ it('filters the survey responses by their name and version', () => {
     {
       data: {
         label: 'Activity', //display label (this value is use for displaying on the button)
-        ts: '100000000', //the timestamp at which the survey was filled out (in seconds)
+        ts: 100000000, //the timestamp at which the survey was filled out (in seconds)
         fmt_time: '12:36', //the formatted timestamp at which the survey was filled out
         name: 'TimeUseSurvey', //survey name
-        version: '1', //survey version
+        version: 1, //survey version
         xmlResponse: '<this is my xml>', //survey response XML string
-        jsonDocResponse: 'this is my json object', //survey response JSON object
+        jsonDocResponse: { this: 'is my json object' }, //survey response JSON object
       },
-      metadata: {},
+      metadata: {} as any,
     },
     {
       data: {
         label: 'Activity', //display label (this value is use for displaying on the button)
-        ts: '100000000', //the timestamp at which the survey was filled out (in seconds)
+        ts: 100000000, //the timestamp at which the survey was filled out (in seconds)
         fmt_time: '12:36', //the formatted timestamp at which the survey was filled out
         name: 'OtherSurvey', //survey name
-        version: '1', //survey version
+        version: 1, //survey version
         xmlResponse: '<this is my xml>', //survey response XML string
-        jsonDocResponse: 'this is my json object', //survey response JSON object
+        jsonDocResponse: { this: 'is my json object' }, //survey response JSON object
       },
-      metadata: {},
+      metadata: {} as any,
     },
     {
       data: {
         label: 'Activity', //display label (this value is use for displaying on the button)
-        ts: '100000000', //the timestamp at which the survey was filled out (in seconds)
+        ts: 100000000, //the timestamp at which the survey was filled out (in seconds)
         fmt_time: '12:39', //the formatted timestamp at which the survey was filled out
         name: 'TimeUseSurvey', //survey name
-        version: '0.5', //survey version
+        version: 0.5, //survey version
         xmlResponse: '<this is my xml>', //survey response XML string
-        jsonDocResponse: 'this is my json object', //survey response JSON object
+        jsonDocResponse: { this: 'is my json object' }, //survey response JSON object
       },
       metadata: {},
     },

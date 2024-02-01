@@ -242,7 +242,7 @@ describe('updateScheduledNotifs', () => {
     const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
     const scheduledPromise: Promise<any> = Promise.resolve();
     // create an empty array of mock notifs from cordova plugin
-    let mockNotifs = [];
+    let mockNotifs: any[] = [];
     // create the expected result
     const expectedResultcheduleNotifs = [
       { key: 'November 19, 2023', val: '9:00 PM' },
