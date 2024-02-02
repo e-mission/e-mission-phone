@@ -298,7 +298,7 @@ export function mapInputsToTimelineEntries(
       // MULTILABEL configuration: use the label inputs from the labelOptions to determine which
       // keys to look for in the unprocessedInputs
       const labelsForTrip: { [k: string]: UserInputEntry | undefined } = {};
-      Object.keys(getLabelInputDetails()).forEach((label: MultilabelKey) => {
+      Object.keys(getLabelInputDetails(appConfig)).forEach((label: MultilabelKey) => {
         // Check unprocessed labels first since they are more recent
         const userInputForTrip = getUserInputForTimelineEntry(
           tlEntry,

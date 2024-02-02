@@ -1,3 +1,6 @@
+import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
+import { mockLogger } from '../__mocks__/globalMocks';
+import { unprocessedLabels, updateLocalUnprocessedInputs } from '../js/diary/timelineHelper';
 import { EnketoUserInputEntry } from '../js/survey/enketo/enketoHelper';
 import {
   fmtTs,
@@ -8,8 +11,13 @@ import {
   getUserInputForTimelineEntry,
   getAdditionsForTimelineEntry,
   getUniqueEntries,
+  mapInputsToTimelineEntries,
 } from '../js/survey/inputMatcher';
+import { AppConfig } from '../js/types/appConfigTypes';
 import { CompositeTrip, TimelineEntry, UserInputEntry } from '../js/types/diaryTypes';
+
+mockLogger();
+mockBEMUserCache();
 
 describe('input-matcher', () => {
   let userTrip: UserInputEntry;
@@ -265,5 +273,212 @@ describe('input-matcher', () => {
   it('tests getUniqueEntries with empty combinedList', () => {
     const uniqueEntires = getUniqueEntries([]);
     expect(uniqueEntires).toMatchObject([]);
+  });
+});
+
+describe('mapInputsToTimelineEntries on a MULTILABEL configuration', () => {
+  const fakeConfigMultilabel = {
+    intro: {},
+    survey_info: {
+      'trip-labels': 'MULTILABEL',
+    },
+  } as AppConfig;
+
+  const timelineEntriesMultilabel = [
+    {
+      _id: { $oid: 'trip1' },
+      origin_key: 'analysis/confirmed_trip',
+      start_ts: 1000,
+      end_ts: 3000,
+      user_input: {
+        mode_confirm: 'walk',
+      },
+    },
+    {
+      _id: { $oid: 'placeA' },
+      origin_key: 'analysis/confirmed_place',
+      enter_ts: 3000,
+      exit_ts: 5000,
+      // no user input
+      additions: [{ data: 'foo', metadata: 'bar' }],
+    },
+    {
+      _id: { $oid: 'trip2' },
+      origin_key: 'analysis/confirmed_trip',
+      start_ts: 5000,
+      end_ts: 7000,
+      // no user input
+    },
+  ] as any as TimelineEntry[];
+  it('creates a map that has the processed labels and notes', () => {
+    const [labelMap, notesMap] = mapInputsToTimelineEntries(
+      timelineEntriesMultilabel,
+      fakeConfigMultilabel,
+    );
+    expect(labelMap).toMatchObject({
+      trip1: {
+        MODE: { data: { label: 'walk' } },
+      },
+    });
+  });
+  it('creates a map that combines processed and unprocessed labels and notes', async () => {
+    // insert some unprocessed data
+    await window['cordova'].plugins.BEMUserCache.putMessage('manual/purpose_confirm', {
+      label: 'recreation',
+      start_ts: 1000,
+      end_ts: 3000,
+    });
+    await window['cordova'].plugins.BEMUserCache.putMessage('manual/mode_confirm', {
+      label: 'bike',
+      start_ts: 5000,
+      end_ts: 7000,
+    });
+    await updateLocalUnprocessedInputs({ start_ts: 1000, end_ts: 5000 }, fakeConfigMultilabel);
+
+    // check that both processed and unprocessed data are returned
+    const [labelMap, notesMap] = mapInputsToTimelineEntries(
+      timelineEntriesMultilabel,
+      fakeConfigMultilabel,
+    );
+
+    expect(labelMap).toMatchObject({
+      trip1: {
+        MODE: { data: { label: 'walk' } },
+        PURPOSE: { data: { label: 'recreation' } },
+      },
+      trip2: {
+        MODE: { data: { label: 'bike' } },
+      },
+    });
+  });
+});
+
+describe('mapInputsToTimelineEntries on an ENKETO configuration', () => {
+  const fakeConfigEnketo = {
+    intro: {},
+    survey_info: {
+      'trip-labels': 'ENKETO',
+      buttons: {
+        'trip-notes': { surveyName: 'TimeSurvey' },
+      },
+      surveys: { TripConfirmSurvey: { compatibleWith: 1 } },
+    },
+  } as any as AppConfig;
+  const timelineEntriesEnketo = [
+    {
+      _id: { $oid: 'trip1' },
+      origin_key: 'analysis/confirmed_trip',
+      start_ts: 1000,
+      end_ts: 3000,
+      user_input: {
+        trip_user_input: {
+          data: {
+            name: 'TripConfirmSurvey',
+            version: 1,
+            xmlResponse: '<processed TripConfirmSurvey response>',
+            start_ts: 1000,
+            end_ts: 3000,
+          },
+          metadata: 'foo',
+        },
+      },
+      additions: [
+        {
+          data: {
+            name: 'TimeSurvey',
+            xmlResponse: '<processed TimeSurvey response>',
+            start_ts: 1000,
+            end_ts: 2000,
+          },
+          metadata: 'foo',
+        },
+      ],
+    },
+    {
+      _id: { $oid: 'trip2' },
+      origin_key: 'analysis/confirmed_trip',
+      start_ts: 5000,
+      end_ts: 7000,
+      // no user input
+      additions: [
+        {
+          data: {
+            name: 'TimeSurvey',
+            xmlResponse: '<processed TimeSurvey response>',
+            match_id: 'foo',
+            start_ts: 5000,
+            end_ts: 7000,
+          },
+          metadata: 'foo',
+        },
+      ],
+    },
+  ] as any as TimelineEntry[];
+  it('creates a map that has the processed responses and notes', () => {
+    const [labelMap, notesMap] = mapInputsToTimelineEntries(
+      timelineEntriesEnketo,
+      fakeConfigEnketo,
+    );
+    expect(labelMap).toMatchObject({
+      trip1: {
+        SURVEY: {
+          data: { xmlResponse: '<processed TripConfirmSurvey response>' },
+        },
+      },
+    });
+    expect(notesMap['trip1'].length).toBe(1);
+    expect(notesMap['trip1'][0]).toMatchObject({
+      data: { xmlResponse: '<processed TimeSurvey response>' },
+    });
+  });
+  it('creates a map that combines processed and unprocessed responses and notes', async () => {
+    // insert some unprocessed data
+    await window['cordova'].plugins.BEMUserCache.putMessage('manual/trip_user_input', {
+      name: 'TripConfirmSurvey',
+      version: 1,
+      xmlResponse: '<unprocessed TripConfirmSurvey response>',
+      start_ts: 5000,
+      end_ts: 7000,
+    });
+    await window['cordova'].plugins.BEMUserCache.putMessage('manual/trip_addition_input', {
+      name: 'TimeSurvey',
+      xmlResponse: '<unprocessed TimeSurvey response>',
+      match_id: 'bar',
+      start_ts: 6000,
+      end_ts: 7000,
+    });
+    await updateLocalUnprocessedInputs({ start_ts: 1000, end_ts: 5000 }, fakeConfigEnketo);
+
+    // check that both processed and unprocessed data are returned
+    const [labelMap, notesMap] = mapInputsToTimelineEntries(
+      timelineEntriesEnketo,
+      fakeConfigEnketo,
+    );
+
+    expect(labelMap).toMatchObject({
+      trip1: {
+        SURVEY: {
+          data: { xmlResponse: '<processed TripConfirmSurvey response>' },
+        },
+      },
+      trip2: {
+        SURVEY: {
+          data: { xmlResponse: '<unprocessed TripConfirmSurvey response>' },
+        },
+      },
+    });
+
+    expect(notesMap['trip1'].length).toBe(1);
+    expect(notesMap['trip1'][0]).toMatchObject({
+      data: { xmlResponse: '<processed TimeSurvey response>' },
+    });
+
+    expect(notesMap['trip2'].length).toBe(2);
+    expect(notesMap['trip2'][0]).toMatchObject({
+      data: { xmlResponse: '<unprocessed TimeSurvey response>' },
+    });
+    expect(notesMap['trip2'][1]).toMatchObject({
+      data: { xmlResponse: '<processed TimeSurvey response>' },
+    });
   });
 });
