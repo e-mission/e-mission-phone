@@ -2,7 +2,7 @@ import { logDebug, displayErrorMsg } from '../plugin/logger';
 import { DateTime } from 'luxon';
 import { CompositeTrip, ConfirmedPlace, TimelineEntry, UserInputEntry } from '../types/diaryTypes';
 import { keysForLabelInputs, unprocessedLabels, unprocessedNotes } from '../diary/timelineHelper';
-import { getLabelInputDetails, inputType2retKey } from './multilabel/confirmHelper';
+import { getLabelInputDetails, inputType2retKey, removeManualPrefix } from './multilabel/confirmHelper';
 import { TimelineLabelMap, TimelineNotesMap } from '../diary/LabelTabContext';
 import { MultilabelKey } from '../types/labelTypes';
 import { EnketoUserInputEntry } from './enketo/enketoHelper';
@@ -281,7 +281,8 @@ export function mapInputsToTimelineEntries(
         timelineLabelMap[tlEntry._id.$oid] = { SURVEY: userInputForTrip };
       } else {
         let processedSurveyResponse;
-        for (const key of keysForLabelInputs(appConfig)) {
+        for (const dataKey of keysForLabelInputs(appConfig)) {
+          const key = removeManualPrefix(dataKey);
           if (tlEntry.user_input?.[key]) {
             processedSurveyResponse = tlEntry.user_input[key];
             break;

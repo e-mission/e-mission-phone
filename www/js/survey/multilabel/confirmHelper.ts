@@ -137,8 +137,11 @@ export const getFakeEntry = (otherValue): Partial<LabelOption> | undefined => {
 export const labelKeyToRichMode = (labelKey: string) =>
   labelOptionByValue(labelKey, 'MODE')?.text || labelKeyToReadable(labelKey);
 
-/* manual/mode_confirm becomes mode_confirm */
-export const inputType2retKey = (inputType) => getLabelInputDetails()[inputType].key.split('/')[1];
+/** @description e.g. manual/mode_confirm becomes mode_confirm */
+export const removeManualPrefix = (key: string) => key.split('/')[1];
+/** @description e.g. 'MODE' gets looked up, its key is 'manual/mode_confirm'. Returns without prefix as 'mode_confirm' */
+export const inputType2retKey = (inputType: string) =>
+  removeManualPrefix(getLabelInputDetails()[inputType].key);
 
 export function verifiabilityForTrip(trip: CompositeTrip, userInputForTrip?: UserInputMap) {
   let allConfirmed = true;
