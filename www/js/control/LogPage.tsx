@@ -1,10 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, StyleSheet, SafeAreaView, Modal } from 'react-native';
 import { useTheme, Text, Appbar, IconButton } from 'react-native-paper';
-import { getAngularService } from '../angular-react-helper';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import AlertBar from './AlertBar';
 import { sendEmail } from './emailService';
 
@@ -15,7 +14,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
   const { colors } = useTheme();
 
   const [loadStats, setLoadStats] = useState<loadStats>();
-  const [entries, setEntries] = useState([]);
+  const [entries, setEntries] = useState<any>([]);
   const [maxErrorVis, setMaxErrorVis] = useState<boolean>(false);
   const [logErrorVis, setLogErrorVis] = useState<boolean>(false);
   const [maxMessage, setMaxMessage] = useState<string>('');
@@ -31,7 +30,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
 
   async function refreshEntries() {
     try {
-      let maxIndex = await window.Logger.getMaxIndex();
+      let maxIndex = await window['Logger'].getMaxIndex();
       console.log('maxIndex = ' + maxIndex);
       let tempStats = {} as loadStats;
       tempStats.currentStart = maxIndex;
@@ -54,17 +53,20 @@ const LogPage = ({ pageVis, setPageVis }) => {
   }, [loadStats]);
 
   const clear = function () {
-    window?.Logger.clearAll();
-    window?.Logger.log(window.Logger.LEVEL_INFO, 'Finished clearing entries from unified log');
+    window?.['Logger'].clearAll();
+    window?.['Logger'].log(
+      window['Logger'].LEVEL_INFO,
+      'Finished clearing entries from unified log',
+    );
     refreshEntries();
   };
 
   async function addEntries() {
     console.log('calling addEntries');
     setIsFetching(true);
-    let start = loadStats.currentStart ? loadStats.currentStart : 0; //set a default start to prevent initial fetch error
+    let start = loadStats?.currentStart ? loadStats.currentStart : 0; //set a default start to prevent initial fetch error
     try {
-      let entryList = await window.Logger.getMessagesFromIndex(start, RETRIEVE_COUNT);
+      let entryList = await window['Logger'].getMessagesFromIndex(start, RETRIEVE_COUNT);
       processEntries(entryList);
       console.log('entry list size = ' + entries.length);
       setIsFetching(false);
@@ -78,10 +80,10 @@ const LogPage = ({ pageVis, setPageVis }) => {
   }
 
   const processEntries = function (entryList) {
-    let tempEntries = [];
-    let tempLoadStats = { ...loadStats };
+    let tempEntries: any[] = [];
+    let tempLoadStats: loadStats = { ...loadStats } as loadStats;
     entryList.forEach((e) => {
-      e.fmt_time = moment.unix(e.ts).format('llll');
+      e.fmt_time = DateTime.fromSeconds(e.ts).toLocaleString(DateTime.DATETIME_MED);
       tempEntries.push(e);
     });
     if (entryList.length == 0) {
@@ -89,7 +91,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
       tempLoadStats.reachedEnd = true;
     } else {
       tempLoadStats.currentStart = entryList[entryList.length - 1].ID;
-      console.log('new start index = ' + loadStats.currentStart);
+      console.log('new start index = ' + loadStats?.currentStart);
     }
     setEntries([...entries].concat(tempEntries)); //push the new entries onto the list
     setLoadStats(tempLoadStats);
@@ -117,7 +119,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
         <Appbar.Header
           statusBarHeight={0}
           elevated={true}
-          style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+          style={{ height: 46, backgroundColor: colors.surface }}>
           <Appbar.BackAction
             onPress={() => {
               setPageVis(false);

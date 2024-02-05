@@ -1,6 +1,6 @@
-import { ServerData } from './serverData';
+import { BEMData } from './serverData';
 
-export type TimeStampData = ServerData<RawTimelineData>;
+export type TimeStampData = BEMData<RawTimelineData>;
 
 export type RawTimelineData = {
   name: string;

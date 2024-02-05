@@ -7,7 +7,7 @@ import { getBaseModeByKey, getBaseModeByValue } from '../diaryHelper';
 import LabelTabContext from '../LabelTabContext';
 
 const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
-  const { labelOptions, timelineLabelMap } = useContext(LabelTabContext);
+  const { labelOptions, labelFor } = useContext(LabelTabContext);
   const {
     displayStartTime,
     displayTime,
@@ -18,13 +18,13 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
 
   const { colors } = useTheme();
 
-  const labeledModeForTrip = timelineLabelMap[trip._id.$oid]?.MODE;
+  const labeledModeForTrip = labelFor(trip, 'MODE');
   let sections = formattedSectionProperties;
   /* if we're only showing the labeled mode, or there are no sections (i.e. unprocessed trip),
     we treat this as unimodal and use trip-level attributes to construct a single section */
   if ((showLabeledMode && labeledModeForTrip) || !trip.sections?.length) {
     let baseMode;
-    if (showLabeledMode && labeledModeForTrip) {
+    if (showLabeledMode && labelOptions && labeledModeForTrip) {
       baseMode = getBaseModeByValue(labeledModeForTrip.value, labelOptions);
     } else {
       baseMode = getBaseModeByKey('UNPROCESSED');
@@ -34,9 +34,9 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
         startTime: displayStartTime,
         duration: displayTime,
         distance: formattedDistance,
+        distanceSuffix,
         color: baseMode.color,
         icon: baseMode.icon,
-        text: showLabeledMode && labeledModeForTrip?.text, // label text only shown for labeled trips
       },
     ];
   }
@@ -68,9 +68,9 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
               iconColor={colors.onPrimary}
               containerColor={section.color}
             />
-            {section.text && (
+            {showLabeledMode && labeledModeForTrip && (
               <Text variant="labelSmall" numberOfLines={2} style={{ textAlign: 'center' }}>
-                {section.text}
+                {labeledModeForTrip.text}
               </Text>
             )}
           </View>

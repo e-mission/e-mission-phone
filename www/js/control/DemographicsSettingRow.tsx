@@ -8,7 +8,7 @@ export const DEMOGRAPHIC_SURVEY_DATAKEY = 'manual/demographic_survey';
 
 const DemographicsSettingRow = ({}) => {
   const [surveyModalVisible, setSurveyModalVisible] = useState(false);
-  const [prevSurveyResponse, setPrevSurveyResponse] = useState(null);
+  const [prevSurveyResponse, setPrevSurveyResponse] = useState<string | undefined>(undefined);
 
   function openPopover() {
     return loadPreviousResponseForSurvey(DEMOGRAPHIC_SURVEY_DATAKEY).then((lastSurvey) => {
@@ -21,12 +21,7 @@ const DemographicsSettingRow = ({}) => {
 
   return (
     <>
-      <SettingRow
-        action={openPopover}
-        iconName="account"
-        textKey="control.edit-demographics"
-        isToggle={false}
-      />
+      <SettingRow action={openPopover} iconName="account" textKey="control.edit-demographics" />
       <EnketoModal
         visible={surveyModalVisible}
         onDismiss={() => setSurveyModalVisible(false)}

@@ -3,14 +3,15 @@ import { StyleSheet } from 'react-native';
 import { List, Switch, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
-const SettingRow = ({
-  textKey,
-  iconName = undefined,
-  action,
-  desc = undefined,
-  switchValue = undefined,
-  descStyle = undefined,
-}) => {
+type Props = {
+  textKey: string;
+  iconName?: string;
+  action: any;
+  desc?: string;
+  switchValue?: boolean;
+  descStyle?: any;
+};
+const SettingRow = ({ textKey, iconName, action, desc, switchValue, descStyle }: Props) => {
   const { t } = useTranslation(); // Access translations
   const { colors } = useTheme(); // Get theme colors
 
@@ -21,7 +22,7 @@ const SettingRow = ({
     rightComponent = (
       <Switch
         value={switchValue}
-        accessibilityLabel={t(textKey)}
+        accessibilityLabel={t(textKey as any)}
         accessibilityHint={switchValue ? t('Currently enabled') : t('Currently disabled')}
       />
     );
@@ -36,20 +37,19 @@ const SettingRow = ({
   return (
     <List.Item
       style={styles.item(colors.surface)}
-      title={t(textKey)}
+      title={t(textKey as any)}
       titleStyle={styles.title}
       description={descriptionText}
       descriptionStyle={descStyle ? descStyle : styles.description}
       descriptionNumberOfLines={4}
       accessible={true}
-      accessibilityLabel={t(textKey)}
+      accessibilityLabel={t(textKey as any)}
       accessibilityRole="button"
       onPress={(e) => action(e)}
       right={() => rightComponent}
     />
   );
 };
-
 export const styles = StyleSheet.create({
   item: (surfaceColor) => ({
     justifyContent: 'space-between',

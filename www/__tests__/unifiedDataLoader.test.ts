@@ -1,10 +1,10 @@
 import { mockLogger } from '../__mocks__/globalMocks';
 import { removeDup, combinedPromises } from '../js/services/unifiedDataLoader';
-import { ServerData } from '../js/types/serverData';
+import { LocalDt, BEMData } from '../js/types/serverData';
 
 mockLogger();
 
-const testOne: ServerData<any> = {
+const testOne: BEMData<any> = {
   data: '',
   metadata: {
     key: '',
@@ -12,7 +12,7 @@ const testOne: ServerData<any> = {
     write_ts: 1, // the only value checked by removeDup
     time_zone: '',
     write_fmt_time: '',
-    write_local_dt: null,
+    write_local_dt: {} as LocalDt,
   },
 };
 
@@ -42,7 +42,7 @@ describe('removeDup can', () => {
 });
 
 // combinedPromises tests
-const promiseGenerator = (values: Array<ServerData<any>>) => {
+const promiseGenerator = (values: Array<BEMData<any>>) => {
   return Promise.resolve(values);
 };
 const badPromiseGenerator = (input: string) => {

@@ -16,7 +16,7 @@ export const Icon = ({ style, ...rest }: IconButtonProps) => {
       {...rest}
       role="none"
       focusable={false}
-      accessibilityHidden={true}
+      aria-hidden={true}
     />
   );
 };

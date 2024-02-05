@@ -1,5 +1,4 @@
 import React, { useEffect, useState, createContext, useMemo } from 'react';
-import { getAngularService } from './angular-react-helper';
 import { ActivityIndicator, BottomNavigation, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import LabelTab from './diary/LabelTab';
@@ -47,6 +46,12 @@ const defaultRoutes = (t) => [
 
 export const AppContext = createContext<any>({});
 
+const scenes = {
+  label: withErrorBoundary(LabelTab),
+  metrics: withErrorBoundary(MetricsTab),
+  control: withErrorBoundary(ProfileSettings),
+};
+
 const App = () => {
   const [index, setIndex] = useState(0);
   // will remain null while the onboarding state is still being determined
@@ -62,11 +67,7 @@ const App = () => {
     return showMetrics ? defaultRoutes(t) : defaultRoutes(t).filter((r) => r.key != 'metrics');
   }, [appConfig, t]);
 
-  const renderScene = BottomNavigation.SceneMap({
-    label: withErrorBoundary(LabelTab),
-    metrics: withErrorBoundary(MetricsTab),
-    control: withErrorBoundary(ProfileSettings),
-  });
+  const renderScene = BottomNavigation.SceneMap(scenes);
 
   const refreshOnboardingState = () => getPendingOnboardingState().then(setOnboardingState);
   useEffect(() => {

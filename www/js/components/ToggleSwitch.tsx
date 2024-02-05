@@ -7,9 +7,7 @@ const ToggleSwitch = ({ value, buttons, ...rest }: SegmentedButtonsProps) => {
   return (
     <SegmentedButtons
       value={value as any}
-      onValueChange={(v) => rest.onValueChange(v as any)}
       buttons={buttons.map((o) => ({
-        value: o.value,
         icon: o.icon,
         accessibilityLabel: o.value,
         uncheckedColor: colors.onSurfaceDisabled,

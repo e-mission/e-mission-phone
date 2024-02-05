@@ -46,7 +46,6 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
       // backwards compat - prev. versions might have config cleared but still have intro_done set
       if (!config && (isIntroDone || isConsented)) {
         resetDataAndRefresh(); // if there's no config, we need to reset everything
-        return null;
       }
 
       if (isIntroDone) {
@@ -63,15 +62,11 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
         route = OnboardingRoute.SURVEY;
       }
 
-      logDebug(
-        'pending onboarding state is ' +
-          route +
-          ' intro, config, consent, qr saved : ' +
-          isIntroDone +
-          config +
-          isConsented +
-          saveQrDone,
-      );
+      logDebug(`pending onboarding state is ${route}; 
+        isIntroDone = ${isIntroDone}; 
+        config = ${config}; 
+        isConsented = ${isConsented}; 
+        saveQrDone = ${saveQrDone}`);
 
       return { route, opcode: config?.joined?.opcode };
     },

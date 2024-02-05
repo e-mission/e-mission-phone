@@ -1,0 +1,35 @@
+name: code coverage
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+jobs:
+  run-codecov:
+    if: github.event.pull_request.draft == false
+    runs-on: macos-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Setup the serve environment
+        shell: bash -l {0}
+        run: |
+          bash setup/setup_serve.sh
+
+      - name: Run Jest tests
+        shell: bash -l {0}
+        run: |
+          source setup/activate_serve.sh
+          npx jest
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/coverage-final.json
+          flags: unit
+          fail_ci_if_error: ${{ github.repository == 'e-mission/e-mission-phone' }}
+          
