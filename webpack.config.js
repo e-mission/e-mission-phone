@@ -13,7 +13,6 @@ module.exports = {
       {
         test: /\.(scss|css)$/,
         include: [path.resolve(__dirname, 'www/css'),
-                  path.resolve(__dirname, 'www/manual_lib'),
                   path.resolve(__dirname, 'node_modules/enketo-core'),
                   path.resolve(__dirname, 'node_modules/leaflet')],
         use: ['style-loader', 'css-loader', 'sass-loader'],
@@ -57,11 +56,8 @@ module.exports = {
     ],
   },
   plugins: [
-    // to load jQuery and moment globally
+    // to load Leaflet globally
     new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      moment: 'moment',
       L: 'leaflet',
     }),
     new webpack.DefinePlugin({

@@ -27,24 +27,28 @@ import TripSectionsDescriptives from './TripSectionsDescriptives';
 import OverallTripDescriptives from './OverallTripDescriptives';
 import ToggleSwitch from '../../components/ToggleSwitch';
 import useAppConfig from '../../useAppConfig';
+import { CompositeTrip } from '../../types/diaryTypes';
 
 const LabelScreenDetails = ({ route, navigation }) => {
-  const { timelineMap, labelOptions, timelineLabelMap } = useContext(LabelTabContext);
+  const { timelineMap, labelOptions, labelFor } = useContext(LabelTabContext);
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
   const appConfig = useAppConfig();
   const { tripId, flavoredTheme } = route.params;
-  const trip = timelineMap.get(tripId);
+  const trip = timelineMap?.get(tripId) as CompositeTrip;
   const { colors } = flavoredTheme || useTheme();
   const { displayDate, displayStartTime, displayEndTime } = useDerivedProperties(trip);
   const [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
 
   const [modesShown, setModesShown] = useState<'labeled' | 'detected'>('labeled');
-  const tripGeojson = useGeojsonForTrip(
-    trip,
-    labelOptions,
-    modesShown == 'labeled' && timelineLabelMap[trip._id.$oid]?.MODE?.value,
-  );
+  const tripGeojson =
+    trip &&
+    labelOptions &&
+    useGeojsonForTrip(
+      trip,
+      labelOptions,
+      modesShown == 'labeled' ? labelFor(trip, 'MODE')?.value : undefined,
+    );
   const mapOpts = { minZoom: 3, maxZoom: 17 };
 
   const modal = (
@@ -53,7 +57,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
         <Appbar.Header
           statusBarHeight={0}
           elevated={true}
-          style={{ height: 46, backgroundColor: colors.surface, elevation: 3 }}>
+          style={{ height: 46, backgroundColor: colors.surface }}>
           <Appbar.BackAction
             onPress={() => {
               navigation.goBack();
@@ -71,9 +75,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
           />
         </Surface>
         <ScrollView style={{ paddingBottom: 30, backgroundColor: colors.background }}>
-          <Surface
-            mode="flat"
-            style={{ margin: 10, paddingHorizontal: 10, rowGap: 12, borderRadius: 15 }}>
+          <Surface mode="flat" style={{ margin: 10, padding: 10, rowGap: 12, borderRadius: 15 }}>
             {/* MultiLabel or UserInput button, inline on one row */}
             <View style={{ paddingVertical: 10 }}>
               {appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL' && (
@@ -93,9 +95,9 @@ const LabelScreenDetails = ({ route, navigation }) => {
 
             {/* If trip is labeled, show a toggle to switch between "Labeled Mode" and "Detected Modes"
               otherwise, just show "Detected" */}
-            {timelineLabelMap[trip._id.$oid]?.MODE?.value ? (
+            {trip && labelFor(trip, 'MODE')?.value ? (
               <ToggleSwitch
-                onValueChange={(v) => setModesShown(v)}
+                onValueChange={(v: 'labeled' | 'detected') => setModesShown(v)}
                 value={modesShown}
                 density="medium"
                 buttons={[
@@ -119,7 +121,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
             {/* Overall trip duration, distance, and modes.
               Only show this when multiple sections are shown, and we are showing detected modes.
               If we just showed the labeled mode or a single section, this would be redundant. */}
-            {modesShown == 'detected' && trip?.sections?.length > 1 && (
+            {modesShown == 'detected' && (trip as CompositeTrip)?.sections?.length > 1 && (
               <OverallTripDescriptives trip={trip} />
             )}
             {/* TODO: show speed graph here */}

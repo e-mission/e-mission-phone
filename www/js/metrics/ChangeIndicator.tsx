@@ -1,15 +1,16 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { useTheme, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import colorLib from 'color';
+import { useAppTheme } from '../appTheme';
 
 type Props = {
   change: { low: number; high: number };
 };
 
 const ChangeIndicator = ({ change }) => {
-  const { colors } = useTheme();
+  const { colors } = useAppTheme();
   const { t } = useTranslation();
 
   const changeSign = function (changeNum) {

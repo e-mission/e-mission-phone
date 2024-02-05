@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { View, ScrollView, useWindowDimensions } from 'react-native';
-import { Appbar } from 'react-native-paper';
+import { Appbar, useTheme } from 'react-native-paper';
 import NavBarButton from '../components/NavBarButton';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
@@ -47,13 +47,14 @@ function getLastTwoWeeksDtRange() {
 
 const MetricsTab = () => {
   const appConfig = useAppConfig();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const { getFormattedSpeed, speedSuffix, getFormattedDistance, distanceSuffix } =
     useImperialConfig();
 
   const [dateRange, setDateRange] = useState<DateTime[]>(getLastTwoWeeksDtRange);
-  const [aggMetrics, setAggMetrics] = useState<MetricsData>(null);
-  const [userMetrics, setUserMetrics] = useState<MetricsData>(null);
+  const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
+  const [userMetrics, setUserMetrics] = useState<MetricsData | undefined>(undefined);
 
   useEffect(() => {
     if (!appConfig?.server) return;
@@ -65,7 +66,11 @@ const MetricsTab = () => {
     try {
       logDebug(`MetricsTab: fetching metrics for population ${population}'
         in date range ${JSON.stringify(dateRange)}`);
-      const serverResponse = await fetchMetricsFromServer(population, dateRange, appConfig.server);
+      const serverResponse: any = await fetchMetricsFromServer(
+        population,
+        dateRange,
+        appConfig.server,
+      );
       logDebug('MetricsTab: received metrics: ' + JSON.stringify(serverResponse));
       const metrics = {};
       const dataKey = population == 'user' ? 'user_metrics' : 'aggregate_metrics';
@@ -95,7 +100,7 @@ const MetricsTab = () => {
       <Appbar.Header
         statusBarHeight={0}
         elevated={true}
-        style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+        style={{ height: 46, backgroundColor: colors.surface }}>
         <Appbar.Content title={t('metrics.dashboard-tab')} />
         <MetricsDateSelect dateRange={dateRange} setDateRange={setDateRange} />
         <Appbar.Action icon="refresh" size={32} onPress={refresh} />

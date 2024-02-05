@@ -25,7 +25,7 @@ const NavBarButton = ({ children, icon, onPressAction, ...otherProps }) => {
           <View>
             <Icon
               icon={icon}
-              color={colors.onBackground}
+              iconColor={colors.onBackground}
               size={20}
               style={{ marginVertical: 'auto' }}
             />

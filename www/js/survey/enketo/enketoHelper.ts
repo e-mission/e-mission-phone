@@ -9,26 +9,37 @@ import { DateTime } from 'luxon';
 import { fetchUrlCached } from '../../services/commHelper';
 import { getUnifiedDataForInterval } from '../../services/unifiedDataLoader';
 import { AppConfig, EnketoSurveyConfig } from '../../types/appConfigTypes';
-import { CompositeTrip, ConfirmedPlace, TimelineEntry } from '../../types/diaryTypes';
+import {
+  CompositeTrip,
+  ConfirmedPlace,
+  TimelineEntry,
+  TimestampRange,
+  UserInputData,
+  UserInputEntry,
+  isTrip,
+} from '../../types/diaryTypes';
 
 export type PrefillFields = { [key: string]: string };
 
 export type SurveyOptions = {
   undismissable?: boolean;
-  timelineEntry?: any;
+  timelineEntry?: TimelineEntry;
   prefilledSurveyResponse?: string;
   prefillFields?: PrefillFields;
   dataKey?: string;
 };
 
 type EnketoResponseData = {
+  start_ts?: number; //start timestamp (in seconds)
+  end_ts?: number; //end timestamp (in seconds)
   label: string; //display label (this value is use for displaying on the button)
-  ts: string; //the timestamp at which the survey was filled out (in seconds)
+  ts: number; //the timestamp at which the survey was filled out (in seconds)
   fmt_time: string; //the formatted timestamp at which the survey was filled out
   name: string; //survey name
-  version: string; //survey version
+  version: number; //survey version
+  key?: string; //data key
   xmlResponse: string; //survey response as XML string
-  jsonDocResponse: string; //survey response as JSON object
+  jsonDocResponse: { [k: string]: any }; //survey response as JSON object
 };
 
 type EnketoResponse = {
@@ -36,13 +47,21 @@ type EnketoResponse = {
   metadata: any;
 };
 
+export type EnketoUserInputData = UserInputData & {
+  key?: string;
+  version: number;
+  xmlResponse: string;
+  jsonDocResponse: { [k: string]: any };
+};
+export type EnketoUserInputEntry = UserInputEntry<EnketoUserInputData>;
+
 const LABEL_FUNCTIONS = {
   UseLabelTemplate: async (xmlDoc: XMLDocument, name: string) => {
     let appConfig = await getConfig();
     const configSurveys = appConfig.survey_info.surveys;
 
     const config = configSurveys[name]; // config for this survey
-    const lang = i18next.resolvedLanguage;
+    const lang = i18next.language;
     const labelTemplate = config.labelTemplate?.[lang];
 
     if (!labelTemplate) return 'Answered'; // no template given in config
@@ -53,7 +72,7 @@ const LABEL_FUNCTIONS = {
     const labelVars = {};
     for (let lblVar in config.labelVars) {
       const fieldName = config.labelVars[lblVar].key;
-      let fieldStr = _getAnswerByTagName(xmlDoc, fieldName);
+      let fieldStr: string | null = _getAnswerByTagName(xmlDoc, fieldName);
       if (fieldStr == '<null>') fieldStr = null;
       if (config.labelVars[lblVar].type == 'length') {
         const fieldMatches = fieldStr?.split(' ');
@@ -94,17 +113,15 @@ let _config: EnketoSurveyConfig;
  * @param {string} name survey name (defined in enketo survey config)
  * @param {EnketoResponse[]} responses An array of previously recorded responses to Enketo surveys
  *  (presumably having been retrieved from unifiedDataLoader)
+ * @param {AppConfig} appConfig the dynamic config file for the app
  * @return {Promise<EnketoResponse[]>} filtered survey responses
  */
-export function filterByNameAndVersion(name: string, responses: EnketoResponse[]) {
-  return getConfig().then((config) =>
-    responses.filter(
-      (r) =>
-        r.data.name === name && r.data.version >= config.survey_info.surveys[name].compatibleWith,
-    ),
+export function filterByNameAndVersion(name: string, responses: EnketoResponse[], appConfig) {
+  return responses.filter(
+    (r) =>
+      r.data.name === name && r.data.version >= appConfig.survey_info.surveys[name].compatibleWith,
   );
 }
-
 /**
  * resolve a label for the survey response
  * @param {string} name survey name
@@ -142,10 +159,10 @@ function getXmlWithPrefills(xmlModel: string, prefillFields: PrefillFields) {
  * @param opts object with options like 'prefilledSurveyResponse' or 'prefillFields'
  * @returns XML string of an existing or prefilled model response, or null if no response is available
  */
-export function getInstanceStr(xmlModel: string, opts: SurveyOptions): string | null {
+export function getInstanceStr(xmlModel: string, opts?: SurveyOptions): string | null {
   if (!xmlModel) return null;
-  if (opts.prefilledSurveyResponse) return opts.prefilledSurveyResponse;
-  if (opts.prefillFields) return getXmlWithPrefills(xmlModel, opts.prefillFields);
+  if (opts?.prefilledSurveyResponse) return opts.prefilledSurveyResponse;
+  if (opts?.prefillFields) return getXmlWithPrefills(xmlModel, opts.prefillFields);
   return null;
 }
 
@@ -153,11 +170,15 @@ export function getInstanceStr(xmlModel: string, opts: SurveyOptions): string | 
  * resolve timestamps label from the survey response
  * @param {XMLDocument} xmlDoc survey response as XML object
  * @param {object} timelineEntry trip or place object
+ * @param {function} onFail callback function to be called if timestamp validation fails
  * @returns {object} object with `start_ts` and `end_ts`
  *    - null if no timestamps are resolved
- *    - undefined if the timestamps are invalid
  */
-export function resolveTimestamps(xmlDoc: XMLDocument, timelineEntry: TimelineEntry) {
+export function resolveTimestamps(
+  xmlDoc: XMLDocument,
+  timelineEntry: TimelineEntry,
+  onFail: (e: Error) => void,
+) {
   // check for Date and Time fields
   const startDate = xmlDoc.getElementsByTagName('Start_date')?.[0]?.innerHTML;
   let startTime = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
@@ -182,7 +203,8 @@ export function resolveTimestamps(xmlDoc: XMLDocument, timelineEntry: TimelineEn
   let additionEndTs = DateTime.fromISO(endDate + 'T' + endTime, { zone: timezone }).toSeconds();
 
   if (additionStartTs > additionEndTs) {
-    return undefined; // if the start time is after the end time, this is an invalid response
+    onFail(new Error(i18next.t('survey.enketo-timestamps-invalid'))); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
+    return;
   }
 
   /* Enketo survey time inputs are only precise to the minute, while trips/places are precise to
@@ -210,13 +232,13 @@ export function resolveTimestamps(xmlDoc: XMLDocument, timelineEntry: TimelineEn
  * @param enketoForm the Form object from enketo-core that contains this survey
  * @param appConfig the dynamic config file for the app
  * @param opts object with SurveyOptions like 'timelineEntry' or 'dataKey'
- * @returns Promise of the saved result, or an Error if there was a problem
+ * @returns Promise of the saved result. May reject if there was a problem
  */
 export function saveResponse(
   surveyName: string,
   enketoForm: Form,
   appConfig: AppConfig,
-  opts: SurveyOptions,
+  opts?: SurveyOptions,
 ) {
   const xmlParser = new window.DOMParser();
   const xmlResponse = enketoForm.getDataStr();
@@ -225,31 +247,46 @@ export function saveResponse(
   const jsonDocResponse = xml2js.parse(xmlResponse);
   return resolveLabel(surveyName, xmlDoc)
     .then((rsLabel) => {
-      const data: any = {
-        label: rsLabel,
+      let timestamps: TimestampRange | { ts: number; fmt_time: string } | undefined;
+      let match_id: string | undefined;
+      if (opts?.timelineEntry) {
+        const resolvedTimestamps = resolveTimestamps(xmlDoc, opts.timelineEntry, (errOnFail) => {
+          return Promise.reject(errOnFail);
+        });
+        if (resolvedTimestamps?.start_ts && resolvedTimestamps?.end_ts) {
+          timestamps = resolvedTimestamps;
+        } else {
+          // if timestamps were not resolved from the survey, we will try the trip or place timestamps
+          timestamps = {
+            start_ts: isTrip(opts.timelineEntry)
+              ? opts.timelineEntry.start_ts
+              : opts.timelineEntry.enter_ts,
+            end_ts: isTrip(opts.timelineEntry)
+              ? opts.timelineEntry.end_ts
+              : opts.timelineEntry.exit_ts,
+          };
+        }
+        // UUID generated using this method https://stackoverflow.com/a/66332305
+        match_id = URL.createObjectURL(new Blob([])).slice(-36);
+      } else {
+        const now = new Date();
+        timestamps = {
+          ts: now.getTime() / 1000, // epoch seconds to be consistent with the server
+          fmt_time: now.toISOString(),
+        };
+      }
+      // use dataKey passed into opts if available, otherwise get it from the config
+      const dataKey = opts?.dataKey || appConfig.survey_info.surveys[surveyName].dataKey;
+      const data: EnketoUserInputData | EnketoResponseData = {
+        ...(timestamps || {}),
         name: surveyName,
         version: appConfig.survey_info.surveys[surveyName].version,
+        label: rsLabel,
+        match_id,
+        key: dataKey,
         xmlResponse,
         jsonDocResponse,
       };
-      if (opts.timelineEntry) {
-        let timestamps = resolveTimestamps(xmlDoc, opts.timelineEntry);
-        if (timestamps === undefined) {
-          // timestamps were resolved, but they are invalid
-          return new Error(i18next.t('survey.enketo-timestamps-invalid')); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
-        }
-        // if timestamps were not resolved from the survey, we will use the trip or place timestamps
-        data.start_ts = timestamps?.start_ts || opts.timelineEntry.enter_ts;
-        data.end_ts = timestamps?.end_ts || opts.timelineEntry.exit_ts;
-        // UUID generated using this method https://stackoverflow.com/a/66332305
-        data.match_id = URL.createObjectURL(new Blob([])).slice(-36);
-      } else {
-        const now = Date.now();
-        data.ts = now / 1000; // convert to seconds to be consistent with the server
-        data.fmt_time = new Date(now);
-      }
-      // use dataKey passed into opts if available, otherwise get it from the config
-      const dataKey = opts.dataKey || appConfig.survey_info.surveys[surveyName].dataKey;
       return window['cordova'].plugins.BEMUserCache.putMessage(dataKey, data).then(() => data);
     })
     .then((data) => data);
@@ -272,7 +309,7 @@ const _getMostRecent = (responses) => {
 export function loadPreviousResponseForSurvey(dataKey: string) {
   const tq = window['cordova'].plugins.BEMUserCache.getAllTimeQuery();
   logDebug('loadPreviousResponseForSurvey: dataKey = ' + dataKey + '; tq = ' + tq);
-  const getMethod = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
+  const getMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
   return getUnifiedDataForInterval(dataKey, tq, getMethod).then((responses) =>
     _getMostRecent(responses),
   );
@@ -280,6 +317,7 @@ export function loadPreviousResponseForSurvey(dataKey: string) {
 
 export async function fetchSurvey(url: string) {
   const responseText = await fetchUrlCached(url);
+  if (!responseText) return;
   try {
     return JSON.parse(responseText);
   } catch (e) {

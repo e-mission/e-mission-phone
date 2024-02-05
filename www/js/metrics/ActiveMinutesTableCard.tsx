@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { ACTIVE_MODES } from './WeeklyActiveMinutesCard';
 import { labelKeyToRichMode } from '../survey/multilabel/confirmHelper';
 
-type Props = { userMetrics: MetricsData };
+type Props = { userMetrics?: MetricsData };
 const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
   const { colors } = useTheme();
   const { t } = useTranslation();

@@ -39,7 +39,7 @@ export const LocalStorageObserver = createObserver<string, string>();
 export const { subscribe, publish } = LocalStorageObserver;
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
-  const [storedValue, setStoredValue] = useState(() => {
+  const [storedValue, setStoredValue] = useState<T | string>(() => {
     try {
       const item = window.localStorage.getItem(key);
       return item || initialValue;
@@ -53,7 +53,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     keyRef.current = key;
     // force state update
     const storedValue = window.localStorage.getItem(key);
-    setStoredValue(storedValue);
+    if (storedValue) setStoredValue(storedValue);
   }
 
   LocalStorageObserver.subscribe(key, setStoredValue);
@@ -74,7 +74,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
 }
 
 import Bottleneck from 'bottleneck';
-import { getAngularService } from '../angular-react-helper';
+import { displayError, logDebug } from '../plugin/logger';
 
 let nominatimLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 export const resetNominatimLimiter = () => {
@@ -104,11 +104,9 @@ function toAddressName(data) {
 }
 
 let nominatimError: Error;
-let Logger;
 // fetches nominatim data for a given location and stores it using the coordinates as the key
 // if the address name is already cached, it skips the fetch
 async function fetchNominatimLocName(loc_geojson) {
-  Logger = Logger || getAngularService('Logger');
   const coordsStr = loc_geojson.coordinates.toString();
   const cachedResponse = localStorage.getItem(coordsStr);
   if (cachedResponse) {
@@ -129,17 +127,15 @@ async function fetchNominatimLocName(loc_geojson) {
   try {
     const response = await fetch(url);
     const data = await response.json();
-    Logger.log(
-      `while reading data from nominatim, status = ${response.status} data = ${JSON.stringify(
-        data,
-      )}`,
-    );
+    logDebug(`while reading data from nominatim, 
+      status = ${response.status}; 
+      data = ${JSON.stringify(data)}`);
     localStorage.setItem(coordsStr, JSON.stringify(data));
     publish(coordsStr, data);
   } catch (error) {
     if (!nominatimError) {
       nominatimError = error;
-      Logger.displayError('while reading address data ', error);
+      displayError(error, 'while reading address data');
     }
   }
 }

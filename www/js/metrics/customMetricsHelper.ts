@@ -1,12 +1,11 @@
-import angular from 'angular';
 import { getLabelOptions } from '../survey/multilabel/confirmHelper';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { standardMETs } from './metDataset';
 import { AppConfig } from '../types/appConfigTypes';
 
 //variables to store values locally
-let _customMETs;
-let _customPerKmFootprint;
+let _customMETs: { [key: string]: { [key: string]: { range: number[]; met: number } } };
+let _customPerKmFootprint: { [key: string]: number };
 let _labelOptions;
 
 /**
@@ -67,7 +66,7 @@ function populateCustomMETs() {
       }
     }
   });
-  _customMETs = Object.fromEntries(modeMETEntries.filter((e) => angular.isDefined(e)));
+  _customMETs = Object.fromEntries(modeMETEntries.filter((e) => typeof e !== 'undefined'));
   logDebug('After populating, custom METs = ' + JSON.stringify(_customMETs));
 }
 
@@ -79,13 +78,13 @@ function populateCustomFootprints() {
   let modeOptions = _labelOptions['MODE'];
   let modeCO2PerKm = modeOptions
     .map((opt) => {
-      if (angular.isDefined(opt.kgCo2PerKm)) {
+      if (typeof opt.kgCo2PerKm !== 'undefined') {
         return [opt.value, opt.kgCo2PerKm];
       } else {
         return undefined;
       }
     })
-    .filter((modeCO2) => angular.isDefined(modeCO2));
+    .filter((modeCO2) => typeof modeCO2 !== 'undefined');
   _customPerKmFootprint = Object.fromEntries(modeCO2PerKm);
   logDebug('After populating, custom perKmFootprint' + JSON.stringify(_customPerKmFootprint));
 }

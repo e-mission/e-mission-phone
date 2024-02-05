@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon';
 import { formatForDisplay } from '../config/useImperialConfig';
 import { DayOfMetricData } from './metricsTypes';
-import moment from 'moment';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];
@@ -93,7 +92,7 @@ export function calculatePercentChange(pastWeekRange, previousWeekRange) {
 
 export function parseDataFromMetrics(metrics, population) {
   console.log('Called parseDataFromMetrics on ', metrics);
-  let mode_bins = {};
+  let mode_bins: { [k: string]: [number, number, string][] } = {};
   metrics?.forEach(function (metric) {
     let onFootVal = 0;
 
@@ -128,7 +127,7 @@ export function parseDataFromMetrics(metrics, population) {
         mode_bins[actualMode].push([
           metric.ts,
           Math.round(metricToValue(population, metric, field)),
-          moment(metric.fmt_time).format(),
+          DateTime.fromISO(metric.fmt_time).toISO() as string,
         ]);
       }
     }
@@ -138,35 +137,28 @@ export function parseDataFromMetrics(metrics, population) {
     }
   });
 
-  let return_val = [];
-  for (let mode in mode_bins) {
-    return_val.push({ key: mode, values: mode_bins[mode] });
-  }
-
-  return return_val;
+  return Object.entries(mode_bins).map(([key, values]) => ({ key, values }));
 }
 
+export type MetricsSummary = { key: string; values: number };
 export function generateSummaryFromData(modeMap, metric) {
   console.log('Invoked getSummaryDataRaw on ', modeMap, 'with', metric);
 
-  let summaryMap = [];
+  let summaryMap: MetricsSummary[] = [];
 
   for (let i = 0; i < modeMap.length; i++) {
-    let summary = {};
-    summary['key'] = modeMap[i].key;
-    let sumVals = 0;
-
+    let vals = 0;
     for (let j = 0; j < modeMap[i].values.length; j++) {
-      sumVals += modeMap[i].values[j][1]; //2nd item of array is value
+      vals += modeMap[i].values[j][1]; //2nd item of array is value
     }
     if (metric === 'mean_speed') {
-      //we care about avg speed, sum for other metrics
-      summary['values'] = Math.round(sumVals / modeMap[i].values.length);
-    } else {
-      summary['values'] = Math.round(sumVals);
+      // For speed, we take the avg. For other metrics we keep the sum
+      vals = vals / modeMap[i].values.length;
     }
-
-    summaryMap.push(summary);
+    summaryMap.push({
+      key: modeMap[i].key,
+      values: Math.round(vals),
+    });
   }
 
   return summaryMap;
@@ -182,8 +174,8 @@ export function generateSummaryFromData(modeMap, metric) {
 export const isCustomLabels = function (modeMap) {
   const isSensed = (mode) => mode == mode.toUpperCase();
   const isCustom = (mode) => mode == mode.toLowerCase();
-  const metricSummaryChecksCustom = [];
-  const metricSummaryChecksSensed = [];
+  const metricSummaryChecksCustom: boolean[] = [];
+  const metricSummaryChecksSensed: boolean[] = [];
 
   const distanceKeys = modeMap.map((e) => e.key);
   const isSensedKeys = distanceKeys.map(isSensed);
@@ -198,7 +190,7 @@ export const isCustomLabels = function (modeMap) {
   );
   const isAllCustomForMetric = isAllCustom(isSensedKeys, isCustomKeys);
   metricSummaryChecksSensed.push(!isAllCustomForMetric);
-  metricSummaryChecksCustom.push(isAllCustomForMetric);
+  metricSummaryChecksCustom.push(!!isAllCustomForMetric);
 
   console.log('overall custom/not results for each metric = ', metricSummaryChecksCustom);
   return isAllCustom(metricSummaryChecksSensed, metricSummaryChecksCustom);

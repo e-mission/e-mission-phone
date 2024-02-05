@@ -2,10 +2,10 @@ module.exports = {
   testEnvironment: 'jsdom',
   testPathIgnorePatterns: [
     "/node_modules/",
+    "/dist/",
     "/platforms/",
     "/plugins/",
     "/lib/",
-    "/manual_lib/"
   ],
   preset: 'react-native',
   transform: {

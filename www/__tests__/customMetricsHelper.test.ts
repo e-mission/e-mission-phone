@@ -8,8 +8,9 @@ import {
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 import fakeLabels from '../__mocks__/fakeLabels.json';
+import fakeConfig from '../__mocks__/fakeConfig.json';
 
-mockBEMUserCache();
+mockBEMUserCache(fakeConfig);
 mockLogger();
 
 beforeEach(() => {

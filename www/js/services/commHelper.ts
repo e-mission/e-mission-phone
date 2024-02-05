@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
-import { logDebug } from '../plugin/logger';
+import { displayError, logDebug } from '../plugin/logger';
 import { ServerConnConfig } from '../types/appConfigTypes';
+import { TimestampRange } from '../types/diaryTypes';
 
 /**
  * @param url URL endpoint for the request
@@ -12,12 +13,16 @@ export async function fetchUrlCached(url) {
     logDebug(`fetchUrlCached: found cached data for url ${url}, returning`);
     return Promise.resolve(stored);
   }
-  logDebug(`fetchUrlCached: found no cached data for url ${url}, fetching`);
-  const response = await fetch(url);
-  const text = await response.text();
-  localStorage.setItem(url, text);
-  logDebug(`fetchUrlCached: fetched data for url ${url}, returning`);
-  return text;
+  try {
+    logDebug(`fetchUrlCached: found no cached data for url ${url}, fetching`);
+    const response = await fetch(url);
+    const text = await response.text();
+    localStorage.setItem(url, text);
+    logDebug(`fetchUrlCached: fetched data for url ${url}, returning`);
+    return text;
+  } catch (e) {
+    displayError(e, `While fetching ${url}`);
+  }
 }
 
 export function getRawEntries(
@@ -87,8 +92,8 @@ export function getRawEntriesForLocalDate(
   });
 }
 
-export function getPipelineRangeTs() {
-  return new Promise((rs, rj) => {
+export function getPipelineRangeTs(): Promise<TimestampRange> {
+  return new Promise((rs: (rangeTs: TimestampRange) => void, rj) => {
     logDebug('getting pipeline range timestamps');
     window['cordova'].plugins.BEMServerComm.getUserPersonalData('/pipeline/get_range_ts', rs, rj);
   }).catch((error) => {
