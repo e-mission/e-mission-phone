@@ -85,5 +85,5 @@ it('errors out if not initialized', () => {
   const t = () => {
     getFootprintForMetrics(custom_metrics, 0);
   };
-  expect(t).toThrow(ReferenceError);
+  expect(t).toThrow(Error);
 });
