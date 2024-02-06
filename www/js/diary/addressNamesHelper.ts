@@ -29,9 +29,7 @@ export default function createObserver<
     },
     publish: (entryKey: KeyType, event: EventType) => {
       if (!listeners[entryKey]) listeners[entryKey] = [];
-      listeners[entryKey].forEach((listener: Listener<EventType>) =>
-        listener(event),
-      );
+      listeners[entryKey].forEach((listener: Listener<EventType>) => listener(event));
     },
   };
 }
@@ -41,8 +39,7 @@ export const LocalStorageObserver = createObserver<string, string>();
 export const { subscribe, publish } = LocalStorageObserver;
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
-
-  const [storedValue, setStoredValue] = useState(() => {
+  const [storedValue, setStoredValue] = useState<T | string>(() => {
     try {
       const item = window.localStorage.getItem(key);
       return item || initialValue;
@@ -56,15 +53,14 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     keyRef.current = key;
     // force state update
     const storedValue = window.localStorage.getItem(key);
-    setStoredValue(storedValue);
+    if (storedValue) setStoredValue(storedValue);
   }
 
   LocalStorageObserver.subscribe(key, setStoredValue);
 
   const setValue = (value: T) => {
     try {
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value;
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
       LocalStorageObserver.publish(key, valueToStore);
       if (typeof window !== 'undefined') {
@@ -77,11 +73,8 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   return [storedValue, setValue];
 }
 
-
-
-
-import Bottleneck from "bottleneck";
-import { getAngularService } from "../angular-react-helper";
+import Bottleneck from 'bottleneck';
+import { displayError, logDebug } from '../plugin/logger';
 
 let nominatimLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 export const resetNominatimLimiter = () => {
@@ -93,53 +86,64 @@ export const resetNominatimLimiter = () => {
 // accepts a nominatim response object and returns an address-like string
 // e.g. "Main St, San Francisco"
 function toAddressName(data) {
-  const address = data?.["address"];
+  const address = data?.['address'];
   if (address) {
     /* Sometimes, the street name ('road') isn't found and is undefined.
       If so, fallback to 'pedestrian' or 'suburb' or 'neighbourhood' */
-    const placeName = address['road'] || address['pedestrian'] ||
-            address['suburb'] || address['neighbourhood'] || '';
+    const placeName =
+      address['road'] ||
+      address['pedestrian'] ||
+      address['suburb'] ||
+      address['neighbourhood'] ||
+      '';
     /* This could be either a city or town. If neither, fallback to 'county' */
     const municipalityName = address['city'] || address['town'] || address['county'] || '';
-    return `${placeName}, ${municipalityName}`
+    return `${placeName}, ${municipalityName}`;
   }
   return '...';
 }
 
 let nominatimError: Error;
-let Logger;
 // fetches nominatim data for a given location and stores it using the coordinates as the key
 // if the address name is already cached, it skips the fetch
 async function fetchNominatimLocName(loc_geojson) {
-  Logger = Logger || getAngularService('Logger');
   const coordsStr = loc_geojson.coordinates.toString();
   const cachedResponse = localStorage.getItem(coordsStr);
   if (cachedResponse) {
-    console.log('fetchNominatimLocName: found cached response for ', coordsStr, cachedResponse, 'skipping fetch');
+    console.log(
+      'fetchNominatimLocName: found cached response for ',
+      coordsStr,
+      cachedResponse,
+      'skipping fetch',
+    );
     return;
   }
-  console.log("Getting location name for ", coordsStr);
-  const url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + loc_geojson.coordinates[1] + "&lon=" + loc_geojson.coordinates[0];
+  console.log('Getting location name for ', coordsStr);
+  const url =
+    'https://nominatim.openstreetmap.org/reverse?format=json&lat=' +
+    loc_geojson.coordinates[1] +
+    '&lon=' +
+    loc_geojson.coordinates[0];
   try {
     const response = await fetch(url);
     const data = await response.json();
-    Logger.log(`while reading data from nominatim, status = ${response.status} data = ${JSON.stringify(data)}`);
+    logDebug(`while reading data from nominatim, 
+      status = ${response.status}; 
+      data = ${JSON.stringify(data)}`);
     localStorage.setItem(coordsStr, JSON.stringify(data));
     publish(coordsStr, data);
   } catch (error) {
     if (!nominatimError) {
       nominatimError = error;
-      Logger.displayError("while reading address data ", error);
+      displayError(error, 'while reading address data');
     }
   }
-};
+}
 
 // Schedules nominatim fetches for the start and end locations of a trip
 export function fillLocationNamesOfTrip(trip) {
-  nominatimLimiter.schedule(() =>
-    fetchNominatimLocName(trip.end_loc));
-  nominatimLimiter.schedule(() =>
-    fetchNominatimLocName(trip.start_loc));
+  nominatimLimiter.schedule(() => fetchNominatimLocName(trip.end_loc));
+  nominatimLimiter.schedule(() => fetchNominatimLocName(trip.start_loc));
 }
 
 // a React hook that takes a trip or place and returns an array of its address names

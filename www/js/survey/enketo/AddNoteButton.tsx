@@ -7,28 +7,29 @@
   The start and end times of the addition are determined by the survey response.
 */
 
-import React, { useEffect, useState, useContext } from "react";
-import DiaryButton from "../../components/DiaryButton";
-import { useTranslation } from "react-i18next";
-import moment from "moment";
-import { LabelTabContext } from "../../diary/LabelTab";
-import EnketoModal from "./EnketoModal";
-import { displayErrorMsg, logDebug } from "../../plugin/logger";
+import React, { useEffect, useState, useContext } from 'react';
+import DiaryButton from '../../components/DiaryButton';
+import { useTranslation } from 'react-i18next';
+import { DateTime } from 'luxon';
+import LabelTabContext from '../../diary/LabelTabContext';
+import EnketoModal from './EnketoModal';
+import { displayErrorMsg, logDebug } from '../../plugin/logger';
+import { isTrip } from '../../types/diaryTypes';
 
 type Props = {
-  timelineEntry: any,
-  notesConfig: any,
-  storeKey: string,
-}
+  timelineEntry: any;
+  notesConfig: any;
+  storeKey: string;
+};
 const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
   const { t, i18n } = useTranslation();
   const [displayLabel, setDisplayLabel] = useState('');
-  const { repopulateTimelineEntry } = useContext(LabelTabContext)
+  const { notesFor, addUserInputToEntry } = useContext(LabelTabContext);
 
   useEffect(() => {
     let newLabel: string;
-    const localeCode = i18n.resolvedLanguage;
-    if (notesConfig?.['filled-in-label'] && timelineEntry.additionsList?.length > 0) {
+    const localeCode = i18n.language;
+    if (notesConfig?.['filled-in-label'] && notesFor(timelineEntry)?.length) {
       newLabel = notesConfig?.['filled-in-label']?.[localeCode];
       setDisplayLabel(newLabel);
     } else {
@@ -37,42 +38,47 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
     }
   }, [notesConfig]);
 
+  type PrefillTimes = {
+    Start_date?: string;
+    Start_time?: string;
+    End_date?: string;
+    End_time?: string;
+  };
   // return a dictionary of fields we want to prefill, using start/enter and end/exit times
   function getPrefillTimes() {
-
-    let begin = timelineEntry.start_ts || timelineEntry.enter_ts;
-    let stop = timelineEntry.end_ts || timelineEntry.exit_ts;
+    let begin = isTrip(timelineEntry) ? timelineEntry.start_ts : timelineEntry.enter_ts;
+    let stop = isTrip(timelineEntry) ? timelineEntry.end_ts : timelineEntry.exit_ts;
 
     // if addition(s) already present on this timeline entry, `begin` where the last one left off
-    timelineEntry.additionsList.forEach(a => {
-      if (a.data.end_ts > (begin || 0) && a.data.end_ts != stop)
-        begin = a.data.end_ts;
+    notesFor(timelineEntry)?.forEach((a) => {
+      if (a.data.end_ts > (begin || 0) && a.data.end_ts != stop) begin = a.data.end_ts;
     });
-    
-    const timezone = timelineEntry.start_local_dt?.timezone
-                      || timelineEntry.enter_local_dt?.timezone
-                      || timelineEntry.end_local_dt?.timezone
-                      || timelineEntry.exit_local_dt?.timezone;
-    const momentBegin = begin ? moment(begin * 1000).tz(timezone) : null;
-    const momentStop = stop ? moment(stop * 1000).tz(timezone) : null;
+
+    const timezone =
+      timelineEntry.start_local_dt?.timezone ||
+      timelineEntry.enter_local_dt?.timezone ||
+      timelineEntry.end_local_dt?.timezone ||
+      timelineEntry.exit_local_dt?.timezone;
+    const beginDt = begin ? DateTime.fromSeconds(begin).setZone(timezone) : null;
+    const stopDt = stop ? DateTime.fromSeconds(stop).setZone(timezone) : null;
 
     // the current, local time offset (e.g. -07:00)
-    const currOffset = moment().toISOString(true).slice(-6);
-    let Start_date: string, Start_time: string, End_date: string, End_time: string;
+    const currOffset = DateTime.now().toISO()?.slice(-6);
+    const prefillTimes: PrefillTimes = {};
 
     // enketo requires dates as YYYY-MM-DD, and times as HH:mm:ss.SSS+/-HH:mm
     // some may be left blank, if the timelineEntry doesn't have them
-    if (momentBegin) {
-      Start_date = momentBegin.format('YYYY-MM-DD');
-      Start_time = momentBegin.format('HH:mm:ss.SSS') + currOffset;
-    } else {
-      Start_date = momentStop.format('YYYY-MM-DD');
+    if (beginDt) {
+      prefillTimes.Start_date = beginDt.toFormat('yyyy-MM-dd');
+      prefillTimes.Start_time = beginDt.toFormat('HH:mm:ss.SSS') + currOffset;
+    } else if (stopDt) {
+      prefillTimes.Start_date = stopDt.toFormat('yyyy-MM-dd');
     }
-    if (momentStop) {
-      End_date = momentStop.format('YYYY-MM-DD');
-      End_time = momentStop.format('HH:mm:ss.SSS') + currOffset;
+    if (stopDt) {
+      prefillTimes.End_date = stopDt.toFormat('yyyy-MM-dd');
+      prefillTimes.End_time = stopDt.toFormat('HH:mm:ss.SSS') + currOffset;
     }
-    return { Start_date, Start_time, End_date, End_time };
+    return prefillTimes;
   }
 
   function launchAddNoteSurvey() {
@@ -80,33 +86,35 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
     console.log('About to launch survey ', surveyName);
     setPrefillTimes(getPrefillTimes());
     setModalVisible(true);
-  };
+  }
 
   function onResponseSaved(result) {
     if (result) {
-      logDebug('AddNoteButton: response was saved, about to repopulateTimelineEntry; result=' + JSON.stringify(result));
-      repopulateTimelineEntry(timelineEntry._id.$oid);
+      logDebug(`AddNoteButton: response was saved, about to addUserInputToEntry; 
+        result = ${JSON.stringify(result)}`);
+      addUserInputToEntry(timelineEntry._id.$oid, result, 'note');
     } else {
       displayErrorMsg('AddNoteButton: response was not saved, result=', result);
     }
   }
 
-  const [prefillTimes, setPrefillTimes] = useState(null);
+  const [prefillTimes, setPrefillTimes] = useState<PrefillTimes | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState(false);
 
-  return (<>
-    <DiaryButton icon={'plus-thick'} onPress={() => launchAddNoteSurvey()}>
-      {displayLabel}
-    </DiaryButton>
-    <EnketoModal visible={modalVisible}
-      onDismiss={() => setModalVisible(false)}
-      onResponseSaved={onResponseSaved}
-      surveyName={notesConfig?.surveyName}
-      opts={{ timelineEntry,
-              dataKey: storeKey,
-              prefillFields: prefillTimes
-      }} />
-  </>);
+  return (
+    <>
+      <DiaryButton icon={'plus-thick'} onPress={() => launchAddNoteSurvey()}>
+        {displayLabel}
+      </DiaryButton>
+      <EnketoModal
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
+        onResponseSaved={onResponseSaved}
+        surveyName={notesConfig?.surveyName}
+        opts={{ timelineEntry, dataKey: storeKey, prefillFields: prefillTimes }}
+      />
+    </>
+  );
 };
 
 export default AddNoteButton;

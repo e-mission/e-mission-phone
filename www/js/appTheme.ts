@@ -1,4 +1,4 @@
-import { MD3LightTheme as DefaultTheme, MD3Theme } from 'react-native-paper';
+import { MD3LightTheme as DefaultTheme, MD3Theme, useTheme } from 'react-native-paper';
 
 /* This is the base theme we will use throughout the app
   It's based on the default theme from React Native Paper, with some modifications */
@@ -28,10 +28,12 @@ const AppTheme = {
     },
     success: '#00a665', // lch(60% 55 155)
     warn: '#f8cf53', //lch(85% 65 85)
-    danger: '#f23934' // lch(55% 85 35)
+    danger: '#f23934', // lch(55% 85 35)
   },
   roundness: 5,
 };
+
+export const useAppTheme = () => useTheme<typeof AppTheme>();
 
 /* Next, we'll set up 'flavors' of the theme, which are variations on the theme
     with any number of properties overridden.
@@ -47,23 +49,26 @@ type DPartial<T> = { [P in keyof T]?: DPartial<T[P]> }; // https://stackoverflow
 type PartialTheme = DPartial<MD3Theme>;
 
 const flavorOverrides = {
-  place: { // for PlaceCards; a blueish color scheme
+  place: {
+    // for PlaceCards; a blueish color scheme
     colors: {
       elevation: {
         level1: '#cbe6ff', // lch(90, 20, 250)
       },
-    }
+    },
   },
-  untracked: { // for UntrackedTimeCards; a reddish color scheme
+  untracked: {
+    // for UntrackedTimeCards; a reddish color scheme
     colors: {
       primary: '#8c4a57', // lch(40 30 10)
       primaryContainer: '#e3bdc2', // lch(80 15 10)
       elevation: {
         level1: '#f8ebec', // lch(94 5 10)
       },
-    }
+    },
   },
-  draft: { // for TripCards and LabelDetailsScreen of draft trips; a greyish color scheme
+  draft: {
+    // for TripCards and LabelDetailsScreen of draft trips; a greyish color scheme
     colors: {
       primary: '#616971', // lch(44 6 250)
       primaryContainer: '#b6bcc2', // lch(76 4 250)
@@ -74,16 +79,19 @@ const flavorOverrides = {
         level1: '#e1e3e4', // lch(90 1 250)
         level2: '#d2d5d8', // lch(85 2 250)
       },
-    }
+    },
   },
 } satisfies Record<string, PartialTheme>;
 
 /* This function is used to retrieve the theme for a given flavor.
   If no valid flavor is specified, it returns the default theme. */
 export const getTheme = (flavor?: keyof typeof flavorOverrides) => {
-  if (!flavorOverrides[flavor]) return AppTheme;
+  if (!flavor || !flavorOverrides[flavor]) return AppTheme;
   const typeStyle = flavorOverrides[flavor];
-  const scopedElevation = {...AppTheme.colors.elevation, ...typeStyle?.colors?.elevation};
-  const scopedColors = {...AppTheme.colors, ...{...typeStyle.colors, elevation: scopedElevation}};
-  return {...AppTheme, colors: scopedColors};
-}
+  const scopedElevation = { ...AppTheme.colors.elevation, ...typeStyle?.colors?.elevation };
+  const scopedColors = {
+    ...AppTheme.colors,
+    ...{ ...typeStyle.colors, elevation: scopedElevation },
+  };
+  return { ...AppTheme, colors: scopedColors };
+};

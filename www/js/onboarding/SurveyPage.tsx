@@ -1,18 +1,21 @@
-import React, { useState, useEffect, useContext, useMemo } from "react";
-import { View, StyleSheet } from "react-native";
-import { ActivityIndicator, Button, Surface, Text } from "react-native-paper";
-import EnketoModal from "../survey/enketo/EnketoModal";
-import { DEMOGRAPHIC_SURVEY_DATAKEY, DEMOGRAPHIC_SURVEY_NAME } from "../control/DemographicsSettingRow";
-import { loadPreviousResponseForSurvey } from "../survey/enketo/enketoHelper";
-import { AppContext } from "../App";
-import { markIntroDone, registerUserDone } from "./onboardingHelper";
-import { useTranslation } from "react-i18next";
-import { DateTime } from "luxon";
-import { onboardingStyles } from "./OnboardingStack";
-import { displayErrorMsg } from "../plugin/logger";
-import i18next from "i18next";
+import React, { useState, useEffect, useContext, useMemo } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { ActivityIndicator, Button, Surface, Text } from 'react-native-paper';
+import EnketoModal from '../survey/enketo/EnketoModal';
+import {
+  DEMOGRAPHIC_SURVEY_DATAKEY,
+  DEMOGRAPHIC_SURVEY_NAME,
+} from '../control/DemographicsSettingRow';
+import { loadPreviousResponseForSurvey } from '../survey/enketo/enketoHelper';
+import { AppContext } from '../App';
+import { markIntroDone, registerUserDone } from './onboardingHelper';
+import { useTranslation } from 'react-i18next';
+import { DateTime } from 'luxon';
+import { onboardingStyles } from './OnboardingStack';
+import { displayErrorMsg } from '../plugin/logger';
+import i18next from 'i18next';
 
-let preloadedResponsePromise: Promise<any> = null;
+let preloadedResponsePromise: Promise<any>;
 export const preloadDemoSurveyResponse = () => {
   if (!preloadedResponsePromise) {
     if (!registerUserDone) {
@@ -22,19 +25,19 @@ export const preloadDemoSurveyResponse = () => {
     preloadedResponsePromise = loadPreviousResponseForSurvey(DEMOGRAPHIC_SURVEY_DATAKEY);
   }
   return preloadedResponsePromise;
-}
+};
 
 const SurveyPage = () => {
-
   const { t } = useTranslation();
   const { refreshOnboardingState } = useContext(AppContext);
   const [surveyModalVisible, setSurveyModalVisible] = useState(false);
-  const [prevSurveyResponse, setPrevSurveyResponse] = useState(null);
+  const [prevSurveyResponse, setPrevSurveyResponse] = useState<string | undefined>(undefined);
   const prevSurveyResponseDate = useMemo(() => {
     if (prevSurveyResponse) {
       const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(prevSurveyResponse, "text/xml");
+      const xmlDoc = parser.parseFromString(prevSurveyResponse, 'text/xml');
       const surveyEndDt = xmlDoc.querySelector('end')?.textContent; // ISO datetime of survey completion
+      if (!surveyEndDt) return;
       return DateTime.fromISO(surveyEndDt).toLocaleString(DateTime.DATE_FULL);
     }
   }, [prevSurveyResponse]);
@@ -60,42 +63,49 @@ const SurveyPage = () => {
     refreshOnboardingState();
   }
 
-  return (<>
-    <Surface style={onboardingStyles.page}>
-      {prevSurveyResponse ?
-        <View style={{margin: 'auto'}}>
-          <View style={{marginBottom: 20}}>
-            <Text variant='bodyLarge' style={{fontWeight: '500'}}> {t('survey.prev-survey-found')} </Text>
-            <Text> {prevSurveyResponseDate} </Text>
+  return (
+    <>
+      <Surface style={onboardingStyles.page}>
+        {prevSurveyResponse ? (
+          <View style={{ margin: 'auto' }}>
+            <View style={{ marginBottom: 20 }}>
+              <Text variant="bodyLarge" style={{ fontWeight: '500' }}>
+                {' '}
+                {t('survey.prev-survey-found')}{' '}
+              </Text>
+              <Text> {prevSurveyResponseDate} </Text>
+            </View>
+            <View style={onboardingStyles.buttonRow}>
+              <Button mode="contained" icon="pencil" onPress={() => setSurveyModalVisible(true)}>
+                {t('survey.edit-response')}
+              </Button>
+              <Button mode="outlined" icon="chevron-right" onPress={onFinish}>
+                {t('survey.use-prior-response')}
+              </Button>
+            </View>
           </View>
-          <View style={onboardingStyles.buttonRow}>
-            <Button mode='contained' icon='pencil' onPress={() => setSurveyModalVisible(true)}>
-              {t('survey.edit-response')}
-            </Button>
-            <Button mode='outlined' icon='chevron-right' onPress={onFinish}>
-              {t('survey.use-prior-response')}
-            </Button>
+        ) : (
+          <View style={{ margin: 'auto' }}>
+            <ActivityIndicator size="large" animating={true} />
+            <Text style={{ textAlign: 'center' }}>{t('survey.loading-prior-survey')}</Text>
           </View>
-        </View>
-      : 
-        <View style={{margin: 'auto'}}>
-          <ActivityIndicator size='large' animating={true} />
-          <Text style={{textAlign: 'center'}}>
-            {t('survey.loading-prior-survey')}
-          </Text>
-        </View>
-      }
-    </Surface>
-    <EnketoModal visible={surveyModalVisible} onDismiss={() => setSurveyModalVisible(false)}
-      onResponseSaved={onFinish} surveyName={DEMOGRAPHIC_SURVEY_NAME}
-      opts={{
-        /* If there is no prev response, we need an initial response from the user and should
+        )}
+      </Surface>
+      <EnketoModal
+        visible={surveyModalVisible}
+        onDismiss={() => setSurveyModalVisible(false)}
+        onResponseSaved={onFinish}
+        surveyName={DEMOGRAPHIC_SURVEY_NAME}
+        opts={{
+          /* If there is no prev response, we need an initial response from the user and should
           not allow them to dismiss the modal by the "<- Dismiss" button */
-        undismissable: !prevSurveyResponse,
-        prefilledSurveyResponse: prevSurveyResponse,
-        dataKey: DEMOGRAPHIC_SURVEY_DATAKEY,
-      }} />
-  </>);
+          undismissable: !prevSurveyResponse,
+          prefilledSurveyResponse: prevSurveyResponse,
+          dataKey: DEMOGRAPHIC_SURVEY_DATAKEY,
+        }}
+      />
+    </>
+  );
 };
 
 export default SurveyPage;

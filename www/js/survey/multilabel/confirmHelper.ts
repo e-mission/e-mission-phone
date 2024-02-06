@@ -1,82 +1,70 @@
-// may refactor this into a React hook once it's no longer used by any Angular screens
-
-import { getAngularService } from "../../angular-react-helper";
-import { fetchUrlCached } from "../../commHelper";
-import i18next from "i18next";
-import { logDebug } from "../../plugin/logger";
-
-type InputDetails<T extends string> = {
-  [k in T]?: {
-    name: string,
-    labeltext: string,
-    choosetext: string,
-    key: string,
-  }
-};
-export type LabelOptions<T extends string = 'MODE'|'PURPOSE'|'REPLACED_MODE'> = {
-  [k in T]: {
-    value: string,
-    baseMode: string,
-    met?: {range: any[], mets: number}
-    met_equivalent?: string,
-    kgCo2PerKm: number,
-    text?: string,
-  }[]
-} & { translations: {
-  [lang: string]: { [translationKey: string]: string }
-}};
+import { fetchUrlCached } from '../../services/commHelper';
+import i18next from 'i18next';
+import enJson from '../../../i18n/en.json';
+import { logDebug } from '../../plugin/logger';
+import { LabelOption, LabelOptions, MultilabelKey, InputDetails } from '../../types/labelTypes';
+import { CompositeTrip, InferredLabels, TimelineEntry } from '../../types/diaryTypes';
+import { TimelineLabelMap, UserInputMap } from '../../diary/LabelTabContext';
 
 let appConfig;
-export let labelOptions: LabelOptions<'MODE'|'PURPOSE'|'REPLACED_MODE'>;
-export let inputDetails: InputDetails<'MODE'|'PURPOSE'|'REPLACED_MODE'>;
+export let labelOptions: LabelOptions<MultilabelKey>;
+export let inputDetails: InputDetails<MultilabelKey>;
 
 export async function getLabelOptions(appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;
   if (labelOptions) return labelOptions;
-
   if (appConfig.label_options) {
     const labelOptionsJson = await fetchUrlCached(appConfig.label_options);
-    labelOptions = JSON.parse(labelOptionsJson) as LabelOptions;
-    /* fill in the translations to the 'text' fields of the labelOptions,
-      according to the current language */
-    const lang = i18next.language;
-    for (const opt in labelOptions) {
-      labelOptions[opt]?.forEach?.((o, i) => {
-        const translationKey = o.value;
-        const translation = labelOptions.translations[lang][translationKey];
-        labelOptions[opt][i].text = translation;
-      });
+    if (labelOptionsJson) {
+      logDebug(`label_options found in config, using dynamic label options 
+        at ${appConfig.label_options}`);
+      labelOptions = JSON.parse(labelOptionsJson) as LabelOptions;
     }
   } else {
-    // backwards compat: if dynamic config doesn't have label_options, use the old way
-    const i18nUtils = getAngularService("i18nUtils");
-    const optionFileName = await i18nUtils.geti18nFileName("json/", "trip_confirm_options", ".json");
-    try {
-      const optionJson = await fetch(optionFileName).then(r => r.json());
-      labelOptions = optionJson as LabelOptions;
-    } catch (e) {
-      logDebug("error "+JSON.stringify(e)+" while reading confirm options, reverting to defaults");
-      const optionJson = await fetch("json/trip_confirm_options.json.sample").then(r => r.json());
-      labelOptions = optionJson as LabelOptions;
+    const defaultLabelOptionsURL = 'json/label-options.json.sample';
+    logDebug(`No label_options found in config, using default label options 
+      at ${defaultLabelOptionsURL}`);
+    const defaultLabelOptionsJson = await fetchUrlCached(defaultLabelOptionsURL);
+    if (defaultLabelOptionsJson) {
+      labelOptions = JSON.parse(defaultLabelOptionsJson) as LabelOptions;
     }
+  }
+  /* fill in the translations to the 'text' fields of the labelOptions,
+    according to the current language */
+  const lang = i18next.language;
+  for (const opt in labelOptions) {
+    labelOptions[opt]?.forEach?.((o, i) => {
+      const translationKey = o.value;
+      /* If translation exists in labelOptions, use that. Otherwise, try i18next translations. */
+      const translationFromLabelOptions = labelOptions.translations?.[lang]?.[translationKey];
+      if (translationFromLabelOptions) {
+        labelOptions[opt][i].text = translationFromLabelOptions;
+      } else {
+        const i18nextKey = translationKey as keyof typeof enJson.multilabel; // cast for type safety
+        labelOptions[opt][i].text = i18next.t(`multilabel.${i18nextKey}`);
+      }
+    });
   }
   return labelOptions;
 }
 
+export const labelOptionByValue = (value: string, labelType: string): LabelOption | undefined =>
+  labelOptions[labelType]?.find((o) => o.value == value) || getFakeEntry(value);
+
 export const baseLabelInputDetails = {
   MODE: {
-    name: "MODE",
-    labeltext: "diary.mode",
-    choosetext: "diary.choose-mode",
-    key: "manual/mode_confirm",
+    name: 'MODE',
+    labeltext: 'diary.mode',
+    choosetext: 'diary.choose-mode',
+    key: 'manual/mode_confirm',
   },
   PURPOSE: {
-    name: "PURPOSE",
-    labeltext: "diary.purpose",
-    choosetext: "diary.choose-purpose",
-    key: "manual/purpose_confirm",
+    name: 'PURPOSE',
+    labeltext: 'diary.purpose',
+    choosetext: 'diary.choose-purpose',
+    key: 'manual/purpose_confirm',
   },
-}
+};
 
 export function getLabelInputDetails(appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;
@@ -88,37 +76,140 @@ export function getLabelInputDetails(appConfigParam?) {
     return baseLabelInputDetails;
   }
   // else this is a program, so add the REPLACED_MODE
-  inputDetails = { ...baseLabelInputDetails,
+  inputDetails = {
+    ...baseLabelInputDetails,
     REPLACED_MODE: {
-      name: "REPLACED_MODE",
-      labeltext: "diary.replaces",
-      choosetext: "diary.choose-replaced-mode",
-      key: "manual/replaced_mode",
-    }
+      name: 'REPLACED_MODE',
+      labeltext: 'diary.replaces',
+      choosetext: 'diary.choose-replaced-mode',
+      key: 'manual/replaced_mode',
+    },
   };
   return inputDetails;
 }
 
-export const getLabelInputs = () => Object.keys(getLabelInputDetails());
-export const getBaseLabelInputs = () => Object.keys(baseLabelInputDetails);
+export function labelInputDetailsForTrip(userInputForTrip, appConfigParam?) {
+  if (appConfigParam) appConfig = appConfigParam;
+  if (appConfig.intro.mode_studied) {
+    if (userInputForTrip?.['MODE']?.value == appConfig.intro.mode_studied) {
+      logDebug(
+        'Found trip labeled with mode of study ' +
+          appConfig.intro.mode_studied +
+          '. Needs REPLACED_MODE',
+      );
+      return getLabelInputDetails();
+    } else {
+      logDebug(
+        'Found trip not labeled with mode of study ' +
+          appConfig.intro.mode_studied +
+          ". Doesn't need REPLACED_MODE",
+      );
+      return baseLabelInputDetails;
+    }
+  } else {
+    logDebug('No mode of study, so there is no REPLACED_MODE label option');
+    return getLabelInputDetails();
+  }
+}
+
+export const getLabelInputs = () => Object.keys(getLabelInputDetails()) as MultilabelKey[];
+export const getBaseLabelInputs = () => Object.keys(baseLabelInputDetails) as MultilabelKey[];
 
 /** @description replace all underscores with spaces, and capitalizes the first letter of each word */
 export const labelKeyToReadable = (otherValue: string) => {
-  const words = otherValue.replace(/_/g, " ").trim().split(" ");
-  if (words.length == 0) return "";
-  return words.map((word) =>
-    word[0].toUpperCase() + word.slice(1)
-  ).join(" ");
-}
+  const words = otherValue.replace(/_/g, ' ').trim().split(' ');
+  if (words.length == 0) return '';
+  return words.map((word) => word[0].toUpperCase() + word.slice(1)).join(' ');
+};
 
 /** @description replaces all spaces with underscores, and lowercases the string */
 export const readableLabelToKey = (otherText: string) =>
-  otherText.trim().replace(/ /g, "_").toLowerCase();
+  otherText.trim().replace(/ /g, '_').toLowerCase();
 
-export const getFakeEntry = (otherValue) => ({
-  text: labelKeyToReadable(otherValue),
-  value: otherValue,
-});
+export const getFakeEntry = (otherValue): Partial<LabelOption> | undefined => {
+  if (!otherValue) return undefined;
+  return {
+    text: labelKeyToReadable(otherValue),
+    value: otherValue,
+  };
+};
 
 export const labelKeyToRichMode = (labelKey: string) =>
-  labelOptions?.MODE?.find(m => m.value == labelKey)?.text || labelKeyToReadable(labelKey);
+  labelOptionByValue(labelKey, 'MODE')?.text || labelKeyToReadable(labelKey);
+
+/** @description e.g. manual/mode_confirm becomes mode_confirm */
+export const removeManualPrefix = (key: string) => key.split('/')[1];
+/** @description e.g. 'MODE' gets looked up, its key is 'manual/mode_confirm'. Returns without prefix as 'mode_confirm' */
+export const inputType2retKey = (inputType: string) =>
+  removeManualPrefix(getLabelInputDetails()[inputType].key);
+
+export function verifiabilityForTrip(trip: CompositeTrip, userInputForTrip?: UserInputMap) {
+  let allConfirmed = true;
+  let someInferred = false;
+  const inputsForTrip = Object.keys(labelInputDetailsForTrip(userInputForTrip));
+  for (const inputType of inputsForTrip) {
+    const finalInference = inferFinalLabels(trip, userInputForTrip)[inputType];
+    const confirmed = userInputForTrip?.[inputType];
+    const inferred = finalInference && Object.values(finalInference).some((o) => o);
+    if (inferred && !confirmed) someInferred = true;
+    if (!confirmed) allConfirmed = false;
+  }
+  return someInferred ? 'can-verify' : allConfirmed ? 'already-verified' : 'cannot-verify';
+}
+
+export function inferFinalLabels(trip: CompositeTrip, userInputForTrip?: UserInputMap) {
+  // Deep copy the possibility tuples
+  let labelsList: InferredLabels = [];
+  if (trip.inferred_labels) {
+    labelsList = JSON.parse(JSON.stringify(trip.inferred_labels));
+  }
+
+  // Capture the level of certainty so we can reconstruct it later
+  const totalCertainty = labelsList.map((item) => item.p).reduce((item, rest) => item + rest, 0);
+
+  // Filter out the tuples that are inconsistent with existing green labels
+  for (const inputType of getLabelInputs()) {
+    const userInput = userInputForTrip?.[inputType];
+    if (userInput) {
+      const retKey = inputType2retKey(inputType);
+      labelsList = labelsList.filter((item) => item.labels[retKey] == userInput.data.label);
+    }
+  }
+
+  const finalInference: { [k in MultilabelKey]?: LabelOption } = {};
+
+  // Return early with (empty obj) if there are no possibilities left
+  if (labelsList.length == 0) {
+    return finalInference;
+  } else {
+    // Normalize probabilities to previous level of certainty
+    const certaintyScalar =
+      totalCertainty / labelsList.map((item) => item.p).reduce((item, rest) => item + rest);
+    labelsList.forEach((item) => (item.p *= certaintyScalar));
+
+    for (const inputType of getLabelInputs()) {
+      // For each label type, find the most probable value by binning by label value and summing
+      const retKey = inputType2retKey(inputType);
+      let valueProbs = new Map();
+      for (const tuple of labelsList) {
+        const labelValue = tuple.labels[retKey];
+        if (!valueProbs.has(labelValue)) valueProbs.set(labelValue, 0);
+        valueProbs.set(labelValue, valueProbs.get(labelValue) + tuple.p);
+      }
+      let max = { p: 0, labelValue: undefined };
+      for (const [thisLabelValue, thisP] of valueProbs) {
+        // In the case of a tie, keep the label with earlier first appearance in the labelsList (we used a Map to preserve this order)
+        if (thisP > max.p) max = { p: thisP, labelValue: thisLabelValue };
+      }
+
+      // Display a label as red if its most probable inferred value has a probability less than or equal to the trip's confidence_threshold
+      // Fails safe if confidence_threshold doesn't exist
+      if (max.p <= trip.confidence_threshold) max.labelValue = undefined;
+
+      if (max.labelValue) {
+        finalInference[inputType] = labelOptionByValue(max.labelValue, inputType);
+      }
+    }
+    return finalInference;
+  }
+}
