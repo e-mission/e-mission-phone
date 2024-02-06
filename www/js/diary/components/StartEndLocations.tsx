@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ViewProps } from 'react-native';
+import { View } from 'react-native';
 import { Icon } from '../../components/Icon';
 import { Text, Divider, useTheme } from 'react-native-paper';
 
@@ -55,7 +55,7 @@ const s = {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: centered ? 'center' : 'flex-start',
-    }) as ViewProps,
+    }) as const,
   locationIcon: (colors, iconSize, filled?) =>
     ({
       border: `2px solid ${colors.primary}`,
@@ -67,7 +67,7 @@ const s = {
       height: iconSize * 1.5,
       backgroundColor: filled ? colors.primary : colors.onPrimary,
       marginRight: 6,
-    }) as ViewProps,
+    }) as const,
 };
 
 export default StartEndLocations;

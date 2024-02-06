@@ -23,8 +23,10 @@ import useDerivedProperties from '../useDerivedProperties';
 import StartEndLocations from '../components/StartEndLocations';
 import ModesIndicator from './ModesIndicator';
 import { useGeojsonForTrip } from '../timelineHelper';
+import { CompositeTrip } from '../../types/diaryTypes';
+import { EnketoUserInputEntry } from '../../survey/enketo/enketoHelper';
 
-type Props = { trip: { [key: string]: any } };
+type Props = { trip: CompositeTrip };
 const TripCard = ({ trip }: Props) => {
   const { t } = useTranslation();
   const { width: windowWidth } = useWindowDimensions();
@@ -40,12 +42,9 @@ const TripCard = ({ trip }: Props) => {
   } = useDerivedProperties(trip);
   let [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
   const navigation = useNavigation<any>();
-  const { labelOptions, timelineLabelMap, timelineNotesMap } = useContext(LabelTabContext);
-  const tripGeojson = useGeojsonForTrip(
-    trip,
-    labelOptions,
-    timelineLabelMap[trip._id.$oid]?.MODE?.value,
-  );
+  const { labelOptions, labelFor, notesFor } = useContext(LabelTabContext);
+  const tripGeojson =
+    trip && labelOptions && useGeojsonForTrip(trip, labelOptions, labelFor(trip, 'MODE')?.value);
 
   const isDraft = trip.key.includes('UNPROCESSED');
   const flavoredTheme = getTheme(isDraft ? 'draft' : undefined);
@@ -123,7 +122,7 @@ const TripCard = ({ trip }: Props) => {
           />
           <ModesIndicator trip={trip} detectedModes={detectedModes} />
           {showAddNoteButton && (
-            <View style={s.notesButton}>
+            <View style={cardStyles.notesButton}>
               <AddNoteButton
                 timelineEntry={trip}
                 notesConfig={appConfig?.survey_info?.buttons?.['trip-notes']}
@@ -133,9 +132,12 @@ const TripCard = ({ trip }: Props) => {
           )}
         </View>
       </View>
-      {timelineNotesMap[trip._id.$oid]?.length && (
+      {notesFor(trip)?.length && (
         <View style={cardStyles.cardFooter}>
-          <AddedNotesList timelineEntry={trip} additionEntries={timelineNotesMap[trip._id.$oid]} />
+          <AddedNotesList
+            timelineEntry={trip}
+            additionEntries={(notesFor(trip) as EnketoUserInputEntry[]) || []}
+          />
         </View>
       )}
     </DiaryCard>
@@ -154,12 +156,6 @@ const s = StyleSheet.create({
     overflow: 'hidden',
     borderTopLeftRadius: 15,
     borderBottomRightRadius: 15,
-  },
-  notesButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-    minWidth: 150,
-    margin: 'auto',
   },
   rightPanel: {
     flex: 1,

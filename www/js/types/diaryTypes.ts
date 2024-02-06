@@ -3,6 +3,7 @@
  As much as possible, these types parallel the types used in the server code. */
 
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
+import { MultilabelKey } from './labelTypes';
 import { BEMData, LocalDt } from './serverData';
 import { FeatureCollection, Feature, Geometry, Point } from 'geojson';
 
@@ -18,8 +19,10 @@ type UserInput = {
 };
 
 export type ConfirmedPlace = {
+  _id: ObjectId;
   additions: UserInputEntry[];
   cleaned_place: ObjectId;
+  duration: number;
   ending_trip: ObjectId;
   enter_fmt_time: string; // ISO string e.g. 2023-10-31T12:00:00.000-04:00
   enter_local_dt: LocalDt;
@@ -42,9 +45,14 @@ export type TripTransition = {
   ts: number;
 };
 
+export type LocationCoord = {
+  type: string; // e.x., "Point"
+  coordinates: [number, number];
+};
+
 type CompTripLocations = {
   loc: {
-    coordinates: [number, number]; // [1,2.3]
+    coordinates: number[]; // e.g. [1, 2.3]
   };
   speed: number;
   ts: number;
@@ -92,7 +100,7 @@ export type CompositeTrip = {
   end_ts: number;
   expectation: any; // TODO "{to_label: boolean}"
   expected_trip: ObjectId;
-  inferred_labels: any[]; // TODO
+  inferred_labels: InferredLabels;
   inferred_section_summary: SectionSummary;
   inferred_trip: ObjectId;
   key: string;
@@ -114,12 +122,12 @@ export type CompositeTrip = {
  so a 'timeline entry' is either a trip or a place. */
 export type TimelineEntry = ConfirmedPlace | CompositeTrip;
 
-export type TimestampRange = { start_ts: number; end_ts: number };
-
 /* Type guard to disambiguate timeline entries as either trips or places
   If it has a 'start_ts' and 'end_ts', it's a trip. Else, it's a place. */
 export const isTrip = (entry: TimelineEntry): entry is CompositeTrip =>
   entry.hasOwnProperty('start_ts') && entry.hasOwnProperty('end_ts');
+
+export type TimestampRange = { start_ts: number; end_ts: number };
 
 /* These properties aren't received from the server, but are derived from the above properties.
   They are used in the UI to display trip/place details and are computed by the useDerivedProperties hook. */
@@ -142,7 +150,12 @@ export type SectionSummary = {
   duration: { [k: MotionTypeKey | BaseModeKey]: number };
 };
 
-type UserInputData = {
+export type InferredLabels = {
+  p: number;
+  labels: { [k in Lowercase<MultilabelKey> as `${k}_confirm`]?: string };
+}[];
+
+export type UserInputData = {
   end_ts: number;
   start_ts: number;
   label: string;
@@ -150,9 +163,20 @@ type UserInputData = {
   end_local_dt?: LocalDt;
   status?: string;
   match_id?: string;
+  name: string;
 };
-
-export type UserInputEntry = BEMData<UserInputData>;
+export type UserInputEntry<T = UserInputData> = {
+  data: T;
+  metadata: {
+    time_zone: string;
+    plugin: string;
+    write_ts: number;
+    platform: string;
+    read_ts: number;
+    key: string;
+  };
+  key?: string;
+};
 
 export type Location = {
   speed: number;
@@ -164,7 +188,7 @@ export type Location = {
   latitude: number;
   fmt_time: string; // ISO
   mode: number;
-  loc: Geometry;
+  loc: LocationCoord;
   ts: number; // Unix
   altitude: number;
   distance: number;
@@ -173,14 +197,14 @@ export type Location = {
 // used in readAllCompositeTrips
 export type SectionData = {
   end_ts: number; // Unix time, e.x. 1696352498.804
-  end_loc: Geometry;
+  end_loc: LocationCoord;
   start_fmt_time: string; // ISO time
   end_fmt_time: string;
   trip_id: ObjectId;
   sensed_mode: number;
   source: string; // e.x., "SmoothedHighConfidenceMotion"
   start_ts: number; // Unix
-  start_loc: Geometry;
+  start_loc: LocationCoord;
   cleaned_section: ObjectId;
   start_local_dt: LocalDt;
   end_local_dt: LocalDt;
@@ -205,7 +229,7 @@ export type FilteredLocation = {
   ts: number;
 };
 
-export type GeoJSONStyledFeature = Feature & { style?: { color: string } };
+export type GeoJSONStyledFeature = Feature<Geometry, any> & { style?: { color: string } };
 
 export type GeoJSONData = {
   data: FeatureCollection & { id: string; properties: { start_ts: number; end_ts: number } };

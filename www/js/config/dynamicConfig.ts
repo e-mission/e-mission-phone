@@ -7,7 +7,7 @@ import { AppConfig } from '../types/appConfigTypes';
 export const CONFIG_PHONE_UI = 'config/app_ui_config';
 export const CONFIG_PHONE_UI_KVSTORE = 'CONFIG_PHONE_UI';
 
-export let storedConfig = null;
+export let storedConfig: AppConfig | null = null;
 export let configChanged = false;
 export const setConfigChanged = (b) => (configChanged = b);
 
@@ -178,7 +178,7 @@ function extractStudyName(token: string): string {
   return tokenParts[1];
 }
 
-function extractSubgroup(token: string, config: AppConfig): string {
+function extractSubgroup(token: string, config: AppConfig): string | undefined {
   if (config.opcode) {
     // new style study, expects token with sub-group
     const tokenParts = token.split('_');

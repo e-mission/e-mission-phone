@@ -26,6 +26,7 @@ const OnboardingStack = () => {
     return <SurveyPage />;
   } else {
     displayErrorMsg('OnboardingStack: unknown route', onboardingState.route);
+    return <></>;
   }
 };
 

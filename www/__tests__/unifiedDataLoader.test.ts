@@ -1,6 +1,6 @@
 import { mockLogger } from '../__mocks__/globalMocks';
 import { removeDup, combinedPromises } from '../js/services/unifiedDataLoader';
-import { BEMData } from '../js/types/serverData';
+import { LocalDt, BEMData } from '../js/types/serverData';
 
 mockLogger();
 
@@ -12,7 +12,7 @@ const testOne: BEMData<any> = {
     write_ts: 1, // the only value checked by removeDup
     time_zone: '',
     write_fmt_time: '',
-    write_local_dt: null,
+    write_local_dt: {} as LocalDt,
   },
 };
 

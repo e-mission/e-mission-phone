@@ -1,9 +1,9 @@
-import { displayError, logDebug } from '../plugin/logger';
+import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import { getBaseModeByKey, getBaseModeByValue } from './diaryHelper';
 import { getUnifiedDataForInterval } from '../services/unifiedDataLoader';
 import { getRawEntries } from '../services/commHelper';
 import { ServerResponse, BEMData } from '../types/serverData';
-import L from 'leaflet';
+import L, { LatLng } from 'leaflet';
 import { DateTime } from 'luxon';
 import {
   UserInputEntry,
@@ -13,10 +13,11 @@ import {
   FilteredLocation,
   TimestampRange,
   CompositeTrip,
+  UnprocessedTrip,
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
-import { filterByNameAndVersion } from '../survey/enketo/enketoHelper';
+import { EnketoUserInputEntry, filterByNameAndVersion } from '../survey/enketo/enketoHelper';
 import { AppConfig } from '../types/appConfigTypes';
 import { Point, Feature } from 'geojson';
 
@@ -28,18 +29,16 @@ const cachedGeojsons: Map<string, GeoJSONData> = new Map();
 export function useGeojsonForTrip(
   trip: CompositeTrip,
   labelOptions: LabelOptions,
-  labeledMode?: Boolean,
+  labeledMode?: string,
 ) {
-  if (!trip) return;
+  if (!trip?._id?.$oid) return;
   const gjKey = `trip-${trip._id.$oid}-${labeledMode || 'detected'}`;
   if (cachedGeojsons.has(gjKey)) {
     return cachedGeojsons.get(gjKey);
   }
 
-  let trajectoryColor: string | null;
-  if (labeledMode) {
-    trajectoryColor = getBaseModeByValue(labeledMode, labelOptions)?.color;
-  }
+  const trajectoryColor =
+    (labeledMode && getBaseModeByValue(labeledMode, labelOptions)?.color) || undefined;
 
   logDebug("Reading trip's " + trip.locations.length + ' location points at ' + new Date());
   var features = [
@@ -95,7 +94,7 @@ export function compositeTrips2TimelineMap(ctList: Array<any>, unpackPlaces?: bo
   (e.g. 'MODE' and 'PURPOSE' for MULTILABEL configuration, or 'SURVEY' for ENKETO configuration) */
 export let unprocessedLabels: { [key: string]: UserInputEntry[] } = {};
 /* 'NOTES' are 1:n - each trip or place can have any number of notes */
-export let unprocessedNotes: UserInputEntry[] = [];
+export let unprocessedNotes: EnketoUserInputEntry[] = [];
 
 const getUnprocessedInputQuery = (pipelineRange: TimestampRange) => ({
   key: 'write_ts',
@@ -185,7 +184,7 @@ export function keysForLabelInputs(appConfig: AppConfig) {
 }
 
 function keysForNotesInputs(appConfig: AppConfig) {
-  const notesKeys = [];
+  const notesKeys: string[] = [];
   if (appConfig.survey_info?.buttons?.['trip-notes']) notesKeys.push('manual/trip_addition_input');
   if (appConfig.survey_info?.buttons?.['place-notes'])
     notesKeys.push('manual/place_addition_input');
@@ -281,9 +280,6 @@ const dateTime2localdate = function (currtime: DateTime, tz: string) {
   return {
     timezone: tz,
     year: currtime.year,
-    //the months of the draft trips match the one format needed for
-    //moment function however now that is modified we need to also
-    //modify the months value here
     month: currtime.month,
     day: currtime.day,
     weekday: currtime.weekday,
@@ -300,9 +296,9 @@ const points2TripProps = function (locationPoints: Array<BEMData<FilteredLocatio
   const startTime = DateTime.fromSeconds(startPoint.data.ts).setZone(startPoint.metadata.time_zone);
   const endTime = DateTime.fromSeconds(endPoint.data.ts).setZone(endPoint.metadata.time_zone);
 
-  const speeds = [];
-  const dists = [];
-  let loc, locLatLng;
+  const speeds: number[] = [];
+  const dists: number[] = [];
+  let loc, locLatLng: LatLng;
   locationPoints.forEach((pt) => {
     const ptLatLng = L.latLng([pt.data.latitude, pt.data.longitude]);
     if (loc) {
@@ -331,14 +327,14 @@ const points2TripProps = function (locationPoints: Array<BEMData<FilteredLocatio
     confidence_threshold: 0,
     distance: dists.reduce((a, b) => a + b, 0),
     duration: endPoint.data.ts - startPoint.data.ts,
-    end_fmt_time: endTime.toISO(),
+    end_fmt_time: endTime.toISO() || displayErrorMsg('end_fmt_time: invalid DateTime') || '',
     end_local_dt: dateTime2localdate(endTime, endPoint.metadata.time_zone),
     end_ts: endPoint.data.ts,
     expectation: { to_label: true },
     inferred_labels: [],
     locations: locations,
     source: 'unprocessed',
-    start_fmt_time: startTime.toISO(),
+    start_fmt_time: startTime.toISO() || displayErrorMsg('start_fmt_time: invalid DateTime') || '',
     start_local_dt: dateTime2localdate(startTime, startPoint.metadata.time_zone),
     start_ts: startPoint.data.ts,
     user_input: {},
@@ -350,7 +346,7 @@ const tsEntrySort = function (e1: BEMData<FilteredLocation>, e2: BEMData<Filtere
   return e1.data.ts - e2.data.ts;
 };
 
-const transitionTrip2TripObj = function (trip: Array<any>) {
+function transitionTrip2TripObj(trip: Array<any>): Promise<UnprocessedTrip | undefined> {
   const tripStartTransition = trip[0];
   const tripEndTransition = trip[1];
   const tq = {
@@ -422,7 +418,7 @@ const transitionTrip2TripObj = function (trip: Array<any>) {
       };
     },
   );
-};
+}
 const isStartingTransition = function (transWrapper: BEMData<TripTransition>) {
   if (
     transWrapper.data.transition == 'local.transition.exited_geofence' ||
@@ -464,7 +460,7 @@ const isEndingTransition = function (transWrapper: BEMData<TripTransition>) {
  */
 const transitions2Trips = function (transitionList: Array<BEMData<TripTransition>>) {
   let inTrip = false;
-  const tripList = [];
+  const tripList: [BEMData<TripTransition>, BEMData<TripTransition>][] = [];
   let currStartTransitionIndex = -1;
   let currEndTransitionIndex = -1;
   let processedUntil = 0;
@@ -535,7 +531,7 @@ const linkTrips = function (trip1, trip2) {
 export function readUnprocessedTrips(
   startTs: number,
   endTs: number,
-  lastProcessedTrip: CompositeTrip,
+  lastProcessedTrip?: CompositeTrip,
 ) {
   const tq = { key: 'write_ts', startTs, endTs };
   logDebug(
@@ -558,7 +554,7 @@ export function readUnprocessedTrips(
         logDebug(JSON.stringify(trip, null, 2));
       });
       const tripFillPromises = tripsList.map(transitionTrip2TripObj);
-      return Promise.all(tripFillPromises).then(function (raw_trip_gj_list) {
+      return Promise.all(tripFillPromises).then((rawTripObjs: (UnprocessedTrip | undefined)[]) => {
         // Now we need to link up the trips. linking unprocessed trips
         // to one another is fairly simple, but we need to link the
         // first unprocessed trip to the last processed trip.
@@ -568,27 +564,27 @@ export function readUnprocessedTrips(
         // new chain for now, since this is with unprocessed data
         // anyway.
 
-        logDebug(`mapped trips to trip_gj_list of size ${raw_trip_gj_list.length}`);
-        /* Filtering: we will keep trips that are 1) defined and 2) have a distance >= 100m or duration >= 5 minutes
-              https://github.com/e-mission/e-mission-docs/issues/966#issuecomment-1709112578 */
-        const trip_gj_list = raw_trip_gj_list.filter(
+        logDebug(`mapping trips to tripObjs of size ${rawTripObjs.length}`);
+        /* Filtering: we will keep trips that are 1) defined and 2) have a distance >= 100m,
+          or duration >= 5 minutes
+          https://github.com/e-mission/e-mission-docs/issues/966#issuecomment-1709112578 */
+        const tripObjs = rawTripObjs.filter(
           (trip) => trip && (trip.distance >= 100 || trip.duration >= 300),
         );
-        logDebug(
-          `after filtering undefined and distance < 100, trip_gj_list size = ${trip_gj_list.length}`,
-        );
+        logDebug(`after filtering undefined and distance < 100m, 
+          tripObjs size = ${tripObjs.length}`);
         // Link 0th trip to first, first to second, ...
-        for (let i = 0; i < trip_gj_list.length - 1; i++) {
-          linkTrips(trip_gj_list[i], trip_gj_list[i + 1]);
+        for (let i = 0; i < tripObjs.length - 1; i++) {
+          linkTrips(tripObjs[i], tripObjs[i + 1]);
         }
-        logDebug(`finished linking trips for list of size ${trip_gj_list.length}`);
-        if (lastProcessedTrip && trip_gj_list.length != 0) {
+        logDebug(`finished linking trips for list of size ${tripObjs.length}`);
+        if (lastProcessedTrip && tripObjs.length != 0) {
           // Need to link the entire chain above to the processed data
           logDebug('linking unprocessed and processed trip chains');
-          linkTrips(lastProcessedTrip, trip_gj_list[0]);
+          linkTrips(lastProcessedTrip, tripObjs[0]);
         }
-        logDebug(`Returning final list of size ${trip_gj_list.length}`);
-        return trip_gj_list;
+        logDebug(`Returning final list of size ${tripObjs.length}`);
+        return tripObjs;
       });
     }
   });
