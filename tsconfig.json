@@ -4,13 +4,15 @@
     "sourceMap": true,
     "module": "es6",
     "target": "es5",
+    "strictNullChecks": true,
     "downlevelIteration": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "jsx": "react",
     "allowJs": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "typeRoots": ["node_modules/@types", "www/js/types"],
   },
   "include": ["www/**/*"],
-  "exclude": ["**/www/manual_lib/*", "**/node_modules/*", "**/dist/*"],
+  "exclude": ["**/node_modules/*", "**/dist/*"],
 }

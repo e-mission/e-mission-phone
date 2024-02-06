@@ -2,6 +2,13 @@ import React, { useEffect, useState } from 'react';
 import useAppConfig from '../useAppConfig';
 import i18next from 'i18next';
 
+export type ImperialConfig = {
+  distanceSuffix: string;
+  speedSuffix: string;
+  getFormattedDistance: (d: number) => string;
+  getFormattedSpeed: (s: number) => string;
+};
+
 const KM_TO_MILES = 0.621371;
 const MPS_TO_KMPH = 3.6;
 
@@ -31,7 +38,7 @@ export const convertSpeed = (speedMetersPerSec: number, imperial: boolean): numb
   return speedMetersPerSec * MPS_TO_KMPH;
 };
 
-export function useImperialConfig() {
+export function useImperialConfig(): ImperialConfig {
   const appConfig = useAppConfig();
   const [useImperial, setUseImperial] = useState(false);
 

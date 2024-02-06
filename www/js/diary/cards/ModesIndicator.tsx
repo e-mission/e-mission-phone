@@ -10,15 +10,15 @@ import { useTranslation } from 'react-i18next';
 
 const ModesIndicator = ({ trip, detectedModes }) => {
   const { t } = useTranslation();
-  const { labelOptions, timelineLabelMap } = useContext(LabelTabContext);
+  const { labelOptions, labelFor } = useContext(LabelTabContext);
   const { colors } = useTheme();
 
   const indicatorBackgroundColor = color(colors.onPrimary).alpha(0.8).rgb().string();
   let indicatorBorderColor = color('black').alpha(0.5).rgb().string();
 
   let modeViews;
-  const labeledModeForTrip = timelineLabelMap[trip._id.$oid]?.['MODE'];
-  if (labeledModeForTrip?.value) {
+  const labeledModeForTrip = labelFor(trip, 'MODE');
+  if (labelOptions && labeledModeForTrip?.value) {
     const baseMode = getBaseModeByValue(labeledModeForTrip.value, labelOptions);
     indicatorBorderColor = baseMode.color;
     logDebug(`TripCard: got baseMode = ${JSON.stringify(baseMode)}`);
@@ -33,7 +33,7 @@ const ModesIndicator = ({ trip, detectedModes }) => {
             fontWeight: '500',
             textDecorationLine: 'underline',
           }}>
-          {timelineLabelMap[trip._id.$oid]?.MODE.text}
+          {labelFor(trip, 'MODE')?.text}
         </Text>
       </View>
     );
@@ -64,7 +64,7 @@ const ModesIndicator = ({ trip, detectedModes }) => {
 
   return (
     modeViews && (
-      <View style={{ position: 'absolute', width: '100%' }}>
+      <View style={s.indicatorWrapper}>
         <View
           style={[
             s.modesIndicator,
@@ -78,6 +78,11 @@ const ModesIndicator = ({ trip, detectedModes }) => {
 };
 
 const s = StyleSheet.create({
+  indicatorWrapper: {
+    position: 'absolute',
+    width: '100%',
+    paddingHorizontal: 5,
+  },
   modesIndicator: {
     marginVertical: 5,
     marginHorizontal: 'auto',

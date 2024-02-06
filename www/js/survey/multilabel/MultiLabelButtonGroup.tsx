@@ -3,7 +3,6 @@
   Next to the buttons is a small checkmark icon, which marks inferrel labels as confirmed */
 
 import React, { useContext, useEffect, useState, useMemo } from 'react';
-import { getAngularService } from '../../angular-react-helper';
 import { View, Modal, ScrollView, Pressable, useWindowDimensions } from 'react-native';
 import {
   IconButton,
@@ -17,7 +16,7 @@ import {
 } from 'react-native-paper';
 import DiaryButton from '../../components/DiaryButton';
 import { useTranslation } from 'react-i18next';
-import LabelTabContext from '../../diary/LabelTabContext';
+import LabelTabContext, { UserInputMap } from '../../diary/LabelTabContext';
 import { displayErrorMsg, logDebug } from '../../plugin/logger';
 import {
   getLabelInputDetails,
@@ -30,6 +29,7 @@ import {
   verifiabilityForTrip,
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
+import { MultilabelKey } from '../../types/labelTypes';
 import { updateUserCustomLabel } from '../../services/commHelper';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
@@ -37,39 +37,42 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const {
-    repopulateTimelineEntry,
     labelOptions,
-    timelineLabelMap,
+    labelFor,
+    userInputFor,
+    addUserInputToEntry,
     customLabelMap,
     setCustomLabelMap,
   } = useContext(LabelTabContext);
   const { height: windowHeight } = useWindowDimensions();
-  // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
-  const [modalVisibleFor, setModalVisibleFor] = useState<
-    'MODE' | 'PURPOSE' | 'REPLACED_MODE' | null
-  >(null);
+  // modal visible for which input type? (MODE or PURPOSE or REPLACED_MODE, null if not visible)
+  const [modalVisibleFor, setModalVisibleFor] = useState<MultilabelKey | null>(null);
   const [otherLabel, setOtherLabel] = useState<string | null>(null);
-  const initialLabel = useMemo<string>(() => {
-    return timelineLabelMap[trip._id.$oid]?.[modalVisibleFor]?.value;
+  const initialLabel = useMemo<string | null>(() => {
+    if (modalVisibleFor == null) return null;
+    return labelFor(trip, modalVisibleFor)?.value || null;
   }, [modalVisibleFor]);
   // to mark 'inferred' labels as 'confirmed'; turn yellow labels blue
   function verifyTrip() {
-    const inferredLabelsForTrip = inferFinalLabels(trip, timelineLabelMap[trip._id.$oid]);
+    const inferredLabelsForTrip = inferFinalLabels(trip, userInputFor(trip));
+    let labelsToStore;
     for (const inputType of getLabelInputs()) {
       const inferred = inferredLabelsForTrip?.[inputType];
-      // if the is an inferred label that is not already confirmed, confirm it now by storing it
-      if (inferred?.value && !timelineLabelMap[trip._id.$oid]?.[inputType]) {
-        store(inputType, inferred.value, false);
+      // if there is an inferred label that is not already confirmed, confirm it by storing it
+      if (inferred?.value && !labelFor(trip, inputType)) {
+        labelsToStore = { ...labelsToStore, [inputType]: inferred.value };
       }
     }
+    if (labelsToStore) store(labelsToStore);
   }
 
   function onChooseLabel(chosenValue) {
+    if (!modalVisibleFor) return displayErrorMsg('Cannot choose label when modal not visible');
     logDebug(`onChooseLabel with chosen ${modalVisibleFor} as ${chosenValue}`);
     if (chosenValue == 'other') {
       setOtherLabel('');
     } else {
-      store(modalVisibleFor, chosenValue, false);
+      store({ [modalVisibleFor]: chosenValue });
     }
   }
 
@@ -78,46 +81,57 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     setOtherLabel(null);
   }
 
-  function store(inputType, newLabel, isOther) {
-    if (!newLabel) return displayErrorMsg('Label is empty');
-    if (isOther) {
-      /* Let's make the value for user entered inputs look consistent with our other values
-       (i.e. lowercase, and with underscores instead of spaces) */
-      newLabel = readableLabelToKey(newLabel);
-    }
-    // If a user saves a new customized label or makes changes to/from customized labels, the labels need to be updated.
-    const key = inputType.toLowerCase();
-    if (
-      isOther ||
-      customLabelMap[key].indexOf(initialLabel) > -1 ||
-      customLabelMap[key].indexOf(newLabel) > -1
-    ) {
-      updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther)
-        .then((res) => {
-          setCustomLabelMap({
-            ...customLabelMap,
-            [key]: res['label'],
+  /* Store a batch of one or more inputs to the user cache, dismiss the popup if it was visible,
+    and inform LabelTab of new inputs */
+  function store(inputs: { [k in MultilabelKey]?: string }, isOther?) {
+    if (!Object.keys(inputs).length) return displayErrorMsg('No inputs to store');
+    const inputsToStore: UserInputMap = {};
+    const storePromises: any[] = [];
+    for (let [inputType, newLabel] of Object.entries(inputs)) {
+      if (isOther) {
+        /* Let's make the value for user entered inputs look consistent with our other values
+        (i.e. lowercase, and with underscores instead of spaces) */
+        newLabel = readableLabelToKey(newLabel);
+      }
+      // If a user saves a new customized label or makes changes to/from customized labels, the labels need to be updated.
+      const key = inputType.toLowerCase();
+      if (
+        isOther ||
+        (initialLabel && customLabelMap[key].indexOf(initialLabel) > -1) ||
+        (newLabel && customLabelMap[key].indexOf(newLabel) > -1)
+      ) {
+        updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther)
+          .then((res) => {
+            setCustomLabelMap({
+              ...customLabelMap,
+              [key]: res['label'],
+            });
+            logDebug('Successfuly stored custom label ' + JSON.stringify(res));
+          })
+          .catch((e) => {
+            displayErrorMsg(e, 'Create Label Error');
           });
-          logDebug('Successfuly stored custom label ' + JSON.stringify(res));
-        })
-        .catch((e) => {
-          displayErrorMsg(e, 'Create Label Error');
-        });
+      }
+      const inputDataToStore = {
+        start_ts: trip.start_ts,
+        end_ts: trip.end_ts,
+        label: newLabel,
+      };
+      inputsToStore[inputType] = inputDataToStore;
+
+      const storageKey = getLabelInputDetails()[inputType].key;
+      storePromises.push(
+        window['cordova'].plugins.BEMUserCache.putMessage(storageKey, inputDataToStore),
+      );
     }
-    const inputDataToStore = {
-      start_ts: trip.start_ts,
-      end_ts: trip.end_ts,
-      label: newLabel,
-    };
-    const storageKey = getLabelInputDetails()[inputType].key;
-    window['cordova'].plugins.BEMUserCache.putMessage(storageKey, inputDataToStore).then(() => {
+    Promise.all(storePromises).then(() => {
+      logDebug('Successfully stored input data ' + JSON.stringify(inputsToStore));
       dismiss();
-      repopulateTimelineEntry(trip._id.$oid);
-      logDebug('Successfully stored input data ' + JSON.stringify(inputDataToStore));
+      addUserInputToEntry(trip._id.$oid, inputsToStore, 'label');
     });
   }
 
-  const tripInputDetails = labelInputDetailsForTrip(timelineLabelMap[trip._id.$oid], appConfig);
+  const tripInputDetails = labelInputDetailsForTrip(userInputFor(trip), appConfig);
   const customLabelKeyInDatabase = modalVisibleFor === 'PURPOSE' ? 'purpose' : 'mode';
 
   return (
@@ -126,10 +140,8 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
         <View style={{ flex: 1, flexDirection: buttonsInline ? 'row' : 'column', columnGap: 8 }}>
           {Object.keys(tripInputDetails).map((key, i) => {
             const input = tripInputDetails[key];
-            const inputIsConfirmed = timelineLabelMap[trip._id.$oid]?.[input.name];
-            const inputIsInferred = inferFinalLabels(trip, timelineLabelMap[trip._id.$oid])[
-              input.name
-            ];
+            const inputIsConfirmed = labelFor(trip, input.name);
+            const inputIsInferred = inferFinalLabels(trip, userInputFor(trip))[input.name];
             let fillColor, textColor, borderColor;
             if (inputIsConfirmed) {
               fillColor = colors.primary;
@@ -154,7 +166,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
             );
           })}
         </View>
-        {verifiabilityForTrip(trip, timelineLabelMap[trip._id.$oid]) == 'can-verify' && (
+        {verifiabilityForTrip(trip, userInputFor(trip)) == 'can-verify' && (
           <View style={{ marginTop: 16 }}>
             <IconButton
               icon="check-bold"
@@ -180,48 +192,50 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                 <RadioButton.Group
                   onValueChange={(val) => onChooseLabel(val)}
                   // if 'other' button is selected and input component shows up, make 'other' radio button filled
-                  value={otherLabel !== null ? 'other' : initialLabel}>
-                  {labelOptions?.[modalVisibleFor]?.map((o, i) => {
-                    const radioItemForOption = (
-                      <RadioButton.Item
-                        key={i}
-                        label={t(o.text)}
-                        value={o.value}
-                        style={{ paddingVertical: 2 }}
-                      />
-                    );
-                    /* if this is the 'other' option and there are some custom labels,
-        show the custom labels section before 'other' */
-                    if (o.value == 'other' && customLabelMap[customLabelKeyInDatabase]?.length) {
-                      return (
-                        <>
-                          <Divider style={{ marginVertical: 10 }} />
-                          <Text
-                            style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
-                            {(modalVisibleFor === 'MODE' || modalVisibleFor === 'REPLACED_MODE') &&
-                              t('trip-confirm.custom-mode')}
-                            {modalVisibleFor === 'PURPOSE' && t('trip-confirm.custom-purpose')}
-                          </Text>
-                          {customLabelMap[customLabelKeyInDatabase].map((key, i) => (
-                            <RadioButton.Item
-                              key={i}
-                              label={labelKeyToReadable(key)}
-                              value={key}
-                              style={{ paddingVertical: 2 }}
-                            />
-                          ))}
-                          <Divider style={{ marginVertical: 10 }} />
-                          {radioItemForOption}
-                        </>
+                  value={otherLabel !== null ? 'other' : initialLabel || ''}>
+                  {modalVisibleFor &&
+                    labelOptions?.[modalVisibleFor]?.map((o, i) => {
+                      const radioItemForOption = (
+                        <RadioButton.Item
+                          key={i}
+                          label={o.text || labelKeyToReadable(o.value)}
+                          value={o.value}
+                          style={{ paddingVertical: 2 }}
+                        />
                       );
-                    }
-                    // otherwise, just show the radio item as normal
-                    return radioItemForOption;
-                  })}
+                      /* if this is the 'other' option and there are some custom labels,
+                      show the custom labels section before 'other' */
+                      if (o.value == 'other' && customLabelMap[customLabelKeyInDatabase]?.length) {
+                        return (
+                          <>
+                            <Divider style={{ marginVertical: 10 }} />
+                            <Text
+                              style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
+                              {(modalVisibleFor === 'MODE' ||
+                                modalVisibleFor === 'REPLACED_MODE') &&
+                                t('trip-confirm.custom-mode')}
+                              {modalVisibleFor === 'PURPOSE' && t('trip-confirm.custom-purpose')}
+                            </Text>
+                            {customLabelMap[customLabelKeyInDatabase].map((key, i) => (
+                              <RadioButton.Item
+                                key={i}
+                                label={labelKeyToReadable(key)}
+                                value={key}
+                                style={{ paddingVertical: 2 }}
+                              />
+                            ))}
+                            <Divider style={{ marginVertical: 10 }} />
+                            {radioItemForOption}
+                          </>
+                        );
+                      }
+                      // otherwise, just show the radio item as normal
+                      return radioItemForOption;
+                    })}
                 </RadioButton.Group>
               </ScrollView>
             </Dialog.Content>
-            {otherLabel != null && (
+            {otherLabel != null && modalVisibleFor != null && (
               <>
                 <TextInput
                   label={t('trip-confirm.services-please-fill-in', {
@@ -232,7 +246,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                   maxLength={25}
                 />
                 <Dialog.Actions>
-                  <Button onPress={() => store(modalVisibleFor, otherLabel, true)}>
+                  <Button onPress={() => store({ [modalVisibleFor]: otherLabel }, true)}>
                     {t('trip-confirm.services-save')}
                   </Button>
                 </Dialog.Actions>

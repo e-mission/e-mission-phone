@@ -7,6 +7,16 @@ export const mockCordova = () => {
   window['cordova'].plugins ||= {};
 };
 
+export const mockReminders = () => {
+  window['cordova'] ||= {};
+  window['cordova'].plugins ||= {};
+  window['cordova'].plugins.notification ||= {};
+  window['cordova'].plugins.notification.local ||= {};
+  window['cordova'].plugins.notification.local.getScheduled ||= () => [];
+  window['cordova'].plugins.notification.local.cancelAll ||= () => {};
+  window['cordova'].plugins.notification.local.schedule ||= () => {};
+};
+
 export const mockDevice = () => {
   window['device'] ||= {};
   window['device'].platform ||= 'ios';
@@ -28,15 +38,18 @@ export const mockFile = () => {
   window['cordova'].file = {
     dataDirectory: '../path/to/data/directory',
     applicationStorageDirectory: '../path/to/app/storage/directory',
+    tempDirectory: '../path/to/temp/directory',
   };
 };
 
 //for consent document
 const _storage = {};
 
-export const mockBEMUserCache = () => {
+type MessageData = any;
+type Message = { key: string; data: MessageData; metadata: { write_ts: number; [k: string]: any } };
+export const mockBEMUserCache = (config?) => {
   const _cache = {};
-  const messages = [];
+  const messages: Message[] = [];
   const mockBEMUserCache = {
     getLocalStorage: (key: string, isSecure: boolean) => {
       return new Promise((rs, rj) =>
@@ -87,24 +100,61 @@ export const mockBEMUserCache = () => {
     putMessage: (key: string, value: any) => {
       return new Promise<void>((rs, rj) =>
         setTimeout(() => {
-          messages.push({ key, value });
+          messages.push({
+            key,
+            data: value,
+            // write_ts is epoch time in seconds
+            metadata: { write_ts: Math.floor(Date.now() / 1000) },
+          });
           rs();
         }, 100),
       );
     },
     getAllMessages: (key: string, withMetadata?: boolean) => {
-      return new Promise<any[]>((rs, rj) =>
+      return new Promise<Message[] | MessageData[]>((rs, rj) =>
         setTimeout(() => {
-          rs(messages.filter((m) => m.key == key).map((m) => m.value));
+          rs(messages.filter((m) => m.key == key).map((m) => (withMetadata ? m : m.data)));
         }, 100),
       );
     },
-    getDocument: (key: string, withMetadata?: boolean) => {
-      return new Promise<any[]>((rs, rj) =>
+    getMessagesForInterval: (key: string, tq, withMetadata?: boolean) => {
+      return new Promise<Message[] | MessageData[]>((rs, rj) =>
         setTimeout(() => {
-          rs(_storage[key]);
+          rs(
+            messages
+              .filter((m) => m.key == key)
+              .filter((m) => m.metadata[tq.key] >= tq.startTs && m.metadata.write_ts <= tq.endTs)
+              .map((m) => (withMetadata ? m : m.data)),
+          );
         }, 100),
       );
+    }, // Used for getUnifiedDataForInterval
+    putRWDocument: (key: string, value: any) => {
+      if (key == 'config/app_ui_config') {
+        return new Promise<void>((rs, rj) =>
+          setTimeout(() => {
+            config = value;
+            rs();
+          }, 100),
+        );
+      }
+    },
+    getDocument: (key: string, withMetadata?: boolean) => {
+      //returns the config provided as a paramenter to this mock!
+      if (key == 'config/app_ui_config') {
+        return new Promise<any>((rs, rj) =>
+          setTimeout(() => {
+            if (config) rs(config);
+            else rs({}); // return empty object if config is not set
+          }, 100),
+        );
+      } else {
+        return new Promise<any[]>((rs, rj) =>
+          setTimeout(() => {
+            rs(_storage[key]);
+          }, 100),
+        );
+      }
     },
     isEmptyDoc: (doc) => {
       if (doc == undefined) {
@@ -115,6 +165,20 @@ export const mockBEMUserCache = () => {
         return true;
       } else {
         return false;
+      }
+    },
+    getAllTimeQuery: () => {
+      return { key: 'write_ts', startTs: 0, endTs: Date.now() / 1000 };
+    },
+    getSensorDataForInterval: (key, tq, withMetadata) => {
+      if (key == `manual/demographic_survey`) {
+        return new Promise<any>((rs, rj) =>
+          setTimeout(() => {
+            rs({ metadata: { write_ts: '1699897723' }, data: 'completed', time: '01/01/2001' });
+          }, 100),
+        );
+      } else {
+        return undefined;
       }
     },
   };

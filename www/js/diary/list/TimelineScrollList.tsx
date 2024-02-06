@@ -16,6 +16,8 @@ const renderCard = ({ item: listEntry }) => {
     return <PlaceCard place={listEntry} />;
   } else if (listEntry.origin_key.includes('untracked')) {
     return <UntrackedTimeCard triplike={listEntry} />;
+  } else {
+    throw new Error(`Unknown listEntry type: ${JSON.stringify(listEntry)}`);
   }
 };
 
@@ -24,7 +26,7 @@ const bigSpinner = <ActivityIndicator size="large" style={{ margin: 15 }} />;
 const smallSpinner = <ActivityIndicator size="small" style={{ margin: 5 }} />;
 
 type Props = {
-  listEntries: any[];
+  listEntries: any[] | null;
   queriedRange: any;
   pipelineRange: any;
   loadMoreFn: (direction: string) => void;
@@ -90,11 +92,15 @@ const TimelineScrollList = ({
             load more trips when the user is approaching the bottom or top of the list.
             This might be a nicer experience than the current header and footer buttons. */
         // onScroll={e => console.debug(e.nativeEvent.contentOffset.y)}
-        ListHeaderComponent={isLoading == 'append' ? smallSpinner : !reachedPipelineEnd && header}
+        ListHeaderComponent={
+          isLoading == 'append' ? smallSpinner : !reachedPipelineEnd ? header : null
+        }
         ListFooterComponent={isLoading == 'prepend' ? smallSpinner : footer}
         ItemSeparatorComponent={separator}
       />
     );
+  } else {
+    return <></>;
   }
 };
 

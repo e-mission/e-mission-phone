@@ -1,34 +1,10 @@
-// may refactor this into a React hook once it's no longer used by any Angular screens
-
-import { getAngularService } from '../../angular-react-helper';
 import { fetchUrlCached } from '../../services/commHelper';
 import i18next from 'i18next';
+import enJson from '../../../i18n/en.json';
 import { logDebug } from '../../plugin/logger';
-
-type InputDetails<T extends string> = {
-  [k in T]?: {
-    name: string;
-    labeltext: string;
-    choosetext: string;
-    key: string;
-  };
-};
-export type LabelOption = {
-  value: string;
-  baseMode: string;
-  met?: { range: any[]; mets: number };
-  met_equivalent?: string;
-  kgCo2PerKm: number;
-  text?: string;
-};
-export type MultilabelKey = 'MODE' | 'PURPOSE' | 'REPLACED_MODE';
-export type LabelOptions<T extends string = MultilabelKey> = {
-  [k in T]: LabelOption[];
-} & {
-  translations: {
-    [lang: string]: { [translationKey: string]: string };
-  };
-};
+import { LabelOption, LabelOptions, MultilabelKey, InputDetails } from '../../types/labelTypes';
+import { CompositeTrip, InferredLabels, TimelineEntry } from '../../types/diaryTypes';
+import { TimelineLabelMap, UserInputMap } from '../../diary/LabelTabContext';
 
 let appConfig;
 export let labelOptions: LabelOptions<MultilabelKey>;
@@ -37,20 +13,21 @@ export let inputDetails: InputDetails<MultilabelKey>;
 export async function getLabelOptions(appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;
   if (labelOptions) return labelOptions;
-
   if (appConfig.label_options) {
     const labelOptionsJson = await fetchUrlCached(appConfig.label_options);
-    logDebug(
-      'label_options found in config, using dynamic label options at ' + appConfig.label_options,
-    );
-    labelOptions = JSON.parse(labelOptionsJson) as LabelOptions;
+    if (labelOptionsJson) {
+      logDebug(`label_options found in config, using dynamic label options 
+        at ${appConfig.label_options}`);
+      labelOptions = JSON.parse(labelOptionsJson) as LabelOptions;
+    }
   } else {
     const defaultLabelOptionsURL = 'json/label-options.json.sample';
-    logDebug(
-      'No label_options found in config, using default label options at ' + defaultLabelOptionsURL,
-    );
+    logDebug(`No label_options found in config, using default label options 
+      at ${defaultLabelOptionsURL}`);
     const defaultLabelOptionsJson = await fetchUrlCached(defaultLabelOptionsURL);
-    labelOptions = JSON.parse(defaultLabelOptionsJson) as LabelOptions;
+    if (defaultLabelOptionsJson) {
+      labelOptions = JSON.parse(defaultLabelOptionsJson) as LabelOptions;
+    }
   }
   /* fill in the translations to the 'text' fields of the labelOptions,
     according to the current language */
@@ -58,12 +35,14 @@ export async function getLabelOptions(appConfigParam?) {
   for (const opt in labelOptions) {
     labelOptions[opt]?.forEach?.((o, i) => {
       const translationKey = o.value;
-      // If translation exists in labelOptions, use that. Otherwise, use the one in the i18next. If there is not "translations" field in labelOptions, defaultly use the one in the i18next.
-      const translation = labelOptions.translations
-        ? labelOptions.translations[lang][translationKey] ||
-          i18next.t(`multilabel.${translationKey}`)
-        : i18next.t(`multilabel.${translationKey}`);
-      labelOptions[opt][i].text = translation;
+      /* If translation exists in labelOptions, use that. Otherwise, try i18next translations. */
+      const translationFromLabelOptions = labelOptions.translations?.[lang]?.[translationKey];
+      if (translationFromLabelOptions) {
+        labelOptions[opt][i].text = translationFromLabelOptions;
+      } else {
+        const i18nextKey = translationKey as keyof typeof enJson.multilabel; // cast for type safety
+        labelOptions[opt][i].text = i18next.t(`multilabel.${i18nextKey}`);
+      }
     });
   }
   return labelOptions;
@@ -133,8 +112,8 @@ export function labelInputDetailsForTrip(userInputForTrip, appConfigParam?) {
   }
 }
 
-export const getLabelInputs = () => Object.keys(getLabelInputDetails());
-export const getBaseLabelInputs = () => Object.keys(baseLabelInputDetails);
+export const getLabelInputs = () => Object.keys(getLabelInputDetails()) as MultilabelKey[];
+export const getBaseLabelInputs = () => Object.keys(baseLabelInputDetails) as MultilabelKey[];
 
 /** @description replace all underscores with spaces, and capitalizes the first letter of each word */
 export const labelKeyToReadable = (otherValue: string) => {
@@ -147,7 +126,7 @@ export const labelKeyToReadable = (otherValue: string) => {
 export const readableLabelToKey = (otherText: string) =>
   otherText.trim().replace(/ /g, '_').toLowerCase();
 
-export const getFakeEntry = (otherValue): Partial<LabelOption> => {
+export const getFakeEntry = (otherValue): Partial<LabelOption> | undefined => {
   if (!otherValue) return undefined;
   return {
     text: labelKeyToReadable(otherValue),
@@ -158,16 +137,19 @@ export const getFakeEntry = (otherValue): Partial<LabelOption> => {
 export const labelKeyToRichMode = (labelKey: string) =>
   labelOptionByValue(labelKey, 'MODE')?.text || labelKeyToReadable(labelKey);
 
-/* manual/mode_confirm becomes mode_confirm */
-export const inputType2retKey = (inputType) => getLabelInputDetails()[inputType].key.split('/')[1];
+/** @description e.g. manual/mode_confirm becomes mode_confirm */
+export const removeManualPrefix = (key: string) => key.split('/')[1];
+/** @description e.g. 'MODE' gets looked up, its key is 'manual/mode_confirm'. Returns without prefix as 'mode_confirm' */
+export const inputType2retKey = (inputType: string) =>
+  removeManualPrefix(getLabelInputDetails()[inputType].key);
 
-export function verifiabilityForTrip(trip, userInputForTrip) {
+export function verifiabilityForTrip(trip: CompositeTrip, userInputForTrip?: UserInputMap) {
   let allConfirmed = true;
   let someInferred = false;
   const inputsForTrip = Object.keys(labelInputDetailsForTrip(userInputForTrip));
   for (const inputType of inputsForTrip) {
     const finalInference = inferFinalLabels(trip, userInputForTrip)[inputType];
-    const confirmed = userInputForTrip[inputType];
+    const confirmed = userInputForTrip?.[inputType];
     const inferred = finalInference && Object.values(finalInference).some((o) => o);
     if (inferred && !confirmed) someInferred = true;
     if (!confirmed) allConfirmed = false;
@@ -175,9 +157,9 @@ export function verifiabilityForTrip(trip, userInputForTrip) {
   return someInferred ? 'can-verify' : allConfirmed ? 'already-verified' : 'cannot-verify';
 }
 
-export function inferFinalLabels(trip, userInputForTrip) {
+export function inferFinalLabels(trip: CompositeTrip, userInputForTrip?: UserInputMap) {
   // Deep copy the possibility tuples
-  let labelsList = [];
+  let labelsList: InferredLabels = [];
   if (trip.inferred_labels) {
     labelsList = JSON.parse(JSON.stringify(trip.inferred_labels));
   }
@@ -190,7 +172,7 @@ export function inferFinalLabels(trip, userInputForTrip) {
     const userInput = userInputForTrip?.[inputType];
     if (userInput) {
       const retKey = inputType2retKey(inputType);
-      labelsList = labelsList.filter((item) => item.labels[retKey] == userInput.value);
+      labelsList = labelsList.filter((item) => item.labels[retKey] == userInput.data.label);
     }
   }
 

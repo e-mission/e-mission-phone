@@ -26,7 +26,7 @@ const LabelListScreen = () => {
       <Appbar.Header
         statusBarHeight={0}
         elevated={true}
-        style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+        style={{ height: 46, backgroundColor: colors.surface }}>
         <FilterSelect
           filters={filterInputs}
           setFilters={setFilterInputs}

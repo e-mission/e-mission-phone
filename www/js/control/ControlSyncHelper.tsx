@@ -3,23 +3,23 @@ import { Modal, View } from 'react-native';
 import { Dialog, Button, Switch, Text, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { settingStyles } from './ProfileSettings';
-import { getAngularService } from '../angular-react-helper';
 import ActionMenu from '../components/ActionMenu';
 import SettingRow from './SettingRow';
 import AlertBar from './AlertBar';
-import moment from 'moment';
 import { addStatEvent, statKeys } from '../plugin/clientStats';
 import { updateUser } from '../services/commHelper';
+import { displayError, logDebug, logWarn } from '../plugin/logger';
+import { DateTime } from 'luxon';
 
 /*
  * BEGIN: Simple read/write wrappers
  */
 export function forcePluginSync() {
-  return window.cordova.plugins.BEMServerSync.forceSync();
+  return window['cordova'].plugins.BEMServerSync.forceSync();
 }
 
 const formatConfigForDisplay = (configToFormat) => {
-  var formatted = [];
+  const formatted: any[] = [];
   for (let prop in configToFormat) {
     formatted.push({ key: prop, val: configToFormat[prop] });
   }
@@ -27,11 +27,11 @@ const formatConfigForDisplay = (configToFormat) => {
 };
 
 const setConfig = function (config) {
-  return window.cordova.plugins.BEMServerSync.setConfig(config);
+  return window['cordova'].plugins.BEMServerSync.setConfig(config);
 };
 
 const getConfig = function () {
-  return window.cordova.plugins.BEMServerSync.getConfig();
+  return window['cordova'].plugins.BEMServerSync.getConfig();
 };
 
 export async function getHelperSyncSettings() {
@@ -39,28 +39,19 @@ export async function getHelperSyncSettings() {
   return formatConfigForDisplay(tempConfig);
 }
 
-const getEndTransitionKey = function () {
-  if (window.cordova.platformId == 'android') {
-    return 'local.transition.stopped_moving';
-  } else if (window.cordova.platformId == 'ios') {
-    return 'T_TRIP_ENDED';
-  }
-};
-
 type syncConfig = { sync_interval: number; ios_use_remote_push: boolean };
 
 //forceSync and endForceSync SettingRows & their actions
 export const ForceSyncRow = ({ getState }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const Logger = getAngularService('Logger');
 
   const [dataPendingVis, setDataPendingVis] = useState(false);
   const [dataPushedVis, setDataPushedVis] = useState(false);
 
   async function forceSync() {
     try {
-      let addedEvent = addStatEvent(statKeys.BUTTON_FORCE_SYNC);
+      let addedEvent = await addStatEvent(statKeys.BUTTON_FORCE_SYNC);
       console.log('Added ' + statKeys.BUTTON_FORCE_SYNC + ' event');
 
       let sync = await forcePluginSync();
@@ -70,7 +61,7 @@ export const ForceSyncRow = ({ getState }) => {
        * See https://github.com/e-mission/e-mission-phone/issues/279 for details
        */
       var sensorKey = 'statemachine/transition';
-      let sensorDataList = await window.cordova.plugins.BEMUserCache.getAllMessages(
+      let sensorDataList = await window['cordova'].plugins.BEMUserCache.getAllMessages(
         sensorKey,
         true,
       );
@@ -82,47 +73,41 @@ export const ForceSyncRow = ({ getState }) => {
       };
       let syncLaunchedCalls = sensorDataList.filter(isTripEnd);
       let syncPending = syncLaunchedCalls.length > 0;
-      Logger.log(
-        'sensorDataList.length = ' +
-          sensorDataList.length +
-          ', syncLaunchedCalls.length = ' +
-          syncLaunchedCalls.length +
-          ', syncPending? = ' +
-          syncPending,
-      );
-      Logger.log('sync launched = ' + syncPending);
+      logDebug(`sensorDataList.length = ${sensorDataList.length}, 
+        syncLaunchedCalls.length = ${syncLaunchedCalls.length}, 
+        syncPending? = ${syncPending}`);
 
       if (syncPending) {
-        Logger.log(Logger.log('data is pending, showing confirm dialog'));
+        logDebug('data is pending, showing confirm dialog');
         setDataPendingVis(true); //consent handling in modal
       } else {
         setDataPushedVis(true);
       }
     } catch (error) {
-      Logger.displayError('Error while forcing sync', error);
+      displayError(error, 'Error while forcing sync');
     }
   }
 
   const getStartTransitionKey = function () {
-    if (window.cordova.platformId == 'android') {
+    if (window['cordova'].platformId == 'android') {
       return 'local.transition.exited_geofence';
-    } else if (window.cordova.platformId == 'ios') {
+    } else if (window['cordova'].platformId == 'ios') {
       return 'T_EXITED_GEOFENCE';
     }
   };
 
   const getEndTransitionKey = function () {
-    if (window.cordova.platformId == 'android') {
+    if (window['cordova'].platformId == 'android') {
       return 'local.transition.stopped_moving';
-    } else if (window.cordova.platformId == 'ios') {
+    } else if (window['cordova'].platformId == 'ios') {
       return 'T_TRIP_ENDED';
     }
   };
 
   const getOngoingTransitionState = function () {
-    if (window.cordova.platformId == 'android') {
+    if (window['cordova'].platformId == 'android') {
       return 'local.state.ongoing_trip';
-    } else if (window.cordova.platformId == 'ios') {
+    } else if (window['cordova'].platformId == 'ios') {
       return 'STATE_ONGOING_TRIP';
     }
   };
@@ -130,12 +115,12 @@ export const ForceSyncRow = ({ getState }) => {
   async function getTransition(transKey) {
     var entry_data = {};
     const curr_state = await getState();
-    entry_data.curr_state = curr_state;
+    entry_data['curr_state'] = curr_state;
     if (transKey == getEndTransitionKey()) {
-      entry_data.curr_state = getOngoingTransitionState();
+      entry_data['curr_state'] = getOngoingTransitionState();
     }
-    entry_data.transition = transKey;
-    entry_data.ts = moment().unix();
+    entry_data['transition'] = transKey;
+    entry_data['ts'] = DateTime.now().toSeconds();
     return entry_data;
   }
 
@@ -144,9 +129,9 @@ export const ForceSyncRow = ({ getState }) => {
      * result for start so that we ensure ordering */
     var sensorKey = 'statemachine/transition';
     let entry_data = await getTransition(getStartTransitionKey());
-    let messagePut = await window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+    let messagePut = await window['cordova'].plugins.BEMUserCache.putMessage(sensorKey, entry_data);
     entry_data = await getTransition(getEndTransitionKey());
-    messagePut = await window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+    messagePut = await window['cordova'].plugins.BEMUserCache.putMessage(sensorKey, entry_data);
     forceSync();
   }
 
@@ -169,7 +154,7 @@ export const ForceSyncRow = ({ getState }) => {
             <Button
               onPress={() => {
                 setDataPendingVis(false);
-                Logger.log('user refused to re-sync');
+                logWarn('user refused to re-sync');
               }}>
               {t('general-settings.cancel')}
             </Button>
@@ -196,7 +181,6 @@ export const ForceSyncRow = ({ getState }) => {
 const ControlSyncHelper = ({ editVis, setEditVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const Logger = getAngularService('Logger');
 
   const [localConfig, setLocalConfig] = useState<syncConfig>();
   const [intervalVis, setIntervalVis] = useState<boolean>(false);
@@ -235,23 +219,22 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
         // or continue to store from native
         // this is easier for people to see, but means that calls to
         // native, even through the javascript interface are not complete
-        curr_sync_interval: localConfig.sync_interval,
+        curr_sync_interval: (localConfig as syncConfig).sync_interval,
       });
     } catch (err) {
       console.log('error with setting sync config', err);
-      Logger.displayError('Error while setting sync config', err);
+      displayError(err, 'Error while setting sync config');
     }
   }
-
   const onChooseInterval = function (interval) {
-    let tempConfig = { ...localConfig };
+    let tempConfig = { ...localConfig } as syncConfig;
     tempConfig.sync_interval = interval.value;
     setLocalConfig(tempConfig);
   };
 
   const onTogglePush = function () {
-    let tempConfig = { ...localConfig };
-    tempConfig.ios_use_remote_push = !localConfig.ios_use_remote_push;
+    let tempConfig = { ...localConfig } as syncConfig;
+    tempConfig.ios_use_remote_push = !(localConfig as syncConfig).ios_use_remote_push;
     setLocalConfig(tempConfig);
   };
 
@@ -259,7 +242,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
    * configure the UI
    */
   let toggle;
-  if (window.cordova.platformId == 'ios') {
+  if (window['cordova'].platformId == 'ios') {
     toggle = (
       <View
         style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>

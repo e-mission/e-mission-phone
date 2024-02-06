@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import { Chart as ChartJS, registerables } from 'chart.js';
+import { ChartData, Chart as ChartJS, ScriptableContext, registerables } from 'chart.js';
 import { Chart as ChartJSChart } from 'react-chartjs-2';
 import Annotation, { AnnotationOptions, LabelPosition } from 'chartjs-plugin-annotation';
 import { dedupColors, getChartHeight, darkenOrLighten } from './charting';
@@ -61,10 +61,11 @@ const Chart = ({
       datasets: chartDatasets.map((e, i) => ({
         ...e,
         backgroundColor: (barCtx) =>
-          labelColorMap?.[e.label] || getColorForChartEl(chartRef.current, e, barCtx, 'background'),
+          labelColorMap?.[e.label] ||
+          getColorForChartEl?.(chartRef.current, e, barCtx, 'background'),
         borderColor: (barCtx) =>
           darkenOrLighten(labelColorMap?.[e.label], -0.5) ||
-          getColorForChartEl(chartRef.current, e, barCtx, 'border'),
+          getColorForChartEl?.(chartRef.current, e, barCtx, 'border'),
         borderWidth: borderWidth || 2,
         borderRadius: 3,
       })),
@@ -138,7 +139,9 @@ const Chart = ({
                             logDebug(`Horizontal axis callback: i = ${i};
                               chartDatasets = ${JSON.stringify(chartDatasets)};
                               chartDatasets[0].data = ${JSON.stringify(chartDatasets[0].data)}`);
-                            const label = chartDatasets[0].data[i].y;
+                            //account for different data possiblities
+                            const label =
+                              chartDatasets[0].data[i]?.y || chartDatasets[i].data[0]?.y;
                             if (typeof label == 'string' && label.includes('\n'))
                               return label.split('\n');
                             return label;
@@ -175,7 +178,9 @@ const Chart = ({
                             logDebug(`Vertical axis callback: i = ${i}; 
                               chartDatasets = ${JSON.stringify(chartDatasets)}; 
                               chartDatasets[0].data = ${JSON.stringify(chartDatasets[0].data)}`);
-                            const label = chartDatasets[0].data[i].x;
+                            //account for different data possiblities - one mode per week, one mode both weeks, mixed weeks
+                            const label =
+                              chartDatasets[0].data[i]?.x || chartDatasets[i].data[0]?.x;
                             if (typeof label == 'string' && label.includes('\n'))
                               return label.split('\n');
                             return label;
@@ -190,7 +195,7 @@ const Chart = ({
                 }),
           },
           plugins: {
-            ...(lineAnnotations?.length > 0 && {
+            ...(lineAnnotations?.length && {
               annotation: {
                 clip: false,
                 annotations: lineAnnotations.map(
@@ -200,12 +205,15 @@ const Chart = ({
                       label: {
                         display: true,
                         padding: { x: 3, y: 1 },
+                        // @ts-ignore
                         borderRadius: 0,
                         backgroundColor: 'rgba(0,0,0,.7)',
                         color: 'rgba(255,255,255,1)',
                         font: { size: 10 },
                         position: a.position || 'start',
-                        content: a.label,
+                        ...(a.label && {
+                          content: a.label,
+                        }),
                         yAdjust: annotationsAtTop ? -12 : 0,
                       },
                       ...(isHorizontal
@@ -224,18 +232,20 @@ const Chart = ({
         // so we need to increase the spacing between the legend and the chart
         // https://stackoverflow.com/a/73498454
         plugins={
-          annotationsAtTop && [
-            {
-              id: 'increase-legend-spacing',
-              beforeInit(chart) {
-                const originalFit = (chart.legend as any).fit;
-                (chart.legend as any).fit = function fit() {
-                  originalFit.bind(chart.legend)();
-                  this.height += 12;
-                };
-              },
-            },
-          ]
+          annotationsAtTop
+            ? [
+                {
+                  id: 'increase-legend-spacing',
+                  beforeInit(chart) {
+                    const originalFit = (chart.legend as any).fit;
+                    (chart.legend as any).fit = function fit() {
+                      originalFit.bind(chart.legend)();
+                      this.height += 12;
+                    };
+                  },
+                },
+              ]
+            : []
         }
       />
     </View>

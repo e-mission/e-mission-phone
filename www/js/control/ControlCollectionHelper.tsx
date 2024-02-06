@@ -4,7 +4,7 @@ import { Dialog, Button, Switch, Text, useTheme, TextInput } from 'react-native-
 import { useTranslation } from 'react-i18next';
 import ActionMenu from '../components/ActionMenu';
 import { settingStyles } from './ProfileSettings';
-import { getAngularService } from '../angular-react-helper';
+import { displayError } from '../plugin/logger';
 
 type collectionConfig = {
   is_duty_cycling: boolean;
@@ -18,6 +18,8 @@ type collectionConfig = {
   ios_use_remote_push_for_sync: boolean;
   android_geofence_responsiveness: number;
 };
+
+type AccuracyAction = { text: string; value: number };
 
 export async function forceTransition(transition) {
   try {
@@ -62,7 +64,6 @@ export async function isMediumAccuracy() {
 }
 
 export async function helperToggleLowAccuracy() {
-  const Logger = getAngularService('Logger');
   let tempConfig = await getConfig();
   let accuracyOptions = await getAccuracyOptions();
   let medium = await isMediumAccuracy();
@@ -83,7 +84,7 @@ export async function helperToggleLowAccuracy() {
     let set = await setConfig(tempConfig);
     console.log('setConfig Sucess');
   } catch (err) {
-    Logger.displayError('Error while setting collection config', err);
+    displayError(err, 'Error while setting collection config');
   }
 }
 
@@ -96,7 +97,7 @@ export const getState = function () {
 };
 
 export async function getHelperCollectionSettings() {
-  let promiseList = [];
+  let promiseList: Promise<any>[] = [];
   promiseList.push(getConfig());
   promiseList.push(getAccuracyOptions());
   let resultList = await Promise.all(promiseList);
@@ -121,10 +122,10 @@ export const forceTransitionWrapper = function (transition) {
 };
 
 const formatConfigForDisplay = function (config, accuracyOptions) {
-  var retVal = [];
-  for (var prop in config) {
+  const retVal: { key: string; val: string }[] = [];
+  for (let prop in config) {
     if (prop == 'accuracy') {
-      for (var name in accuracyOptions) {
+      for (let name in accuracyOptions) {
         if (accuracyOptions[name] == config[prop]) {
           retVal.push({ key: prop, val: name });
         }
@@ -138,20 +139,17 @@ const formatConfigForDisplay = function (config, accuracyOptions) {
 
 const ControlCollectionHelper = ({ editVis, setEditVis }) => {
   const { colors } = useTheme();
-  const Logger = getAngularService('Logger');
 
   const [localConfig, setLocalConfig] = useState<collectionConfig>();
-  const [accuracyActions, setAccuracyActions] = useState([]);
+  const [accuracyActions, setAccuracyActions] = useState<AccuracyAction[]>([]);
   const [accuracyVis, setAccuracyVis] = useState(false);
 
   async function getCollectionSettings() {
-    let promiseList = [];
+    let promiseList: Promise<any>[] = [];
     promiseList.push(getConfig());
     promiseList.push(getAccuracyOptions());
-    let resultList = await Promise.all(promiseList);
-    let tempConfig = resultList[0];
+    const [tempConfig, tempAccuracyOptions] = await Promise.all(promiseList);
     setLocalConfig(tempConfig);
-    let tempAccuracyOptions = resultList[1];
     setAccuracyActions(formatAccuracyForActions(tempAccuracyOptions));
     return formatConfigForDisplay(tempConfig, tempAccuracyOptions);
   }
@@ -161,7 +159,7 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
   }, [editVis]);
 
   const formatAccuracyForActions = function (accuracyOptions) {
-    let tempAccuracyActions = [];
+    let tempAccuracyActions: AccuracyAction[] = [];
     for (var name in accuracyOptions) {
       tempAccuracyActions.push({ text: name, value: accuracyOptions[name] });
     }
@@ -178,24 +176,24 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
       let set = await setConfig(localConfig);
       setEditVis(false);
     } catch (err) {
-      Logger.displayError('Error while setting collection config', err);
+      displayError(err, 'Error while setting collection config');
     }
   }
 
   const onToggle = function (config_key) {
-    let tempConfig = { ...localConfig };
-    tempConfig[config_key] = !localConfig[config_key];
+    let tempConfig = { ...localConfig } as collectionConfig;
+    tempConfig[config_key] = !(localConfig as collectionConfig)[config_key];
     setLocalConfig(tempConfig);
   };
 
   const onChooseAccuracy = function (accuracyOption) {
-    let tempConfig = { ...localConfig };
+    let tempConfig = { ...localConfig } as collectionConfig;
     tempConfig.accuracy = accuracyOption.value;
     setLocalConfig(tempConfig);
   };
 
   const onChangeText = function (newText, config_key) {
-    let tempConfig = { ...localConfig };
+    let tempConfig = { ...localConfig } as collectionConfig;
     tempConfig[config_key] = parseInt(newText);
     setLocalConfig(tempConfig);
   };

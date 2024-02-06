@@ -4,10 +4,8 @@ import { StyleSheet, Modal, ScrollView, SafeAreaView, Pressable } from 'react-na
 import { ModalProps } from 'react-native-paper';
 import useAppConfig from '../../useAppConfig';
 import { useTranslation } from 'react-i18next';
-import { SurveyOptions, getInstanceStr, saveResponse } from './enketoHelper';
-import { fetchUrlCached } from '../../services/commHelper';
+import { SurveyOptions, fetchSurvey, getInstanceStr, saveResponse } from './enketoHelper';
 import { displayError, displayErrorMsg } from '../../plugin/logger';
-// import { transform } from 'enketo-transformer/web';
 
 type Props = Omit<ModalProps, 'children'> & {
   surveyName: string;
@@ -17,42 +15,26 @@ type Props = Omit<ModalProps, 'children'> & {
 
 const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
   const { t, i18n } = useTranslation();
-  const headerEl = useRef(null);
-  const surveyJson = useRef(null);
+  const headerEl = useRef<HTMLElement>(null);
+  const surveyJson = useRef<any>(null);
   const enketoForm = useRef<Form | null>(null);
   const appConfig = useAppConfig();
-
-  async function fetchSurveyJson(url) {
-    const responseText = await fetchUrlCached(url);
-    try {
-      return JSON.parse(responseText);
-    } catch ({ name, message }) {
-      // not JSON, so it must be XML
-      return Promise.reject(
-        'downloaded survey was not JSON; enketo-transformer is not available yet',
-      );
-      /* uncomment once enketo-transformer is available */
-      // if `response` is not JSON, it is an XML string and needs transformation to JSON
-      // const xmlText = await res.text();
-      // return await transform({xform: xmlText});
-    }
-  }
 
   async function validateAndSave() {
     const valid = await enketoForm.current.validate();
     if (!valid) return false;
-    const result = await saveResponse(surveyName, enketoForm.current, appConfig, opts);
-    if (!result) {
-      // validation failed
-      displayErrorMsg(t('survey.enketo-form-errors'));
-    } else if (result instanceof Error) {
-      // error thrown in saveResponse
-      displayError(result);
-    } else {
-      // success
-      rest.onDismiss();
-      onResponseSaved(result);
-      return;
+    try {
+      const result = await saveResponse(surveyName, enketoForm.current, appConfig, opts);
+      if (result) {
+        // success
+        rest.onDismiss?.();
+        onResponseSaved(result);
+      } else {
+        // validation failed
+        displayErrorMsg(t('survey.enketo-form-errors'));
+      }
+    } catch (err) {
+      displayError(err);
     }
   }
 
@@ -62,9 +44,9 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
     const formPath = appConfig.survey_info?.surveys?.[surveyName]?.formPath;
     if (!formPath) return console.error('No form path found for survey', surveyName);
 
-    fetchSurveyJson(formPath).then(({ form, model }) => {
+    fetchSurvey(formPath).then(({ form, model }) => {
       surveyJson.current = { form, model };
-      headerEl?.current.insertAdjacentHTML('afterend', form); // inject form into DOM
+      headerEl?.current?.insertAdjacentHTML('afterend', form); // inject form into DOM
       const formEl = document.querySelector('form.or');
       const data = {
         modelStr: model, // the XML model for this form
@@ -87,14 +69,14 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
   /* adapted from the template given by enketo-core:
     https://github.com/enketo/enketo-core/blob/master/src/index.html */
   const enketoContent = (
-    <div className="main" id="survey-paper">
+    <div className="main" style={{ height: '100%' }}>
       <article className="paper" data-tap-disabled="true">
         {/* This form header (markup/css) can be changed in the application.
         Just make sure to keep a .form-language-selector element into which the form language selector (<select>)
         will be appended by Enketo Core. */}
         <header ref={headerEl} className="form-header clearfix">
-          {!opts.undismissable && (
-            <button style={s.dismissBtn} onClick={() => rest.onDismiss()}>
+          {!opts?.undismissable && (
+            <button style={s.dismissBtn} onClick={() => rest.onDismiss?.()}>
               {/* arrow-left glyph from https://pictogrammers.com/library/mdi/icon/arrow-left/ */}
               <span style={{ fontFamily: 'MaterialCommunityIcons', fontSize: 24, marginRight: 5 }}>
                 󰁍

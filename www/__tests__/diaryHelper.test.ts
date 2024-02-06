@@ -8,11 +8,14 @@ import {
   modeColors,
 } from '../js/diary/diaryHelper';
 
+import initializedI18next from '../js/i18nextInit';
+window['i18next'] = initializedI18next;
+
 it('returns a formatted date', () => {
-  expect(getFormattedDate('2023-09-18T00:00:00-07:00')).toBe('Mon September 18, 2023');
+  expect(getFormattedDate('2023-09-18T00:00:00-07:00')).toBe('Mon, September 18, 2023');
   expect(getFormattedDate('')).toBeUndefined();
   expect(getFormattedDate('2023-09-18T00:00:00-07:00', '2023-09-21T00:00:00-07:00')).toBe(
-    'Mon September 18, 2023 - Thu September 21, 2023',
+    'Mon, September 18, 2023 - Thu, September 21, 2023',
   );
 });
 

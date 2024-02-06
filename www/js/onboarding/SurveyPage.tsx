@@ -15,7 +15,7 @@ import { onboardingStyles } from './OnboardingStack';
 import { displayErrorMsg } from '../plugin/logger';
 import i18next from 'i18next';
 
-let preloadedResponsePromise: Promise<any> = null;
+let preloadedResponsePromise: Promise<any>;
 export const preloadDemoSurveyResponse = () => {
   if (!preloadedResponsePromise) {
     if (!registerUserDone) {
@@ -31,12 +31,13 @@ const SurveyPage = () => {
   const { t } = useTranslation();
   const { refreshOnboardingState } = useContext(AppContext);
   const [surveyModalVisible, setSurveyModalVisible] = useState(false);
-  const [prevSurveyResponse, setPrevSurveyResponse] = useState(null);
+  const [prevSurveyResponse, setPrevSurveyResponse] = useState<string | undefined>(undefined);
   const prevSurveyResponseDate = useMemo(() => {
     if (prevSurveyResponse) {
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(prevSurveyResponse, 'text/xml');
       const surveyEndDt = xmlDoc.querySelector('end')?.textContent; // ISO datetime of survey completion
+      if (!surveyEndDt) return;
       return DateTime.fromISO(surveyEndDt).toLocaleString(DateTime.DATE_FULL);
     }
   }, [prevSurveyResponse]);

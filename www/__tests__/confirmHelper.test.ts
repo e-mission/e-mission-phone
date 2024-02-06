@@ -14,6 +14,8 @@ import {
 } from '../js/survey/multilabel/confirmHelper';
 
 import initializedI18next from '../js/i18nextInit';
+import { CompositeTrip, UserInputEntry } from '../js/types/diaryTypes';
+import { UserInputMap } from '../js/diary/LabelTabContext';
 window['i18next'] = initializedI18next;
 mockLogger();
 
@@ -44,9 +46,12 @@ const fakeDefaultLabelOptions = {
   },
 };
 
-CommHelper.fetchUrlCached = jest
-  .fn()
-  .mockImplementation(() => JSON.stringify(fakeDefaultLabelOptions));
+jest.mock('../js/services/commHelper', () => ({
+  ...jest.requireActual('../js/services/commHelper'),
+  fetchUrlCached: jest
+    .fn()
+    .mockReturnValue(Promise.resolve(JSON.stringify(fakeDefaultLabelOptions))),
+}));
 
 describe('confirmHelper', () => {
   it('returns labelOptions given an appConfig', async () => {
@@ -111,7 +116,7 @@ describe('confirmHelper', () => {
     e-mission-server -> emission/tests/storageTests/TestTripQueries.py -> testExpandFinalLabels() */
 
   it('has no final label for a trip with no user labels or inferred labels', () => {
-    const fakeTrip = {};
+    const fakeTrip = {} as CompositeTrip;
     const fakeUserInput = {};
     expect(inferFinalLabels(fakeTrip, fakeUserInput)).toEqual({});
     expect(verifiabilityForTrip(fakeTrip, fakeUserInput)).toEqual('cannot-verify');
@@ -120,19 +125,19 @@ describe('confirmHelper', () => {
   it('returns a final inference for a trip no user labels and all high-confidence inferred labels', () => {
     const fakeTrip = {
       inferred_labels: [{ labels: { mode_confirm: 'walk', purpose_confirm: 'exercise' }, p: 0.9 }],
-    };
+    } as CompositeTrip;
     const fakeUserInput = {};
     const final = inferFinalLabels(fakeTrip, fakeUserInput);
-    expect(final.MODE.value).toEqual('walk');
-    expect(final.PURPOSE.value).toEqual('exercise');
+    expect(final.MODE?.value).toEqual('walk');
+    expect(final.PURPOSE?.value).toEqual('exercise');
     expect(verifiabilityForTrip(fakeTrip, fakeUserInput)).toEqual('can-verify');
   });
 
   it('gives no final inference when there are user labels and no inferred labels', () => {
-    const fakeTrip = {};
-    const fakeUserInput = {
-      MODE: labelOptionByValue('bike', 'MODE'),
-      PURPOSE: labelOptionByValue('shopping', 'PURPOSE'),
+    const fakeTrip = {} as CompositeTrip;
+    const fakeUserInput: UserInputMap = {
+      MODE: { data: { label: 'bike' } } as UserInputEntry,
+      PURPOSE: { data: { label: 'shopping' } } as UserInputEntry,
     };
     const final = inferFinalLabels(fakeTrip, fakeUserInput);
     expect(final.MODE?.value).toBeUndefined();
@@ -143,10 +148,10 @@ describe('confirmHelper', () => {
   it('still gives no final inference when there are user labels and high-confidence inferred labels', () => {
     const fakeTrip = {
       inferred_labels: [{ labels: { mode_confirm: 'walk', purpose_confirm: 'exercise' }, p: 0.9 }],
-    };
+    } as CompositeTrip;
     const fakeUserInput = {
-      MODE: labelOptionByValue('bike', 'MODE'),
-      PURPOSE: labelOptionByValue('shopping', 'PURPOSE'),
+      MODE: { data: { label: 'bike' } } as UserInputEntry,
+      PURPOSE: { data: { label: 'shopping' } } as UserInputEntry,
     };
     const final = inferFinalLabels(fakeTrip, fakeUserInput);
     expect(final.MODE?.value).toBeUndefined();
@@ -160,11 +165,13 @@ describe('confirmHelper', () => {
         { labels: { mode_confirm: 'bike', purpose_confirm: 'shopping' }, p: 0.1 },
         { labels: { mode_confirm: 'walk', purpose_confirm: 'exercise' }, p: 0.9 },
       ],
+    } as CompositeTrip;
+    const fakeUserInput = {
+      MODE: { data: { label: 'bike' } } as UserInputEntry,
     };
-    const fakeUserInput = { MODE: labelOptionByValue('bike', 'MODE') };
     const final = inferFinalLabels(fakeTrip, fakeUserInput);
-    expect(final.MODE.value).toEqual('bike');
-    expect(final.PURPOSE.value).toEqual('shopping');
+    expect(final.MODE?.value).toEqual('bike');
+    expect(final.PURPOSE?.value).toEqual('shopping');
     expect(verifiabilityForTrip(fakeTrip, fakeUserInput)).toEqual('can-verify');
   });
 });

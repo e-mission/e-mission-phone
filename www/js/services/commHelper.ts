@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon';
-import { logDebug } from '../plugin/logger';
+import { displayError, logDebug } from '../plugin/logger';
+import { ServerConnConfig } from '../types/appConfigTypes';
+import { TimestampRange } from '../types/diaryTypes';
 
 /**
  * @param url URL endpoint for the request
@@ -11,12 +13,16 @@ export async function fetchUrlCached(url) {
     logDebug(`fetchUrlCached: found cached data for url ${url}, returning`);
     return Promise.resolve(stored);
   }
-  logDebug(`fetchUrlCached: found no cached data for url ${url}, fetching`);
-  const response = await fetch(url);
-  const text = await response.text();
-  localStorage.setItem(url, text);
-  logDebug(`fetchUrlCached: fetched data for url ${url}, returning`);
-  return text;
+  try {
+    logDebug(`fetchUrlCached: found no cached data for url ${url}, fetching`);
+    const response = await fetch(url);
+    const text = await response.text();
+    localStorage.setItem(url, text);
+    logDebug(`fetchUrlCached: fetched data for url ${url}, returning`);
+    return text;
+  } catch (e) {
+    displayError(e, `While fetching ${url}`);
+  }
 }
 
 export function getRawEntries(
@@ -86,8 +92,8 @@ export function getRawEntriesForLocalDate(
   });
 }
 
-export function getPipelineRangeTs() {
-  return new Promise((rs, rj) => {
+export function getPipelineRangeTs(): Promise<TimestampRange> {
+  return new Promise((rs: (rangeTs: TimestampRange) => void, rj) => {
     logDebug('getting pipeline range timestamps');
     window['cordova'].plugins.BEMServerComm.getUserPersonalData('/pipeline/get_range_ts', rs, rj);
   }).catch((error) => {
@@ -129,20 +135,17 @@ export function getMetrics(timeType: 'timestamp' | 'local_date', metricsQuery) {
   });
 }
 
-export function getAggregateData(path: string, data: any) {
+export function getAggregateData(path: string, query, serverConnConfig: ServerConnConfig) {
   return new Promise((rs, rj) => {
-    const fullUrl = `${window['$rootScope'].connectUrl}/${path}`;
-    data['aggregate'] = true;
+    const fullUrl = `${serverConnConfig.connectUrl}/${path}`;
+    query['aggregate'] = true;
 
-    if (window['$rootScope'].aggregateAuth === 'no_auth') {
-      logDebug(
-        `getting aggregate data without user authentication from ${fullUrl} with arguments ${JSON.stringify(
-          data,
-        )}`,
-      );
+    if (serverConnConfig.aggregate_call_auth == 'no_auth') {
+      logDebug(`getting aggregate data without user authentication from ${fullUrl} 
+        with arguments ${JSON.stringify(query)}`);
       const options = {
         method: 'post',
-        data: data,
+        data: query,
         responseType: 'json',
       };
       window['cordova'].plugin.http.sendRequest(
@@ -156,14 +159,9 @@ export function getAggregateData(path: string, data: any) {
         },
       );
     } else {
-      logDebug(
-        `getting aggregate data with user authentication from ${fullUrl} with arguments ${JSON.stringify(
-          data,
-        )}`,
-      );
-      const msgFiller = (message) => {
-        return Object.assign(message, data);
-      };
+      logDebug(`getting aggregate data with user authentication from ${fullUrl} 
+        with arguments ${JSON.stringify(query)}`);
+      const msgFiller = (message) => Object.assign(message, query);
       window['cordova'].plugins.BEMServerComm.pushGetJSON(`/${path}`, msgFiller, rs, rj);
     }
   }).catch((error) => {
@@ -231,7 +229,7 @@ export function putOne(key, data) {
 }
 
 export function getUserCustomLabels(keys) {
-  return new Promise((rs, rj) => {
+  return new Promise<any>((rs, rj) => {
     window['cordova'].plugins.BEMServerComm.postUserPersonalData(
       '/customlabel/get',
       'keys',
@@ -252,7 +250,7 @@ export function updateUserCustomLabel(key, oldLabel, newLabel, isNewLabelMustAdd
     new_label: newLabel,
     is_new_label_must_added: isNewLabelMustAdded,
   };
-  return new Promise((rs, rj) => {
+  return new Promise<any>((rs, rj) => {
     window['cordova'].plugins.BEMServerComm.postUserPersonalData(
       '/customlabel/update',
       'updated_label',

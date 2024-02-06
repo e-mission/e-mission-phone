@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { getAngularService } from '../angular-react-helper';
 import { View, ScrollView, useWindowDimensions } from 'react-native';
-import { Appbar } from 'react-native-paper';
+import { Appbar, useTheme } from 'react-native-paper';
 import NavBarButton from '../components/NavBarButton';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
@@ -18,10 +17,16 @@ import CarbonTextCard from './CarbonTextCard';
 import ActiveMinutesTableCard from './ActiveMinutesTableCard';
 import { getAggregateData, getMetrics } from '../services/commHelper';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
+import useAppConfig from '../useAppConfig';
+import { ServerConnConfig } from '../types/appConfigTypes';
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
-async function fetchMetricsFromServer(type: 'user' | 'aggregate', dateRange: DateTime[]) {
+async function fetchMetricsFromServer(
+  type: 'user' | 'aggregate',
+  dateRange: DateTime[],
+  serverConnConfig: ServerConnConfig,
+) {
   const query = {
     freq: 'D',
     start_time: dateRange[0].toSeconds(),
@@ -30,7 +35,7 @@ async function fetchMetricsFromServer(type: 'user' | 'aggregate', dateRange: Dat
     is_return_aggregate: type == 'aggregate',
   };
   if (type == 'user') return getMetrics('timestamp', query);
-  return getAggregateData('result/metrics/timestamp', query);
+  return getAggregateData('result/metrics/timestamp', query, serverConnConfig);
 }
 
 function getLastTwoWeeksDtRange() {
@@ -41,24 +46,31 @@ function getLastTwoWeeksDtRange() {
 }
 
 const MetricsTab = () => {
+  const appConfig = useAppConfig();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const { getFormattedSpeed, speedSuffix, getFormattedDistance, distanceSuffix } =
     useImperialConfig();
 
   const [dateRange, setDateRange] = useState<DateTime[]>(getLastTwoWeeksDtRange);
-  const [aggMetrics, setAggMetrics] = useState<MetricsData>(null);
-  const [userMetrics, setUserMetrics] = useState<MetricsData>(null);
+  const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
+  const [userMetrics, setUserMetrics] = useState<MetricsData | undefined>(undefined);
 
   useEffect(() => {
+    if (!appConfig?.server) return;
     loadMetricsForPopulation('user', dateRange);
     loadMetricsForPopulation('aggregate', dateRange);
-  }, [dateRange]);
+  }, [dateRange, appConfig?.server]);
 
   async function loadMetricsForPopulation(population: 'user' | 'aggregate', dateRange: DateTime[]) {
     try {
       logDebug(`MetricsTab: fetching metrics for population ${population}'
         in date range ${JSON.stringify(dateRange)}`);
-      const serverResponse = await fetchMetricsFromServer(population, dateRange);
+      const serverResponse: any = await fetchMetricsFromServer(
+        population,
+        dateRange,
+        appConfig.server,
+      );
       logDebug('MetricsTab: received metrics: ' + JSON.stringify(serverResponse));
       const metrics = {};
       const dataKey = population == 'user' ? 'user_metrics' : 'aggregate_metrics';
@@ -88,7 +100,7 @@ const MetricsTab = () => {
       <Appbar.Header
         statusBarHeight={0}
         elevated={true}
-        style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+        style={{ height: 46, backgroundColor: colors.surface }}>
         <Appbar.Content title={t('metrics.dashboard-tab')} />
         <MetricsDateSelect dateRange={dateRange} setDateRange={setDateRange} />
         <Appbar.Action icon="refresh" size={32} onPress={refresh} />

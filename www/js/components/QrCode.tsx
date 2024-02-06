@@ -4,16 +4,18 @@ we can remove this wrapper and just use the QRCode component directly */
 
 import React from 'react';
 import QRCode from 'react-qr-code';
+import { logWarn } from '../plugin/logger';
 
 export function shareQR(message) {
   /*code adapted from demo of react-qr-code*/
   const svg = document.querySelector('.qr-code');
+  if (!svg) return logWarn('No QR code found to share');
   const svgData = new XMLSerializer().serializeToString(svg);
   const img = new Image();
 
   img.onload = () => {
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     canvas.width = img.width;
     canvas.height = img.height;
     ctx.drawImage(img, 0, 0);
