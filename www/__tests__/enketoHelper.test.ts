@@ -241,7 +241,7 @@ it('gets the saved result or throws an error', async () => {
     },
   } as unknown as AppConfig;
   mockBEMUserCache(config);
-  } as unknown as AppConfig;
+
   const opts = {
     timelineEntry: {
       end_local_dt: { timezone: 'America/Los_Angeles' },
@@ -254,15 +254,13 @@ it('gets the saved result or throws an error', async () => {
     label: '1 Personal Care',
     name: 'TimeUseSurvey',
   });
-  await expect(saveResponse(surveyName, form, config, {})).resolves.toMatchObject({
+  expect(async () => await saveResponse(surveyName, form, config, {})).resolves.toMatchObject({
     label: '1 Personal Care',
     name: 'TimeUseSurvey',
   });
-
-  await expect(saveResponse(surveyName, badForm, config, opts)).resolves.toMatchObject({
-    message:
-      'The times you entered are invalid. Please ensure that the start time is before the end time.',
-  });
+  expect(async () => await saveResponse(surveyName, badForm, config, opts)).rejects.toThrowError(
+    'The times you entered are invalid. Please ensure that the start time is before the end time.',
+  );
 
   //wrong label format
   const bad_config = {
@@ -283,11 +281,13 @@ it('gets the saved result or throws an error', async () => {
         },
       },
     },
-  };
+  } as unknown as AppConfig;
+
   _test_resetStoredConfig();
   mockBEMUserCache(bad_config);
-  await expect(saveResponse(surveyName, form, bad_config, opts)).rejects.toThrow(
-    'labelVar type width is not supported!',
+
+  expect(async () => await saveResponse(surveyName, form, bad_config, opts)).rejects.toThrow(
+    'labelVar type width is not supported!',);
   expect(async () => await saveResponse(surveyName, badForm, config, opts)).rejects.toEqual(
     'The times you entered are invalid. Please ensure that the start time is before the end time.',
   );
@@ -332,7 +332,7 @@ it('filters the survey responses by their name and version', async () => {
   ];
 
   //one response -> that response
-  await expect(filterByNameAndVersion('TimeUseSurvey', response)).resolves.toStrictEqual(response);
+  await expect(filterByNameAndVersion('TimeUseSurvey', response, fakeConfig)).resolves.toStrictEqual(response);
 
   const responses = [
     {
@@ -374,7 +374,7 @@ it('filters the survey responses by their name and version', async () => {
   ];
 
   //several responses -> only the one that has a name & version match
-  await expect(filterByNameAndVersion('TimeUseSurvey', responses)).resolves.toStrictEqual(response);
+  await expect(filterByNameAndVersion('TimeUseSurvey', responses, fakeConfig)).resolves.toStrictEqual(response);
 });
 
 it('fetches the survey', async () => {

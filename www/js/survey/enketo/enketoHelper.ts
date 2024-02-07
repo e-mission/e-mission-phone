@@ -248,7 +248,7 @@ export function saveResponse(
   const jsonDocResponse = xml2js.parse(xmlResponse);
   return resolveLabel(surveyName, xmlDoc)
     .then((rsLabel) => {
-      let timestamps: TimestampRange | { ts: number; fmt_time: string } | undefined;
+      let timestamps: TimestampRange | { ts: number; fmt_time: string } | TimelineEntry | undefined;
       let match_id: string | undefined;
       if (opts?.timelineEntry) {
         const resolvedTimestamps = resolveTimestamps(xmlDoc, opts.timelineEntry, (errOnFail) => {
@@ -269,8 +269,11 @@ export function saveResponse(
         }
         // if timestamps were not resolved from the survey, we will use the trip or place timestamps
         timestamps ||= opts.timelineEntry;
-        data.start_ts = timestamps?.start_ts || opts.timelineEntry.enter_ts;
-        data.end_ts = timestamps?.end_ts || opts.timelineEntry.exit_ts;
+        let time = {start_ts: 0, end_ts: 0}; // was data ... wasn't declared ... WHAT IS GOING ON HERE
+        time.start_ts = timestamps?.start_ts || opts.timelineEntry.enter_ts;
+        time.end_ts = timestamps?.end_ts || opts.timelineEntry.exit_ts;
+        console.log(time);
+
         // UUID generated using this method https://stackoverflow.com/a/66332305
         match_id = URL.createObjectURL(new Blob([])).slice(-36);
       } else {
