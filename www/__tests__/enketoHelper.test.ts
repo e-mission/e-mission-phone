@@ -198,14 +198,12 @@ it('resolves the label, if no labelVars, returns template', async () => {
   );
 });
 
-/**
- * @param surveyName the name of the survey (e.g. "TimeUseSurvey")
- * @param enketoForm the Form object from enketo-core that contains this survey
- * @param appConfig the dynamic config file for the app
- * @param opts object with SurveyOptions like 'timelineEntry' or 'dataKey'
- * @returns Promise of the saved result, or an Error if there was a problem
- */
-//   export function saveResponse(surveyName: string, enketoForm: Form, appConfig, opts: SurveyOptions) {
+/* cases to test here:
+  1. returns the label with options timestamps
+  2. returns the label with fallback timestamps
+  3. error out over invalid timestamps
+  4. error out over invalid label vars
+*/
 it('gets the saved result or throws an error', async () => {
   const surveyName = 'TimeUseSurvey';
   const form = {
@@ -227,12 +225,13 @@ it('gets the saved result or throws an error', async () => {
           formPath:
             'https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
           labelTemplate: {
-            en: '{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }',
-            es: '{ erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }}',
+            en: '{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }{ pca, plural, =0 {} other {# Personal Care, } }',
+            es: '{ erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }}{ pca, plural, =0 {} other {# Cuidado, } }',
           },
           labelVars: {
             da: { key: 'Domestic_activities', type: 'length' },
             erea: { key: 'Employment_related_a_Education_activities', type: 'length' },
+            pca: { key: 'Personal_Care_activities', type: 'length' },
           },
           version: 9,
         },
