@@ -284,7 +284,8 @@ it('gets the saved result or throws an error', async () => {
   mockBEMUserCache(bad_config);
 
   expect(async () => await saveResponse(surveyName, form, bad_config, opts)).rejects.toThrow(
-    'labelVar type width is not supported!',);
+    'labelVar type width is not supported!',
+  );
 
   // expect(async () => await saveResponse(surveyName, badForm, config, opts)).rejects.toEqual(
   //   'The times you entered are invalid. Please ensure that the start time is before the end time.',
@@ -330,7 +331,9 @@ it('filters the survey responses by their name and version', async () => {
   ];
 
   //one response -> that response
-  await expect(filterByNameAndVersion('TimeUseSurvey', response, fakeConfig)).toStrictEqual(response);
+  await expect(filterByNameAndVersion('TimeUseSurvey', response, fakeConfig)).toStrictEqual(
+    response,
+  );
 
   const responses = [
     {
@@ -372,5 +375,7 @@ it('filters the survey responses by their name and version', async () => {
   ];
 
   //several responses -> only the one that has a name match
-  await expect(filterByNameAndVersion('TimeUseSurvey', responses, fakeConfig)).toStrictEqual(response);
+  await expect(filterByNameAndVersion('TimeUseSurvey', responses, fakeConfig)).toStrictEqual(
+    response,
+  );
 });
