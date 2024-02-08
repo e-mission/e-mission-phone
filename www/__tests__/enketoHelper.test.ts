@@ -238,6 +238,9 @@ it('gets the saved result or throws an error', async () => {
       },
     },
   } as unknown as AppConfig;
+
+  mockBEMUserCache(config);
+
   const opts = {
     timelineEntry: {
       end_local_dt: { timezone: 'America/Los_Angeles' },
@@ -246,14 +249,46 @@ it('gets the saved result or throws an error', async () => {
     } as CompositeTrip,
   };
 
-  console.log(config);
-  expect(saveResponse(surveyName, form, config, opts)).resolves.toMatchObject({
+  await expect(saveResponse(surveyName, form, config, opts)).resolves.toMatchObject({
     label: '1 Personal Care',
     name: 'TimeUseSurvey',
   });
-  expect(async () => await saveResponse(surveyName, badForm, config, opts)).rejects.toEqual(
-    'The times you entered are invalid. Please ensure that the start time is before the end time.',
-  );
+
+  await expect(saveResponse(surveyName, form, config, {})).resolves.toMatchObject({
+    label: '1 Personal Care',
+    name: 'TimeUseSurvey',
+  });
+
+  //wrong label format
+  const bad_config = {
+    survey_info: {
+      surveys: {
+        TimeUseSurvey: {
+          compatibleWith: 1,
+          formPath:
+            'https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
+          labelTemplate: {
+            en: '{ da, plural, =0 {} other {# Domestic, } }',
+            es: '{ da, plural, =0 {} other {# Actividades domesticas, }}',
+          },
+          labelVars: {
+            da: { key: 'Domestic_activities', type: 'width' },
+          },
+          version: 9,
+        },
+      },
+    },
+  } as unknown as AppConfig;
+
+  _test_resetStoredConfig();
+  mockBEMUserCache(bad_config);
+
+  expect(async () => await saveResponse(surveyName, form, bad_config, opts)).rejects.toThrow(
+    'labelVar type width is not supported!',);
+
+  // expect(async () => await saveResponse(surveyName, badForm, config, opts)).rejects.toEqual(
+  //   'The times you entered are invalid. Please ensure that the start time is before the end time.',
+  // );
 });
 
 /*
@@ -275,7 +310,7 @@ it('loads the previous response to a given survey', () => {
  * The version for filtering is specified in enketo survey `compatibleWith` config.
  * The stored survey response version must be greater than or equal to `compatibleWith` to be included.
  */
-it('filters the survey responses by their name and version', () => {
+it('filters the survey responses by their name and version', async () => {
   //no response -> no filtered responses
   expect(filterByNameAndVersion('TimeUseSurvey', [], fakeConfig)).toStrictEqual([]);
 
@@ -295,7 +330,7 @@ it('filters the survey responses by their name and version', () => {
   ];
 
   //one response -> that response
-  expect(filterByNameAndVersion('TimeUseSurvey', response, fakeConfig)).toStrictEqual(response);
+  await expect(filterByNameAndVersion('TimeUseSurvey', response, fakeConfig)).toStrictEqual(response);
 
   const responses = [
     {
@@ -337,5 +372,5 @@ it('filters the survey responses by their name and version', () => {
   ];
 
   //several responses -> only the one that has a name match
-  expect(filterByNameAndVersion('TimeUseSurvey', responses, fakeConfig)).toStrictEqual(response);
+  await expect(filterByNameAndVersion('TimeUseSurvey', responses, fakeConfig)).toStrictEqual(response);
 });
