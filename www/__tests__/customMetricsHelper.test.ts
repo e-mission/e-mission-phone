@@ -40,12 +40,12 @@ it('gets the custom mets', async () => {
   await initCustomDatasetHelper(appConfig);
   //expecting the keys from fakeLabels.json NOT metrics/metDataset.ts
   expect(getCustomMETs()).toMatchObject({
-    walk: expect.any(Object),
-    bike: expect.any(Object),
-    bikeshare: expect.any(Object),
+    'walk': expect.any(Object),
+    'bike': expect.any(Object),
+    'bikeshare': expect.any(Object),
     'e-bike': expect.any(Object),
-    scootershare: expect.any(Object),
-    drove_alone: expect.any(Object),
+    'scootershare': expect.any(Object),
+    'drove_alone': expect.any(Object),
   });
 });
 
@@ -54,11 +54,11 @@ it('gets the custom footprint', async () => {
   await initCustomDatasetHelper(appConfig);
   //numbers from fakeLabels.json
   expect(getCustomFootprint()).toMatchObject({
-    walk: 0,
-    bike: 0,
-    bikeshare: 0,
+    'walk': 0,
+    'bike': 0,
+    'bikeshare': 0,
     'e-bike': 0.00728,
-    scootershare: 0.00894,
-    drove_alone: 0.22031,
+    'scootershare': 0.00894,
+    'drove_alone': 0.22031,
   });
 });
