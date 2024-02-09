@@ -100,7 +100,7 @@ const WelcomePage = () => {
       <Surface style={[onboardingStyles.page, { paddingVertical: 0 }]}>
         <View style={s.headerArea(windowWidth, colors)} aria-hidden={true} />
         <IconButton
-          accessibilityLabel="More info"
+          accessibilityLabel={t('join.more-info')}
           icon="information-variant"
           containerColor={colors.onPrimary}
           iconColor={colors.primary}
