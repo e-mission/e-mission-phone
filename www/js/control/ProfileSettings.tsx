@@ -6,6 +6,7 @@ import ExpansionSection from './ExpandMenu';
 import SettingRow from './SettingRow';
 import ControlDataTable from './ControlDataTable';
 import DemographicsSettingRow from './DemographicsSettingRow';
+import BluetoothScanSettingRow from './BluetoothScanSettingRow';
 import PopOpCode from './PopOpCode';
 import ReminderTime from './ReminderTime';
 import useAppConfig from '../useAppConfig';
@@ -461,10 +462,7 @@ const ProfileSettings = () => {
           iconName="email"
           action={() => sendEmail('loggerDB')}></SettingRow>
         <ExpansionSection sectionTitle="control.dev-zone">
-          <SettingRow
-            textKey="control.bluetooth-scan"
-            iconName="bluetooth-settings"
-            action={() => {alert(`Not Implemented!`)}}></SettingRow>
+        <BluetoothScanSettingRow></BluetoothScanSettingRow>
           <SettingRow
             textKey="control.refresh"
             iconName="refresh"
