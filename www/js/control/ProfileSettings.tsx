@@ -462,7 +462,7 @@ const ProfileSettings = () => {
           iconName="email"
           action={() => sendEmail('loggerDB')}></SettingRow>
         <ExpansionSection sectionTitle="control.dev-zone">
-        <BluetoothScanSettingRow></BluetoothScanSettingRow>
+          <BluetoothScanSettingRow></BluetoothScanSettingRow>
           <SettingRow
             textKey="control.refresh"
             iconName="refresh"
