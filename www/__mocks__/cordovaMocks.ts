@@ -1,11 +1,20 @@
 import packageJsonBuild from '../../package.cordovabuild.json';
-import fakeConfig from './fakeConfig.json';
 
 export const mockCordova = () => {
   window['cordova'] ||= {};
   window['cordova'].platformId ||= 'ios';
   window['cordova'].platformVersion ||= packageJsonBuild.dependencies['cordova-ios'];
   window['cordova'].plugins ||= {};
+};
+
+export const mockReminders = () => {
+  window['cordova'] ||= {};
+  window['cordova'].plugins ||= {};
+  window['cordova'].plugins.notification ||= {};
+  window['cordova'].plugins.notification.local ||= {};
+  window['cordova'].plugins.notification.local.getScheduled ||= () => [];
+  window['cordova'].plugins.notification.local.cancelAll ||= () => {};
+  window['cordova'].plugins.notification.local.schedule ||= () => {};
 };
 
 export const mockDevice = () => {
@@ -36,9 +45,11 @@ export const mockFile = () => {
 //for consent document
 const _storage = {};
 
+type MessageData = any;
+type Message = { key: string; data: MessageData; metadata: { write_ts: number; [k: string]: any } };
 export const mockBEMUserCache = (config?) => {
   const _cache = {};
-  const messages = [];
+  const messages: Message[] = [];
   const mockBEMUserCache = {
     getLocalStorage: (key: string, isSecure: boolean) => {
       return new Promise((rs, rj) =>
@@ -89,24 +100,52 @@ export const mockBEMUserCache = (config?) => {
     putMessage: (key: string, value: any) => {
       return new Promise<void>((rs, rj) =>
         setTimeout(() => {
-          messages.push({ key, value });
+          messages.push({
+            key,
+            data: value,
+            // write_ts is epoch time in seconds
+            metadata: { write_ts: Math.floor(Date.now() / 1000) },
+          });
           rs();
         }, 100),
       );
     },
     getAllMessages: (key: string, withMetadata?: boolean) => {
-      return new Promise<any[]>((rs, rj) =>
+      return new Promise<Message[] | MessageData[]>((rs, rj) =>
         setTimeout(() => {
-          rs(messages.filter((m) => m.key == key).map((m) => m.value));
+          rs(messages.filter((m) => m.key == key).map((m) => (withMetadata ? m : m.data)));
         }, 100),
       );
+    },
+    getMessagesForInterval: (key: string, tq, withMetadata?: boolean) => {
+      return new Promise<Message[] | MessageData[]>((rs, rj) =>
+        setTimeout(() => {
+          rs(
+            messages
+              .filter((m) => m.key == key)
+              .filter((m) => m.metadata[tq.key] >= tq.startTs && m.metadata.write_ts <= tq.endTs)
+              .map((m) => (withMetadata ? m : m.data)),
+          );
+        }, 100),
+      );
+    }, // Used for getUnifiedDataForInterval
+    putRWDocument: (key: string, value: any) => {
+      if (key == 'config/app_ui_config') {
+        return new Promise<void>((rs, rj) =>
+          setTimeout(() => {
+            config = value;
+            rs();
+          }, 100),
+        );
+      }
     },
     getDocument: (key: string, withMetadata?: boolean) => {
       //returns the config provided as a paramenter to this mock!
       if (key == 'config/app_ui_config') {
         return new Promise<any>((rs, rj) =>
           setTimeout(() => {
-            rs(config || fakeConfig);
+            if (config) rs(config);
+            else rs({}); // return empty object if config is not set
           }, 100),
         );
       } else {

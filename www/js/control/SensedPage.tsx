@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, SafeAreaView, Modal } from 'react-native';
 import { useTheme, Appbar, IconButton, Text } from 'react-native-paper';
-import { getAngularService } from '../angular-react-helper';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { sendEmail } from './emailService';
 
 const SensedPage = ({ pageVis, setPageVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  /* Let's keep a reference to the database for convenience */
-  const [DB, setDB] = useState();
-  const [entries, setEntries] = useState([]);
+  const [entries, setEntries] = useState<any[]>([]);
 
   const emailCache = function () {
     sendEmail('userCacheDB');
@@ -21,23 +18,21 @@ const SensedPage = ({ pageVis, setPageVis }) => {
 
   async function updateEntries() {
     //hardcoded function and keys after eliminating bit-rotted options
-    setDB(window.cordova.plugins.BEMUserCache);
-    let userCacheFn = DB.getAllMessages;
+    let userCacheFn = window['cordova'].plugins.BEMUserCache.getAllMessages;
     let userCacheKey = 'statemachine/transition';
     try {
       let entryList = await userCacheFn(userCacheKey, true);
-      let tempEntries = [];
+      let tempEntries: any[] = [];
       entryList.forEach((entry) => {
-        entry.metadata.write_fmt_time = moment
-          .unix(entry.metadata.write_ts)
-          .tz(entry.metadata.time_zone)
-          .format('llll');
+        entry.metadata.write_fmt_time = DateTime.fromSeconds(entry.metadata.write_ts)
+          .setZone(entry.metadata.time_zone)
+          .toLocaleString(DateTime.DATETIME_MED);
         entry.data = JSON.stringify(entry.data, null, 2);
         tempEntries.push(entry);
       });
       setEntries(tempEntries);
     } catch (error) {
-      window.Logger.log(window.Logger.LEVEL_ERROR, 'Error updating entries' + error);
+      window['Logger'].log(window['Logger'].LEVEL_ERROR, 'Error updating entries' + error);
     }
   }
 
@@ -63,7 +58,7 @@ const SensedPage = ({ pageVis, setPageVis }) => {
         <Appbar.Header
           statusBarHeight={0}
           elevated={true}
-          style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+          style={{ height: 46, backgroundColor: colors.surface }}>
           <Appbar.BackAction onPress={() => setPageVis(false)} />
           <Appbar.Content title={t('control.sensed-title')} />
         </Appbar.Header>

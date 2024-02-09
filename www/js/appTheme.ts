@@ -1,4 +1,4 @@
-import { MD3LightTheme as DefaultTheme, MD3Theme } from 'react-native-paper';
+import { MD3LightTheme as DefaultTheme, MD3Theme, useTheme } from 'react-native-paper';
 
 /* This is the base theme we will use throughout the app
   It's based on the default theme from React Native Paper, with some modifications */
@@ -32,6 +32,8 @@ const AppTheme = {
   },
   roundness: 5,
 };
+
+export const useAppTheme = () => useTheme<typeof AppTheme>();
 
 /* Next, we'll set up 'flavors' of the theme, which are variations on the theme
     with any number of properties overridden.
@@ -84,7 +86,7 @@ const flavorOverrides = {
 /* This function is used to retrieve the theme for a given flavor.
   If no valid flavor is specified, it returns the default theme. */
 export const getTheme = (flavor?: keyof typeof flavorOverrides) => {
-  if (!flavorOverrides[flavor]) return AppTheme;
+  if (!flavor || !flavorOverrides[flavor]) return AppTheme;
   const typeStyle = flavorOverrides[flavor];
   const scopedElevation = { ...AppTheme.colors.elevation, ...typeStyle?.colors?.elevation };
   const scopedColors = {

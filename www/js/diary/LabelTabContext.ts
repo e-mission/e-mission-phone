@@ -1,30 +1,37 @@
-import { createContext } from 'react';
+import { Dispatch, SetStateAction, createContext } from 'react';
 import { TimelineEntry, UserInputEntry } from '../types/diaryTypes';
-import { LabelOption } from '../survey/multilabel/confirmHelper';
+import { LabelOption, LabelOptions, MultilabelKey } from '../types/labelTypes';
+import { EnketoUserInputEntry } from '../survey/enketo/enketoHelper';
 
-export type TimelineMap = Map<string, TimelineEntry>;
+export type UserInputMap = {
+  /* if the key here is 'SURVEY', we are in the ENKETO configuration, meaning the user input
+    value will have the raw 'xmlResponse' string */
+  SURVEY?: EnketoUserInputEntry;
+} & {
+  /* all other keys, (e.g. 'MODE', 'PURPOSE') are from the MULTILABEL configuration
+    and will have the 'label' string but no 'xmlResponse' string */
+  [k in MultilabelKey]?: UserInputEntry;
+};
+
+export type TimelineMap = Map<string, TimelineEntry>; // Todo: update to reflect unpacked trips (origin_Key, etc)
 export type TimelineLabelMap = {
-  [k: string]: {
-    /* if the key here is 'SURVEY', we are in the ENKETO configuration, meaning the user input
-      value is a raw survey response */
-    SURVEY?: UserInputEntry;
-    /* all other keys, (e.g. 'MODE', 'PURPOSE') are from the MULTILABEL configuration
-      and use a LabelOption for the user input value */
-    MODE?: LabelOption;
-    PURPOSE?: LabelOption;
-    REPLACED_MODE?: LabelOption;
-  };
+  [k: string]: UserInputMap;
 };
 export type TimelineNotesMap = {
   [k: string]: UserInputEntry[];
 };
+export type CustomLabelMap = {
+  [k: string]: string[];
+};
 
 type ContextProps = {
-  labelOptions: any;
-  timelineMap: TimelineMap;
-  timelineLabelMap: TimelineLabelMap;
-  timelineNotesMap: TimelineNotesMap;
-  displayedEntries: TimelineEntry[];
+  labelOptions: LabelOptions | null;
+  timelineMap: TimelineMap | null;
+  userInputFor: (tlEntry: TimelineEntry) => UserInputMap | undefined;
+  notesFor: (tlEntry: TimelineEntry) => UserInputEntry[] | undefined;
+  labelFor: (tlEntry: TimelineEntry, labelType: MultilabelKey) => LabelOption | undefined;
+  addUserInputToEntry: (oid: string, userInput: any, inputType: 'label' | 'note') => void;
+  displayedEntries: TimelineEntry[] | null;
   filterInputs: any; // TODO
   setFilterInputs: any; // TODO
   queriedRange: any; // TODO
@@ -33,7 +40,8 @@ type ContextProps = {
   loadAnotherWeek: any; // TODO
   loadSpecificWeek: any; // TODO
   refresh: any; // TODO
-  repopulateTimelineEntry: any; // TODO
+  customLabelMap: CustomLabelMap;
+  setCustomLabelMap: Dispatch<SetStateAction<CustomLabelMap>>;
 };
 
-export default createContext<ContextProps>(null);
+export default createContext<ContextProps>({} as ContextProps);

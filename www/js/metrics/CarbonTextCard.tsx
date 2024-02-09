@@ -15,16 +15,17 @@ import {
   generateSummaryFromData,
   calculatePercentChange,
   segmentDaysByWeeks,
+  MetricsSummary,
 } from './metricsHelper';
-import { getAngularService } from '../angular-react-helper';
+import { logWarn } from '../plugin/logger';
 
-type Props = { userMetrics: MetricsData; aggMetrics: MetricsData };
+type Props = { userMetrics?: MetricsData; aggMetrics?: MetricsData };
 const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
   const userText = useMemo(() => {
-    if (userMetrics?.distance?.length > 0) {
+    if (userMetrics?.distance?.length) {
       //separate data into weeks
       const [thisWeekDistance, lastWeekDistance] = segmentDaysByWeeks(userMetrics?.distance, 2);
 
@@ -45,7 +46,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
       );
 
       //setting up data to be displayed
-      let textList = [];
+      let textList: { label: string; value: string }[] = [];
 
       //calculate low-high and format range for prev week, if exists (14 days ago -> 8 days ago)
       if (userLastWeekSummaryMap[0]) {
@@ -55,7 +56,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
         };
         const label = `${t('main-metrics.prev-week')} (${formatDateRangeOfDays(lastWeekDistance)})`;
         if (userPrevWeek.low == userPrevWeek.high)
-          textList.push({ label: label, value: Math.round(userPrevWeek.low) });
+          textList.push({ label: label, value: `${Math.round(userPrevWeek.low)}` });
         else
           textList.push({
             label: label + '²',
@@ -70,7 +71,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
       };
       const label = `${t('main-metrics.past-week')} (${formatDateRangeOfDays(thisWeekDistance)})`;
       if (userPastWeek.low == userPastWeek.high)
-        textList.push({ label: label, value: Math.round(userPastWeek.low) });
+        textList.push({ label: label, value: `${Math.round(userPastWeek.low)}` });
       else
         textList.push({
           label: label + '²',
@@ -79,14 +80,14 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
 
       //calculate worst-case carbon footprint
       let worstCarbon = getHighestFootprintForDistance(worstDistance);
-      textList.push({ label: t('main-metrics.worst-case'), value: Math.round(worstCarbon) });
+      textList.push({ label: t('main-metrics.worst-case'), value: `${Math.round(worstCarbon)}` });
 
       return textList;
     }
   }, [userMetrics]);
 
   const groupText = useMemo(() => {
-    if (aggMetrics?.distance?.length > 0) {
+    if (aggMetrics?.distance?.length) {
       //separate data into weeks
       const thisWeekDistance = segmentDaysByWeeks(aggMetrics?.distance, 1)[0];
 
@@ -95,20 +96,17 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
 
       // Issue 422:
       // https://github.com/e-mission/e-mission-docs/issues/422
-      let aggCarbonData = [];
-      for (var i in aggThisWeekSummary) {
+      let aggCarbonData: MetricsSummary[] = [];
+      for (let i in aggThisWeekSummary) {
         aggCarbonData.push(aggThisWeekSummary[i]);
         if (isNaN(aggCarbonData[i].values)) {
-          console.warn(
-            'WARNING in calculating groupCarbonRecords: value is NaN for mode ' +
-              aggCarbonData[i].key +
-              ', changing to 0',
-          );
+          logWarn(`WARNING in calculating groupCarbonRecords: value is NaN for mode 
+            ${aggCarbonData[i].key}, changing to 0`);
           aggCarbonData[i].values = 0;
         }
       }
 
-      let groupText = [];
+      let groupText: { label: string; value: string }[] = [];
 
       let aggCarbon = {
         low: getFootprintForMetrics(aggCarbonData, 0),
@@ -117,7 +115,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
       console.log('testing group past week', aggCarbon);
       const label = t('main-metrics.average');
       if (aggCarbon.low == aggCarbon.high)
-        groupText.push({ label: label, value: Math.round(aggCarbon.low) });
+        groupText.push({ label: label, value: `${Math.round(aggCarbon.low)}` });
       else
         groupText.push({
           label: label + '²',
@@ -129,7 +127,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
   }, [aggMetrics]);
 
   const textEntries = useMemo(() => {
-    let tempText = [];
+    let tempText: { label: string; value: string }[] = [];
     if (userText?.length) {
       tempText = tempText.concat(userText);
     }
@@ -140,6 +138,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
   }, [userText, groupText]);
 
   const cardSubtitleText = useMemo(() => {
+    if (!aggMetrics?.distance?.length) return;
     const recentEntries = segmentDaysByWeeks(aggMetrics?.distance, 2)
       .reverse()
       .flat();

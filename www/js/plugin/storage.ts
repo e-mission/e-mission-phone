@@ -1,4 +1,3 @@
-import { getAngularService } from '../angular-react-helper';
 import { addStatReading, statKeys } from './clientStats';
 import { logDebug, logWarn } from './logger';
 
@@ -132,9 +131,9 @@ export function storageGetDirect(key: string) {
   return unmungeValue(key, localStorageGet(key));
 }
 
-function findMissing(fromKeys, toKeys) {
-  const foundKeys = [];
-  const missingKeys = [];
+function findMissing(fromKeys: any[], toKeys: any[]) {
+  const foundKeys: any[] = [];
+  const missingKeys: any[] = [];
   fromKeys.forEach((fk) => {
     if (toKeys.includes(fk)) {
       foundKeys.push(fk);

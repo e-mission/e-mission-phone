@@ -9,7 +9,6 @@
 */
 
 import React, { useContext, useMemo, useState } from 'react';
-import { getAngularService } from '../../angular-react-helper';
 import DiaryButton from '../../components/DiaryButton';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'react-native-paper';
@@ -24,30 +23,30 @@ const UserInputButton = ({ timelineEntry }: Props) => {
   const { colors } = useTheme();
   const { t, i18n } = useTranslation();
 
-  const [prevSurveyResponse, setPrevSurveyResponse] = useState(null);
+  const [prevSurveyResponse, setPrevSurveyResponse] = useState<string | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState(false);
-  const { repopulateTimelineEntry, timelineLabelMap } = useContext(LabelTabContext);
+  const { userInputFor, addUserInputToEntry } = useContext(LabelTabContext);
 
   // the label resolved from the survey response, or null if there is no response yet
-  const responseLabel = useMemo<string | null>(
-    () => timelineLabelMap[timelineEntry._id.$oid]?.['SURVEY']?.data?.label || null,
-    [timelineEntry],
+  const responseLabel = useMemo<string | undefined>(
+    () => userInputFor(timelineEntry)?.['SURVEY']?.data.label || undefined,
+    [userInputFor(timelineEntry)?.['SURVEY']?.data.label],
   );
 
   function launchUserInputSurvey() {
     logDebug('UserInputButton: About to launch survey');
-    const prevResponse = timelineLabelMap[timelineEntry._id.$oid]?.['SURVEY'];
-    setPrevSurveyResponse(prevResponse?.data?.xmlResponse);
+    const prevResponse = userInputFor(timelineEntry)?.['SURVEY'];
+    if (prevResponse?.data?.xmlResponse) {
+      setPrevSurveyResponse(prevResponse.data.xmlResponse);
+    }
     setModalVisible(true);
   }
 
   function onResponseSaved(result) {
     if (result) {
-      logDebug(
-        'UserInputButton: response was saved, about to repopulateTimelineEntry; result=' +
-          JSON.stringify(result),
-      );
-      repopulateTimelineEntry(timelineEntry._id.$oid);
+      logDebug(`UserInputButton: response was saved, about to addUserInputToEntry; 
+        result = ${JSON.stringify(result)}`);
+      addUserInputToEntry(timelineEntry._id.$oid, { SURVEY: result }, 'label');
     } else {
       displayErrorMsg('UserInputButton: response was not saved, result=', result);
     }

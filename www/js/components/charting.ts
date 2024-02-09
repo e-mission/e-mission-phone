@@ -26,7 +26,7 @@ export function getChartHeight(
     so they don't look squished */
   if (isHorizontal) {
     // 'ideal' chart height is based on the number of datasets and number of unique index values
-    const uniqueIndexVals = [];
+    const uniqueIndexVals: string[] = [];
     chartDatasets.forEach((e) =>
       e.data.forEach((r) => {
         if (!uniqueIndexVals.includes(r[indexAxis])) uniqueIndexVals.push(r[indexAxis]);
@@ -65,7 +65,7 @@ function createDiagonalPattern(color = 'black') {
   let shape = document.createElement('canvas');
   shape.width = 10;
   shape.height = 10;
-  let c = shape.getContext('2d');
+  let c = shape.getContext('2d') as CanvasRenderingContext2D;
   c.strokeStyle = color;
   c.lineWidth = 2;
   c.beginPath();
@@ -112,7 +112,14 @@ const meterColors = {
   above: '#440000', // dark red
 };
 
-export function getGradient(chart, meter, currDataset, barCtx, alpha = null, darken = 0) {
+export function getGradient(
+  chart,
+  meter,
+  currDataset,
+  barCtx,
+  alpha: number | null = null,
+  darken = 0,
+) {
   const { ctx, chartArea, scales } = chart;
   if (!chartArea) return null;
   let gradient: CanvasGradient;

@@ -1,6 +1,5 @@
-# Ignore www/dist, manual_lib, json
+# Ignore www/dist, json
 www/dist
-www/manual_lib
 www/json
 
 # Ignore all HTML files:

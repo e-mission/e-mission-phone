@@ -1,8 +1,8 @@
 export type ServerResponse<Type> = {
-  phone_data: Array<ServerData<Type>>;
+  phone_data: Array<BEMData<Type>>;
 };
 
-export type ServerData<Type> = {
+export type BEMData<Type> = {
   data: Type;
   metadata: MetaData;
   key?: string;
@@ -17,6 +17,8 @@ export type MetaData = {
   time_zone: string;
   write_fmt_time: string;
   write_local_dt: LocalDt;
+  origin_key?: string;
+  read_ts?: number;
 };
 
 export type LocalDt = {

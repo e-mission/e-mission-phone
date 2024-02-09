@@ -3,14 +3,15 @@ import { StyleSheet } from 'react-native';
 import { List, Switch, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
-const SettingRow = ({
-  textKey,
-  iconName = undefined,
-  action,
-  desc = undefined,
-  switchValue = undefined,
-  descStyle = undefined,
-}) => {
+type Props = {
+  textKey: string;
+  iconName?: string;
+  action: any;
+  desc?: string;
+  switchValue?: boolean;
+  descStyle?: any;
+};
+const SettingRow = ({ textKey, iconName, action, desc, switchValue, descStyle }: Props) => {
   const { t } = useTranslation(); //this accesses the translations
   const { colors } = useTheme(); // use this to get the theme colors instead of hardcoded #hex colors
 
@@ -30,7 +31,7 @@ const SettingRow = ({
   return (
     <List.Item
       style={styles.item(colors.surface)}
-      title={t(textKey)}
+      title={t(textKey as any)}
       titleStyle={styles.title}
       description={desc}
       descriptionStyle={descStyle ? descStyle : styles.description}
