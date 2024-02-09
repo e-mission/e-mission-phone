@@ -53,6 +53,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     if (modalVisibleFor == null) return null;
     return labelFor(trip, modalVisibleFor)?.value || null;
   }, [modalVisibleFor]);
+
   // to mark 'inferred' labels as 'confirmed'; turn yellow labels blue
   function verifyTrip() {
     const inferredLabelsForTrip = inferFinalLabels(trip, userInputFor(trip));
@@ -88,6 +89,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     if (!Object.keys(inputs).length) return displayErrorMsg('No inputs to store');
     const inputsToStore: UserInputMap = {};
     const storePromises: any[] = [];
+
     for (let [inputType, newLabel] of Object.entries(inputs)) {
       if (isOther) {
         /* Let's make the value for user entered inputs look consistent with our other values
