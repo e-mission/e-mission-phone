@@ -460,8 +460,11 @@ const ProfileSettings = () => {
           textKey="control.email-log"
           iconName="email"
           action={() => sendEmail('loggerDB')}></SettingRow>
-
         <ExpansionSection sectionTitle="control.dev-zone">
+          <SettingRow
+            textKey="control.bluetooth-scan"
+            iconName="bluetooth-settings"
+            action={() => {alert(`Not Implemented!`)}}></SettingRow>
           <SettingRow
             textKey="control.refresh"
             iconName="refresh"
