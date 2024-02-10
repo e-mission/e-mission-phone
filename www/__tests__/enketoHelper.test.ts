@@ -5,6 +5,7 @@ import {
   resolveLabel,
   loadPreviousResponseForSurvey,
   saveResponse,
+  fetchSurvey,
   EnketoUserInputEntry,
 } from '../js/survey/enketo/enketoHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
@@ -214,7 +215,7 @@ it('gets the saved result or throws an error', async () => {
   //the start time listed is after the end time listed
   const badForm = {
     getDataStr: () => {
-      return '<aDxjD5f5KAghquhAvsormy xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" id="time_use_survey_form_v9_1"><start>2023-10-13T15:05:48.890-06:00</start><end>2023-10-13T15:05:48.892-06:00</end><group_hg4zz25><Start_date>2016-08-25</Start_date><Start_time>17:24:32.928-06:00</Start_time><End_date>2016-07-25</End_date><End_time>17:30:31.000-06:00</End_time><Activity_Type>personal_care_activities</Activity_Type><Personal_Care_activities>doing_sport</Personal_Care_activities><Employment_related_a_Education_activities/><Domestic_activities/><Recreation_and_leisure/><Voluntary_work_and_care_activities/><Other/></group_hg4zz25><meta><instanceID>uuid:dc16c287-08b2-4435-95aa-e4d7838b4225</instanceID><deprecatedID/></meta></aDxjD5f5KAghquhAvsormy>';
+      return '<aDxjD5f5KAghquhAvsormy xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" id="time_use_survey_form_v9_1"><start>2023-10-13T15:05:48.895-06:00</start><end>2023-10-13T15:05:48.892-06:00</end><group_hg4zz25><Start_date>2016-08-25</Start_date><Start_time>17:24:32.928-06:00</Start_time><End_date>2016-07-25</End_date><End_time>17:30:31.000-06:00</End_time><Activity_Type>personal_care_activities</Activity_Type><Personal_Care_activities>doing_sport</Personal_Care_activities><Employment_related_a_Education_activities/><Domestic_activities/><Recreation_and_leisure/><Voluntary_work_and_care_activities/><Other/></group_hg4zz25><meta><instanceID>uuid:dc16c287-08b2-4435-95aa-e4d7838b4225</instanceID><deprecatedID/></meta></aDxjD5f5KAghquhAvsormy>';
     },
   };
   const config = {
@@ -280,16 +281,17 @@ it('gets the saved result or throws an error', async () => {
     },
   } as unknown as AppConfig;
 
+  // //resolving instead of rejecting?
+  // await expect(saveResponse(surveyName, badForm, config, opts)).rejects.toThrow(
+  //   'The times you entered are invalid. Please ensure that the start time is before the end time.',
+  // );
+
   _test_resetStoredConfig();
   mockBEMUserCache(bad_config);
 
-  expect(async () => await saveResponse(surveyName, form, bad_config, opts)).rejects.toThrow(
+  await expect(saveResponse(surveyName, form, bad_config, opts)).rejects.toThrow(
     'labelVar type width is not supported!',
   );
-
-  // expect(async () => await saveResponse(surveyName, badForm, config, opts)).rejects.toEqual(
-  //   'The times you entered are invalid. Please ensure that the start time is before the end time.',
-  // );
 });
 
 /*
@@ -379,3 +381,30 @@ it('filters the survey responses by their name and version', async () => {
     response,
   );
 });
+
+//returning undefined? fetch is not working?
+// it('fetches the survey', async () => {
+//   global.fetch = (url: string) =>
+//     new Promise((rs, rj) => {
+//       setTimeout(() =>
+//         rs({
+//           text: () =>
+//             new Promise((rs, rj) => {
+//               console.log('reading the text');
+//               let urlList = url.split('.');
+//               let urlEnd = urlList[urlList.length - 1];
+//               if (urlEnd === 'json') {
+//                 setTimeout(() => rs('{ "data": "is_json" }'), 100);
+//               } else {
+//                 setTimeout(() => rs('not json'), 100);
+//               }
+//             }),
+//         }),
+//       );
+//     }) as any;
+//   await expect(
+//     fetchSurvey(
+//       'https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/label_options/example-study-label-options.json',
+//     ),
+//   ).resolves.toMatchObject({ data: 'is_json' });
+// });
