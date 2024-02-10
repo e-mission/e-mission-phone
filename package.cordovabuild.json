@@ -96,7 +96,8 @@
       "cordova-plugin-androidx-adapter": {},
       "phonegap-plugin-barcodescanner": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
-      }
+      },
+      "cordova-plugin-bluetooth-serial": {}
     }
   },
   "dependencies": {
@@ -132,6 +133,7 @@
     "cordova-plugin-ionic-webview": "5.0.0",
     "cordova-plugin-local-notification-12": "github:e-mission/cordova-plugin-local-notification-12#v0.1.4-fix-android-action",
     "cordova-plugin-x-socialsharing": "6.0.4",
+    "cordova-plugin-bluetooth-serial": "0.4.7",
     "core-js": "^2.5.7",
     "enketo-core": "^6.1.7",
     "enketo-transformer": "^4.0.0",
