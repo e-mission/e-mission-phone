@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppContext } from '../App';
 import { StyleSheet, Text, Modal, ScrollView, SafeAreaView, Pressable } from 'react-native';
+import { gatherData } from './blueoothScanner';
 
 /**
  * The implementation of this scanner page follows the design of
@@ -13,6 +14,23 @@ import { StyleSheet, Text, Modal, ScrollView, SafeAreaView, Pressable } from 're
 const BluetoothScanPage = ({ ...props }: any) => {
   const { t } = useTranslation();
   const context = useContext(AppContext); // May not be necessary
+  const [logs, setLogs] = useState<string[]>([]);
+
+  useEffect(() => {
+
+  }, []); 
+
+  // Function to run Bluetooth test and update logs
+  const runBluetoothTest = async () => {
+    try {
+      setLogs(["Loading..."]);
+      const newLogs = await gatherData();
+      setLogs(newLogs);
+    } catch (error) {
+      console.error(error);
+      // Handle error
+    }
+  };
 
   const BlueScanContent = (
     <div style={{ height: '100%' }}>
@@ -28,6 +46,16 @@ const BluetoothScanPage = ({ ...props }: any) => {
         }
       </header>
       <Text>{'Add Scanner Components here!'}</Text>
+      <button style={s.btn} onClick={() => window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions()}>
+        <Text>{'Permissions'}</Text>
+      </button>
+      <button style={s.btn} onClick={runBluetoothTest}>
+        <Text>{'Scan'}</Text>
+      </button>
+      <h3>Console Output:</h3>
+      {logs.map((log, index) => (
+        <p key={index}>{log}</p>
+      ))}
     </div>
   );
 
@@ -56,6 +84,9 @@ const s = StyleSheet.create({
     alignItems: 'center',
     padding: 0,
   },
+  btn: {
+    display: 'flex'
+  }
 });
 
 export default BluetoothScanPage;
