@@ -1,13 +1,22 @@
 import { getLabelOptions } from '../survey/multilabel/confirmHelper';
-import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
+import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { standardMETs } from './metDataset';
 import { AppConfig } from '../types/appConfigTypes';
 
 //variables to store values locally
 let _customMETs: { [key: string]: { [key: string]: { range: number[]; met: number } } };
 let _customPerKmFootprint: { [key: string]: number };
-let _range_limited_motorized;
 let _labelOptions;
+
+/**
+ * ONLY USED IN TESTING
+ * @function clears the locally stored variables
+ */
+export function _test_clearCustomMetrics() {
+  _customMETs = undefined;
+  _customPerKmFootprint = undefined;
+  _labelOptions = undefined;
+}
 
 /**
  * @function gets custom mets, must be initialized
@@ -69,16 +78,6 @@ function populateCustomFootprints() {
   let modeOptions = _labelOptions['MODE'];
   let modeCO2PerKm = modeOptions
     .map((opt) => {
-      if (opt.range_limit_km) {
-        if (_range_limited_motorized) {
-          displayErrorMsg(
-            JSON.stringify({ first: _range_limited_motorized, second: opt }),
-            'Found two range limited motorized options',
-          );
-        }
-        _range_limited_motorized = opt;
-        logDebug(`Found range limited motorized mode - ${_range_limited_motorized}`);
-      }
       if (typeof opt.kgCo2PerKm !== 'undefined') {
         return [opt.value, opt.kgCo2PerKm];
       } else {
