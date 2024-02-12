@@ -25,7 +25,7 @@ export function formatForDisplay(value: number): string {
   if (value >= 100) opts.maximumFractionDigits = 0;
   else if (value >= 1) opts.maximumSignificantDigits = 3;
   else opts.maximumFractionDigits = 2;
-  return Intl.NumberFormat(i18next.language, opts).format(value);
+  return Intl.NumberFormat(i18next.resolvedLanguage, opts).format(value);
 }
 
 export function convertDistance(distMeters: number, imperial: boolean): number {

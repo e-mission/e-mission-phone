@@ -61,7 +61,7 @@ const LABEL_FUNCTIONS = {
     const configSurveys = appConfig.survey_info.surveys;
 
     const config = configSurveys[name]; // config for this survey
-    const lang = i18next.language;
+    const lang = i18next.resolvedLanguage || 'en';
     const labelTemplate = config.labelTemplate?.[lang];
 
     if (!labelTemplate) return 'Answered'; // no template given in config

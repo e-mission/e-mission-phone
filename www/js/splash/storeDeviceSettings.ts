@@ -14,7 +14,7 @@ function storeDeviceSettings() {
     .getVersionNumber()
     .then((appver) => {
       const updateJSON = {
-        phone_lang: i18next.language,
+        phone_lang: i18next.resolvedLanguage,
         curr_platform: window['cordova'].platformId,
         manufacturer: window['device'].manufacturer,
         client_os_version: window['device'].version,

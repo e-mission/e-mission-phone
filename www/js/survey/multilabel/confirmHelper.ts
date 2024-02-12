@@ -31,7 +31,7 @@ export async function getLabelOptions(appConfigParam?) {
   }
   /* fill in the translations to the 'text' fields of the labelOptions,
     according to the current language */
-  const lang = i18next.language;
+  const lang = i18next.resolvedLanguage || 'en';
   for (const opt in labelOptions) {
     labelOptions[opt]?.forEach?.((o, i) => {
       const translationKey = o.value;

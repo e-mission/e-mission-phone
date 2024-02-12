@@ -125,7 +125,7 @@ function getNotifs() {
 function scheduleNotifs(scheme, notifTimes: DateTime[], setIsScheduling: Function) {
   return new Promise<void>((rs) => {
     setIsScheduling(true);
-    const localeCode = i18next.language;
+    const localeCode = i18next.resolvedLanguage || 'en';
     const nots = notifTimes.map((n) => {
       const nDate = n.toJSDate();
       const seconds = nDate.getTime() / 1000; // the id must be in seconds, otherwise the sorting won't work
