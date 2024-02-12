@@ -31,7 +31,7 @@ export async function getHelperSyncSettings() {
   return formatConfigForDisplay(tempConfig);
 }
 
-type syncConfig = { sync_interval: number; ios_use_remote_push: boolean };
+type SyncConfig = { sync_interval: number; ios_use_remote_push: boolean };
 
 //forceSync and endForceSync SettingRows & their actions
 export const ForceSyncRow = ({ getState }) => {
@@ -170,7 +170,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const [localConfig, setLocalConfig] = useState<syncConfig>();
+  const [localConfig, setLocalConfig] = useState<SyncConfig>();
   const [intervalVis, setIntervalVis] = useState<boolean>(false);
 
   /*
@@ -207,21 +207,21 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
         // or continue to store from native
         // this is easier for people to see, but means that calls to
         // native, even through the javascript interface are not complete
-        curr_sync_interval: (localConfig as syncConfig).sync_interval,
+        curr_sync_interval: (localConfig as SyncConfig).sync_interval,
       });
     } catch (err) {
       displayError(err, 'Error while setting sync config');
     }
   }
   function onChooseInterval(interval) {
-    let tempConfig = { ...localConfig } as syncConfig;
+    let tempConfig = { ...localConfig } as SyncConfig;
     tempConfig.sync_interval = interval.value;
     setLocalConfig(tempConfig);
   }
 
   function onTogglePush() {
-    let tempConfig = { ...localConfig } as syncConfig;
-    tempConfig.ios_use_remote_push = !(localConfig as syncConfig).ios_use_remote_push;
+    let tempConfig = { ...localConfig } as SyncConfig;
+    tempConfig.ios_use_remote_push = !(localConfig as SyncConfig).ios_use_remote_push;
     setLocalConfig(tempConfig);
   }
 

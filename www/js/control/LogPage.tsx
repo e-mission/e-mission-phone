@@ -8,13 +8,13 @@ import AlertBar from './AlertBar';
 import { sendEmail } from './emailService';
 import { displayError, logDebug } from '../plugin/logger';
 
-type loadStats = { currentStart: number; gotMaxIndex: boolean; reachedEnd: boolean };
+type LoadStats = { currentStart: number; gotMaxIndex: boolean; reachedEnd: boolean };
 
 const LogPage = ({ pageVis, setPageVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const [loadStats, setLoadStats] = useState<loadStats>();
+  const [loadStats, setLoadStats] = useState<LoadStats>();
   const [entries, setEntries] = useState<any>([]);
   const [maxErrorVis, setMaxErrorVis] = useState<boolean>(false);
   const [logErrorVis, setLogErrorVis] = useState<boolean>(false);
@@ -33,7 +33,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
     try {
       let maxIndex = await window['Logger'].getMaxIndex();
       logDebug('Logger maxIndex = ' + maxIndex);
-      let tempStats = {} as loadStats;
+      let tempStats = {} as LoadStats;
       tempStats.currentStart = maxIndex;
       tempStats.gotMaxIndex = true;
       tempStats.reachedEnd = false;
@@ -81,7 +81,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
 
   function processEntries(entryList) {
     let tempEntries: any[] = [];
-    let tempLoadStats: loadStats = { ...loadStats } as loadStats;
+    let tempLoadStats: LoadStats = { ...loadStats } as LoadStats;
     entryList.forEach((e) => {
       e.fmt_time = DateTime.fromSeconds(e.ts).toLocaleString(DateTime.DATETIME_MED);
       tempEntries.push(e);

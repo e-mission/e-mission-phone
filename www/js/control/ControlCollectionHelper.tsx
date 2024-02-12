@@ -6,7 +6,7 @@ import ActionMenu from '../components/ActionMenu';
 import { settingStyles } from './ProfileSettings';
 import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 
-type collectionConfig = {
+type CollectionConfig = {
   is_duty_cycling: boolean;
   simulate_user_interaction: boolean;
   accuracy: number;
@@ -127,7 +127,7 @@ function formatConfigForDisplay(config, accuracyOptions) {
 const ControlCollectionHelper = ({ editVis, setEditVis }) => {
   const { colors } = useTheme();
 
-  const [localConfig, setLocalConfig] = useState<collectionConfig>();
+  const [localConfig, setLocalConfig] = useState<CollectionConfig>();
   const [accuracyActions, setAccuracyActions] = useState<AccuracyAction[]>([]);
   const [accuracyVis, setAccuracyVis] = useState(false);
 
@@ -168,19 +168,19 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
   }
 
   function onToggle(config_key) {
-    let tempConfig = { ...localConfig } as collectionConfig;
-    tempConfig[config_key] = !(localConfig as collectionConfig)[config_key];
+    let tempConfig = { ...localConfig } as CollectionConfig;
+    tempConfig[config_key] = !(localConfig as CollectionConfig)[config_key];
     setLocalConfig(tempConfig);
   }
 
   function onChooseAccuracy(accuracyOption) {
-    let tempConfig = { ...localConfig } as collectionConfig;
+    let tempConfig = { ...localConfig } as CollectionConfig;
     tempConfig.accuracy = accuracyOption.value;
     setLocalConfig(tempConfig);
   }
 
   function onChangeText(newText, config_key) {
-    let tempConfig = { ...localConfig } as collectionConfig;
+    let tempConfig = { ...localConfig } as CollectionConfig;
     tempConfig[config_key] = parseInt(newText);
     setLocalConfig(tempConfig);
   }
