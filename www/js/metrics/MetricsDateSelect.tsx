@@ -88,7 +88,7 @@ const MetricsDateSelect = ({ dateRange, setDateRange }: Props) => {
 
 export const s = StyleSheet.create({
   divider: {
-    width: '3ch',
+    width: 25,
     marginHorizontal: 'auto',
   },
 });
