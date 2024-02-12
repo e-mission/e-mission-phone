@@ -32,7 +32,7 @@ export function getSurveyForTimelineEntry(
   for (let surveyConfig of tripLabelConfig) {
     if (!surveyConfig.showsIf) return surveyConfig; // survey shows unconditionally
     const scope = {
-      tlEntry,
+      ...tlEntry,
       ...conditionalSurveyFunctions,
     };
     try {
