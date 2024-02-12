@@ -186,7 +186,8 @@ const LabelTab = () => {
   async function loadAnotherWeek(when: 'past' | 'future') {
     try {
       logDebug('LabelTab: loadAnotherWeek into the ' + when);
-      if (!pipelineRange?.start_ts) return logWarn('No pipelineRange yet - early return');
+      if (!pipelineRange?.start_ts || !pipelineRange?.end_ts)
+        return logWarn('No pipelineRange yet - early return');
 
       const reachedPipelineStart =
         queriedRange?.start_ts && queriedRange.start_ts <= pipelineRange.start_ts;
@@ -265,7 +266,8 @@ const LabelTab = () => {
   }
 
   async function fetchTripsInRange(startTs: number, endTs: number) {
-    if (!pipelineRange?.start_ts) return logWarn('No pipelineRange yet - early return');
+    if (!pipelineRange?.start_ts || !pipelineRange?.end_ts)
+      return logWarn('No pipelineRange yet - early return');
     logDebug('LabelTab: fetchTripsInRange from ' + startTs + ' to ' + endTs);
     const readCompositePromise = readAllCompositeTrips(startTs, endTs);
     let readUnprocessedPromise;
