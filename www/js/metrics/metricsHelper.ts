@@ -180,7 +180,7 @@ export function isCustomLabels(modeMap) {
   logDebug(`Checking metric keys ${distanceKeys}; sensed ${isSensedKeys}; custom ${isCustomKeys}`);
   const isAllCustomForMetric = isAllCustom(isSensedKeys, isCustomKeys);
   metricSummaryChecksSensed.push(!isAllCustomForMetric);
-  metricSummaryChecksCustom.push(!!isAllCustomForMetric);
+  metricSummaryChecksCustom.push(Boolean(isAllCustomForMetric));
   logDebug(`overall custom/not results for each metric 
     is ${JSON.stringify(metricSummaryChecksCustom)}`);
   return isAllCustom(metricSummaryChecksSensed, metricSummaryChecksCustom);
