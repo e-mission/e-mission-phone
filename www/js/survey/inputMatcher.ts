@@ -10,6 +10,7 @@ import {
 import { TimelineLabelMap, TimelineNotesMap } from '../diary/LabelTabContext';
 import { MultilabelKey } from '../types/labelTypes';
 import { EnketoUserInputEntry } from './enketo/enketoHelper';
+import { AppConfig } from '../types/appConfigTypes';
 
 const EPOCH_MAXIMUM = 2 ** 31 - 1;
 
@@ -259,7 +260,7 @@ export function getUniqueEntries(combinedList) {
  */
 export function mapInputsToTimelineEntries(
   allEntries: TimelineEntry[],
-  appConfig,
+  appConfig: AppConfig,
 ): [TimelineLabelMap, TimelineNotesMap] {
   const timelineLabelMap: TimelineLabelMap = {};
   const timelineNotesMap: TimelineNotesMap = {};
