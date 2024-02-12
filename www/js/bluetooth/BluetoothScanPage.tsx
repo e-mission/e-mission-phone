@@ -1,8 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppContext } from '../App';
-import { StyleSheet, Text, Modal, ScrollView, SafeAreaView, Pressable } from 'react-native';
-import { gatherData } from './blueoothScanner';
+import { StyleSheet, Modal, ScrollView, SafeAreaView, View } from 'react-native';
+import gatherBluetoothData from './blueoothScanner';
+import { logDebug } from '../plugin/logger';
+import BluetoothCard from './BluetoothCard';
+import { Appbar, useTheme, Button } from 'react-native-paper';
 
 /**
  * The implementation of this scanner page follows the design of
@@ -13,48 +16,48 @@ import { gatherData } from './blueoothScanner';
  */
 const BluetoothScanPage = ({ ...props }: any) => {
   const { t } = useTranslation();
-  const context = useContext(AppContext); // May not be necessary
   const [logs, setLogs] = useState<string[]>([]);
-
-  useEffect(() => {
-
-  }, []); 
+  const { colors } = useTheme();
 
   // Function to run Bluetooth test and update logs
   const runBluetoothTest = async () => {
     try {
-      setLogs(["Loading..."]);
-      const newLogs = await gatherData();
+      const newLogs = await gatherBluetoothData();
       setLogs(newLogs);
     } catch (error) {
-      console.error(error);
+      logDebug(error);
       // Handle error
     }
   };
 
   const BlueScanContent = (
     <div style={{ height: '100%' }}>
-      <header>
-        {
-          // TODO: Fix background color of button
-          <button style={s.dismissBtn} onClick={() => props.onDismiss?.()}>
-            <span style={{ fontFamily: 'MaterialCommunityIcons', fontSize: 24, marginRight: 5 }}>
-              󰁍
-            </span>
-            <span>{t('survey.dismiss')}</span>
-          </button>
-        }
-      </header>
-      <Text>{'Add Scanner Components here!'}</Text>
-      <button style={s.btn} onClick={() => window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions()}>
-        <Text>{'Permissions'}</Text>
-      </button>
-      <button style={s.btn} onClick={runBluetoothTest}>
-        <Text>{'Scan'}</Text>
-      </button>
-      <h3>Console Output:</h3>
+      <Appbar.Header
+        statusBarHeight={0}
+        elevated={true}
+        style={{ height: 46, backgroundColor: colors.surface }}>
+        <Appbar.BackAction
+          onPress={() => {
+            props.onDismiss?.();
+          }}
+        />
+        <Appbar.Content title={'Bluetooth Scanner'} titleStyle={{ fontSize: 17 }} />
+      </Appbar.Header>
+      <View style={s.btnContainer}>
+        <Button
+          mode="elevated"
+          onPress={() => window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions()}
+          textColor={colors.primary}
+          style={s.btn}>
+          Permissions
+        </Button>
+        <Button mode="elevated" onPress={runBluetoothTest} textColor={colors.primary} style={s.btn}>
+          Scan for Devices
+        </Button>
+      </View>
+
       {logs.map((log, index) => (
-        <p key={index}>{log}</p>
+        <BluetoothCard deviceName={log} deviceData={index} />
       ))}
     </div>
   );
@@ -64,9 +67,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
       <Modal {...props} animationType="slide">
         <SafeAreaView style={{ flex: 1 }}>
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flex: 1 }}>
-            <Pressable style={{ flex: 1 }}>
-              <div> {BlueScanContent} </div>
-            </Pressable>
+            <div> {BlueScanContent} </div>
           </ScrollView>
         </SafeAreaView>
       </Modal>
@@ -75,18 +76,15 @@ const BluetoothScanPage = ({ ...props }: any) => {
 };
 
 const s = StyleSheet.create({
-  dismissBtn: {
-    height: 38,
-    fontSize: 11,
-    color: '#222',
-    marginRight: 'auto',
-    display: 'flex',
-    alignItems: 'center',
-    padding: 0,
+  btnContainer: {
+    padding: 16,
+    justifyContent: 'center',
   },
   btn: {
-    display: 'flex'
-  }
+    height: 38,
+    fontSize: 11,
+    margin: 4,
+  },
 });
 
 export default BluetoothScanPage;
