@@ -112,6 +112,10 @@
       "baseMode": "OTHER",
       "met_equivalent": "UNKNOWN",
       "kgCo2PerKm": 0
+    },
+    {
+      "value": "unicycle",
+      "baseMode": "UNICYCLE"
     }
   ],
   "PURPOSE": [

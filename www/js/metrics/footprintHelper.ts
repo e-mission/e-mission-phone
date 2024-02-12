@@ -1,4 +1,4 @@
-import { displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
+import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { getCustomFootprint } from './customMetricsHelper';
 
 //variables for the highest footprint in the set and if using custom
@@ -22,7 +22,6 @@ export function clearHighestFootprint() {
 /**
  * @function gets the footprint
  * currently will only be custom, as all labels are "custom"
- * fallback is json/label-options.json.sample, with MET and kgCO2 defined
  * @returns the footprint or undefined
  */
 function getFootprint() {
@@ -47,10 +46,8 @@ export function getFootprintForMetrics(userMetrics, defaultIfMissing = 0) {
   let result = 0;
   for (let i in userMetrics) {
     let mode = userMetrics[i].key;
-    if (mode == 'ON_FOOT') {
-      mode = 'WALKING';
-    }
 
+    //either the mode is in our custom footprint or it is not
     if (mode in footprint) {
       result += footprint[mode] * mtokm(userMetrics[i].values);
     } else if (mode == 'IN_VEHICLE') {

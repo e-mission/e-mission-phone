@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Modal, StyleSheet, ScrollView } from 'react-native';
-import { Dialog, Button, useTheme, Text, Appbar, IconButton, TextInput } from 'react-native-paper';
+import {
+  Dialog,
+  Button,
+  useTheme,
+  Text,
+  Appbar,
+  IconButton,
+  TextInput,
+  List,
+} from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import ExpansionSection from './ExpandMenu';
 import SettingRow from './SettingRow';
@@ -406,10 +415,19 @@ const ProfileSettings = () => {
       <Appbar.Header
         statusBarHeight={0}
         elevated={true}
-        style={{ height: 46, backgroundColor: colors.surface }}>
+        style={{ height: 46, backgroundColor: colors.surface }}
+        accessibilityRole="navigation">
         <Appbar.Content title={t('control.profile-tab')} />
-        <Text>{t('control.log-out')}</Text>
-        <IconButton icon="logout" onPress={() => setLogoutVis(true)}></IconButton>
+        <List.Item
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
+          title={t('control.log-out')}
+          titleStyle={{ fontSize: 14, color: 'black', paddingEnd: 5 }}
+          accessible={true}
+          accessibilityLabel={t('control.log-out')}
+          accessibilityRole="button"
+          onPress={() => setLogoutVis(true)}
+          right={() => <List.Icon icon="logout" aria-hidden={true} />}
+        />
       </Appbar.Header>
 
       <ScrollView>
