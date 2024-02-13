@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Modal, ScrollView, SafeAreaView, View } from 'react-native';
 import gatherBluetoothData from './blueoothScanner';
@@ -16,6 +16,7 @@ import { Appbar, useTheme, Button } from 'react-native-paper';
 const BluetoothScanPage = ({ ...props }: any) => {
   const { t } = useTranslation();
   const [logs, setLogs] = useState<string[]>([]);
+  const [isScanning, setIsScanning] = useState(false);
   const { colors } = useTheme();
 
   // Function to run Bluetooth test and update logs
@@ -27,6 +28,20 @@ const BluetoothScanPage = ({ ...props }: any) => {
       logWarn(error);
       // TODO: Handle error further
     }
+  };
+
+  useEffect(() => {
+    let intervalId;
+    if (isScanning) {
+      intervalId = setInterval(runBluetoothTest, 5000);
+    } else {
+      clearInterval(intervalId);
+    }
+    return () => clearInterval(intervalId);
+  }, [isScanning]);
+
+  const handleToggle = () => {
+    setIsScanning(!isScanning);
   };
 
   const BlueScanContent = (
@@ -50,8 +65,13 @@ const BluetoothScanPage = ({ ...props }: any) => {
           style={s.btn}>
           {t('consent.permissions')}
         </Button>
-        <Button mode="elevated" onPress={runBluetoothTest} textColor={colors.primary} style={s.btn}>
-          {t('bluetooth.scan-for-bluetooth')}
+        <Button
+          mode="elevated"
+          onPress={handleToggle}
+          textColor={isScanning ? colors.onPrimary : colors.primary}
+          style={s.btn}
+          buttonColor={isScanning ? colors.primary : colors.onPrimary}>
+          {isScanning ? t('bluetooth.is-scanning') : t('bluetooth.scan-for-bluetooth')}
         </Button>
       </View>
 
