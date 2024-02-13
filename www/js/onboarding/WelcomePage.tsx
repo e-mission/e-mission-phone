@@ -13,6 +13,7 @@ import {
   Button,
   Dialog,
   Divider,
+  Icon,
   IconButton,
   Surface,
   Text,
@@ -25,7 +26,6 @@ import { initByUser } from '../config/dynamicConfig';
 import { AppContext } from '../App';
 import { displayError, logDebug } from '../plugin/logger';
 import { onboardingStyles } from './OnboardingStack';
-import { Icon } from '../components/Icon';
 
 const WelcomePage = () => {
   const { t } = useTranslation();
@@ -235,7 +235,7 @@ const WelcomePageButton = ({ onPress, icon, children }) => {
   return (
     <TouchableRipple onPress={onPress} style={welcomeButtonStyles.wrapper(colors)}>
       <View style={welcomeButtonStyles.btn(colors)}>
-        <Icon icon={icon} size={68} iconColor={colors.onPrimary} />
+        <Icon source={icon} size={68} color={colors.onPrimary} />
         <Text variant="titleSmall" style={{ color: colors.onPrimary }}>
           {children}
         </Text>

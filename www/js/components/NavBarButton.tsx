@@ -1,8 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import color from 'color';
-import { Button, useTheme } from 'react-native-paper';
-import { Icon } from './Icon';
+import { Button, Icon, useTheme } from 'react-native-paper';
 
 const NavBarButton = ({ children, icon, onPressAction, ...otherProps }) => {
   const { colors } = useTheme();
@@ -22,13 +21,8 @@ const NavBarButton = ({ children, icon, onPressAction, ...otherProps }) => {
         {...otherProps}>
         <View style={s.textWrapper}>{children}</View>
         {icon && (
-          <View>
-            <Icon
-              icon={icon}
-              iconColor={colors.onBackground}
-              size={20}
-              style={{ marginVertical: 'auto' }}
-            />
+          <View style={{ justifyContent: 'center' }}>
+            <Icon source={icon} color={colors.onBackground} size={20} />
           </View>
         )}
       </Button>

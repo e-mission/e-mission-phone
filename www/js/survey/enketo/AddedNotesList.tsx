@@ -5,10 +5,9 @@
 import React, { useContext, useState } from 'react';
 import { DateTime } from 'luxon';
 import { Modal } from 'react-native';
-import { Text, Button, DataTable, Dialog } from 'react-native-paper';
+import { Text, Button, DataTable, Dialog, Icon } from 'react-native-paper';
 import LabelTabContext from '../../diary/LabelTabContext';
 import { getFormattedDateAbbr, isMultiDay } from '../../diary/diaryHelper';
-import { Icon } from '../../components/Icon';
 import EnketoModal from './EnketoModal';
 import { useTranslation } from 'react-i18next';
 import { EnketoUserInputEntry } from './enketoHelper';
@@ -129,8 +128,8 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
               </DataTable.Cell>
               <DataTable.Cell
                 onPress={() => confirmDeleteEntry(entry)}
-                style={[styles.cell, { flex: 1 }]}>
-                <Icon icon="delete" size={18} />
+                style={[styles.cell, { flex: 1, justifyContent: 'center' }]}>
+                <Icon source="delete" size={18} />
               </DataTable.Cell>
             </DataTable.Row>
           );
