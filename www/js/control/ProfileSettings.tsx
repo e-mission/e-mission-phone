@@ -50,6 +50,7 @@ import {
 } from '../splash/notifScheduler';
 import { DateTime } from 'luxon';
 import { AppConfig } from '../types/appConfigTypes';
+import NavBar from '../components/NavBar';
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -412,11 +413,7 @@ const ProfileSettings = () => {
 
   return (
     <>
-      <Appbar.Header
-        statusBarHeight={0}
-        elevated={true}
-        style={{ height: 46, backgroundColor: colors.surface }}
-        accessibilityRole="navigation">
+      <NavBar>
         <Appbar.Content title={t('control.profile-tab')} />
         <List.Item
           style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
@@ -428,7 +425,7 @@ const ProfileSettings = () => {
           onPress={() => setLogoutVis(true)}
           right={() => <List.Icon icon="logout" aria-hidden={true} />}
         />
-      </Appbar.Header>
+      </NavBar>
 
       <ScrollView>
         <SettingRow

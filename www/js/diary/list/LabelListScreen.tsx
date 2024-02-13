@@ -5,6 +5,7 @@ import DateSelect from './DateSelect';
 import FilterSelect from './FilterSelect';
 import TimelineScrollList from './TimelineScrollList';
 import LabelTabContext from '../LabelTabContext';
+import NavBar from '../../components/NavBar';
 
 const LabelListScreen = () => {
   const {
@@ -23,10 +24,7 @@ const LabelListScreen = () => {
 
   return (
     <>
-      <Appbar.Header
-        statusBarHeight={0}
-        elevated={true}
-        style={{ height: 46, backgroundColor: colors.surface }}>
+      <NavBar>
         <FilterSelect
           filters={filterInputs}
           setFilters={setFilterInputs}
@@ -44,7 +42,7 @@ const LabelListScreen = () => {
           accessibilityLabel="Refresh"
           style={{ marginLeft: 'auto' }}
         />
-      </Appbar.Header>
+      </NavBar>
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         <TimelineScrollList
           listEntries={displayedEntries}

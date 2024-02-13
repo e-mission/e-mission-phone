@@ -7,6 +7,7 @@ import { DateTime } from 'luxon';
 import AlertBar from './AlertBar';
 import { sendEmail } from './emailService';
 import { displayError, logDebug } from '../plugin/logger';
+import NavBar from '../components/NavBar';
 
 type LoadStats = { currentStart: number; gotMaxIndex: boolean; reachedEnd: boolean };
 
@@ -116,17 +117,14 @@ const LogPage = ({ pageVis, setPageVis }) => {
   return (
     <Modal visible={pageVis} onDismiss={() => setPageVis(false)}>
       <SafeAreaView style={{ flex: 1 }}>
-        <Appbar.Header
-          statusBarHeight={0}
-          elevated={true}
-          style={{ height: 46, backgroundColor: colors.surface }}>
+        <NavBar>
           <Appbar.BackAction
             onPress={() => {
               setPageVis(false);
             }}
           />
           <Appbar.Content title={t('control.log-title')} />
-        </Appbar.Header>
+        </NavBar>
 
         <View
           style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>

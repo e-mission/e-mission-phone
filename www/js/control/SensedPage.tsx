@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { DateTime } from 'luxon';
 import { sendEmail } from './emailService';
+import NavBar from '../components/NavBar';
 
 const SensedPage = ({ pageVis, setPageVis }) => {
   const { t } = useTranslation();
@@ -51,13 +52,10 @@ const SensedPage = ({ pageVis, setPageVis }) => {
   return (
     <Modal visible={pageVis} onDismiss={() => setPageVis(false)}>
       <SafeAreaView style={{ flex: 1 }}>
-        <Appbar.Header
-          statusBarHeight={0}
-          elevated={true}
-          style={{ height: 46, backgroundColor: colors.surface }}>
+        <NavBar>
           <Appbar.BackAction onPress={() => setPageVis(false)} />
           <Appbar.Content title={t('control.sensed-title')} />
-        </Appbar.Header>
+        </NavBar>
 
         <View
           style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>

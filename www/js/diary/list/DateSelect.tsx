@@ -14,7 +14,7 @@ import { DatePickerModal } from 'react-native-paper-dates';
 import { Text, Divider, useTheme } from 'react-native-paper';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
-import NavBarButton from '../../components/NavBarButton';
+import { NavBarButton } from '../../components/NavBar';
 
 const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
   const { pipelineRange } = useContext(LabelTabContext);

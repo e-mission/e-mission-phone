@@ -10,8 +10,8 @@
 import React, { useState, useMemo } from 'react';
 import { Modal } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import NavBarButton from '../../components/NavBarButton';
 import { RadioButton, Text, Dialog } from 'react-native-paper';
+import { NavBarButton } from '../../components/NavBar';
 
 const FilterSelect = ({ filters, setFilters, numListDisplayed, numListTotal }) => {
   const { t } = useTranslation();
