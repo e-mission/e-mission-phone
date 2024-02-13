@@ -60,13 +60,6 @@ const BluetoothScanPage = ({ ...props }: any) => {
       <View style={s.btnContainer}>
         <Button
           mode="elevated"
-          onPress={() => window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions()}
-          textColor={colors.primary}
-          style={s.btn}>
-          {t('consent.permissions')}
-        </Button>
-        <Button
-          mode="elevated"
           onPress={handleToggle}
           textColor={isScanning ? colors.onPrimary : colors.primary}
           style={s.btn}
