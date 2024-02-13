@@ -61,8 +61,7 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
   }
 
   useEffect(() => {
-    if (!rest.visible) return;
-    if (!appConfig) return displayErrorMsg('App config not loaded yet');
+    if (!rest.visible || !appConfig) return;
     initSurvey();
   }, [appConfig, rest.visible]);
 
