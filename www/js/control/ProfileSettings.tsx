@@ -421,7 +421,7 @@ const ProfileSettings = () => {
         <List.Item
           style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
           title={t('control.log-out')}
-          titleStyle={{ fontSize: 14, color: 'black', paddingEnd: 5 }}
+          titleStyle={{ fontSize: 14, color: colors.onSurface, paddingEnd: 5 }}
           accessible={true}
           accessibilityLabel={t('control.log-out')}
           accessibilityRole="button"
