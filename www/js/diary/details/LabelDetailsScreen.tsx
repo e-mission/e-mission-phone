@@ -40,7 +40,10 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const { displayDate, displayStartTime, displayEndTime } = useDerivedProperties(trip);
   const [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
 
-  const [modesShown, setModesShown] = useState<'labeled' | 'detected'>('labeled');
+  const [modesShown, setModesShown] = useState<'labeled' | 'detected'>(() =>
+    // if trip has a labeled mode, initial state shows that; otherwise, show detected modes
+    trip && labelFor(trip, 'MODE')?.value ? 'labeled' : 'detected',
+  );
   const tripGeojson =
     trip &&
     labelOptions &&
