@@ -1,9 +1,8 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AppContext } from '../App';
 import { StyleSheet, Modal, ScrollView, SafeAreaView, View } from 'react-native';
 import gatherBluetoothData from './blueoothScanner';
-import { logDebug } from '../plugin/logger';
+import { logWarn } from '../plugin/logger';
 import BluetoothCard from './BluetoothCard';
 import { Appbar, useTheme, Button } from 'react-native-paper';
 
@@ -25,8 +24,8 @@ const BluetoothScanPage = ({ ...props }: any) => {
       const newLogs = await gatherBluetoothData();
       setLogs(newLogs);
     } catch (error) {
-      logDebug(error);
-      // Handle error
+      logWarn(error);
+      // TODO: Handle error further
     }
   };
 
@@ -41,7 +40,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
             props.onDismiss?.();
           }}
         />
-        <Appbar.Content title={'Bluetooth Scanner'} titleStyle={{ fontSize: 17 }} />
+        <Appbar.Content title={t('bluetooth.scan-debug-title')} titleStyle={{ fontSize: 17 }} />
       </Appbar.Header>
       <View style={s.btnContainer}>
         <Button
@@ -49,10 +48,10 @@ const BluetoothScanPage = ({ ...props }: any) => {
           onPress={() => window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions()}
           textColor={colors.primary}
           style={s.btn}>
-          Permissions
+          {t('consent.permissions')}
         </Button>
         <Button mode="elevated" onPress={runBluetoothTest} textColor={colors.primary} style={s.btn}>
-          Scan for Devices
+          {t('bluetooth.scan-for-bluetooth')}
         </Button>
       </View>
 

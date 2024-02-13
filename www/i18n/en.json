@@ -29,6 +29,7 @@
     "user-data": "User data",
     "erase-data": "Erase data",
     "dev-zone": "Developer zone",
+    "bluetooth-scan": "Scan for Bluetooth",
     "refresh": "Refresh",
     "end-trip-sync": "End trip + sync",
     "check-consent": "Check consent",
@@ -230,6 +231,15 @@
   "list-datepicker-close": "Close",
   "list-datepicker-set": "Set",
 
+  "bluetooth": {
+    "scan-debug-title": "Bluetooth Scanner",
+    "scan-for-bluetooth": "Scan for Devices",
+    "device-info": {
+      "id": "ID",
+      "name": "Name"
+    }
+  },
+
   "service": {
     "reading-server": "Reading from server...",
     "reading-unprocessed-data": "Reading unprocessed data..."
@@ -409,7 +419,8 @@
     "while-repopulating-entry": "While repopulating timeline entry: ",
     "while-loading-metrics": "While loading metrics: ",
     "while-log-messages": "While getting messages from the log ",
-    "while-max-index": "While getting max index "
+    "while-max-index": "While getting max index ",
+    "while-scanning-bluetooth": "While scanning for Bluetooth Devices: "
   },
   "consent-text": {
     "title": "NREL OPENPATH PRIVACY POLICY/TERMS OF USE",

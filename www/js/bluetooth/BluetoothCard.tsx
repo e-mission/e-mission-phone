@@ -1,11 +1,9 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Card, List } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 
 type Props = any;
 const BluetoothCard = ({ deviceName, deviceData }: Props) => {
-  const { t } = useTranslation();
   return (
     <Card style={cardStyles.card}>
       <Card.Title
