@@ -115,9 +115,10 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
             <DataTable.Row key={index} style={styles.row(isLastRow)}>
               <DataTable.Cell
                 onPress={() => editEntry(entry)}
-                style={[styles.cell, { flex: 5, pointerEvents: 'auto' }]}
-                textStyle={{ fontSize: 12, fontWeight: 'bold' }}>
-                <Text numberOfLines={2}>{entry.data.label}</Text>
+                style={[styles.cell, { flex: 5, pointerEvents: 'auto' }]}>
+                <Text numberOfLines={2} style={{ fontSize: 12, fontWeight: 'bold' }}>
+                  {entry.data.label}
+                </Text>
               </DataTable.Cell>
               <DataTable.Cell
                 onPress={() => editEntry(entry)}
