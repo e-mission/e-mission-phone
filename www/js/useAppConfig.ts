@@ -20,7 +20,7 @@ const useAppConfig = () => {
 
   function updateConfig() {
     return getConfig().then((config) => {
-      if (Object.keys(config).length) {
+      if (config && Object.keys(config).length) {
         setAppConfig(config);
       } else {
         logDebug('Config was empty, treating as null');
