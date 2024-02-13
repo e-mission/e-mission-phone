@@ -1,0 +1,423 @@
+{
+    "loading": "Chargement...",
+    "map-refresh": "Rafraîchir",
+    "map-fixmap": "Ré-afficher la Carte",
+    "pull-to-refresh": "Tirer pour rafraîchir",
+
+    "weekdays-all": "Tout",
+    "weekdays-select": "Jour de la semaine",
+
+    "post-trip-prompt": {
+        "notification-option-mute": "Silencieux",
+        "notification-option-snooze": "En Sommeil",
+        "notification-option-choose": "votre choix",
+        "notification-title": "Comment et pourquoi êtes-vous venu.e?",
+        "choose-mode": "Mode principal",
+        "skip": "Sauter",
+        "snoozed-reminder": "Rappel : en sommeil",
+        "snoozed-reapper-message": "Affiché à nouveau dans 30'",
+        "platform-specific-message-ios": "Glisser vers la G ou toucher pour ajouter une info sur ce déplacement.",
+        "platform-specific-message-android": "Voir les options ou toucher l'écran pour ajouter une info.",
+        "platform-specific-message-other": "Toucher l'écran pour ajouter une info sur ce déplacement",
+        "notifications-muted": "Arrêt des notifications en fin de déplacement",
+        "notifications-reenabled": "Peut être réactivé depuis Profil / Dev Zone, ou réactivez maintenant.",
+        "muted": "Silencieux",
+        "unmute": "Réactiver",
+        "keep-muted": "Laisser silencieux"
+    },
+
+    "post-trip-map-display-tour-incident": "Zoomez puis indiquez le lieu de l'incident et cliquez sur la ligne bleue pour qualifier l'incident ☻ ou ☹",
+
+    "tour-next": "Suivant",
+    "tour-previous": "Précédent",
+    "tour-finish": "Fin",
+
+    "trip-confirm": {
+        "recenttrip": "Déplacement de: {{startTime}} → à: {{endTime}}",
+        "continue": "Continuer",
+        "done": "OK",
+        "services-please-fill-in": "Renseignez le {{text}} non listé.",
+        "services-cancel": "Annuler",
+        "services-save": "Enregistrer"
+    },
+
+    "place-common-place": "Lieu fréquent",
+    "place-successor-trips": "Déplacements suivants",
+    "place-trips-to": "{{trips}} déplacements vers",
+    "place-usually-starts": "Commence en général à: {{hour}}:00",
+    "place-usually-takes": "Dure en général: {{duration}}",
+    
+    "trip-start-hours": "Heures de départ",
+    "trip-start-duration": "Durée",
+
+    "control": {
+        "profile": "Profil",
+        "edit-demographics": "Editer Démographie",
+        "username": "Identifiant {{usernamedata}}",
+        "tracking": "Tracking activé",
+        "enable-opgeofence": "Début de voyage expérimental",
+        "app-status": "Status de l'application",
+        "medium-accuracy": "Précision moyenne",
+        "dark-theme": "Thème sombre",
+        "force-sync": "Forcer la synchro",
+        "share": "Partager",
+        "check-ui-updates": "Vérifier les mises à jour",
+        "download-json-dump": "Télécharger les données json",
+        "email-log": "Envoyer les logs",
+        "upload-log": "Copier les logs",
+        "view-privacy": "Voir la politique de confidentialité",
+        "user-data": "Mes données",
+        "erase-data": "Effacer mes données",
+        "dev-zone": "Dev zone",
+        "refresh": "Rafraîchir",
+        "end-trip-sync": "Forcer End trip + synchro",
+        "check-consent": "Validation des conditions",
+        "invalidate-cached-docs": "Invalider les docs en cache",
+        "nuke-all": "Supprimer buffers et cache",
+        "test-notification": "Test notification locale",
+        "set-ui-channel": "Channel",
+        "check-log": "Voir les logs",
+        "check-sensed-data": "Données recueillies",
+        "check-map": "Vérifier la carte",
+        "collection": "Recueil",
+        "sync": "Synchro",
+        "transition-notify": "Notifier une transition",
+        "button-accept": "J'accepte",
+        "view-qrc": "Mon jeton (OPcode)",
+        "app-version": "Version de l'Application"
+    },
+
+    "general-settings": {
+        "choose-date": "Date",
+        "choose-dataset" : "Choisir un dataset pour les calculs d'empreinte carbone",
+        "carbon-dataset" : "Dataset empreinte carbone",
+        "nuke-ui-state-only": "UI state only",
+        "nuke-native-cache-only": "Native cache only",
+        "nuke-everything": "Tout",
+        "clear-data": "Effacer les données",
+        "cancel": "Annuler",
+        "user-data-erased": "Données effacées.",
+        "consent-not-found": "Consentement utilisateur non trouvé, êtes-vous Ok pour accepter maintenant ?",
+        "no-consent-message": "OK! Note que vous n'aurez pas de stats sans votre accord!",
+        "consent-found": "Consentement trouvé!",
+        "consented-to": "Accord pour le protocole {{protocol_id}}, {{approval_date}}",
+        "consented-ok": "OK",
+        "share-message": "Rejoins moi pour rendre les moyens de transports plus écolos \nTélécharges l'application emission:",
+        "share-subject": "Emission - UC Berkeley Research Project",
+        "share-url": "https://bic2cal.eecs.berkeley.edu/#download",
+        "qrcode": "Mon jeton (OPcode)",
+        "qrcode-share-title": "Vous pouvez sauvegarder votre jeton (OPcode) pour vous identifier facilement la prochaine fois",
+        "qrcode-share-message": "Sauvegardez ce jeton (OPcode) ou envoyez le à un autre appareil pour le scanner et vous identifier. \n[OpenPath] Mon jeton (OPcode): ",
+        "qrcode-share-subject": "Mon jeton (OPcode) - OpenPATH"
+    },
+
+    "metrics": {
+        "cancel": "Annuler",
+        "confirm": "Confirmer",
+        "get": "Ok",
+        "range": "Range",
+        "filter": "Filtre",
+        "from": "de :",
+        "to": "à :",
+        "last-week": "Semaine dernière",
+        "frequency": "Fréquence:",
+        "pandafreqoptions-daily": "par JOUR",
+        "pandafreqoptions-weekly": "par SEMAINE",
+        "pandafreqoptions-biweekly": "BI-HEBDO",
+        "pandafreqoptions-monthly": "MENSUEL",
+        "pandafreqoptions-yearly": "ANNUEL",
+        "freqoptions-daily": "par JOUR",
+        "freqoptions-monthly": "MENSUEL",
+        "freqoptions-yearly": "ANNUEL",
+        "select-pandafrequency": "Fréquence des stats",
+        "select-frequency": "Fréquence des stats",
+        "chart-xaxis-date": "Date",
+        "chart-no-data": "Pas de données!",
+        "trips-yaxis-number": "Nombre",
+        "calorie-data-change": " d'écart",
+        "carbon-data-change": " d'écart",
+        "carbon-data-calculating": "Je calcule...",
+        "carbon-data-unknown": "Inconnu",
+        "calorie-data-unknown": "Inconnu...",
+        "calorie-data-change-increase": " d'augmentation en 1 semaine",
+        "calorie-data-change-decrease": " de diminution en 1 semaine",
+        "carbon-data-change-increase": " d'augmentation en 1 semaine",
+        "carbon-data-change-decrease": " de diminution en 1 semaine",
+        "pick-a-date": "Choisissez la date",
+        "trips": "déplacements",
+        "custom": "Dates personnalisées",
+        "greater-than": " de plus que ",
+        "greater": " plus ",
+        "or": "ou",
+        "less-than": " de moins que ",
+        "less": " moins ",
+        "week-before": "par rapport à la semaine précédente",
+        "hours": "heures"
+    },
+
+    "diary": {
+        "current-trip": "Déplacement en cours",
+        "current-yesterday": "Hier",
+        "current-weekago": "Semaine dernière",
+        "history": "Historique",
+        "began": "A commencé {{startTime}}",
+        "report-incident": "Signalez un Incident",
+        "draft": "BROUILLON",
+        "distance-in-time": "{{distance}} km en {{time}}",
+        "date-distance-in-time": "{{date}}: {{distance}} {{distsuffix}} en {{time}}",
+        "distance": "Distance",
+        "time": "Durée",
+        "mode": "Mode",
+        "replaces": "Remplacement",
+        "purpose": "Motif",
+        "choose-mode": "Mode principal 📝",
+        "choose-purpose": "Motif principal 📝",
+        "how-did-you-get-here": "Mode principal ?",
+        "why-did-you-come-here": "Motif principal ?",
+        "list-pick-a-date": "Date",
+        "survey": "Détails",
+        "unlabeled": "Sans labels",
+        "invalid-ebike": "Invalides",
+        "to-label": "À labelliser`",
+        "show-all": "Tout les trajets",
+        "no-trips-found": "Aucun trajet trouvé",
+        "for-current-filter": "pour le filtre actuel. Selectionner Tout les trajets pour retirer le filtre",
+        "scroll-to-load-more": "Faire défiler pour voir plus",
+        "filter-display-status": "Affiche {{displayTripsLength}} / {{allTripsLength}} trajets",
+        "filter-display-range": "{{currentEnd | date}} à {{currentStart | date:'medium' }}",
+        "choose-replaced-mode": "Remplacement 📝",
+        "choose-survey": "Ajouter un détail de trajet 📝 ",
+        "select-mode-scroll": "Mode (👇 pour afficher plus)",
+        "select-replaced-mode-scroll": "Remplacement (👇 pour afficher plus)",
+        "select-purpose-scroll": "Motif (👇 pour afficher plus)",
+        "no-trips-today": "Aucun trajet enregistré aujourd'hui"
+    },
+    "new_label_tour": {
+        "0": "Ceci est la nouvelle interface de labellisation. Labellisez les trajets ici au lieu de la page Journal. Les trajets prennent plus de temps à apparaître ici, mais une fois qu'ils apparaissent, ils seront plus précis et vous pourrez utiliser nos nouvelles fonctionnalités pour les labelliser plus rapidement.",
+        "1": "Ceci est l'onglet 'À labelliser'. Sur cet onglet, seuls les trajets que vous devez labelliser apparaîtront. Lorsque vous les labellisez, ils disparaîtront automatiquement après quelques secondes.",
+        "2": "Certains de vos trajets n'apparaissent pas dans 'À labelliser' car un algorithme les a labellisées pour vous. Si vous êtes curieux, vous pouvez les voir dans les autres onglets, mais vous devez seulement labelliser les trajets dans l'onglet 'À labelliser'.",
+        "3": "Les trajets apparaissent maintenant avec le voyage le plus récent en bas.",
+        "4": "Pour charger des trajets plus anciens, faites défiler vers le haut et appuyez sur le bouton de chargement.",
+        "5": "Les labels sont maintenant rouges si nous ne pouvions pas les prédire, jaunes si nous pouvions les prédire et verts si vous les avez entrés ou confirmés vous-même.",
+        "6": "Si vous voyez des labels jaunes sur l'onglet 'À labelliser', cela signifie que vous devez les confirmer ou les corriger.",
+        "7": "Si touts les labels jaunes d'un voyage sont corrects, vous pouvez les cochez, ce qui les transformera en vert.",
+        "8": "Si certains labels jaunes sont incorrects, vous pouvez les corriger comme vous le feriez normalement.",
+        "9": "Lorsqu'il n'y a plus de trajets à labelliser, vous avez terminé la labellisation pour la journée.",
+        "10": "Plus vous labellisez vos trajets, meilleur est l'algorithme pour prédire vos trajets à l'avenir, donc rester à jour avec votre labellisation vous fera gagner du temps à long terme !",
+        "11": "Cliquez sur le bouton '?' chaque fois que vous souhaitez voir cette démonstration à nouveau."
+    },
+    
+    "user-gender": "Genre",
+    "gender-male": "Homme",
+    "gender-female": "Femme",
+    "user-height": "Taille",
+    "user-weight": "Poids",
+    "user-age": "Age",
+
+    "main-metrics": {
+        "dashboard": "Tableau de bord",
+        "summary": "Résumé",
+        "chart": "Graphique",
+        "mybear": "Mon Ours",
+        "leaderboard": "Classement",
+        "carbon-usage": "Emission CO2 des 7 derniers jours",
+        "trip-labelling-stats": "Statistiques de labellisation",
+        "gold-tier": "Niveau Or",
+        "silver-tier": "Niveau Argent",
+        "bronze-tier": "Niveau Bronze",
+        "overallScoreMsg": "Score total: {{overallScore | number }}",
+        "confirmationMsg": "{{confirmedPct | number }}% labellisés",
+        "validLabelsMsg": "{{validReplacePct | number }}% eBike 'modes remplacés' labels valides",
+        "suggestion": "Suggestion",
+        "suggestion-savings": "Vous pouvez sauvegarder {{suggestionData.savings}} fois en un mois",
+        "recent-trips": "Trajets récents",
+        "no-available-recent-trips": "Aucun trajet récent",
+        "weekly-stats": "Statistiques de a semaine",
+        "change-data": "Changer date",
+        "distance": "Distance",
+        "trips": "Déplacements",
+        "duration": "Durée",
+        "fav-mode": "Mon mode préféré",
+        "speed": "Vitesse",
+        "footprint": "Empreinte",
+        "how-it-compares": "Comparaisons approximatives",
+        "optimal": "Optimal :",
+        "average": "Moyenne :",
+        "avoided": "CO₂ évités:",
+        "worst": "Pire :",
+        "label-to-squish": "Label trips to collapse the range into a single number",
+        "equals-phone-charges": "Saved {charges, plural, =0{at least 0 smartphone charges} one {at least 1 smartphone charge} other {at least # smartphone charges}} vs. all 'taxi'",
+        "lastweek": "Semaine dernière :",
+        "us-2030-goal": "Estimation But US 2030:",
+        "us-2050-goal": "Estimation But US 2050:",
+        "calories": "Calories",
+        "calibrate": "Calibrer",
+        "no-summary-data": "Pas de données résumées",
+        "median-speed": "Vitesse médiane",
+        "equals-cookies": "soit {cookies, plural, =0{0 cookies} one {1 cookie} other {# cookies}}",
+        "equals-icecream": "soit {icecream, plural, =0{0 glaces à la vanille} one {1 glace à la vanille} other {# glaces à la vanille}}",
+        "equals-bananas": "soit {bananas, plural, =0{0 bananes} one {1 banane} other {# bananes}}"
+    },
+
+    "main-diary": "Journal",
+
+    "main-inf-scroll" : {
+        "tab": "Label"
+    },
+
+    "main-heatmap": {
+        "title": "Points chauds",
+        "counts": "Comptage",
+        "stress": "Stress",
+        "from": "De :",
+        "to": "à :",
+        "get": "Go !",
+        "all": "TOUT",
+        "none": "AUCUN",
+        "bicycling": "VELO",
+        "walking": "MARCHE",
+        "in-vehicle": "VEHICULE",
+        "select-travel-mode": "Choix du mode",
+        "cancel": "Annuler",
+        "tour-datepicker": "Cette carte superpose les données de tous les utilisateurs. Choisissez les dates, filtrez selon l'heure et le jour de la semaine.",
+        "tour-mode": "Cliquez ici pour filtrer par mode. Par défaut, tous les modes sont affichés.",
+        "tour-get": "Cliquez ici pour générer la carte."
+    },
+
+    "details": {
+        "speed": "Vitesse",
+        "time": "Durée",
+        "tour-detail-content": "Pour signaler un incident, Zoomez puis indiquez le lieu de l'incident et cliquez sur la ligne bleue pour qualifier l'incident ☻ ou ☹",
+        "tour-sectionList-content": "Trajets, heures et modes",
+        "tour-sectionPct-content": "% du temps passé dans chaque mode"
+    },
+
+    "list-explainDraft-alert": "Le déplacement n'a pas encore été analysé. Si cela dure + de 24H, signalez-le à votre administrateur système !",
+    "list-datepicker-today": "Aujourd'hui",
+    "list-datepicker-close": "Fermer",
+    "list-datepicker-set": "Définir",
+    "list-tour-datepicker-button": "Choisissez le jour à afficher.",
+    "list-tour-diary-entry": "Cliquez sur la carte pour + de détails.",
+    "list-tour-map-fix-button": "Cliquez pour rafraichir la carte.",
+
+    "service": {
+        "reading-server": "Données lues du serveur...",
+        "reading-cache": "Données lues dans le cache...",
+        "reading-unprocessed-data": "Données non traitées en cours de lecture..."
+    },
+
+    "post-trip-manual-incident-time": "Jour/Heure de l'incident",
+
+    "email-service":{
+        "email-account-not-configured": "Le compte email n'est pas configuré",
+        "email-account-mail-app": "L'appli e-mail doit être configuré sinon cela ne fonctionnera pas.",
+        "going-to-email": "Transfert par mail de la Base de Données {{parentDir}}",
+        "email-log":{
+            "subject-logs": "emission logs",
+            "body-please-fill-in-what-is-wrong": "Merci d'indiquer ce qui ne fonctionne pas"
+        },
+        "no-email-address-configured": "Aucune adresse e-mail configurée.",
+        "email-data":{
+            "subject-data-dump-from-to": "Données du {{start}} au {{end}}",
+            "body-data-consists-of-list-of-entries": "Les données sont une liste d'entrées.\n Vous pouvez trouver le format d'une entrée au lien suivant : https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \nLes données peuvent être chargées localement en suivant les instructions indiquées ici https://github.com/e-mission/e-mission-server#loading-test-data \n et peuvent être manipulées en suivant l'exemple disponible à ce lien : https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb"
+        }
+    },
+    "intro": {
+        "appstatus": {
+            "overall-description": "Cette application fonctionne en arrière-plan pour créer automatiquement un journal de trajets pour vous. Assurez-vous que tous les paramètres ci-dessous sont en vert afin que l'application fonctionne correctement !",
+            "overall-loc-name": "Position",
+            "overall-loc-description": "Nous utilisons l'autorisation de position en arrière-plan pour suivre votre position, même lorsque l'application est fermée. Cette lecture permet d'éviter de devoir activer et désactiver le suivi, ce qui rend l'application plus facile à utiliser et empêche la perte de batterie.",
+            "locsettings": {
+                "name": "Paramètres de localisation",
+                "description": {
+                    "android-lt-9": "Les services de localisation doivent être activés et réglés sur une haute précision. Cela nous permet d'enregistrer avec précision la trajectoire du voyage.",
+                    "android-gte-9": "Les services de localisation doivent être activés. Cela nous permet d'accéder aux données de localisation et de générer le journal de voyage.",
+                    "ios": "Les services de localisation doivent être activés. Cela nous permet d'accéder aux données de localisation et de générer le journal de voyage."
+                }
+            },
+            "locperms": {
+                "name": "Autorisations sur la position",
+                "description": {
+                    "android-lt-6": "Activées lors de l'installation de l'application.",
+                    "android-6-9": "Sélectionnez 'Autoriser', s'il vous plaît.",
+                    "android-10": "Sélectionnez 'Toujours autoriser', s'il vous plaît.",
+                    "android-gte-11": "Dans la page des paramètres de l'application, choisissez l'autorisation 'Position' et réglez-la sur 'Toujours autoriser'.",
+                    "ios-lt-13": "Sélectionnez 'Toujours autoriser', s'il vous plaît.",
+                    "ios-gte-13": "Dans la page des paramètres de l'application, sélectionnez 'Toujours' et 'Précis' et revenez ici pour continuer."
+                }
+            },
+            "overall-fitness-name-android": "Activité physique",
+            "overall-fitness-name-ios": "Mouvement et fitness",
+            "overall-fitness-description": "Les capteurs d'activité distinguent la marche, le vélo et les modes motorisés. Nous utilisons ces données pour séparer les parties du voyage multi-modal. Nous l'utilisons également comme une vérification croisée des voyages potentiellement erronés : si le capteur de localisation saute à travers la ville mais que le capteur d'activité est stationnaire, nous pouvons supposer que le voyage était invalide.",
+            "fitnessperms": {
+                "name": "Autorisation sur l'activité physique",
+                "description": {
+                    "android": "S'il vous plaît, autorisez.",
+                    "ios": "S'il vous plaît, autorisez."
+                }
+            },
+            "overall-notification-name": "Notifications",
+            "overall-notification-description": "Nous devons utiliser des notifications pour vous informer si les paramètres sont incorrects. Nous utilisons également des notifications push invisibles pour réveiller l'application et permettre de télécharger des données et de vérifier l'état de l'application. Nous utilisons également des notifications pour vous rappeler de labelliser vos trajets.",
+            "notificationperms": {
+                "app-enabled-name": "Notifications de l'application",
+                "not-paused-name": "Non mis en pause",
+                "description": {
+                    "android-enable": "Sur la page des paramètres de l'application, assurez-vous que toutes les notifications sont activés.",
+                    "android-unpause": "Sur la page des paramètres de l'application, assurez-vous que toutes les notifications sont activées. Si cela ne résout pas le problème, demandez de l'aide à votre administrateur.",
+                    "ios-enable": "Veuillez autoriser, sur la fenêtre contextuelle ou la page des paramètres de l'application si nécessaire."
+                }
+            },
+            "overall-background-restrictions-name": "Restrictions en arrière-plan",
+            "overall-background-restrictions-description": "L'application fonctionne en arrière-plan la plupart du temps pour faciliter votre vie. Vous n'avez besoin de l'ouvrir que périodiquement pour labelliser vos trajets. Android restreint parfois le fonctionnement des applications en arrière-plan. Cela nous empêche de générer un journal de voyage précis. Veuillez supprimer les restrictions en arrière-plan sur cette application.",
+            "unusedapprestrict": {
+                "name": "Suspendre activité appli si inutilisée",
+                "description": {
+                    "android-disable": "Sur la page des paramètres de l'application, allez dans « Autorisations » et assurez-vous que les autorisations de l'application ne seront pas réinitialisées automatiquement.",
+                    "ios": "Veuillez autoriser."
+                }
+            }
+        },
+        "permissions": {
+            "locationPermExplanation-android-lt-6": "Activées lors de l'installation de l'application.",
+            "locationPermExplanation-android-6-9": "Sélectionnez 'Autoriser', s'il vous plaît.",
+            "locationPermExplanation-android-10": "Sélectionnez 'Toujours autoriser', s'il vous plaît.",
+            "locationPermExplanation-android-gte-11": "Dans la page des paramètres de l'application, choisissez l'autorisation 'Position' et réglez-la sur 'Toujours autoriser'.",
+            "locationPermExplanation-ios-lt-13": "Sélectionnez 'Toujours autoriser', s'il vous plaît.",
+            "locationPermExplanation-ios-gte-13": "Dans la page des paramètres de l'application, sélectionnez 'Toujours' et 'Précis' et revenez ici pour continuer."
+        }
+    },
+    "allow_background": {
+        "samsung": "Désactiver 'Medium power saving mode'"
+    },
+    "consent": {
+        "button-accept": "J'accepte",
+        "button-decline": "Je refuse"
+    },
+
+    "updatecheck": {
+        "downloading-update": "Mise à jour de l'UI uniquement",
+        "extracting-update": "Récupération de la mise à jour",
+        "done": "Mise à jour faire, chargement en cours...",
+        "download-new-ui": "Télécharger la mise à jour ?",
+        "download-not-now": "Pas maintenant",
+        "download-apply": "Appliquer"
+    },
+    "sensor_explanation":{
+        "button-accept": "OK",
+        "button-decline": "Stop"
+    },
+    "survey": {
+        "prev-survey-found": "Des réponses précédement renseignées ont été trouvée",
+        "use-prior-response": "Utiliser les réponses précendentes",
+        "edit-response": "Modifier la réponse",
+        "move-on": "Contnuer",
+        "survey": "Enquête",
+        "save": "Sauvegarder",
+        "back": "Retour",
+        "next": "Suivant",
+        "powered-by": "Réalisé avec",
+        "dismiss": "Masquer",
+        "return-to-beginning": "Retour au début",
+        "go-to-end": "Aller à la fin"
+    }
+}

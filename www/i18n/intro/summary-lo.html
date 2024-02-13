@@ -1,0 +1,24 @@
+<ion-content class="has-footer">
+	<!-- <div class="intro-space"></div> -->
+	<div class="intro-title">
+	<center><h4>{{template_text.deployment_name}}</h4></center>
+	</div>
+	<!-- <div class="intro-space"></div> -->
+	<div class="intro-text">
+    {{ui_config.intro.deployment_partner_name}} {{template_text.deployment_name}}:
+	<div class="intro-space"></div>
+	<ol>
+	<li> ✔️  {{template_text.summary_line_1}}
+	<div class="intro-space"></div>
+	<li> ✔️  {{template_text.summary_line_2}}
+	<div class="intro-space"></div>
+	<li> ✔️  {{template_text.summary_line_3}}
+	</ol>
+	</div>
+</ion-content>
+<ion-footer-bar class="no-bgColor" id="intro-footer">
+  <button class="button button-block button-outline button-positive" ng-click="next()">
+    ກຳລັງເລີ່ມ
+  </button>
+</ion-footer-bar>
+

@@ -1,0 +1,25 @@
+{
+    "modeOptions" : [
+         {"text":"A piedi", "value":"walk"},
+         {"text":"Bici","value":"bike"},
+         {"text":"In macchina da solo","value":"drove_alone"},
+         {"text":"In macchina con altri","value":"shared_ride"},
+         {"text":"Taxi","value":"taxi"},
+         {"text":"Bus","value":"bus"},
+         {"text":"Treno","value":"train"},
+         {"text":"Navetta","value":"free_shuttle"},
+         {"text":"Altro","value":"other_mode"}],
+      "purposeOptions" : [
+         {"text":"Casa", "value":"home"},
+         {"text":"Lavoro","value":"work"},
+         {"text":"Scuola","value":"school"},
+         {"text":"Cambio mezzo", "value":"transit_transfer"},
+         {"text":"Shopping","value":"shopping"},
+         {"text":"Pasto","value":"meal"},
+         {"text":"Carico/ scarico","value":"pick_drop"},
+         {"text":"Personale","value":"personal_med"},
+         {"text":"Svago/ Sport","value":"exercise"},
+         {"text":"Divertimento","value":"entertainment"},
+         {"text":"Altro","value":"other_purpose"}]
+  }
+  
