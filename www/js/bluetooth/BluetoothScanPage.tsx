@@ -43,13 +43,6 @@ const BluetoothScanPage = ({ ...props }: any) => {
         <Appbar.Content title={t('bluetooth.scan-debug-title')} titleStyle={{ fontSize: 17 }} />
       </Appbar.Header>
       <View style={s.btnContainer}>
-        <Button
-          mode="elevated"
-          onPress={() => window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions()}
-          textColor={colors.primary}
-          style={s.btn}>
-          {t('consent.permissions')}
-        </Button>
         <Button mode="elevated" onPress={runBluetoothTest} textColor={colors.primary} style={s.btn}>
           {t('bluetooth.scan-for-bluetooth')}
         </Button>
