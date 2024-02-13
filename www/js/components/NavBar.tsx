@@ -9,7 +9,7 @@ const NavBar = ({ children }) => {
     <Appbar.Header
       statusBarHeight={0}
       elevated={true}
-      style={{ height: 46, backgroundColor: colors.surface }}>
+      style={{ height: 56, backgroundColor: colors.surface }}>
       {children}
     </Appbar.Header>
   );
@@ -30,7 +30,7 @@ export const NavBarButton = ({ children, icon, onPressAction, ...otherProps }) =
         mode="outlined"
         buttonColor={buttonColor}
         textColor={colors.onBackground}
-        contentStyle={{ flexDirection: 'row', height: 36 }}
+        contentStyle={{ height: 44, flexDirection: 'row' }}
         style={[s.btn, { borderColor: outlineColor }]}
         labelStyle={s.label}
         onPress={() => onPressAction()}
