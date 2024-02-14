@@ -12,9 +12,9 @@ const BluetoothScanSettingRow = ({}) => {
     // Check and prompt for bluetooth scan permission
     try {
       let response = await window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions();
-      if (response == "OK") setBluePageVisible(true)
+      if (response == 'OK') setBluePageVisible(true);
     } catch (e) {
-      displayError(e, "Insufficient Permissions");
+      displayError(e, 'Insufficient Permissions');
     }
   }
 
