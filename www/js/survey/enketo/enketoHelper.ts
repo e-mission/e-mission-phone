@@ -267,13 +267,6 @@ export function saveResponse(
               : opts.timelineEntry.exit_ts,
           };
         }
-        // if timestamps were not resolved from the survey, we will use the trip or place timestamps
-        timestamps ||= opts.timelineEntry;
-        let time = { start_ts: 0, end_ts: 0 }; // was data ... wasn't declared ... WHAT IS GOING ON HERE
-        time.start_ts = timestamps?.start_ts || opts.timelineEntry.enter_ts;
-        time.end_ts = timestamps?.end_ts || opts.timelineEntry.exit_ts;
-        console.log(time);
-
         // UUID generated using this method https://stackoverflow.com/a/66332305
         match_id = URL.createObjectURL(new Blob([])).slice(-36);
       } else {
