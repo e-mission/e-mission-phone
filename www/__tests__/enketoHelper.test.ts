@@ -281,7 +281,7 @@ it('gets the saved result or throws an error', async () => {
     },
   } as unknown as AppConfig;
 
-  // //resolving instead of rejecting?
+  //resolving instead of rejecting?
   // await expect(saveResponse(surveyName, badForm, config, opts)).rejects.toThrow(
   //   'The times you entered are invalid. Please ensure that the start time is before the end time.',
   // );
@@ -382,29 +382,28 @@ it('filters the survey responses by their name and version', async () => {
   );
 });
 
-//returning undefined? fetch is not working?
-// it('fetches the survey', async () => {
-//   global.fetch = (url: string) =>
-//     new Promise((rs, rj) => {
-//       setTimeout(() =>
-//         rs({
-//           text: () =>
-//             new Promise((rs, rj) => {
-//               console.log('reading the text');
-//               let urlList = url.split('.');
-//               let urlEnd = urlList[urlList.length - 1];
-//               if (urlEnd === 'json') {
-//                 setTimeout(() => rs('{ "data": "is_json" }'), 100);
-//               } else {
-//                 setTimeout(() => rs('not json'), 100);
-//               }
-//             }),
-//         }),
-//       );
-//     }) as any;
-//   await expect(
-//     fetchSurvey(
-//       'https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/label_options/example-study-label-options.json',
-//     ),
-//   ).resolves.toMatchObject({ data: 'is_json' });
-// });
+it('fetches the survey', async () => {
+  global.fetch = (url: string) =>
+    new Promise((rs, rj) => {
+      setTimeout(() =>
+        rs({
+          text: () =>
+            new Promise((rs, rj) => {
+              console.log('reading the text');
+              let urlList = url.split('.');
+              let urlEnd = urlList[urlList.length - 1];
+              if (urlEnd === 'json') {
+                setTimeout(() => rs('{ "data": "is_json" }'), 100);
+              } else {
+                setTimeout(() => rs('not json'), 100);
+              }
+            }),
+        }),
+      );
+    }) as any;
+  await expect(
+    fetchSurvey(
+      'https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/label_options/example-study-label-options.json',
+    ),
+  ).resolves.toMatchObject({ data: 'is_json' });
+});
