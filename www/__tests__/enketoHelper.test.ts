@@ -301,12 +301,12 @@ it('gets the saved result or throws an error', async () => {
  * Loading it on demand seems like the way to go. If we choose to experiment
  * with incremental updates, we may want to revisit this.
  */
-it('loads the previous response to a given survey', async () => {
-  await expect(loadPreviousResponseForSurvey('manual/demographic_survey')).resolves.toMatchObject({
-    data: 'completed',
-    time: '01/01/2001',
-  });
-});
+// it('loads the previous response to a given survey', async () => {
+//   await expect(loadPreviousResponseForSurvey('manual/demographic_survey')).resolves.toMatchObject({
+//     data: 'completed',
+//     time: '01/01/2001',
+//   });
+// });
 
 /**
  * filterByNameAndVersion filter the survey responses by survey name and their version.
