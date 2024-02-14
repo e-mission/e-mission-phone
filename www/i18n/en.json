@@ -234,7 +234,6 @@
   "bluetooth": {
     "scan-debug-title": "Bluetooth Scanner",
     "scan-for-bluetooth": "Scan for Devices",
-    "is-scanning": "Scanning...",
     "device-info": {
       "id": "ID",
       "name": "Name"
