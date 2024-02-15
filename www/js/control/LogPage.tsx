@@ -4,7 +4,7 @@ import { useTheme, Text, Appbar, IconButton } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { DateTime } from 'luxon';
-import { AlertManager } from './AlertBar';
+import { AlertManager } from '../components/AlertBar';
 import { sendEmail } from './emailService';
 import { displayError, logDebug } from '../plugin/logger';
 import NavBar from '../components/NavBar';

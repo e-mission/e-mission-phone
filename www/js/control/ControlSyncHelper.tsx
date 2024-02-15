@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { settingStyles } from './ProfileSettings';
 import ActionMenu from '../components/ActionMenu';
 import SettingRow from './SettingRow';
-import { AlertManager } from './AlertBar';
+import { AlertManager } from '../components/AlertBar';
 import { addStatEvent, statKeys } from '../plugin/clientStats';
 import { updateUser } from '../services/commHelper';
 import { displayError, logDebug, logWarn } from '../plugin/logger';

@@ -18,7 +18,7 @@ import DemographicsSettingRow from './DemographicsSettingRow';
 import PopOpCode from './PopOpCode';
 import ReminderTime from './ReminderTime';
 import useAppConfig from '../useAppConfig';
-import { AlertManager } from './AlertBar';
+import { AlertManager } from '../components/AlertBar';
 import DataDatePicker from './DataDatePicker';
 import PrivacyPolicyModal from './PrivacyPolicyModal';
 import { sendEmail } from './emailService';

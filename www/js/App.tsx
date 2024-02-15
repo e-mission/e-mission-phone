@@ -19,7 +19,7 @@ import { initStoreDeviceSettings } from './splash/storeDeviceSettings';
 import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
 import { withErrorBoundary } from './plugin/ErrorBoundary';
 import { initCustomDatasetHelper } from './metrics/customMetricsHelper';
-import AlertBar from './control/AlertBar';
+import AlertBar from './components/AlertBar';
 
 const defaultRoutes = (t) => [
   {

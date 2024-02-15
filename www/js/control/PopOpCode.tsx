@@ -3,7 +3,7 @@ import { Modal, StyleSheet } from 'react-native';
 import { Button, Text, IconButton, Dialog, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import QrCode from '../components/QrCode';
-import { AlertManager } from './AlertBar';
+import { AlertManager } from '../components/AlertBar';
 import { settingStyles } from './ProfileSettings';
 
 const PopOpCode = ({ visibilityValue, tokenURL, action, setVis }) => {
