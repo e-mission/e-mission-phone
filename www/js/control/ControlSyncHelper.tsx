@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { settingStyles } from './ProfileSettings';
 import ActionMenu from '../components/ActionMenu';
 import SettingRow from './SettingRow';
-import AlertBar from './AlertBar';
+import { AlertManager } from './AlertBar';
 import { addStatEvent, statKeys } from '../plugin/clientStats';
 import { updateUser } from '../services/commHelper';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
@@ -39,7 +39,6 @@ export const ForceSyncRow = ({ getState }) => {
   const { colors } = useTheme();
 
   const [dataPendingVis, setDataPendingVis] = useState(false);
-  const [dataPushedVis, setDataPushedVis] = useState(false);
 
   async function forceSync() {
     try {
@@ -69,7 +68,7 @@ export const ForceSyncRow = ({ getState }) => {
         logDebug('data is pending, showing confirm dialog');
         setDataPendingVis(true); //consent handling in modal
       } else {
-        setDataPushedVis(true);
+        AlertManager.addMessage({ text: 'all data pushed!' });
       }
     } catch (error) {
       displayError(error, 'Error while forcing sync');
@@ -156,11 +155,6 @@ export const ForceSyncRow = ({ getState }) => {
           </Dialog.Actions>
         </Dialog>
       </Modal>
-
-      <AlertBar
-        visible={dataPushedVis}
-        setVisible={setDataPushedVis}
-        messageKey="all data pushed!"></AlertBar>
     </>
   );
 };

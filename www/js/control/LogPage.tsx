@@ -4,7 +4,7 @@ import { useTheme, Text, Appbar, IconButton } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { DateTime } from 'luxon';
-import AlertBar from './AlertBar';
+import { AlertManager } from './AlertBar';
 import { sendEmail } from './emailService';
 import { displayError, logDebug } from '../plugin/logger';
 import NavBar from '../components/NavBar';
@@ -17,10 +17,6 @@ const LogPage = ({ pageVis, setPageVis }) => {
 
   const [loadStats, setLoadStats] = useState<LoadStats>();
   const [entries, setEntries] = useState<any>([]);
-  const [maxErrorVis, setMaxErrorVis] = useState<boolean>(false);
-  const [logErrorVis, setLogErrorVis] = useState<boolean>(false);
-  const [maxMessage, setMaxMessage] = useState<string>('');
-  const [logMessage, setLogMessage] = useState<string>('');
   const [isFetching, setIsFetching] = useState<boolean>(false);
 
   const RETRIEVE_COUNT = 100;
@@ -43,8 +39,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
     } catch (error) {
       let errorString = t('errors.while-max-index') + JSON.stringify(error, null, 2);
       displayError(error, errorString);
-      setMaxMessage(errorString);
-      setMaxErrorVis(true);
+      AlertManager.addMessage({ text: errorString });
     } finally {
       addEntries();
     }
@@ -74,8 +69,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
     } catch (error) {
       let errStr = t('errors.while-log-messages') + JSON.stringify(error, null, 2);
       displayError(error, errStr);
-      setLogMessage(errStr);
-      setLogErrorVis(true);
+      AlertManager.addMessage({ text: errStr });
       setIsFetching(false);
     }
   }
@@ -153,17 +147,6 @@ const LogPage = ({ pageVis, setPageVis }) => {
           }}
         />
       </SafeAreaView>
-
-      <AlertBar
-        visible={maxErrorVis}
-        setVisible={setMaxErrorVis}
-        messageKey={''}
-        messageAddition={maxMessage}></AlertBar>
-      <AlertBar
-        visible={logErrorVis}
-        setVisible={setLogErrorVis}
-        messageKey={''}
-        messageAddition={logMessage}></AlertBar>
     </Modal>
   );
 };

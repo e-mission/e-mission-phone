@@ -1,41 +1,57 @@
-import React from 'react';
-import { Modal } from 'react-native';
+/* Provides a global context for alerts to show as SnackBars ('toasts') at the bottom of the screen.
+ Alerts can be added to the queue from anywhere by calling AlertManager.addMessage. */
+
+import React, { useState, useEffect } from 'react';
 import { Snackbar } from 'react-native-paper';
+import { Modal } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ParseKeys } from 'i18next';
 
-type Props = {
-  visible: boolean;
-  setVisible: any;
-  messageKey: any;
-  messageAddition?: string;
+type AlertMessage = {
+  msgKey?: ParseKeys<'translation'>;
+  text?: string;
+  duration?: number;
 };
-const AlertBar = ({ visible, setVisible, messageKey, messageAddition }: Props) => {
-  const { t } = useTranslation();
-  const onDismissSnackBar = () => setVisible(false);
 
-  let text = '';
-  if (messageAddition) {
-    text = t(messageKey) + messageAddition;
-  } else {
-    text = t(messageKey);
+// public static AlertManager that can add messages from a global context
+export class AlertManager {
+  private static listener?: (msg: AlertMessage) => void;
+  static setListener(listener?: (msg: AlertMessage) => void) {
+    AlertManager.listener = listener;
   }
+  static addMessage(msg: AlertMessage) {
+    AlertManager.listener?.(msg);
+  }
+}
 
+const AlertBar = () => {
+  const { t } = useTranslation();
+  const [messages, setMessages] = useState<AlertMessage[]>([]);
+  const onDismissSnackBar = () => setMessages(messages.slice(1));
+
+  // on init, attach a listener to AlertManager so messages can be added from a global context
+  useEffect(() => {
+    AlertManager.setListener((msg) => {
+      setMessages([...messages, msg]);
+    });
+    return () => AlertManager.setListener(undefined);
+  }, []);
+
+  if (!messages.length) return null;
+  const { msgKey, text } = messages[0];
+  const alertText = [msgKey && t(msgKey), text].filter((x) => x).join(' ');
   return (
-    <Modal visible={visible} onDismiss={() => setVisible(false)} transparent={true}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <Snackbar
-          visible={visible}
-          onDismiss={onDismissSnackBar}
-          action={{
-            label: t('join.close'),
-            onPress: () => {
-              onDismissSnackBar();
-            },
-          }}>
-          {text}
-        </Snackbar>
-      </SafeAreaView>
+    <Modal visible={true} onDismiss={onDismissSnackBar} transparent={true}>
+      <Snackbar
+        visible={true}
+        onDismiss={onDismissSnackBar}
+        duration={messages[0].duration}
+        action={{
+          label: t('join.close'),
+          onPress: onDismissSnackBar,
+        }}>
+        {alertText}
+      </Snackbar>
     </Modal>
   );
 };

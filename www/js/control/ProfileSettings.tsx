@@ -18,7 +18,7 @@ import DemographicsSettingRow from './DemographicsSettingRow';
 import PopOpCode from './PopOpCode';
 import ReminderTime from './ReminderTime';
 import useAppConfig from '../useAppConfig';
-import AlertBar from './AlertBar';
+import { AlertManager } from './AlertBar';
 import DataDatePicker from './DataDatePicker';
 import PrivacyPolicyModal from './PrivacyPolicyModal';
 import { sendEmail } from './emailService';
@@ -68,9 +68,7 @@ const ProfileSettings = () => {
   const [nukeSetVis, setNukeVis] = useState(false);
   const [forceStateVis, setForceStateVis] = useState(false);
   const [logoutVis, setLogoutVis] = useState(false);
-  const [invalidateSuccessVis, setInvalidateSuccessVis] = useState(false);
   const [noConsentVis, setNoConsentVis] = useState(false);
-  const [noConsentMessageVis, setNoConsentMessageVis] = useState(false);
   const [consentVis, setConsentVis] = useState(false);
   const [dateDumpVis, setDateDumpVis] = useState(false);
   const [privacyVis, setPrivacyVis] = useState(false);
@@ -347,8 +345,10 @@ const ProfileSettings = () => {
     window['cordova'].plugins.BEMUserCache.invalidateAllCache().then(
       (result) => {
         logDebug('invalidateCache: result = ' + JSON.stringify(result));
-        setCacheResult(result);
-        setInvalidateSuccessVis(true);
+        AlertManager.addMessage({
+          msgKey: 'success -> ',
+          text: result,
+        });
       },
       (error) => {
         displayError(error, 'while invalidating cache, error->');
@@ -662,16 +662,6 @@ const ProfileSettings = () => {
         minDate={
           new Date(appConfig?.intro?.start_year, appConfig?.intro?.start_month - 1, 1)
         }></DataDatePicker>
-
-      <AlertBar
-        visible={invalidateSuccessVis}
-        setVisible={setInvalidateSuccessVis}
-        messageKey="success -> "
-        messageAddition={cacheResult}></AlertBar>
-      <AlertBar
-        visible={noConsentMessageVis}
-        setVisible={setNoConsentMessageVis}
-        messageKey="general-settings.no-consent-message"></AlertBar>
 
       <SensedPage pageVis={showingSensed} setPageVis={setShowingSensed}></SensedPage>
       <LogPage pageVis={showingLog} setPageVis={setShowingLog}></LogPage>

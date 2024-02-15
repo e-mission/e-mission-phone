@@ -19,6 +19,7 @@ import { initStoreDeviceSettings } from './splash/storeDeviceSettings';
 import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
 import { withErrorBoundary } from './plugin/ErrorBoundary';
 import { initCustomDatasetHelper } from './metrics/customMetricsHelper';
+import AlertBar from './control/AlertBar';
 
 const defaultRoutes = (t) => [
   {
@@ -131,6 +132,7 @@ const App = () => {
           <AppStatusModal permitVis={permissionsPopupVis} setPermitVis={setPermissionsPopupVis} />
         )}
       </AppContext.Provider>
+      <AlertBar />
     </>
   );
 };
