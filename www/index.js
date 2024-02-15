@@ -45,6 +45,6 @@ deviceReady.then(() => {
       <SafeAreaView style={{ flex: 1 }}>
         <App />
       </SafeAreaView>
-    </PaperProvider>
+    </PaperProvider>,
   );
 });
