@@ -40,8 +40,6 @@ type ContextProps = {
   loadAnotherWeek: any; // TODO
   loadSpecificWeek: any; // TODO
   refresh: any; // TODO
-  customLabelMap: CustomLabelMap;
-  setCustomLabelMap: Dispatch<SetStateAction<CustomLabelMap>>;
 };
 
 export default createContext<ContextProps>({} as ContextProps);

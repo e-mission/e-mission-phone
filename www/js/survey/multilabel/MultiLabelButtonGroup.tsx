@@ -37,14 +37,8 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const appConfig = useAppConfig();
-  const {
-    labelOptions,
-    labelFor,
-    userInputFor,
-    addUserInputToEntry,
-    customLabelMap,
-    setCustomLabelMap,
-  } = useContext(LabelTabContext);
+  const { labelOptions, labelFor, userInputFor, addUserInputToEntry } = useContext(LabelTabContext);
+  const { customLabelMap, setCustomLabelMap } = useContext(AppContext);
   const { height: windowHeight } = useWindowDimensions();
   // modal visible for which input type? (MODE or PURPOSE or REPLACED_MODE, null if not visible)
   const [modalVisibleFor, setModalVisibleFor] = useState<MultilabelKey | null>(null);
@@ -103,7 +97,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
         (initialLabel && customLabelMap[key].indexOf(initialLabel) > -1) ||
         (newLabel && customLabelMap[key].indexOf(newLabel) > -1)
       ) {
-        updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther)
+        updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther ?? false)
           .then((res) => {
             setCustomLabelMap({
               ...customLabelMap,

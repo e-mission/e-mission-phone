@@ -26,7 +26,7 @@ import { fillLocationNamesOfTrip, resetNominatimLimiter } from './addressNamesHe
 import { getLabelOptions, labelOptionByValue } from '../survey/multilabel/confirmHelper';
 import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { useTheme } from 'react-native-paper';
-import { getPipelineRangeTs, getUserCustomLabels } from '../services/commHelper';
+import { getPipelineRangeTs } from '../services/commHelper';
 import { getNotDeletedCandidates, mapInputsToTimelineEntries } from '../survey/inputMatcher';
 import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
@@ -59,7 +59,6 @@ const LabelTab = () => {
   const [displayedEntries, setDisplayedEntries] = useState<TimelineEntry[] | null>(null);
   const [refreshTime, setRefreshTime] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState<string | false>('replace');
-  const [customLabelMap, setCustomLabelMap] = useState<CustomLabelMap>({});
 
   // initialization, once the appConfig is loaded
   useEffect(() => {
@@ -360,8 +359,6 @@ const LabelTab = () => {
     loadAnotherWeek,
     loadSpecificWeek,
     refresh,
-    customLabelMap,
-    setCustomLabelMap,
   };
 
   const Tab = createStackNavigator();
