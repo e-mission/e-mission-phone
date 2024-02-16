@@ -1,15 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Modal, StyleSheet, ScrollView } from 'react-native';
-import {
-  Dialog,
-  Button,
-  useTheme,
-  Text,
-  Appbar,
-  IconButton,
-  TextInput,
-  List,
-} from 'react-native-paper';
+import { Dialog, Button, useTheme, Text, Appbar, TextInput } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import ExpansionSection from './ExpandMenu';
 import SettingRow from './SettingRow';
@@ -50,7 +41,7 @@ import {
 } from '../splash/notifScheduler';
 import { DateTime } from 'luxon';
 import { AppConfig } from '../types/appConfigTypes';
-import NavBar from '../components/NavBar';
+import NavBar, { NavBarButton } from '../components/NavBar';
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -415,16 +406,9 @@ const ProfileSettings = () => {
     <>
       <NavBar>
         <Appbar.Content title={t('control.profile-tab')} />
-        <List.Item
-          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
-          title={t('control.log-out')}
-          titleStyle={{ fontSize: 14, color: colors.onSurface, paddingEnd: 5 }}
-          accessible={true}
-          accessibilityLabel={t('control.log-out')}
-          accessibilityRole="button"
-          onPress={() => setLogoutVis(true)}
-          right={() => <List.Icon icon="logout" aria-hidden={true} />}
-        />
+        <NavBarButton icon="logout" iconSize={24} onPress={() => setLogoutVis(true)}>
+          <Text>{t('control.log-out')}</Text>
+        </NavBarButton>
       </NavBar>
 
       <ScrollView>

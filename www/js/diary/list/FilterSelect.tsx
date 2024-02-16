@@ -46,9 +46,7 @@ const FilterSelect = ({ filters, setFilters, numListDisplayed, numListTotal }) =
 
   return (
     <>
-      <NavBarButton
-        icon={filters ? 'chevron-down' : null}
-        onPressAction={() => setModalVisible(true)}>
+      <NavBarButton icon={filters ? 'chevron-down' : null} onPress={() => setModalVisible(true)}>
         <Text>{labelDisplayText}</Text>
       </NavBarButton>
       <Modal visible={modalVisible} transparent={true} onDismiss={() => setModalVisible(false)}>

@@ -59,7 +59,7 @@ const MetricsDateSelect = ({ dateRange, setDateRange }: Props) => {
 
   return (
     <>
-      <NavBarButton icon="calendar" onPressAction={() => setOpen(true)}>
+      <NavBarButton icon="calendar" onPress={() => setOpen(true)}>
         {dateRange[0] && (
           <>
             <Text>{dateRange[0].toLocaleString()}</Text>

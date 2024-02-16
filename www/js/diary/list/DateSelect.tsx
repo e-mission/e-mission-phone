@@ -68,7 +68,7 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
         accessibilityLabel={
           'Date range: ' + (dateRange[0] ? dateRange[0] + ' to ' : '') + dateRangeEnd
         }
-        onPressAction={() => setOpen(true)}>
+        onPress={() => setOpen(true)}>
         {dateRange[0] && (
           <>
             <Text>{dateRange[0]}</Text>
