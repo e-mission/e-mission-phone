@@ -54,12 +54,6 @@ const scenes = {
   control: withErrorBoundary(ProfileSettings),
 };
 
-const scenes = {
-  label: withErrorBoundary(LabelTab),
-  metrics: withErrorBoundary(MetricsTab),
-  control: withErrorBoundary(ProfileSettings),
-};
-
 const App = () => {
   const [index, setIndex] = useState(0);
   // will remain null while the onboarding state is still being determined
