@@ -435,7 +435,7 @@ const ProfileSettings = () => {
           desc={authSettings.opcode}
           descStyle={settingStyles.monoDesc}></SettingRow>
         <DemographicsSettingRow></DemographicsSettingRow>
-        <CustomLabelSettingRow />
+        {appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL' && <CustomLabelSettingRow />}
         <SettingRow
           textKey="control.view-privacy"
           iconName="eye"
