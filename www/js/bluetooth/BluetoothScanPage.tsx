@@ -5,6 +5,7 @@ import gatherBluetoothData from './blueoothScanner';
 import { logWarn } from '../plugin/logger';
 import BluetoothCard from './BluetoothCard';
 import { Appbar, useTheme, Button } from 'react-native-paper';
+// import useBluetoothScan from '../bluetooth/blueoothScanner'
 
 /**
  * The implementation of this scanner page follows the design of
@@ -22,7 +23,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
   // Function to run Bluetooth test and update logs
   const runBluetoothTest = async () => {
     try {
-      const newLogs = await gatherBluetoothData();
+      const newLogs = await gatherBluetoothData(t);
       setLogs(newLogs);
     } catch (error) {
       logWarn(error);

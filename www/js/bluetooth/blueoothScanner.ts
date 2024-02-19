@@ -1,11 +1,10 @@
-import { logWarn } from '../plugin/logger';
-import { useTranslation } from 'react-i18next';
+import { logWarn, logDebug } from '../plugin/logger';
 
-export function gatherBluetoothData(): Promise<string[]> {
-  const { t } = useTranslation();
+export default function gatherBluetoothData(t): Promise<string[]> {
 
   return new Promise((resolve, reject) => {
     let logs: string[] = [];
+    logDebug("Running bluetooth discovery test!");
 
     window['bluetoothSerial'].discoverUnpaired(
       (devices: Array<any>) => {
@@ -27,5 +26,3 @@ export function gatherBluetoothData(): Promise<string[]> {
     );
   });
 }
-
-export default gatherBluetoothData;
