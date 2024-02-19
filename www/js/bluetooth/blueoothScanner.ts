@@ -1,10 +1,9 @@
 import { logWarn, logDebug } from '../plugin/logger';
 
 export default function gatherBluetoothData(t): Promise<string[]> {
-
   return new Promise((resolve, reject) => {
     let logs: string[] = [];
-    logDebug("Running bluetooth discovery test!");
+    logDebug('Running bluetooth discovery test!');
 
     window['bluetoothSerial'].discoverUnpaired(
       (devices: Array<any>) => {
