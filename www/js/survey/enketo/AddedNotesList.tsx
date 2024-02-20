@@ -11,7 +11,7 @@ import { getFormattedDateAbbr, isMultiDay } from '../../diary/diaryHelper';
 import EnketoModal from './EnketoModal';
 import { useTranslation } from 'react-i18next';
 import { EnketoUserInputEntry } from './enketoHelper';
-import { logDebug } from '../../plugin/logger';
+import { displayErrorMsg, logDebug } from '../../plugin/logger';
 
 type Props = {
   timelineEntry: any;
@@ -59,10 +59,13 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
   }
 
   function deleteEntry(entry?: EnketoUserInputEntry) {
-    if (!entry) return;
+    const dataKey = entry?.data?.key || entry?.metadata?.key;
+    const data = entry?.data;
 
-    const dataKey = entry.data.key || entry.metadata.key;
-    const data = entry.data;
+    if (!dataKey || !data) {
+      return displayErrorMsg(`Error in deleteEntry, entry was: ${JSON.stringify(entry)}`);
+    }
+
     const index = additionEntries.indexOf(entry);
     data.status = 'DELETED';
 
@@ -71,7 +74,10 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
       index = ${index}`);
 
     return window['cordova'].plugins.BEMUserCache.putMessage(dataKey, data).then(() => {
-      additionEntries.splice(index, 1);
+      // if entry was found in additionEntries, remove it
+      if (index > -1) {
+        additionEntries.splice(index, 1);
+      }
       setConfirmDeleteModalVisible(false);
       setEditingEntry(undefined);
     });
