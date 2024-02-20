@@ -24,7 +24,11 @@ const calcNotifTimes = (scheme, dayZeroDate, timeOfDay): DateTime[] => {
         .plus({ days: d })
         .toFormat('yyyy-MM-dd');
       const notifTime = DateTime.fromFormat(date + ' ' + timeOfDay, 'yyyy-MM-dd HH:mm');
-      notifTimes.push(notifTime);
+      if (notifTime.isValid) {
+        notifTimes.push(notifTime);
+      } else {
+        displayErrorMsg('Cannot schedule notifs with invalid time of day: ' + timeOfDay);
+      }
     }
   }
   return notifTimes;
