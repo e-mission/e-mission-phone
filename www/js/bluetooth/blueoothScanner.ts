@@ -5,7 +5,7 @@ export default function gatherBluetoothData(t): Promise<string[]> {
     let logs: string[] = [];
     logDebug('Running bluetooth discovery test!');
 
-    window['bluetoothSerial'].discoverUnpaired(
+    window['bluetoothClassicSerial'].discoverUnpaired(
       (devices: Array<any>) => {
         devices.forEach(function (device) {
           logs.push(
