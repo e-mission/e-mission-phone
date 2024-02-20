@@ -297,10 +297,10 @@ const ProfileSettings = () => {
     if (!uiConfig?.reminderSchemes)
       return logWarn('In updatePrefReminderTime, no reminderSchemes yet, skipping');
     if (storeNewVal) {
-      const m = DateTime.fromISO(newTime);
+      const dt = DateTime.fromJSDate(newTime);
       // store in HH:mm
       setReminderPrefs(
-        { reminder_time_of_day: m.toFormat('HH:mm') },
+        { reminder_time_of_day: dt.toFormat('HH:mm') },
         uiConfig.reminderSchemes,
         isScheduling,
         setIsScheduling,
