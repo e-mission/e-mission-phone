@@ -32,7 +32,7 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
   }, [pipelineRange]);
 
   useEffect(() => {
-    if (!tsRange.oldestTs) return;
+    if (!pipelineRange || !tsRange.oldestTs) return;
     const displayStartTs = Math.max(tsRange.oldestTs, pipelineRange.start_ts);
     const displayStartDate = DateTime.fromSeconds(displayStartTs).toLocaleString(
       DateTime.DATE_SHORT,

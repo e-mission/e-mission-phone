@@ -12,8 +12,15 @@ import { Modal } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RadioButton, Text, Dialog } from 'react-native-paper';
 import { NavBarButton } from '../../components/NavBar';
+import { LabelTabFilter } from '../LabelTabContext';
 
-const FilterSelect = ({ filters, setFilters, numListDisplayed, numListTotal }) => {
+type Props = {
+  filters: LabelTabFilter[];
+  setFilters: (filters: LabelTabFilter[]) => void;
+  numListDisplayed?: number;
+  numListTotal?: number;
+};
+const FilterSelect = ({ filters, setFilters, numListDisplayed, numListTotal }: Props) => {
   const { t } = useTranslation();
   const [modalVisible, setModalVisible] = useState(false);
   const selectedFilter = useMemo(() => filters?.find((f) => f.state)?.key || 'show-all', [filters]);
@@ -46,7 +53,7 @@ const FilterSelect = ({ filters, setFilters, numListDisplayed, numListTotal }) =
 
   return (
     <>
-      <NavBarButton icon={filters ? 'chevron-down' : null} onPress={() => setModalVisible(true)}>
+      <NavBarButton icon={'chevron-down'} onPress={() => setModalVisible(true)}>
         <Text>{labelDisplayText}</Text>
       </NavBarButton>
       <Modal visible={modalVisible} transparent={true} onDismiss={() => setModalVisible(false)}>

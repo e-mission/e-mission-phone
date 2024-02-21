@@ -31,6 +31,7 @@ import { getNotDeletedCandidates, mapInputsToTimelineEntries } from '../survey/i
 import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
 import LabelTabContext, {
+  LabelTabFilter,
   TimelineLabelMap,
   TimelineMap,
   TimelineNotesMap,
@@ -49,7 +50,7 @@ const LabelTab = () => {
   const { colors } = useTheme();
 
   const [labelOptions, setLabelOptions] = useState<LabelOptions<MultilabelKey> | null>(null);
-  const [filterInputs, setFilterInputs] = useState<any[]>([]);
+  const [filterInputs, setFilterInputs] = useState<LabelTabFilter[]>([]);
   const [lastFilteredTs, setLastFilteredTs] = useState<number | null>(null);
   const [pipelineRange, setPipelineRange] = useState<TimestampRange | null>(null);
   const [queriedRange, setQueriedRange] = useState<TimestampRange | null>(null);
