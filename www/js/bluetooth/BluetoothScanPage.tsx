@@ -5,7 +5,6 @@ import gatherBluetoothData from './blueoothScanner';
 import { logWarn } from '../plugin/logger';
 import BluetoothCard from './BluetoothCard';
 import { Appbar, useTheme, Button } from 'react-native-paper';
-// import useBluetoothScan from '../bluetooth/blueoothScanner'
 
 /**
  * The implementation of this scanner page follows the design of
@@ -14,6 +13,7 @@ import { Appbar, useTheme, Button } from 'react-native-paper';
  * Future work may include refractoring these files to be implementations of a
  * single base "pop-up page" component
  */
+
 const BluetoothScanPage = ({ ...props }: any) => {
   const { t } = useTranslation();
   const [logs, setLogs] = useState<string[]>([]);
@@ -45,7 +45,20 @@ const BluetoothScanPage = ({ ...props }: any) => {
     setIsScanning(!isScanning);
   };
 
-  const BlueScanContent = (
+  const BluetoothCardList = ({ devices }) => (
+    <div>
+      {devices.map((device) => {
+        if (device) {
+          const deviceID = device.slice(0, 18);
+          const deviceName = device.slice(18);
+          return <BluetoothCard deviceName={deviceName} deviceData={deviceID} />;
+        }
+        return null;
+      })}
+    </div>
+  );
+
+  const BlueScanContent = () => (
     <div style={{ height: '100%' }}>
       <Appbar.Header
         statusBarHeight={0}
@@ -68,10 +81,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
           {isScanning ? t('bluetooth.is-scanning') : t('bluetooth.scan-for-bluetooth')}
         </Button>
       </View>
-
-      {logs.map((log, index) => (
-        <BluetoothCard deviceName={log} deviceData={index} />
-      ))}
+      <BluetoothCardList devices={logs} />
     </div>
   );
 
@@ -80,7 +90,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
       <Modal {...props} animationType="slide">
         <SafeAreaView style={{ flex: 1 }}>
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flex: 1 }}>
-            <div> {BlueScanContent} </div>
+            <BlueScanContent />
           </ScrollView>
         </SafeAreaView>
       </Modal>
