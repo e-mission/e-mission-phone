@@ -336,10 +336,7 @@ const ProfileSettings = () => {
     window['cordova'].plugins.BEMUserCache.invalidateAllCache().then(
       (result) => {
         logDebug('invalidateCache: result = ' + JSON.stringify(result));
-        AlertManager.addMessage({
-          msgKey: 'success -> ',
-          text: result,
-        });
+        AlertManager.addMessage({ text: `success -> ${result}` });
       },
       (error) => {
         displayError(error, 'while invalidating cache, error->');
