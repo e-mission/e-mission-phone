@@ -58,13 +58,13 @@ function readDBFile(parentDir, database, callbackFn) {
             };
 
             reader.onerror = (error) => {
-              logDebug('Error while reading file ' + JSON.stringify(this.error));
-              reject({ error: { message: this.error } });
+              logDebug('Error while reading file ' + JSON.stringify(reader.error));
+              reject({ error: { message: reader.error } });
             };
 
             reader.onload = () => {
-              logDebug('Successful file read with ' + this.result?.['byteLength'] + ' characters');
-              resolve(new DataView(this.result as ArrayBuffer));
+              logDebug(`Successful file read with ${reader.result?.['byteLength']} characters`);
+              resolve(new DataView(reader.result as ArrayBuffer));
             };
 
             reader.readAsArrayBuffer(file);
