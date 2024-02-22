@@ -97,6 +97,25 @@ const TimelineScrollList = ({
         }
         ListFooterComponent={isLoading == 'prepend' ? smallSpinner : footer}
         ItemSeparatorComponent={separator}
+        /* Percent of viewport that must be covered for a partially occluded item to count as "viewable", 0-100.
+        a single pixel in the viewport makes the item viewable */
+        viewabilityConfig={{
+          viewAreaCoveragePercentThreshold: 0,
+          itemVisiblePercentThreshold: 0,
+          waitForInteraction: false,
+        }}
+        // 'getItemType' prop is used when FlashList has different types of cell components and these are vastly different
+        getItemType={(item) => {
+          if (item.origin_key.includes('trip')) {
+            return 'trip';
+          } else if (item.origin_key.includes('place')) {
+            return 'place';
+          } else if (item.origin_key.includes('untracked')) {
+            return 'untracked';
+          } else {
+            return 'unknown';
+          }
+        }}
       />
     );
   } else {
