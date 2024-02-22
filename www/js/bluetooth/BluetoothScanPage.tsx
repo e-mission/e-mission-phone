@@ -37,8 +37,8 @@ const BluetoothScanPage = ({ ...props }: any) => {
     <div>
       {devices.map((device) => {
         if (device) {
-          const deviceID = device.slice(0, 18);
-          const deviceName = device.slice(18);
+          const deviceID = device.slice(0, 21);
+          const deviceName = device.slice(21);
           return <BluetoothCard deviceName={deviceName} deviceData={deviceID} />;
         }
         return null;
