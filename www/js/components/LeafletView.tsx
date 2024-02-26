@@ -1,21 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import L, { Map } from 'leaflet';
+import L, { Map as LeafletMap } from 'leaflet';
 import { GeoJSONStyledFeature } from '../types/diaryTypes';
+import parse from 'html-react-parser';
 
 const mapSet = new Set<any>();
+const cachedLeafletMap = new Map();
+
 export function invalidateMaps() {
   mapSet.forEach((map) => map.invalidateSize());
 }
 
 const LeafletView = ({ geojson, opts, ...otherProps }) => {
   const mapElRef = useRef<HTMLDivElement | null>(null);
-  const leafletMapRef = useRef<Map | null>(null);
+  const leafletMapRef = useRef<LeafletMap | null>(null);
   const geoJsonIdRef = useRef(null);
   const { colors } = useTheme();
+  // non-alphanumeric characters are not safe for element IDs
+  const mapElId = `map-${geojson.data.id.replace(/[^a-zA-Z0-9]/g, '')}`;
+  const [isMapReady, setIsMapReady] = useState(false);
 
-  function initMap(map: Map) {
+  function initMap(map: LeafletMap) {
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       opacity: 1,
@@ -33,26 +39,40 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
   }
 
   useEffect(() => {
+    // if a Leaflet map is chached, there is no need to create the map again
+    if (cachedLeafletMap.has(mapElId)) return;
     // if a Leaflet map already exists (because we are re-rendering), remove it before creating a new one
     if (leafletMapRef.current) {
       leafletMapRef.current.remove();
       mapSet.delete(leafletMapRef.current);
     }
     if (!mapElRef.current) return;
+    setIsMapReady(false);
     const map = L.map(mapElRef.current, opts || {});
     initMap(map);
+    setIsMapReady(true);
   }, [geojson]);
+
+  useEffect(() => {
+    // After a Leaflet map is rendered, chache the map to reduce the cost for creating a map
+    if (isMapReady) {
+      const mapHTMLElements = document.getElementById(mapElId);
+      cachedLeafletMap.set(mapElId, mapHTMLElements?.outerHTML);
+    }
+  }, [isMapReady]);
 
   /* If the geojson is different between renders, we need to recreate the map
     (happens because of FlashList's view recycling on the trip cards:
       https://shopify.github.io/flash-list/docs/recycling) */
-  if (geoJsonIdRef.current && geoJsonIdRef.current !== geojson.data.id && leafletMapRef.current) {
+  if (
+    !cachedLeafletMap.has(mapElId) &&
+    geoJsonIdRef.current &&
+    geoJsonIdRef.current !== geojson.data.id &&
+    leafletMapRef.current
+  ) {
     leafletMapRef.current.eachLayer((layer) => leafletMapRef.current?.removeLayer(layer));
     initMap(leafletMapRef.current);
   }
-
-  // non-alphanumeric characters are not safe for element IDs
-  const mapElId = `map-${geojson.data.id.replace(/[^a-zA-Z0-9]/g, '')}`;
 
   return (
     <View {...otherProps} role="img" aria-label="Map">
@@ -97,12 +117,16 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
           }
         }
       `}</style>
-      <div
-        id={mapElId}
-        ref={mapElRef}
-        data-tap-disabled="true"
-        aria-hidden={true}
-        style={{ width: '100%', height: '100%', zIndex: 0 }}></div>
+      {cachedLeafletMap.has(mapElId) ? (
+        parse(cachedLeafletMap.get(mapElId))
+      ) : (
+        <div
+          id={mapElId}
+          ref={mapElRef}
+          data-tap-disabled="true"
+          aria-hidden={true}
+          style={{ width: '100%', height: '100%', zIndex: 0 }}></div>
+      )}
     </View>
   );
 };
