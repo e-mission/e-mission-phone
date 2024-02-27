@@ -30,7 +30,7 @@ const setConfig = function (config) {
   return window['cordova'].plugins.BEMServerSync.setConfig(config);
 };
 
-const getConfig = function () {
+export const getConfig = function () {
   return window['cordova'].plugins.BEMServerSync.getConfig();
 };
 
