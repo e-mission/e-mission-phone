@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Form } from 'enketo-core';
 import { StyleSheet, Modal, ScrollView, SafeAreaView, Pressable } from 'react-native';
-import { ModalProps } from 'react-native-paper';
+import { Button, Icon, ModalProps } from 'react-native-paper';
 import useAppConfig from '../../useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { SurveyOptions, fetchSurvey, getInstanceStr, saveResponse } from './enketoHelper';
@@ -97,7 +97,7 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
 
         {/* The retrieved form will be injected here */}
 
-        <section className="form-footer">
+        <section className="form-footer" style={{ display: 'flex', flexDirection: 'column' }}>
           {/* Used some quick-and-dirty inline CSS styles here because the form-footer should be styled in the
           mother application. The HTML markup can be changed as well. */}
           <a
@@ -106,37 +106,40 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
             style={{ position: 'absolute', left: 10, bottom: 40 }}>
             {t('survey.back')}
           </a>
-          <button
-            id="validate-form"
-            className="btn btn-primary"
-            onClick={() => validateAndSave()}
-            style={{ width: 200, marginLeft: 'calc(50% - 100px)' }}>
-            {t('survey.save')}
-          </button>
           <a
-            href="#survey-paper"
-            className="btn btn-primary next-page disabled"
-            style={{ width: 200, marginLeft: 'calc(50% - 100px' }}>
-            {t('survey.next')}
+            id="validate-form"
+            className="btn"
+            onClick={() => validateAndSave()}
+            style={{ width: 200, margin: 'auto' }}>
+            <Button id="validate-form" icon="check-bold" mode="contained">
+              {t('survey.save')}
+            </Button>
+          </a>
+          <a href="#" className="btn next-page disabled" style={{ width: 200, margin: 'auto' }}>
+            <Button icon="arrow-right-thick" mode="contained">
+              {t('survey.next')}
+            </Button>
           </a>
           <div className="enketo-power" style={{ marginBottom: 30 }}>
             <span>{t('survey.powered-by')}</span>{' '}
             <a href="http://enketo.org" title="enketo.org website">
               <img src="img/enketo_bare_150x56.png" alt="enketo logo" />
-            </a>{' '}
+            </a>
           </div>
           <div className="form-footer__jump-nav" style={{ display: 'flex', flexDirection: 'row' }}>
             <a
               href="#"
               className="btn btn-default disabled first-page"
-              style={{ flex: 1, borderRadius: 0 }}>
-              {t('survey.return-to-beginning')}
+              style={{ display: 'inline-flex', flex: 1, borderRadius: 0 }}>
+              <Icon source={'arrow-u-left-top'} size={16} />
+              <span style={{ margin: 'auto' }}>{t('survey.return-to-beginning')}</span>
             </a>
             <a
               href="#"
               className="btn btn-default disabled last-page"
-              style={{ flex: 1, borderRadius: 0 }}>
-              {t('survey.go-to-end')}
+              style={{ display: 'inline-flex', flex: 1, borderRadius: 0 }}>
+              <span style={{ margin: 'auto' }}>{t('survey.go-to-end')}</span>
+              <Icon source={'page-last'} size={16} />
             </a>
           </div>
           {/* <ol className="page-toc"></ol> */}
