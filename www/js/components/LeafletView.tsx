@@ -3,7 +3,6 @@ import { View, ViewProps } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import L, { Map as LeafletMap } from 'leaflet';
 import { GeoJSONData, GeoJSONStyledFeature } from '../types/diaryTypes';
-import parse from 'html-react-parser';
 
 const mapSet = new Set<any>();
 const cachedLeafletMap = new Map();
@@ -62,7 +61,8 @@ const LeafletView = ({ geojson, opts, downscaleTiles, ...otherProps }: Props) =>
     // After a Leaflet map is rendered, chache the map to reduce the cost for creating a map
     if (isMapReady) {
       const mapHTMLElements = document.getElementById(mapElId);
-      cachedLeafletMap.set(mapElId, mapHTMLElements?.outerHTML);
+      cachedLeafletMap.set(mapElId, mapHTMLElements?.innerHTML);
+      leafletMapRef.current?.remove();
     }
   }, [isMapReady]);
 
@@ -122,16 +122,19 @@ const LeafletView = ({ geojson, opts, downscaleTiles, ...otherProps }: Props) =>
           }
         }
       `}</style>
-      {cachedLeafletMap.has(mapElId) ? (
-        parse(cachedLeafletMap.get(mapElId))
-      ) : (
-        <div
-          id={mapElId}
-          ref={mapElRef}
-          data-tap-disabled="true"
-          aria-hidden={true}
-          style={{ width: '100%', height: '100%', zIndex: 0 }}></div>
-      )}
+
+      <div
+        id={mapElId}
+        ref={mapElRef}
+        data-tap-disabled="true"
+        aria-hidden={true}
+        style={{ width: '100%', height: '100%', zIndex: 0 }}
+        dangerouslySetInnerHTML={
+          /* this is not 'dangerous' here because the content is not user-generated;
+          it's just an HTML string that we cached from a previous render */
+          cachedLeafletMap.has(mapElId) ? { __html: cachedLeafletMap.get(mapElId) } : undefined
+        }
+      />
     </View>
   );
 };
