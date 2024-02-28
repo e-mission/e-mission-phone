@@ -9,9 +9,9 @@ import LoadMoreButton from './LoadMoreButton';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../components/Icon';
 
-const renderCard = ({ item: listEntry }) => {
+const renderCard = ({ item: listEntry, index }) => {
   if (listEntry.origin_key.includes('trip')) {
-    return <TripCard trip={listEntry} />;
+    return <TripCard trip={listEntry} isFirstInList={index == 0} />;
   } else if (listEntry.origin_key.includes('place')) {
     return <PlaceCard place={listEntry} />;
   } else if (listEntry.origin_key.includes('untracked')) {

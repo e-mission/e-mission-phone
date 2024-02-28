@@ -26,8 +26,8 @@ import { useGeojsonForTrip } from '../timelineHelper';
 import { CompositeTrip } from '../../types/diaryTypes';
 import { EnketoUserInputEntry } from '../../survey/enketo/enketoHelper';
 
-type Props = { trip: CompositeTrip };
-const TripCard = ({ trip }: Props) => {
+type Props = { trip: CompositeTrip; isFirstInList?: boolean };
+const TripCard = ({ trip, isFirstInList }: Props) => {
   const { t } = useTranslation();
   const { width: windowWidth } = useWindowDimensions();
   const appConfig = useAppConfig();
@@ -54,7 +54,7 @@ const TripCard = ({ trip }: Props) => {
     navigation.navigate('label.details', { tripId, flavoredTheme });
   }
 
-  const mapOpts = { zoomControl: false, dragging: false };
+  const mapOpts = { attributionControl: isFirstInList, zoomControl: false, dragging: false };
   const showAddNoteButton = appConfig?.survey_info?.buttons?.['trip-notes'];
   const mapStyle = showAddNoteButton ? s.shortenedMap : s.fullHeightMap;
   return (
