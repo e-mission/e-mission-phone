@@ -113,14 +113,16 @@ const TripCard = ({ trip }: Props) => {
         </View>
         <View style={{ flex: 1, paddingBottom: showAddNoteButton ? 8 : 0 }}>
           {/* left panel */}
-          <LeafletView
-            geojson={tripGeojson}
-            opts={mapOpts}
-            downscaleTiles={true}
-            /* the map should be at least as tall as it is wide
+          {tripGeojson && (
+            <LeafletView
+              geojson={tripGeojson}
+              opts={mapOpts}
+              downscaleTiles={true}
+              /* the map should be at least as tall as it is wide
                           so it doesn't look squished */
-            style={[{ minHeight: windowWidth / 2 }, mapStyle]}
-          />
+              style={[{ minHeight: windowWidth / 2 }, mapStyle]}
+            />
+          )}
           <ModesIndicator trip={trip} detectedModes={detectedModes} />
           {showAddNoteButton && (
             <View style={cardStyles.notesButton}>

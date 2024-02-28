@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { View, ViewProps } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import L, { Map as LeafletMap } from 'leaflet';
-import { GeoJSONStyledFeature } from '../types/diaryTypes';
+import { GeoJSONData, GeoJSONStyledFeature } from '../types/diaryTypes';
 import parse from 'html-react-parser';
 
 const mapSet = new Set<any>();
@@ -12,10 +12,15 @@ export function invalidateMaps() {
   mapSet.forEach((map) => map.invalidateSize());
 }
 
+type Props = ViewProps & {
+  geojson: GeoJSONData;
+  opts?: L.MapOptions;
+  downscaleTiles?: boolean;
+};
 const LeafletView = ({ geojson, opts, downscaleTiles, ...otherProps }: Props) => {
   const mapElRef = useRef<HTMLDivElement | null>(null);
   const leafletMapRef = useRef<LeafletMap | null>(null);
-  const geoJsonIdRef = useRef(null);
+  const geoJsonIdRef = useRef<string | null>(null);
   const { colors } = useTheme();
   // non-alphanumeric characters are not safe for element IDs
   const mapElId = `map-${geojson.data.id.replace(/[^a-zA-Z0-9]/g, '')}`;
