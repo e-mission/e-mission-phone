@@ -116,6 +116,7 @@ const TripCard = ({ trip }: Props) => {
           <LeafletView
             geojson={tripGeojson}
             opts={mapOpts}
+            downscaleTiles={true}
             /* the map should be at least as tall as it is wide
                           so it doesn't look squished */
             style={[{ minHeight: windowWidth / 2 }, mapStyle]}

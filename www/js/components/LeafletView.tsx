@@ -12,7 +12,7 @@ export function invalidateMaps() {
   mapSet.forEach((map) => map.invalidateSize());
 }
 
-const LeafletView = ({ geojson, opts, ...otherProps }) => {
+const LeafletView = ({ geojson, opts, downscaleTiles, ...otherProps }: Props) => {
   const mapElRef = useRef<HTMLDivElement | null>(null);
   const leafletMapRef = useRef<LeafletMap | null>(null);
   const geoJsonIdRef = useRef(null);
@@ -25,7 +25,7 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       opacity: 1,
-      detectRetina: true,
+      detectRetina: !downscaleTiles,
     }).addTo(map);
     const gj = L.geoJson(geojson.data, {
       pointToLayer: pointToLayer,
