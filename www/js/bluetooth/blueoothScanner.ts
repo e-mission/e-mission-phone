@@ -50,7 +50,7 @@ export default function gatherBluetoothData(t): Promise<string[]> {
     });
 
     const pairedDevicesPromise = new Promise((pairRes, pairRej) => {
-      window['bluetoothClassicSerial'].discoverUnpaired(
+      window['bluetoothClassicSerial'].list(
         (devices: Array<BluetoothClassicDevice>) => {
           handleLogs(devices);
           pairRes(logs);
