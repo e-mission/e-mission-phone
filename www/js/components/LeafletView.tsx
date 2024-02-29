@@ -3,9 +3,9 @@ import { View, ViewProps } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import L, { Map as LeafletMap } from 'leaflet';
 import { GeoJSONData, GeoJSONStyledFeature } from '../types/diaryTypes';
+import useLeafletCache from './useLeafletCache';
 
 const mapSet = new Set<any>();
-const cachedLeafletMap = new Map();
 
 // open the URL in the system browser & prevent any other effects of the click event
 window['launchURL'] = (url, event) => {
@@ -31,6 +31,7 @@ const LeafletView = ({ geojson, opts, downscaleTiles, cacheHtml, ...otherProps }
   const leafletMapRef = useRef<LeafletMap | null>(null);
   const geoJsonIdRef = useRef<string | null>(null);
   const { colors } = useTheme();
+  const leafletCache = useLeafletCache();
 
   // unique ID for map element, like "map-5f3e3b" or "map-5f3e3b-downscaled"
   const mapElId = useMemo(() => {
@@ -63,8 +64,8 @@ const LeafletView = ({ geojson, opts, downscaleTiles, cacheHtml, ...otherProps }
   }
 
   useEffect(() => {
-    // if a Leaflet map is chached, there is no need to create the map again
-    if (cachedLeafletMap.has(mapElId)) return;
+    // if a Leaflet map is cached, there is no need to create the map again
+    if (cacheHtml && leafletCache.has(mapElId)) return;
     // if a Leaflet map already exists (because we are re-rendering), remove it before creating a new one
     if (leafletMapRef.current) {
       leafletMapRef.current.remove();
@@ -78,7 +79,7 @@ const LeafletView = ({ geojson, opts, downscaleTiles, cacheHtml, ...otherProps }
       new Promise((resolve) => tileLayer.on('load', resolve)).then(() => {
         // After a Leaflet map is rendered, cache the map to reduce the cost for creating a map
         const mapHTMLElements = document.getElementById(mapElId);
-        cachedLeafletMap.set(mapElId, mapHTMLElements?.innerHTML);
+        leafletCache.set(mapElId, mapHTMLElements?.innerHTML);
         leafletMapRef.current?.remove();
       });
     }
@@ -88,7 +89,7 @@ const LeafletView = ({ geojson, opts, downscaleTiles, cacheHtml, ...otherProps }
     (happens because of FlashList's view recycling on the trip cards:
       https://shopify.github.io/flash-list/docs/recycling) */
   if (
-    !cachedLeafletMap.has(mapElId) &&
+    !leafletCache.has(mapElId) &&
     geoJsonIdRef.current &&
     geoJsonIdRef.current !== geojson.data.id &&
     leafletMapRef.current
@@ -153,9 +154,7 @@ const LeafletView = ({ geojson, opts, downscaleTiles, cacheHtml, ...otherProps }
         dangerouslySetInnerHTML={
           /* this is not 'dangerous' here because the content is not user-generated;
           it's just an HTML string that we cached from a previous render */
-          cacheHtml && cachedLeafletMap.has(mapElId)
-            ? { __html: cachedLeafletMap.get(mapElId) }
-            : undefined
+          cacheHtml && leafletCache.has(mapElId) ? { __html: leafletCache.get(mapElId) } : undefined
         }
       />
     </View>
