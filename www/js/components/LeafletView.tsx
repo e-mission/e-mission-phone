@@ -7,6 +7,15 @@ import { GeoJSONData, GeoJSONStyledFeature } from '../types/diaryTypes';
 const mapSet = new Set<any>();
 const cachedLeafletMap = new Map();
 
+// open the URL in the system browser & prevent any other effects of the click event
+window['launchURL'] = (url, event) => {
+  window['cordova'].InAppBrowser.open(url, '_system');
+  event.stopPropagation();
+  return false;
+};
+const osmURL = 'http://www.openstreetmap.org/copyright';
+const leafletURL = 'https://leafletjs.com';
+
 export function invalidateMaps() {
   mapSet.forEach((map) => map.invalidateSize());
 }
@@ -26,8 +35,11 @@ const LeafletView = ({ geojson, opts, downscaleTiles, ...otherProps }: Props) =>
   const [isMapReady, setIsMapReady] = useState(false);
 
   function initMap(map: LeafletMap) {
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    map.attributionControl?.setPrefix(
+      `<a href="#" onClick="launchURL('${leafletURL}', event)">Leaflet</a>`,
+    );
+    const tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: `&copy; <a href="#" onClick="launchURL('${osmURL}', event)">OpenStreetMap</a>`,
       opacity: 1,
       detectRetina: !downscaleTiles,
     }).addTo(map);
