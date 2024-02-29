@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { View, ViewProps } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import L, { Map as LeafletMap } from 'leaflet';
@@ -24,15 +24,22 @@ type Props = ViewProps & {
   geojson: GeoJSONData;
   opts?: L.MapOptions;
   downscaleTiles?: boolean;
+  cacheHtml?: boolean;
 };
-const LeafletView = ({ geojson, opts, downscaleTiles, ...otherProps }: Props) => {
+const LeafletView = ({ geojson, opts, downscaleTiles, cacheHtml, ...otherProps }: Props) => {
   const mapElRef = useRef<HTMLDivElement | null>(null);
   const leafletMapRef = useRef<LeafletMap | null>(null);
   const geoJsonIdRef = useRef<string | null>(null);
   const { colors } = useTheme();
-  // non-alphanumeric characters are not safe for element IDs
-  const mapElId = `map-${geojson.data.id.replace(/[^a-zA-Z0-9]/g, '')}`;
-  const [isMapReady, setIsMapReady] = useState(false);
+
+  // unique ID for map element, like "map-5f3e3b" or "map-5f3e3b-downscaled"
+  const mapElId = useMemo(() => {
+    let id = 'map-';
+    // non-alphanumeric characters are not safe for element IDs
+    id += geojson.data.id.replace(/[^a-zA-Z0-9]/g, '');
+    if (downscaleTiles) id += '-downscaled';
+    return id;
+  }, [geojson.data.id, downscaleTiles]);
 
   function initMap(map: LeafletMap) {
     map.attributionControl?.setPrefix(
@@ -52,6 +59,7 @@ const LeafletView = ({ geojson, opts, downscaleTiles, ...otherProps }: Props) =>
     geoJsonIdRef.current = geojson.data.id;
     leafletMapRef.current = map;
     mapSet.add(map);
+    return tileLayer;
   }
 
   useEffect(() => {
@@ -63,20 +71,18 @@ const LeafletView = ({ geojson, opts, downscaleTiles, ...otherProps }: Props) =>
       mapSet.delete(leafletMapRef.current);
     }
     if (!mapElRef.current) return;
-    setIsMapReady(false);
     const map = L.map(mapElRef.current, opts || {});
-    initMap(map);
-    setIsMapReady(true);
-  }, [geojson]);
+    const tileLayer = initMap(map);
 
-  useEffect(() => {
-    // After a Leaflet map is rendered, chache the map to reduce the cost for creating a map
-    if (isMapReady) {
-      const mapHTMLElements = document.getElementById(mapElId);
-      cachedLeafletMap.set(mapElId, mapHTMLElements?.innerHTML);
-      leafletMapRef.current?.remove();
+    if (cacheHtml) {
+      new Promise((resolve) => tileLayer.on('load', resolve)).then(() => {
+        // After a Leaflet map is rendered, cache the map to reduce the cost for creating a map
+        const mapHTMLElements = document.getElementById(mapElId);
+        cachedLeafletMap.set(mapElId, mapHTMLElements?.innerHTML);
+        leafletMapRef.current?.remove();
+      });
     }
-  }, [isMapReady]);
+  }, [geojson, cacheHtml]);
 
   /* If the geojson is different between renders, we need to recreate the map
     (happens because of FlashList's view recycling on the trip cards:
@@ -133,6 +139,9 @@ const LeafletView = ({ geojson, opts, downscaleTiles, ...otherProps }: Props) =>
             /* glyph for 'flag' from https://pictogrammers.com/library/mdi/icon/flag/ */ ''
           }
         }
+        .leaflet-tile-loaded {
+          opacity: 1 !important;
+        }
       `}</style>
 
       <div
@@ -144,7 +153,9 @@ const LeafletView = ({ geojson, opts, downscaleTiles, ...otherProps }: Props) =>
         dangerouslySetInnerHTML={
           /* this is not 'dangerous' here because the content is not user-generated;
           it's just an HTML string that we cached from a previous render */
-          cachedLeafletMap.has(mapElId) ? { __html: cachedLeafletMap.get(mapElId) } : undefined
+          cacheHtml && cachedLeafletMap.has(mapElId)
+            ? { __html: cachedLeafletMap.get(mapElId) }
+            : undefined
         }
       />
     </View>
