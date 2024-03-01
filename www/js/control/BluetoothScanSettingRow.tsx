@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SettingRow from './SettingRow';
 import BluetoothScanPage from '../bluetooth/BluetoothScanPage';
-import { displayError, displayErrorMsg } from '../plugin/logger';
+import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import { getConfig } from './ControlSyncHelper';
 
 const BluetoothScanSettingRow = ({}) => {
@@ -10,11 +10,13 @@ const BluetoothScanSettingRow = ({}) => {
   async function openPopover() {
     // TODO: Add logic to check for conifig here, or in settings
 
-    // Determine if user is on Android or iOS as this is an Android only feature right now
+    // Get the config to determine if user is on Android or iOS
     let config = await getConfig();
 
+    // Depending on user platform, handle requesting the permissions differently
     if (!config.ios_use_remote_push) {
       // Check and prompt for bluetooth scan permission
+      logDebug('[BLUETOOTH] ANDROID');
       try {
         let response = await window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions();
         if (response == 'OK') setBluePageVisible(true);
@@ -22,10 +24,10 @@ const BluetoothScanSettingRow = ({}) => {
         displayError(e, 'Insufficient Permissions');
       }
     } else {
-      displayErrorMsg(
-        'Scanning for bluetooth devices is currently only supported on Android, sorry!',
-        'Platform Not Supported',
-      );
+      logDebug('[BLUETOOTH] IOS');
+      let response = await window['bluetoothClassicSerial'].initializeBluetooth();
+      logDebug(response);
+      setBluePageVisible(true);
     }
   }
 
