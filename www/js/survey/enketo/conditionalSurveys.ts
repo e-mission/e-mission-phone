@@ -18,7 +18,7 @@ const conditionalSurveyFunctions = {
  * @example scopedEval('console.log(foo)', { foo: 'bar' })
  */
 const scopedEval = (script: string, scope: { [k: string]: any }) =>
-  Function(...Object.keys(scope), script)(...Object.values(scope));
+  Function(...Object.keys(scope), `return ${script}`)(...Object.values(scope));
 
 // the first survey in the list that passes its condition will be returned
 export function getSurveyForTimelineEntry(
