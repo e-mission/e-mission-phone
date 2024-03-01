@@ -1,14 +1,21 @@
 import { displayError } from '../../plugin/logger';
 import { SurveyButtonConfig } from '../../types/appConfigTypes';
 import { TimelineEntry } from '../../types/diaryTypes';
+import { Position } from 'geojson';
 
 const conditionalSurveyFunctions = {
-  pointIsWithinBounds: (pt: [number, number], bounds: [[number, number], [number, number]]) => {
-    // pt is [lat, lon] and bounds is NW and SE corners as [[lat, lon], [lat, lon]]
-    // pt's lat must be south of, or less than, NW's lat; and north of, or greater than, SE's lat
+  /**
+  @description Returns true if the given point is within the given bounds.
+    Coordinates are in [longitude, latitude] order, since that is the GeoJSON spec.
+  @param pt point to check as [lon, lat]
+  @param bounds NW and SE corners as [[lon, lat], [lon, lat]] 
+  @returns true if pt is within bounds
+  */
+  pointIsWithinBounds: (pt: Position, bounds: Position[]) => {
     // pt's lon must be east of, or greater than, NW's lon; and west of, or less than, SE's lon
-    const latInRange = pt[0] < bounds[0][0] && pt[0] > bounds[1][0];
-    const lonInRange = pt[1] > bounds[0][1] && pt[1] < bounds[1][1];
+    const lonInRange = pt[0] > bounds[0][0] && pt[0] < bounds[1][0];
+    // pt's lat must be south of, or less than, NW's lat; and north of, or greater than, SE's lat
+    const latInRange = pt[1] < bounds[0][1] && pt[1] > bounds[1][1];
     return latInRange && lonInRange;
   },
 };
