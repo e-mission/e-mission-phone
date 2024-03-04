@@ -121,15 +121,6 @@ const ProfileSettings = () => {
   function whenReady(newAppConfig: AppConfig) {
     const tempUiConfig = newAppConfig;
 
-    // backwards compat hack to fill in the raw_data_use for programs that don't have it
-    const default_raw_data_use = {
-      en: `to monitor the ${tempUiConfig.intro.program_or_study}, send personalized surveys or provide recommendations to participants`,
-      es: `para monitorear el ${tempUiConfig.intro.program_or_study}, enviar encuestas personalizadas o proporcionar recomendaciones a los participantes`,
-    };
-    Object.entries(tempUiConfig.intro.translated_text).forEach(([lang, val]) => {
-      val.raw_data_use = val.raw_data_use || default_raw_data_use[lang];
-    });
-
     // Backwards compat hack to fill in the `app_required` based on the
     // old-style "program_or_study"
     // remove this at the end of 2023 when all programs have been migrated over
@@ -274,10 +265,10 @@ const ProfileSettings = () => {
     if (!uiConfig?.reminderSchemes)
       return logWarn('In updatePrefReminderTime, no reminderSchemes yet, skipping');
     if (storeNewVal) {
-      const m = DateTime.fromISO(newTime);
+      const dt = DateTime.fromJSDate(newTime);
       // store in HH:mm
       setReminderPrefs(
-        { reminder_time_of_day: m.toFormat('HH:mm') },
+        { reminder_time_of_day: dt.toFormat('HH:mm') },
         uiConfig.reminderSchemes,
         isScheduling,
         setIsScheduling,
