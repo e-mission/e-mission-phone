@@ -110,7 +110,6 @@ const TimelineScrollList = ({
             is the least intrusive way I've found to trigger a layout change.
           It basically just jiggles the element so it doesn't blank out. */
         onContentSizeChange={() => {
-          console.debug('TimelineScrollList onContentSizeChange');
           const list = document.getElementById('timelineScrollList');
           list?.style.setProperty('margin-right', '1px');
           setTimeout(() => {
