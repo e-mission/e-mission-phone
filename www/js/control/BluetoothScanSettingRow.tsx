@@ -16,7 +16,6 @@ const BluetoothScanSettingRow = ({}) => {
     // Depending on user platform, handle requesting the permissions differently
     if (!config.ios_use_remote_push) {
       // Check and prompt for bluetooth scan permission
-      logDebug('[BLUETOOTH] ANDROID');
       try {
         let response = await window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions();
         if (response == 'OK') setBluePageVisible(true);
@@ -24,10 +23,7 @@ const BluetoothScanSettingRow = ({}) => {
         displayError(e, 'Insufficient Permissions');
       }
     } else {
-      logDebug('[BLUETOOTH] IOS');
-      let response = await window['bluetoothClassicSerial'].initializeBluetooth();
-      logDebug(response);
-      setBluePageVisible(true);
+      displayErrorMsg("Sorry, iOS is not supported for this feature!", "iOS Not Supported");
     }
   }
 
