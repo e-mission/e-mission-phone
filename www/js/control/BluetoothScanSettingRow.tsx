@@ -23,7 +23,7 @@ const BluetoothScanSettingRow = ({}) => {
         displayError(e, 'Insufficient Permissions');
       }
     } else {
-      displayErrorMsg("Sorry, iOS is not supported for this feature!", "iOS Not Supported");
+      displayErrorMsg('Sorry, iOS is not supported for this feature!', 'iOS Not Supported');
     }
   }
 
