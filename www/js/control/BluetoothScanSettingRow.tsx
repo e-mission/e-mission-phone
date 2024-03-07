@@ -8,8 +8,6 @@ const BluetoothScanSettingRow = ({}) => {
   const [bluePageVisible, setBluePageVisible] = useState<boolean>(false);
 
   async function openPopover() {
-    // TODO: Add logic to check for conifig here, or in settings
-
     // Get the config to determine if user is on Android or iOS
     let config = await getConfig();
 

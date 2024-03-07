@@ -10,7 +10,7 @@ type BluetoothClassicDevice = {
 
 /**
  * gatherBluetoothData scans for viewable Bluetooth Classic Devices
- * @param t is the 18next translation function
+ * @param t is the i18next translation function
  * @returns an array of strings containing device data, formatted ['ID: id Name: name']
  */
 export default function gatherBluetoothData(t): Promise<string[]> {
