@@ -18,10 +18,11 @@ const BluetoothScanPage = ({ ...props }: any) => {
   const { t } = useTranslation();
   const [logs, setLogs] = useState<string[]>([]);
   const [isScanning, setIsScanning] = useState(false);
+  const [isClassic, setIsClassic] = useState(false);
   const { colors } = useTheme();
 
   // Function to run Bluetooth test and update logs
-  const runBluetoothTest = async () => {
+  const runBluetoothClassicTest = async () => {
     try {
       setIsScanning(true);
       const newLogs = await gatherBluetoothData(t);
@@ -31,6 +32,10 @@ const BluetoothScanPage = ({ ...props }: any) => {
     } finally {
       setIsScanning(false);
     }
+  };
+
+  const switchMode = () => {
+    setIsClassic(!isClassic);
   };
 
   const BluetoothCardList = ({ devices }) => (
@@ -57,11 +62,33 @@ const BluetoothScanPage = ({ ...props }: any) => {
             props.onDismiss?.();
           }}
         />
-        <Appbar.Content title={t('bluetooth.scan-debug-title')} titleStyle={{ fontSize: 17 }} />
+        <Appbar.Content
+          title={isClassic ? t('bluetooth.title.classic') : t('bluetooth.title.ble')}
+          titleStyle={{ fontSize: 17 }}
+        />
       </Appbar.Header>
       <View style={s.btnContainer}>
-        <Button mode="elevated" onPress={runBluetoothTest} textColor={colors.primary} style={s.btn}>
-          {isScanning ? t('bluetooth.is-scanning') : t('bluetooth.scan-for-bluetooth')}
+        <Button
+          mode="elevated"
+          onPress={switchMode}
+          textColor={isClassic ? colors.onPrimary : colors.primary}
+          style={s.btn}
+          buttonColor={isClassic ? colors.primary : colors.onPrimary}>
+          {isClassic ? t('bluetooth.switch-to.ble') : t('bluetooth.switch-to.classic')}
+        </Button>
+      </View>
+      <View style={s.btnContainer}>
+        <Button
+          mode="elevated"
+          onPress={runBluetoothClassicTest}
+          textColor={isScanning ? colors.onPrimary : colors.primary}
+          buttonColor={isScanning ? colors.primary : colors.onPrimary}
+          style={s.btn}>
+          {isScanning
+            ? t('bluetooth.is-scanning')
+            : isClassic
+              ? t('bluetooth.scan.for-bluetooth')
+              : t('bluetooth.scan.for-ble')}
         </Button>
       </View>
       <BluetoothCardList devices={logs} />
@@ -83,7 +110,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
 
 const s = StyleSheet.create({
   btnContainer: {
-    padding: 16,
+    padding: 8,
     justifyContent: 'center',
   },
   btn: {
