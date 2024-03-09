@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Modal, ScrollView, SafeAreaView, View } from 'react-native';
 import gatherBluetoothData from './blueoothScanner';
-import { logWarn } from '../plugin/logger';
+import { logWarn, displayErrorMsg } from '../plugin/logger';
+import { getConfig } from '../config/dynamicConfig';
 import BluetoothCard from './BluetoothCard';
 import { Appbar, useTheme, Button } from 'react-native-paper';
 
@@ -21,8 +22,14 @@ const BluetoothScanPage = ({ ...props }: any) => {
   const [isClassic, setIsClassic] = useState(false);
   const { colors } = useTheme();
 
-  // Function to run Bluetooth test and update logs
   const runBluetoothClassicTest = async () => {
+    let config = await getConfig();
+
+    if (!config.ios_use_remote_push) {
+      displayErrorMsg('Sorry, Bluetooth Classic scanning is not available on iOS!', 'OS Error:');
+      return;
+    }
+
     try {
       setIsScanning(true);
       const newLogs = await gatherBluetoothData(t);
@@ -32,6 +39,10 @@ const BluetoothScanPage = ({ ...props }: any) => {
     } finally {
       setIsScanning(false);
     }
+  };
+
+  const runBLETest = async () => {
+    displayErrorMsg('Not Implemented Yet!', '404:');
   };
 
   const switchMode = () => {
@@ -80,7 +91,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
       <View style={s.btnContainer}>
         <Button
           mode="elevated"
-          onPress={runBluetoothClassicTest}
+          onPress={isClassic ? runBluetoothClassicTest : runBLETest}
           textColor={isScanning ? colors.onPrimary : colors.primary}
           buttonColor={isScanning ? colors.primary : colors.onPrimary}
           style={s.btn}>

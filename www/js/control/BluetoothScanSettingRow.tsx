@@ -21,7 +21,8 @@ const BluetoothScanSettingRow = ({}) => {
         displayError(e, 'Insufficient Permissions');
       }
     } else {
-      displayErrorMsg('Sorry, iOS is not supported for this feature!', 'iOS Not Supported');
+      // May need to add iOS permission scanning here
+      setBluePageVisible(true);
     }
   }
 
