@@ -3,7 +3,7 @@ import { transform } from 'enketo-transformer/web';
 import { XMLParser } from 'fast-xml-parser';
 import i18next from 'i18next';
 import MessageFormat from '@messageformat/core';
-import { logDebug, logInfo } from '../../plugin/logger';
+import { logDebug } from '../../plugin/logger';
 import { getConfig } from '../../config/dynamicConfig';
 import { DateTime } from 'luxon';
 import { fetchUrlCached } from '../../services/commHelper';
@@ -188,9 +188,10 @@ export function resolveTimestamps(
   // if any of the fields are missing, return null
   if (!startDate || !startTime || !endDate || !endTime) return null;
 
-  const timezone =
+  const start_timezone =
     (timelineEntry as CompositeTrip).start_local_dt?.timezone ||
-    (timelineEntry as ConfirmedPlace).enter_local_dt?.timezone ||
+    (timelineEntry as ConfirmedPlace).enter_local_dt?.timezone;
+  const end_timezone =
     (timelineEntry as CompositeTrip).end_local_dt?.timezone ||
     (timelineEntry as ConfirmedPlace).exit_local_dt?.timezone;
   // split by + or - to get time without offset
@@ -198,9 +199,9 @@ export function resolveTimestamps(
   endTime = endTime.split(/\-|\+/)[0];
 
   let additionStartTs = DateTime.fromISO(startDate + 'T' + startTime, {
-    zone: timezone,
+    zone: start_timezone,
   }).toSeconds();
-  let additionEndTs = DateTime.fromISO(endDate + 'T' + endTime, { zone: timezone }).toSeconds();
+  let additionEndTs = DateTime.fromISO(endDate + 'T' + endTime, { zone: end_timezone }).toSeconds();
 
   if (additionStartTs > additionEndTs) {
     onFail(new Error(i18next.t('survey.enketo-timestamps-invalid'))); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
@@ -247,7 +248,7 @@ export function saveResponse(
   const jsonDocResponse = xml2js.parse(xmlResponse);
   return resolveLabel(surveyName, xmlDoc)
     .then((rsLabel) => {
-      let timestamps: TimestampRange | { ts: number; fmt_time: string } | undefined;
+      let timestamps: TimestampRange | { ts: number; fmt_time: string } | TimelineEntry | undefined;
       let match_id: string | undefined;
       if (opts?.timelineEntry) {
         const resolvedTimestamps = resolveTimestamps(xmlDoc, opts.timelineEntry, (errOnFail) => {
