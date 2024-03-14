@@ -78,7 +78,7 @@ async function readConsented() {
 }
 
 export async function readIntroDone() {
-  return storageGet(INTRO_DONE_KEY).then((read_val) => !!read_val) as Promise<boolean>;
+  return storageGet(INTRO_DONE_KEY).then((read_val) => Boolean(read_val)) as Promise<boolean>;
 }
 
 export async function markIntroDone() {

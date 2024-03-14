@@ -5,14 +5,13 @@
 import React, { useContext, useState } from 'react';
 import { DateTime } from 'luxon';
 import { Modal } from 'react-native';
-import { Text, Button, DataTable, Dialog } from 'react-native-paper';
+import { Text, Button, DataTable, Dialog, Icon } from 'react-native-paper';
 import LabelTabContext from '../../diary/LabelTabContext';
 import { getFormattedDateAbbr, isMultiDay } from '../../diary/diaryHelper';
-import { Icon } from '../../components/Icon';
 import EnketoModal from './EnketoModal';
 import { useTranslation } from 'react-i18next';
 import { EnketoUserInputEntry } from './enketoHelper';
-import { logDebug } from '../../plugin/logger';
+import { displayErrorMsg, logDebug } from '../../plugin/logger';
 
 type Props = {
   timelineEntry: any;
@@ -60,10 +59,13 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
   }
 
   function deleteEntry(entry?: EnketoUserInputEntry) {
-    if (!entry) return;
+    const dataKey = entry?.data?.key || entry?.metadata?.key;
+    const data = entry?.data;
 
-    const dataKey = entry.data.key || entry.metadata.key;
-    const data = entry.data;
+    if (!dataKey || !data) {
+      return displayErrorMsg(`Error in deleteEntry, entry was: ${JSON.stringify(entry)}`);
+    }
+
     const index = additionEntries.indexOf(entry);
     data.status = 'DELETED';
 
@@ -72,7 +74,10 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
       index = ${index}`);
 
     return window['cordova'].plugins.BEMUserCache.putMessage(dataKey, data).then(() => {
-      additionEntries.splice(index, 1);
+      // if entry was found in additionEntries, remove it
+      if (index > -1) {
+        additionEntries.splice(index, 1);
+      }
       setConfirmDeleteModalVisible(false);
       setEditingEntry(undefined);
     });
@@ -90,7 +95,7 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
 
   function editEntry(entry) {
     setEditingEntry(entry);
-    console.debug('Editing entry is now ', entry);
+    logDebug('editingEntry = ' + JSON.stringify(entry));
     setSurveyModalVisible(true);
   }
 
@@ -116,9 +121,10 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
             <DataTable.Row key={index} style={styles.row(isLastRow)}>
               <DataTable.Cell
                 onPress={() => editEntry(entry)}
-                style={[styles.cell, { flex: 5, pointerEvents: 'auto' }]}
-                textStyle={{ fontSize: 12, fontWeight: 'bold' }}>
-                <Text numberOfLines={2}>{entry.data.label}</Text>
+                style={[styles.cell, { flex: 5, pointerEvents: 'auto' }]}>
+                <Text numberOfLines={2} style={{ fontSize: 12, fontWeight: 'bold' }}>
+                  {entry.data.label}
+                </Text>
               </DataTable.Cell>
               <DataTable.Cell
                 onPress={() => editEntry(entry)}
@@ -129,8 +135,8 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
               </DataTable.Cell>
               <DataTable.Cell
                 onPress={() => confirmDeleteEntry(entry)}
-                style={[styles.cell, { flex: 1 }]}>
-                <Icon icon="delete" size={18} />
+                style={[styles.cell, { flex: 1, justifyContent: 'center' }]}>
+                <Icon source="delete" size={18} />
               </DataTable.Cell>
             </DataTable.Row>
           );

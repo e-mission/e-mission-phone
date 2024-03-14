@@ -2,7 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider as PaperProvider } from 'react-native-paper';
 
-import './css/style.css';
+import './css/style.scss';
 import 'chartjs-adapter-luxon';
 
 import initializedI18next from './js/i18nextInit';

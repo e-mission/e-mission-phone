@@ -23,20 +23,15 @@ TODO: Potentially unify with the survey URL loading
  * @function launches a webpage
  * @param url to open in the browser
  */
-const launchWebpage = function (url) {
-  // THIS LINE FOR inAppBrowser
-  let iab = window['cordova'].InAppBrowser.open(url, '_blank', options);
-};
+const launchWebpage = (url) => window['cordova'].InAppBrowser.open(url, '_blank', options);
 
 /**
- * @callback for cloud notification event
+ * @description callback for cloud notification event
  * @param event that triggered this call
  */
-const onCloudNotifEvent = (event) => {
+function onCloudNotifEvent(event) {
   const data = event.detail;
-  addStatEvent(statKeys.NOTIFICATION_OPEN).then(() => {
-    console.log('Added ' + statKeys.NOTIFICATION_OPEN + ' event. Data = ' + JSON.stringify(data));
-  });
+  addStatEvent(statKeys.NOTIFICATION_OPEN);
   logDebug('data = ' + JSON.stringify(data));
   if (
     data.additionalData &&
@@ -44,32 +39,32 @@ const onCloudNotifEvent = (event) => {
     data.additionalData.payload.alert_type
   ) {
     if (data.additionalData.payload.alert_type == 'website') {
-      var webpage_spec = data.additionalData.payload.spec;
-      if (webpage_spec && webpage_spec.url && webpage_spec.url.startsWith('https://')) {
-        launchWebpage(webpage_spec.url);
+      const webpageSpec = data.additionalData.payload.spec;
+      if (webpageSpec?.url?.startsWith('https://')) {
+        launchWebpage(webpageSpec.url);
       } else {
         displayErrorMsg(
-          JSON.stringify(webpage_spec),
+          JSON.stringify(webpageSpec),
           'webpage was not specified correctly. spec is ',
         );
       }
     }
     if (data.additionalData.payload.alert_type == 'popup') {
-      var popup_spec = data.additionalData.payload.spec;
-      if (popup_spec && popup_spec.title && popup_spec.text) {
+      const popupSpec = data.additionalData.payload.spec;
+      if (popupSpec?.title && popupSpec?.text) {
         /* TODO: replace popup with something with better UI */
-        window.alert(popup_spec.title + ' ' + popup_spec.text);
+        window.alert(popupSpec.title + ' ' + popupSpec.text);
       } else {
-        displayErrorMsg(JSON.stringify(popup_spec), 'popup was not specified correctly. spec is ');
+        displayErrorMsg(JSON.stringify(popupSpec), 'popup was not specified correctly. spec is ');
       }
     }
   }
-};
+}
 
 /**
  * @function initializes the remote notification handling
  * subscribes to cloud notification event
  */
-export const initRemoteNotifyHandler = function () {
+export function initRemoteNotifyHandler() {
   subscribe(EVENTS.CLOUD_NOTIFICATION_EVENT, onCloudNotifEvent);
-};
+}

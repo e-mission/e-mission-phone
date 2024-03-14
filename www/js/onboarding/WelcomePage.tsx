@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import {
   View,
@@ -13,6 +13,7 @@ import {
   Button,
   Dialog,
   Divider,
+  Icon,
   IconButton,
   Surface,
   Text,
@@ -25,7 +26,6 @@ import { initByUser } from '../config/dynamicConfig';
 import { AppContext } from '../App';
 import { displayError, logDebug } from '../plugin/logger';
 import { onboardingStyles } from './OnboardingStack';
-import { Icon } from '../components/Icon';
 
 const WelcomePage = () => {
   const { t } = useTranslation();
@@ -37,7 +37,7 @@ const WelcomePage = () => {
   const [infoPopupVis, setInfoPopupVis] = useState(false);
   const [existingToken, setExistingToken] = useState('');
 
-  const getCode = function (result) {
+  function getCode(result) {
     let url = new window.URL(result.text);
     let notCancelled = result.cancelled == false;
     let isQR = result.format == 'QR_CODE';
@@ -45,41 +45,34 @@ const WelcomePage = () => {
     let hasToken = url.searchParams.has('token');
     let code = url.searchParams.get('token');
 
-    logDebug(
-      'QR code ' +
-        result.text +
-        ' checks: cancel, format, prefix, params, code ' +
-        notCancelled +
-        isQR +
-        hasPrefix +
-        hasToken +
-        code,
-    );
+    logDebug(`QR code ${result.text} checks: 
+      cancel, format, prefix, params, code: 
+      ${notCancelled}, ${isQR}, ${hasPrefix}, ${hasToken}, ${code}`);
 
     if (notCancelled && isQR && hasPrefix && hasToken) {
       return code;
     } else {
       return false;
     }
-  };
+  }
 
-  const scanCode = function () {
+  function scanCode() {
     window['cordova'].plugins.barcodeScanner.scan(
-      function (result) {
-        console.debug('scanned code', result);
+      (result) => {
+        logDebug('scanCode: scanned ' + JSON.stringify(result));
         let code = getCode(result);
         if (code != false) {
-          console.log('found code', code);
+          logDebug('scanCode: found code ' + code);
           loginWithToken(code);
         } else {
           displayError(result.text, 'invalid study reference');
         }
       },
-      function (error) {
+      (error) => {
         displayError(error, 'Scanning failed: ');
       },
     );
-  };
+  }
 
   function loginWithToken(token) {
     initByUser({ token })
@@ -90,7 +83,7 @@ const WelcomePage = () => {
         }
       })
       .catch((err) => {
-        console.error('Error logging in with token', err);
+        displayError(err, 'Error logging in with token');
         setExistingToken('');
       });
   }
@@ -100,6 +93,7 @@ const WelcomePage = () => {
       <Surface style={[onboardingStyles.page, { paddingVertical: 0 }]}>
         <View style={s.headerArea(windowWidth, colors)} aria-hidden={true} />
         <IconButton
+          accessibilityLabel={t('join.more-info')}
           icon="information-variant"
           containerColor={colors.onPrimary}
           iconColor={colors.primary}
@@ -125,16 +119,20 @@ const WelcomePage = () => {
           </View>
           <View style={s.buttonsSection}>
             <View style={{ width: windowWidth / 2 - 5, paddingHorizontal: 10, gap: 8 }}>
-              <WelcomePageButton onPress={scanCode} icon="qrcode">
-                {t('join.scan-code')}
-              </WelcomePageButton>
+              <View accessibilityRole="button">
+                <WelcomePageButton onPress={scanCode} icon="qrcode">
+                  {t('join.scan-code')}
+                </WelcomePageButton>
+              </View>
               <Text style={{ textAlign: 'center', margin: 'auto' }}>{t('join.scan-hint')}</Text>
             </View>
             <Divider style={{ width: 2, height: '100%' }} />
             <View style={{ width: windowWidth / 2 - 5, paddingHorizontal: 10, gap: 8 }}>
-              <WelcomePageButton onPress={() => setPasteModalVis(true)} icon="content-paste">
-                {t('join.paste-code')}
-              </WelcomePageButton>
+              <View accessibilityRole="button">
+                <WelcomePageButton onPress={() => setPasteModalVis(true)} icon="content-paste">
+                  {t('join.paste-code')}
+                </WelcomePageButton>
+              </View>
               <Text style={{ textAlign: 'center', margin: 'auto' }}>{t('join.paste-hint')}</Text>
             </View>
           </View>
@@ -237,7 +235,7 @@ const WelcomePageButton = ({ onPress, icon, children }) => {
   return (
     <TouchableRipple onPress={onPress} style={welcomeButtonStyles.wrapper(colors)}>
       <View style={welcomeButtonStyles.btn(colors)}>
-        <Icon icon={icon} size={68} iconColor={colors.onPrimary} />
+        <Icon source={icon} size={68} color={colors.onPrimary} />
         <Text variant="titleSmall" style={{ color: colors.onPrimary }}>
           {children}
         </Text>

@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { displayError } from './logger';
-import { Icon } from '../components/Icon';
+import { View } from 'react-native';
+import { Icon } from 'react-native-paper';
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
   constructor(props) {
@@ -20,7 +21,11 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 
   render() {
     if (this.state.hasError) {
-      return <Icon icon="alpha-x-box-outline" size={50} style={{ flex: 1, margin: 'auto' }} />;
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Icon source="alpha-x-box-outline" size={50} />
+        </View>
+      );
     }
 
     return this.props.children;

@@ -17,7 +17,7 @@ import {
   segmentDaysByWeeks,
   MetricsSummary,
 } from './metricsHelper';
-import { logWarn } from '../plugin/logger';
+import { logDebug, logWarn } from '../plugin/logger';
 
 type Props = { userMetrics?: MetricsData; aggMetrics?: MetricsData };
 const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
@@ -112,7 +112,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
         low: getFootprintForMetrics(aggCarbonData, 0),
         high: getFootprintForMetrics(aggCarbonData, getHighestFootprint()),
       };
-      console.log('testing group past week', aggCarbon);
+      logDebug(`groupText: aggCarbon = ${JSON.stringify(aggCarbon)}`);
       const label = t('main-metrics.average');
       if (aggCarbon.low == aggCarbon.high)
         groupText.push({ label: label, value: `${Math.round(aggCarbon.low)}` });
