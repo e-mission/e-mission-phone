@@ -19,6 +19,7 @@ import { initStoreDeviceSettings } from './splash/storeDeviceSettings';
 import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
 import { withErrorBoundary } from './plugin/ErrorBoundary';
 import { initCustomDatasetHelper } from './metrics/customMetricsHelper';
+import AlertBar from './components/AlertBar';
 
 const defaultRoutes = (t) => [
   {
@@ -95,8 +96,6 @@ const App = () => {
     setPermissionsPopupVis,
   };
 
-  console.debug('onboardingState in App', onboardingState);
-
   let appContent;
   if (onboardingState == null) {
     // if onboarding state is not yet determined, show a loading spinner
@@ -133,6 +132,7 @@ const App = () => {
           <AppStatusModal permitVis={permissionsPopupVis} setPermitVis={setPermissionsPopupVis} />
         )}
       </AppContext.Provider>
+      <AlertBar />
     </>
   );
 };

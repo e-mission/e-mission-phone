@@ -5,16 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { DateTime } from 'luxon';
 import { sendEmail } from './emailService';
+import NavBar from '../components/NavBar';
 
 const SensedPage = ({ pageVis, setPageVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
   const [entries, setEntries] = useState<any[]>([]);
-
-  const emailCache = function () {
-    sendEmail('userCacheDB');
-  };
 
   async function updateEntries() {
     //hardcoded function and keys after eliminating bit-rotted options
@@ -55,18 +52,15 @@ const SensedPage = ({ pageVis, setPageVis }) => {
   return (
     <Modal visible={pageVis} onDismiss={() => setPageVis(false)}>
       <SafeAreaView style={{ flex: 1 }}>
-        <Appbar.Header
-          statusBarHeight={0}
-          elevated={true}
-          style={{ height: 46, backgroundColor: colors.surface }}>
+        <NavBar>
           <Appbar.BackAction onPress={() => setPageVis(false)} />
           <Appbar.Content title={t('control.sensed-title')} />
-        </Appbar.Header>
+        </NavBar>
 
         <View
           style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
           <IconButton icon="refresh" onPress={() => updateEntries()} />
-          <IconButton icon="email" onPress={() => emailCache()} />
+          <IconButton icon="email" onPress={() => sendEmail('userCacheDB')} />
         </View>
 
         <FlashList

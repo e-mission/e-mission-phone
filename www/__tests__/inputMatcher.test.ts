@@ -1,6 +1,7 @@
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 import { unprocessedLabels, updateLocalUnprocessedInputs } from '../js/diary/timelineHelper';
+import * as logger from '../js/plugin/logger';
 import { EnketoUserInputEntry } from '../js/survey/enketo/enketoHelper';
 import {
   fmtTs,
@@ -148,11 +149,13 @@ describe('input-matcher', () => {
   });
 
   it('tests getNotDeletedCandidates called with 0 candidates', () => {
-    jest.spyOn(console, 'log');
+    jest.spyOn(logger, 'logDebug');
     const candidates = getNotDeletedCandidates([]);
 
     // check if the log printed collectly with
-    expect(console.log).toHaveBeenCalledWith('getNotDeletedCandidates called with 0 candidates');
+    expect(logger.logDebug).toHaveBeenCalledWith(
+      'getNotDeletedCandidates called with 0 candidates',
+    );
     expect(candidates).toStrictEqual([]);
   });
 

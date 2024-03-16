@@ -1,8 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Button, ButtonProps, useTheme } from 'react-native-paper';
+import { Button, ButtonProps, Icon, useTheme } from 'react-native-paper';
 import color from 'color';
-import { Icon } from './Icon';
 
 type Props = ButtonProps & { fillColor?: string; borderColor?: string };
 const DiaryButton = ({ children, fillColor, borderColor, icon, ...rest }: Props) => {
@@ -19,7 +18,7 @@ const DiaryButton = ({ children, fillColor, borderColor, icon, ...rest }: Props)
       contentStyle={s.buttonContent}
       {...rest}>
       <>
-        {icon && <Icon icon={icon} iconColor={textColor} size={18} style={s.icon} />}
+        {icon && <Icon source={icon} color={textColor} size={18} />}
         {children}
       </>
     </Button>
@@ -39,15 +38,14 @@ const s = StyleSheet.create({
     height: 25,
   },
   label: {
+    display: 'flex',
+    alignItems: 'center',
     marginHorizontal: 5,
     marginVertical: 0,
     fontSize: 13,
     fontWeight: '500',
     whiteSpace: 'nowrap',
-  },
-  icon: {
-    marginRight: 4,
-    verticalAlign: 'middle',
+    gap: 4,
   },
 });
 

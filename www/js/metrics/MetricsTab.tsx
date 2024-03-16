@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { View, ScrollView, useWindowDimensions } from 'react-native';
 import { Appbar, useTheme } from 'react-native-paper';
-import NavBarButton from '../components/NavBarButton';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
+import NavBar from '../components/NavBar';
 import { MetricsData } from './metricsTypes';
 import MetricsCard from './MetricsCard';
 import { formatForDisplay, useImperialConfig } from '../config/useImperialConfig';
@@ -97,14 +97,11 @@ const MetricsTab = () => {
 
   return (
     <>
-      <Appbar.Header
-        statusBarHeight={0}
-        elevated={true}
-        style={{ height: 46, backgroundColor: colors.surface }}>
+      <NavBar>
         <Appbar.Content title={t('metrics.dashboard-tab')} />
         <MetricsDateSelect dateRange={dateRange} setDateRange={setDateRange} />
         <Appbar.Action icon="refresh" size={32} onPress={refresh} />
-      </Appbar.Header>
+      </NavBar>
       <ScrollView style={{ paddingVertical: 12 }}>
         <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
           <CarbonFootprintCard userMetrics={userMetrics} aggMetrics={aggMetrics} />

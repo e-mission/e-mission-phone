@@ -28,6 +28,7 @@ import OverallTripDescriptives from './OverallTripDescriptives';
 import ToggleSwitch from '../../components/ToggleSwitch';
 import useAppConfig from '../../useAppConfig';
 import { CompositeTrip } from '../../types/diaryTypes';
+import NavBar from '../../components/NavBar';
 
 const LabelScreenDetails = ({ route, navigation }) => {
   const { timelineMap, labelOptions, labelFor } = useContext(LabelTabContext);
@@ -40,7 +41,10 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const { displayDate, displayStartTime, displayEndTime } = useDerivedProperties(trip);
   const [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
 
-  const [modesShown, setModesShown] = useState<'labeled' | 'detected'>('labeled');
+  const [modesShown, setModesShown] = useState<'labeled' | 'detected'>(() =>
+    // if trip has a labeled mode, initial state shows that; otherwise, show detected modes
+    trip && labelFor(trip, 'MODE')?.value ? 'labeled' : 'detected',
+  );
   const tripGeojson =
     trip &&
     labelOptions &&
@@ -54,17 +58,14 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const modal = (
     <Modal visible={true}>
       <SafeAreaView style={{ flex: 1 }}>
-        <Appbar.Header
-          statusBarHeight={0}
-          elevated={true}
-          style={{ height: 46, backgroundColor: colors.surface }}>
+        <NavBar>
           <Appbar.BackAction
             onPress={() => {
               navigation.goBack();
             }}
           />
           <Appbar.Content title={displayDate} titleStyle={{ fontSize: 17 }} />
-        </Appbar.Header>
+        </NavBar>
         <Surface mode="elevated" style={{ paddingVertical: 4, paddingHorizontal: 10, zIndex: 1 }}>
           <StartEndLocations
             fontSize={14}

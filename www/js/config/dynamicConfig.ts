@@ -197,7 +197,7 @@ function extractSubgroup(token: string, config: AppConfig): string | undefined {
           }),
         );
       } else {
-        console.log('subgroup ' + tokenParts[2] + ' found in list ' + config.opcode.subgroups);
+        logDebug('subgroup ' + tokenParts[2] + ' found in list ' + config.opcode.subgroups);
         return tokenParts[2];
       }
     } else {
@@ -205,7 +205,7 @@ function extractSubgroup(token: string, config: AppConfig): string | undefined {
         // subpart not in config list
         throw new Error(i18next.t('config.invalid-subgroup-no-default', { token: token }));
       } else {
-        console.log("no subgroups in config, 'default' subgroup found in token ");
+        logDebug("no subgroups in config, 'default' subgroup found in token ");
         return tokenParts[2];
       }
     }
@@ -216,7 +216,7 @@ function extractSubgroup(token: string, config: AppConfig): string | undefined {
      * first is already handled in extractStudyName, second is handled
      * by default since download will fail if it is invalid
      */
-    console.log('Old-style study, expecting token without a subgroup...');
+    logDebug('Old-style study, expecting token without a subgroup...');
     return undefined;
   }
 }
@@ -251,10 +251,8 @@ function loadNewConfig(newToken: string, existingVersion?: number): Promise<bool
       // loaded new config, so it is both ready and changed
       return Promise.all([storeConfigPromise, storeInKVStorePromise])
         .then(([result, kvStoreResult]) => {
-          logDebug(
-            'UI_CONFIG: Stored dynamic config in KVStore successfully, result = ' +
-              JSON.stringify(kvStoreResult),
-          );
+          logDebug(`UI_CONFIG: Stored dynamic config in KVStore successfully, 
+            result = ${JSON.stringify(kvStoreResult)}`);
           storedConfig = toSaveConfig;
           configChanged = true;
           return true;

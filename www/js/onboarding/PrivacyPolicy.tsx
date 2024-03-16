@@ -47,7 +47,10 @@ const PrivacyPolicy = () => {
     });
   }
 
-  const templateText = useMemo(() => getTemplateText(appConfig, i18n.language), [appConfig]);
+  const templateText = useMemo(
+    () => getTemplateText(appConfig, i18n.resolvedLanguage),
+    [appConfig],
+  );
 
   return (
     <>

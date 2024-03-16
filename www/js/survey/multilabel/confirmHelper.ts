@@ -31,7 +31,7 @@ export async function getLabelOptions(appConfigParam?) {
   }
   /* fill in the translations to the 'text' fields of the labelOptions,
     according to the current language */
-  const lang = i18next.language;
+  const lang = i18next.resolvedLanguage || 'en';
   for (const opt in labelOptions) {
     labelOptions[opt]?.forEach?.((o, i) => {
       const translationKey = o.value;
@@ -92,18 +92,12 @@ export function labelInputDetailsForTrip(userInputForTrip, appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;
   if (appConfig.intro.mode_studied) {
     if (userInputForTrip?.['MODE']?.value == appConfig.intro.mode_studied) {
-      logDebug(
-        'Found trip labeled with mode of study ' +
-          appConfig.intro.mode_studied +
-          '. Needs REPLACED_MODE',
-      );
+      logDebug(`Found trip labeled with mode of study, ${appConfig.intro.mode_studied}. 
+        Needs REPLACED_MODE`);
       return getLabelInputDetails();
     } else {
-      logDebug(
-        'Found trip not labeled with mode of study ' +
-          appConfig.intro.mode_studied +
-          ". Doesn't need REPLACED_MODE",
-      );
+      logDebug(`Found trip not labeled with mode of study, ${appConfig.intro.mode_studied}. 
+        Doesn't need REPLACED_MODE`);
       return baseLabelInputDetails;
     }
   } else {
@@ -116,23 +110,23 @@ export const getLabelInputs = () => Object.keys(getLabelInputDetails()) as Multi
 export const getBaseLabelInputs = () => Object.keys(baseLabelInputDetails) as MultilabelKey[];
 
 /** @description replace all underscores with spaces, and capitalizes the first letter of each word */
-export const labelKeyToReadable = (otherValue: string) => {
+export function labelKeyToReadable(otherValue: string) {
   const words = otherValue.replace(/_/g, ' ').trim().split(' ');
   if (words.length == 0) return '';
   return words.map((word) => word[0].toUpperCase() + word.slice(1)).join(' ');
-};
+}
 
 /** @description replaces all spaces with underscores, and lowercases the string */
 export const readableLabelToKey = (otherText: string) =>
   otherText.trim().replace(/ /g, '_').toLowerCase();
 
-export const getFakeEntry = (otherValue): Partial<LabelOption> | undefined => {
+export function getFakeEntry(otherValue): Partial<LabelOption> | undefined {
   if (!otherValue) return undefined;
   return {
     text: labelKeyToReadable(otherValue),
     value: otherValue,
   };
-};
+}
 
 export const labelKeyToRichMode = (labelKey: string) =>
   labelOptionByValue(labelKey, 'MODE')?.text || labelKeyToReadable(labelKey);

@@ -29,7 +29,7 @@ export function markConsented() {
   // mark in native storage
   return readConsentState()
     .then(writeConsentToNative)
-    .then(function (response) {
+    .then((response) => {
       // mark in local storage
       storageSet(DATA_COLLECTION_CONSENTED_PROTOCOL, _req_consent);
       // mark in local variable as well
@@ -68,13 +68,12 @@ export function isConsented() {
 export function readConsentState() {
   return fetch('json/startupConfig.json')
     .then((response) => response.json())
-    .then(function (startupConfigResult) {
-      console.log(startupConfigResult);
+    .then((startupConfigResult) => {
       _req_consent = startupConfigResult.emSensorDataCollectionProtocol;
       logDebug('required consent version = ' + JSON.stringify(_req_consent));
       return storageGet(DATA_COLLECTION_CONSENTED_PROTOCOL);
     })
-    .then(function (kv_store_consent) {
+    .then((kv_store_consent) => {
       _curr_consented = kv_store_consent;
       console.assert(
         _req_consent != undefined && _req_consent != null,
@@ -93,13 +92,8 @@ export function readConsentState() {
 //used in ProfileSettings
 export function getConsentDocument() {
   return window['cordova'].plugins.BEMUserCache.getDocument('config/consent', false).then(
-    function (resultDoc) {
-      if (window['cordova'].plugins.BEMUserCache.isEmptyDoc(resultDoc)) {
-        return null;
-      } else {
-        return resultDoc;
-      }
-    },
+    (resultDoc) =>
+      window['cordova'].plugins.BEMUserCache.isEmptyDoc(resultDoc) ? null : resultDoc,
   );
 }
 
@@ -108,7 +102,7 @@ export function getConsentDocument() {
  * @returns if doc not stored in native, a promise to write it there
  */
 function checkNativeConsent() {
-  getConsentDocument().then(function (resultDoc) {
+  getConsentDocument().then((resultDoc) => {
     if (resultDoc == null) {
       if (isConsented()) {
         logDebug('Local consent found, native consent missing, writing consent to native');

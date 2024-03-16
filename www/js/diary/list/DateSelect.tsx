@@ -14,7 +14,7 @@ import { DatePickerModal } from 'react-native-paper-dates';
 import { Text, Divider, useTheme } from 'react-native-paper';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
-import NavBarButton from '../../components/NavBarButton';
+import { NavBarButton } from '../../components/NavBar';
 
 const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
   const { pipelineRange } = useContext(LabelTabContext);
@@ -32,7 +32,7 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
   }, [pipelineRange]);
 
   useEffect(() => {
-    if (!tsRange.oldestTs) return;
+    if (!pipelineRange || !tsRange.oldestTs) return;
     const displayStartTs = Math.max(tsRange.oldestTs, pipelineRange.start_ts);
     const displayStartDate = DateTime.fromSeconds(displayStartTs).toLocaleString(
       DateTime.DATE_SHORT,
@@ -68,7 +68,7 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
         accessibilityLabel={
           'Date range: ' + (dateRange[0] ? dateRange[0] + ' to ' : '') + dateRangeEnd
         }
-        onPressAction={() => setOpen(true)}>
+        onPress={() => setOpen(true)}>
         {dateRange[0] && (
           <>
             <Text>{dateRange[0]}</Text>

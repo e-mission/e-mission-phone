@@ -14,7 +14,10 @@ const StudySummary = () => {
   const { i18n } = useTranslation();
   const appConfig = useAppConfig();
 
-  const templateText = useMemo(() => getTemplateText(appConfig, i18n.language), [appConfig]);
+  const templateText = useMemo(
+    () => getTemplateText(appConfig, i18n.resolvedLanguage),
+    [appConfig],
+  );
 
   return (
     <>

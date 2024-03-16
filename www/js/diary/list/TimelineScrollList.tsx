@@ -3,12 +3,11 @@ import TripCard from '../cards/TripCard';
 import PlaceCard from '../cards/PlaceCard';
 import UntrackedTimeCard from '../cards/UntrackedTimeCard';
 import { View, FlatList } from 'react-native';
-import { ActivityIndicator, Banner, Text } from 'react-native-paper';
+import { ActivityIndicator, Banner, Icon, Text } from 'react-native-paper';
 import LoadMoreButton from './LoadMoreButton';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../../components/Icon';
 
-const renderCard = ({ item: listEntry, index }) => {
+function renderCard({ item: listEntry, index }) {
   if (listEntry.origin_key.includes('trip')) {
     return <TripCard trip={listEntry} isFirstInList={index == 0} />;
   } else if (listEntry.origin_key.includes('place')) {
@@ -18,7 +17,7 @@ const renderCard = ({ item: listEntry, index }) => {
   } else {
     throw new Error(`Unknown listEntry type: ${JSON.stringify(listEntry)}`);
   }
-};
+}
 
 const separator = () => <View style={{ height: 8 }} />;
 const bigSpinner = <ActivityIndicator size="large" style={{ margin: 15 }} />;
@@ -59,9 +58,7 @@ const TimelineScrollList = ({
   );
 
   const noTravelBanner = (
-    <Banner
-      visible={true}
-      icon={({ size }) => <Icon size={size} icon="alert-circle" style={{ marginVertical: 3 }} />}>
+    <Banner visible={true} icon={({ size }) => <Icon source="alert-circle" size={size} />}>
       <View style={{ width: '100%' }}>
         <Text variant="titleMedium">{t('diary.no-travel')}</Text>
         <Text variant="bodySmall">{t('diary.no-travel-hint')}</Text>

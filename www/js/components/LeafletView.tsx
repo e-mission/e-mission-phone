@@ -164,7 +164,7 @@ const LeafletView = ({ geojson, opts, downscaleTiles, cacheHtml, ...otherProps }
 const startIcon = L.divIcon({ className: 'leaflet-div-icon-start', iconSize: [18, 18] });
 const stopIcon = L.divIcon({ className: 'leaflet-div-icon-stop', iconSize: [18, 18] });
 
-const pointToLayer = (feature, latlng) => {
+function pointToLayer(feature, latlng) {
   switch (feature.properties.feature_type) {
     case 'start_place':
       return L.marker(latlng, { icon: startIcon });
@@ -175,6 +175,6 @@ const pointToLayer = (feature, latlng) => {
       alert('Found unknown type in feature' + feature);
       return L.marker(latlng);
   }
-};
+}
 
 export default LeafletView;
