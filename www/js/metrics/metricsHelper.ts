@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import { formatForDisplay } from '../config/useImperialConfig';
 import { DayOfMetricData } from './metricsTypes';
+import { logDebug } from '../plugin/logger';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];
@@ -62,24 +63,19 @@ const ON_FOOT_MODES = ['WALKING', 'RUNNING', 'ON_FOOT'] as const;
  * for regular data (user-specific), this will return the field value
  * for avg data (aggregate), this will return the field value/nUsers
  */
-const metricToValue = function (population: 'user' | 'aggreagte', metric, field) {
-  if (population == 'user') {
-    return metric[field];
-  } else {
-    return metric[field] / metric.nUsers;
-  }
-};
+const metricToValue = (population: 'user' | 'aggregate', metric, field) =>
+  population == 'user' ? metric[field] : metric[field] / metric.nUsers;
 
 //testing agains global list of what is "on foot"
 //returns true | false
-const isOnFoot = function (mode: string) {
+function isOnFoot(mode: string) {
   for (let ped_mode in ON_FOOT_MODES) {
     if (mode === ped_mode) {
       return true;
     }
   }
   return false;
-};
+}
 
 //from two weeks fo low and high values, calculates low and high change
 export function calculatePercentChange(pastWeekRange, previousWeekRange) {
@@ -91,9 +87,10 @@ export function calculatePercentChange(pastWeekRange, previousWeekRange) {
 }
 
 export function parseDataFromMetrics(metrics, population) {
-  console.log('Called parseDataFromMetrics on ', metrics);
+  logDebug(`parseDataFromMetrics: metrics = ${JSON.stringify(metrics)}; 
+    population = ${population}`);
   let mode_bins: { [k: string]: [number, number, string][] } = {};
-  metrics?.forEach(function (metric) {
+  metrics?.forEach((metric) => {
     let onFootVal = 0;
 
     for (let field in metric) {
@@ -120,7 +117,7 @@ export function parseDataFromMetrics(metrics, population) {
       //this section handles user lables, assuming 'label_' prefix
       if (field.startsWith('label_')) {
         let actualMode = field.slice(6, field.length); //remove prefix
-        console.log('Mapped field ' + field + ' to mode ' + actualMode);
+        logDebug('Mapped field ' + field + ' to mode ' + actualMode);
         if (!(actualMode in mode_bins)) {
           mode_bins[actualMode] = [];
         }
@@ -142,7 +139,7 @@ export function parseDataFromMetrics(metrics, population) {
 
 export type MetricsSummary = { key: string; values: number };
 export function generateSummaryFromData(modeMap, metric) {
-  console.log('Invoked getSummaryDataRaw on ', modeMap, 'with', metric);
+  logDebug(`Invoked getSummaryDataRaw on ${JSON.stringify(modeMap)} with ${metric}`);
 
   let summaryMap: MetricsSummary[] = [];
 
@@ -171,7 +168,7 @@ export function generateSummaryFromData(modeMap, metric) {
  * the label_prefix stripped out before this. Results should have either all
  * sensed labels or all custom labels.
  */
-export const isCustomLabels = function (modeMap) {
+export function isCustomLabels(modeMap) {
   const isSensed = (mode) => mode == mode.toUpperCase();
   const isCustom = (mode) => mode == mode.toLowerCase();
   const metricSummaryChecksCustom: boolean[] = [];
@@ -180,23 +177,16 @@ export const isCustomLabels = function (modeMap) {
   const distanceKeys = modeMap.map((e) => e.key);
   const isSensedKeys = distanceKeys.map(isSensed);
   const isCustomKeys = distanceKeys.map(isCustom);
-  console.log(
-    'Checking metric keys',
-    distanceKeys,
-    ' sensed ',
-    isSensedKeys,
-    ' custom ',
-    isCustomKeys,
-  );
+  logDebug(`Checking metric keys ${distanceKeys}; sensed ${isSensedKeys}; custom ${isCustomKeys}`);
   const isAllCustomForMetric = isAllCustom(isSensedKeys, isCustomKeys);
   metricSummaryChecksSensed.push(!isAllCustomForMetric);
-  metricSummaryChecksCustom.push(!!isAllCustomForMetric);
-
-  console.log('overall custom/not results for each metric = ', metricSummaryChecksCustom);
+  metricSummaryChecksCustom.push(Boolean(isAllCustomForMetric));
+  logDebug(`overall custom/not results for each metric 
+    is ${JSON.stringify(metricSummaryChecksCustom)}`);
   return isAllCustom(metricSummaryChecksSensed, metricSummaryChecksCustom);
-};
+}
 
-const isAllCustom = function (isSensedKeys, isCustomKeys) {
+function isAllCustom(isSensedKeys, isCustomKeys) {
   const allSensed = isSensedKeys.reduce((a, b) => a && b, true);
   const anySensed = isSensedKeys.reduce((a, b) => a || b, false);
   const allCustom = isCustomKeys.reduce((a, b) => a && b, true);
@@ -210,4 +200,4 @@ const isAllCustom = function (isSensedKeys, isCustomKeys) {
   // Logger.displayError("Mixed entries that combine sensed and custom labels",
   //     "Please report to your program admin");
   return undefined;
-};
+}

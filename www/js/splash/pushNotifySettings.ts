@@ -18,6 +18,7 @@ import { logDebug, displayError, logWarn } from '../plugin/logger';
 import { publish, subscribe, EVENTS } from '../customEventHandler';
 import { isConsented, readConsentState } from './startprefs';
 import { readIntroDone } from '../onboarding/onboardingHelper';
+import { AlertManager } from '../components/AlertBar';
 
 let push;
 
@@ -115,7 +116,9 @@ function registerPush() {
     })
     .catch((error) => {
       if (error.message.includes('remote notifications are not supported in the simulator')) {
-        logWarn(error.message); // this is to be expected in the Simulator, so no need to popup
+        AlertManager.addMessage({
+          text: 'Error in registering push notifications: ' + error.message,
+        });
       } else {
         displayError(error, 'Error in registering push notifications');
       }

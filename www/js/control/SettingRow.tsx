@@ -27,12 +27,6 @@ const SettingRow = ({ textKey, iconName, action, desc, switchValue, descStyle }:
       />
     );
   }
-  let descriptionText;
-  if (desc) {
-    descriptionText = { desc };
-  } else {
-    descriptionText = '';
-  }
 
   return (
     <List.Item

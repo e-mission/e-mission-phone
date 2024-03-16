@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { configChanged, getConfig, setConfigChanged } from './config/dynamicConfig';
 import { logDebug } from './plugin/logger';
+import { AppConfig } from './types/appConfigTypes';
 
 /* For Cordova, 'deviceready' means that Cordova plugins are loaded and ready to access.
     https://cordova.apache.org/docs/en/5.0.0/cordova/events/events.deviceready.html
@@ -11,7 +12,7 @@ const deviceReady = new Promise((resolve) => {
 });
 
 const useAppConfig = () => {
-  const [appConfig, setAppConfig] = useState<any>(null);
+  const [appConfig, setAppConfig] = useState<AppConfig>(null as any);
 
   useEffect(() => {
     deviceReady.then(updateConfig);
@@ -19,11 +20,11 @@ const useAppConfig = () => {
 
   function updateConfig() {
     return getConfig().then((config) => {
-      if (Object.keys(config).length) {
+      if (config && Object.keys(config).length) {
         setAppConfig(config);
       } else {
         logDebug('Config was empty, treating as null');
-        setAppConfig(null);
+        setAppConfig(null as any);
       }
     });
   }

@@ -1,17 +1,15 @@
 import React from 'react';
-import { FlashList } from '@shopify/flash-list';
 import TripCard from '../cards/TripCard';
 import PlaceCard from '../cards/PlaceCard';
 import UntrackedTimeCard from '../cards/UntrackedTimeCard';
-import { View } from 'react-native';
-import { ActivityIndicator, Banner, Text } from 'react-native-paper';
+import { View, FlatList } from 'react-native';
+import { ActivityIndicator, Banner, Icon, Text } from 'react-native-paper';
 import LoadMoreButton from './LoadMoreButton';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../../components/Icon';
 
-const renderCard = ({ item: listEntry }) => {
+function renderCard({ item: listEntry, index }) {
   if (listEntry.origin_key.includes('trip')) {
-    return <TripCard trip={listEntry} />;
+    return <TripCard trip={listEntry} isFirstInList={index == 0} />;
   } else if (listEntry.origin_key.includes('place')) {
     return <PlaceCard place={listEntry} />;
   } else if (listEntry.origin_key.includes('untracked')) {
@@ -19,7 +17,7 @@ const renderCard = ({ item: listEntry }) => {
   } else {
     throw new Error(`Unknown listEntry type: ${JSON.stringify(listEntry)}`);
   }
-};
+}
 
 const separator = () => <View style={{ height: 8 }} />;
 const bigSpinner = <ActivityIndicator size="large" style={{ margin: 15 }} />;
@@ -40,6 +38,7 @@ const TimelineScrollList = ({
   isLoading,
 }: Props) => {
   const { t } = useTranslation();
+  const listRef = React.useRef<FlatList | null>(null);
 
   // The way that FlashList inverts the scroll view means we have to reverse the order of items too
   const reversedListEntries = listEntries ? [...listEntries].reverse() : [];
@@ -59,9 +58,7 @@ const TimelineScrollList = ({
   );
 
   const noTravelBanner = (
-    <Banner
-      visible={true}
-      icon={({ size }) => <Icon size={size} icon="alert-circle" style={{ marginVertical: 3 }} />}>
+    <Banner visible={true} icon={({ size }) => <Icon source="alert-circle" size={size} />}>
       <View style={{ width: '100%' }}>
         <Text variant="titleMedium">{t('diary.no-travel')}</Text>
         <Text variant="bodySmall">{t('diary.no-travel-hint')}</Text>
@@ -82,11 +79,11 @@ const TimelineScrollList = ({
   } else if (listEntries) {
     /* Condition: we've successfully loaded and set `listEntries`, so show the list */
     return (
-      <FlashList
-        inverted
+      <FlatList
+        ref={listRef}
+        nativeID="timelineScrollList"
         data={reversedListEntries}
         renderItem={renderCard}
-        estimatedItemSize={240}
         keyExtractor={(item) => item._id.$oid}
         /* TODO: We can capture onScroll events like this, so we should be able to automatically
             load more trips when the user is approaching the bottom or top of the list.
@@ -97,6 +94,25 @@ const TimelineScrollList = ({
         }
         ListFooterComponent={isLoading == 'prepend' ? smallSpinner : footer}
         ItemSeparatorComponent={separator}
+        /* use column-reverse so that the list is 'inverted', meaning it should start
+            scrolling from the bottom, and the bottom-most item should be first in the DOM tree
+          This method is used instead of the `inverted` property of FlatList, because `inverted`
+            uses CSS transforms to flip the entire list and then flip each list item back, which
+            is a performance hit and causes scrolling to be choppy, especially on old iPhones. */
+        style={{ flexDirection: 'column-reverse' }}
+        contentContainerStyle={{ flexDirection: 'column-reverse' }}
+        /* Workaround for iOS Safari bug where a 'column-reverse' element containing scroll content
+            shows up blank until it's scrolled or its layout changes.
+          Adding a temporary 1px margin-right, and then removing it on the next event loop,
+            is the least intrusive way I've found to trigger a layout change.
+          It basically just jiggles the element so it doesn't blank out. */
+        onContentSizeChange={() => {
+          const list = document.getElementById('timelineScrollList');
+          list?.style.setProperty('margin-right', '1px');
+          setTimeout(() => {
+            list?.style.setProperty('margin-right', '0');
+          });
+        }}
       />
     );
   } else {

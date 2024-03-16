@@ -18,6 +18,10 @@ const AppTheme = {
     surfaceVariant: '#e0f0ff', // lch(94% 50 250) - background of DataTable
     surfaceDisabled: '#c7e0f7', // lch(88% 15 250)
     onSurfaceDisabled: '#3a4955', // lch(30% 10 250)
+    // "inverse" colors - used for SnackBars / AlertBars
+    inversePrimary: '#90ceff', // lch(80% 35 250) - SnackBar colored text
+    inverseSurface: '#2e3133', // lch(20% 2 250) - SnackBar background
+    inverseOnSurface: '#edf1f6', // lch(95% 3 250) - SnackBar text
     elevation: {
       level0: 'transparent',
       level1: '#fafdff', // lch(99% 30 250)
@@ -85,7 +89,7 @@ const flavorOverrides = {
 
 /* This function is used to retrieve the theme for a given flavor.
   If no valid flavor is specified, it returns the default theme. */
-export const getTheme = (flavor?: keyof typeof flavorOverrides) => {
+export function getTheme(flavor?: keyof typeof flavorOverrides) {
   if (!flavor || !flavorOverrides[flavor]) return AppTheme;
   const typeStyle = flavorOverrides[flavor];
   const scopedElevation = { ...AppTheme.colors.elevation, ...typeStyle?.colors?.elevation };
@@ -94,4 +98,4 @@ export const getTheme = (flavor?: keyof typeof flavorOverrides) => {
     ...{ ...typeStyle.colors, elevation: scopedElevation },
   };
   return { ...AppTheme, colors: scopedColors };
-};
+}

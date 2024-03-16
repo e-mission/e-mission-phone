@@ -19,16 +19,17 @@ import {
 } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
-import ChangeIndicator from './ChangeIndicator';
+import ChangeIndicator, { CarbonChange } from './ChangeIndicator';
 import color from 'color';
 import { useAppTheme } from '../appTheme';
+import { logDebug, logWarn } from '../plugin/logger';
 
 type Props = { userMetrics?: MetricsData; aggMetrics?: MetricsData };
 const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
   const { colors } = useAppTheme();
   const { t } = useTranslation();
 
-  const [emissionsChange, setEmissionsChange] = useState({});
+  const [emissionsChange, setEmissionsChange] = useState<CarbonChange>(undefined);
 
   const userCarbonRecords = useMemo(() => {
     if (userMetrics?.distance?.length) {
@@ -109,7 +110,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
     if (aggMetrics?.distance?.length) {
       //separate data into weeks
       const thisWeekDistance = segmentDaysByWeeks(aggMetrics?.distance, 1)[0];
-      console.log('testing agg metrics', aggMetrics, thisWeekDistance);
+      logDebug(`groupCarbonRecords: aggMetrics = ${JSON.stringify(aggMetrics)}; 
+       thisWeekDistance = ${JSON.stringify(thisWeekDistance)}`);
 
       let aggThisWeekModeMap = parseDataFromMetrics(thisWeekDistance, 'aggregate');
       let aggThisWeekSummary = generateSummaryFromData(aggThisWeekModeMap, 'distance');
@@ -120,7 +122,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
       for (let i in aggThisWeekSummary) {
         aggCarbonData.push(aggThisWeekSummary[i]);
         if (isNaN(aggCarbonData[i].values)) {
-          console.warn(`WARNING in calculating groupCarbonRecords: value is NaN for mode 
+          logWarn(`WARNING in calculating groupCarbonRecords: value is NaN for mode 
             ${aggCarbonData[i].key}, changing to 0`);
           aggCarbonData[i].values = 0;
         }
@@ -132,7 +134,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         low: getFootprintForMetrics(aggCarbonData, 0),
         high: getFootprintForMetrics(aggCarbonData, getHighestFootprint()),
       };
-      console.log('testing group past week', aggCarbon);
+      logDebug(`groupCarbonRecords: aggCarbon = ${JSON.stringify(aggCarbon)}`);
       groupRecords.push({
         label: t('main-metrics.unlabeled'),
         x: aggCarbon.high - aggCarbon.low,
@@ -157,7 +159,6 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
       tempChartData = tempChartData.concat(groupCarbonRecords);
     }
     tempChartData = tempChartData.reverse();
-    console.log('testing chart data', tempChartData);
     return tempChartData;
   }, [userCarbonRecords, groupCarbonRecords]);
 

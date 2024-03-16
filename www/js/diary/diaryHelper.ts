@@ -156,7 +156,7 @@ export function getFormattedTimeRange(beginFmtTime: string, endFmtTime: string) 
   const endTime = DateTime.fromISO(endFmtTime, { setZone: true });
   const range = endTime.diff(beginTime, ['hours', 'minutes']);
   return humanizeDuration(range.as('milliseconds'), {
-    language: i18next.language,
+    language: i18next.resolvedLanguage,
     largest: 1,
     round: true,
   });
