@@ -4,6 +4,7 @@ export type BluetoothClassicDevice = {
   id: string;
   address: string;
   name: string;
+  is_paired?: boolean;
 };
 
 /* Config File containg BLEBeaconData, mapped in the format

@@ -24,7 +24,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
   const { colors } = useTheme();
 
   // Function to run Bluetooth Classic test and update logs
-  const runBluetoothTest = async () => {
+  const runBluetoothClassicTest = async () => {
     let permissionFunction;
     // Depending on user platform, handle requesting the permissions differently
     if (window['cordova'].platformId == 'android') {
@@ -179,8 +179,8 @@ const BluetoothScanPage = ({ ...props }: any) => {
           {isScanning
             ? t('bluetooth.is-scanning')
             : isClassic
-            ? t('bluetooth.scan.for-bluetooth')
-            : t('bluetooth.scan.for-ble')}
+              ? t('bluetooth.scan.for-bluetooth')
+              : t('bluetooth.scan.for-ble')}
         </Button>
       </View>
       <Button mode="elevated" onPress={runBLETest} style={s.btn}>
