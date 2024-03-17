@@ -40,7 +40,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
         displayErrorMsg('Please Enable Bluetooth!', 'Insufficient Permissions');
         return;
       }
-      if (window['cordova'].platformId == 'iOS') {
+      if (window['cordova'].platformId == 'ios') {
         displayErrorMsg('Sorry, iOS is not supported!', 'OSError');
         return;
       }
