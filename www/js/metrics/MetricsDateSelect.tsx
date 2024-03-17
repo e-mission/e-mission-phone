@@ -12,8 +12,8 @@ import { DatePickerModal } from 'react-native-paper-dates';
 import { Divider, useTheme } from 'react-native-paper';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
-import NavBarButton from '../components/NavBarButton';
 import { DateTime } from 'luxon';
+import { NavBarButton } from '../components/NavBar';
 
 type Props = {
   dateRange: DateTime[];
@@ -59,7 +59,7 @@ const MetricsDateSelect = ({ dateRange, setDateRange }: Props) => {
 
   return (
     <>
-      <NavBarButton icon="calendar" onPressAction={() => setOpen(true)}>
+      <NavBarButton icon="calendar" onPress={() => setOpen(true)}>
         {dateRange[0] && (
           <>
             <Text>{dateRange[0].toLocaleString()}</Text>
@@ -88,7 +88,7 @@ const MetricsDateSelect = ({ dateRange, setDateRange }: Props) => {
 
 export const s = StyleSheet.create({
   divider: {
-    width: '3ch',
+    width: 25,
     marginHorizontal: 'auto',
   },
 });

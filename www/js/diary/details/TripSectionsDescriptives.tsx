@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
-import { View } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
-import { Icon } from '../../components/Icon';
+import { View, StyleSheet } from 'react-native';
+import { Icon, Text, useTheme } from 'react-native-paper';
 import useDerivedProperties from '../useDerivedProperties';
 import { getBaseModeByKey, getBaseModeByValue } from '../diaryHelper';
 import LabelTabContext from '../LabelTabContext';
@@ -60,14 +59,9 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
             <Text variant="bodyLarge">{`${section.distance} ${distanceSuffix}`}</Text>
           </View>
           <View style={{ maxWidth: 50, alignItems: 'center' }}>
-            <Icon
-              mode="contained"
-              icon={section.icon}
-              size={18}
-              style={{ height: 32, width: 32 }}
-              iconColor={colors.onPrimary}
-              containerColor={section.color}
-            />
+            <View style={s.modeIconContainer(section.color)}>
+              <Icon source={section.icon} color={colors.onPrimary} size={18} />
+            </View>
             {showLabeledMode && labeledModeForTrip && (
               <Text variant="labelSmall" numberOfLines={2} style={{ textAlign: 'center' }}>
                 {labeledModeForTrip.text}
@@ -79,5 +73,16 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  modeIconContainer: (bgColor) => ({
+    backgroundColor: bgColor,
+    height: 32,
+    width: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }),
+});
 
 export default TripSectionsDescriptives;

@@ -10,18 +10,18 @@ import i18next from 'i18next';
 import { labelInputDetailsForTrip } from './confirmHelper';
 import { logDebug } from '../../plugin/logger';
 
-const unlabeledCheck = (trip, userInputForTrip) => {
+function unlabeledCheck(trip, userInputForTrip) {
   const tripInputDetails = labelInputDetailsForTrip(userInputForTrip);
   return Object.keys(tripInputDetails)
     .map((inputType) => !userInputForTrip?.[inputType])
     .reduce((acc, val) => acc || val, false);
-};
+}
 
-const toLabelCheck = (trip, userInputForTrip) => {
+function toLabelCheck(trip, userInputForTrip) {
   logDebug('Expectation: ' + trip.expectation);
   if (!trip.expectation) return true;
   return trip.expectation.to_label && unlabeledCheck(trip, userInputForTrip);
-};
+}
 
 const UNLABELED = {
   key: 'unlabeled',

@@ -5,6 +5,7 @@
 
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
+import { logDebug } from './plugin/logger';
 
 const useAppStateChange = (onResume) => {
   const appState = useRef(AppState.currentState);
@@ -16,7 +17,7 @@ const useAppStateChange = (onResume) => {
       }
 
       appState.current = nextAppState;
-      console.log('AppState', appState.current);
+      logDebug('new AppState: ' + appState.current);
     });
   }, []);
 

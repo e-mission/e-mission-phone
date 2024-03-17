@@ -12,8 +12,6 @@ import { displayErrorMsg } from '../plugin/logger';
 const OnboardingStack = () => {
   const { onboardingState } = useContext(AppContext);
 
-  console.debug('onboardingState in OnboardingStack', onboardingState);
-
   if (onboardingState.route == OnboardingRoute.WELCOME) {
     return <WelcomePage />;
   } else if (onboardingState.route == OnboardingRoute.SUMMARY) {

@@ -8,9 +8,7 @@
 
 import i18next from 'i18next';
 
-const unlabeledCheck = (trip, userInputForTrip) => {
-  return !userInputForTrip?.['SURVEY'];
-};
+const unlabeledCheck = (trip, userInputForTrip) => !userInputForTrip?.['SURVEY'];
 
 const TO_LABEL = {
   key: 'to_label',

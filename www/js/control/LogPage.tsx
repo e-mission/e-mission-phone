@@ -4,24 +4,22 @@ import { useTheme, Text, Appbar, IconButton } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { DateTime } from 'luxon';
-import AlertBar from './AlertBar';
+import { AlertManager } from '../components/AlertBar';
 import { sendEmail } from './emailService';
+import { displayError, logDebug } from '../plugin/logger';
+import NavBar from '../components/NavBar';
 
-type loadStats = { currentStart: number; gotMaxIndex: boolean; reachedEnd: boolean };
+type LoadStats = { currentStart: number; gotMaxIndex: boolean; reachedEnd: boolean };
 
 const LogPage = ({ pageVis, setPageVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const [loadStats, setLoadStats] = useState<loadStats>();
+  const [loadStats, setLoadStats] = useState<LoadStats>();
   const [entries, setEntries] = useState<any>([]);
-  const [maxErrorVis, setMaxErrorVis] = useState<boolean>(false);
-  const [logErrorVis, setLogErrorVis] = useState<boolean>(false);
-  const [maxMessage, setMaxMessage] = useState<string>('');
-  const [logMessage, setLogMessage] = useState<string>('');
   const [isFetching, setIsFetching] = useState<boolean>(false);
 
-  var RETRIEVE_COUNT = 100;
+  const RETRIEVE_COUNT = 100;
 
   //when opening the modal, load the entries
   useEffect(() => {
@@ -31,8 +29,8 @@ const LogPage = ({ pageVis, setPageVis }) => {
   async function refreshEntries() {
     try {
       let maxIndex = await window['Logger'].getMaxIndex();
-      console.log('maxIndex = ' + maxIndex);
-      let tempStats = {} as loadStats;
+      logDebug('Logger maxIndex = ' + maxIndex);
+      let tempStats = {} as LoadStats;
       tempStats.currentStart = maxIndex;
       tempStats.gotMaxIndex = true;
       tempStats.reachedEnd = false;
@@ -40,9 +38,8 @@ const LogPage = ({ pageVis, setPageVis }) => {
       setEntries([]);
     } catch (error) {
       let errorString = t('errors.while-max-index') + JSON.stringify(error, null, 2);
-      console.log(errorString);
-      setMaxMessage(errorString);
-      setMaxErrorVis(true);
+      displayError(error, errorString);
+      AlertManager.addMessage({ text: errorString });
     } finally {
       addEntries();
     }
@@ -52,54 +49,52 @@ const LogPage = ({ pageVis, setPageVis }) => {
     return loadStats?.gotMaxIndex && !loadStats?.reachedEnd;
   }, [loadStats]);
 
-  const clear = function () {
+  function clear() {
     window?.['Logger'].clearAll();
     window?.['Logger'].log(
       window['Logger'].LEVEL_INFO,
       'Finished clearing entries from unified log',
     );
     refreshEntries();
-  };
+  }
 
   async function addEntries() {
-    console.log('calling addEntries');
     setIsFetching(true);
     let start = loadStats?.currentStart ? loadStats.currentStart : 0; //set a default start to prevent initial fetch error
     try {
       let entryList = await window['Logger'].getMessagesFromIndex(start, RETRIEVE_COUNT);
       processEntries(entryList);
-      console.log('entry list size = ' + entries.length);
+      logDebug('addEntries: entry list size = ' + entries.length);
       setIsFetching(false);
     } catch (error) {
       let errStr = t('errors.while-log-messages') + JSON.stringify(error, null, 2);
-      console.log(errStr);
-      setLogMessage(errStr);
-      setLogErrorVis(true);
+      displayError(error, errStr);
+      AlertManager.addMessage({ text: errStr });
       setIsFetching(false);
     }
   }
 
-  const processEntries = function (entryList) {
+  function processEntries(entryList) {
     let tempEntries: any[] = [];
-    let tempLoadStats: loadStats = { ...loadStats } as loadStats;
+    let tempLoadStats: LoadStats = { ...loadStats } as LoadStats;
     entryList.forEach((e) => {
       e.fmt_time = DateTime.fromSeconds(e.ts).toLocaleString(DateTime.DATETIME_MED);
       tempEntries.push(e);
     });
     if (entryList.length == 0) {
-      console.log('Reached the end of the scrolling');
+      logDebug('LogPage reached the end of the scrolling');
       tempLoadStats.reachedEnd = true;
     } else {
       tempLoadStats.currentStart = entryList[entryList.length - 1].ID;
-      console.log('new start index = ' + loadStats?.currentStart);
+      logDebug('LogPage new start index = ' + loadStats?.currentStart);
     }
     setEntries([...entries].concat(tempEntries)); //push the new entries onto the list
     setLoadStats(tempLoadStats);
-  };
+  }
 
-  const emailLog = function () {
+  function emailLog() {
     sendEmail('loggerDB');
-  };
+  }
 
   const separator = () => <View style={{ height: 8 }} />;
   const logItem = ({ item: logItem }) => (
@@ -116,17 +111,14 @@ const LogPage = ({ pageVis, setPageVis }) => {
   return (
     <Modal visible={pageVis} onDismiss={() => setPageVis(false)}>
       <SafeAreaView style={{ flex: 1 }}>
-        <Appbar.Header
-          statusBarHeight={0}
-          elevated={true}
-          style={{ height: 46, backgroundColor: colors.surface }}>
+        <NavBar>
           <Appbar.BackAction
             onPress={() => {
               setPageVis(false);
             }}
           />
           <Appbar.Content title={t('control.log-title')} />
-        </Appbar.Header>
+        </NavBar>
 
         <View
           style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -155,17 +147,6 @@ const LogPage = ({ pageVis, setPageVis }) => {
           }}
         />
       </SafeAreaView>
-
-      <AlertBar
-        visible={maxErrorVis}
-        setVisible={setMaxErrorVis}
-        messageKey={''}
-        messageAddition={maxMessage}></AlertBar>
-      <AlertBar
-        visible={logErrorVis}
-        setVisible={setLogErrorVis}
-        messageKey={''}
-        messageAddition={logMessage}></AlertBar>
     </Modal>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Modal, ScrollView, SafeAreaView, View, Text } from 'react-native';
 import { gatherBluetoothData, startBLEScanning } from './blueoothScanner';
-import { logWarn, displayErrorMsg } from '../plugin/logger';
+import { logWarn, displayError, displayErrorMsg } from '../plugin/logger';
 import { getConfig } from '../config/dynamicConfig';
 import BluetoothCard from './BluetoothCard';
 import { Appbar, useTheme, Button } from 'react-native-paper';
@@ -23,11 +23,32 @@ const BluetoothScanPage = ({ ...props }: any) => {
   const [isClassic, setIsClassic] = useState(false);
   const { colors } = useTheme();
 
-  const runBluetoothClassicTest = async () => {
-    let config = await getConfig();
+  // Function to run Bluetooth Classic test and update logs
+  const runBluetoothTest = async () => {
+    let permissionFunction;
+    // Depending on user platform, handle requesting the permissions differently
+    if (window['cordova'].platformId == 'android') {
+      permissionFunction = window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions();
+    } else {
+      permissionFunction = window['bluetoothClassicSerial'].initializeBluetooth();
+    }
+    if (!permissionFunction) {
+      displayErrorMsg('PlatformID Not Found', 'OSError');
+      return;
+    }
 
-    if (!config.ios_use_remote_push) {
-      displayErrorMsg('Sorry, Bluetooth Classic scanning is not available on iOS!', 'OS Error:');
+    try {
+      const response = await permissionFunction();
+      if (response != 'OK') {
+        displayErrorMsg('Please Enable Bluetooth!', 'Insufficient Permissions');
+        return;
+      }
+      if (window['cordova'].platformId == 'ios') {
+        displayErrorMsg('Sorry, iOS is not supported!', 'OSError');
+        return;
+      }
+    } catch (e) {
+      displayError(e, 'Insufficient Permissions');
       return;
     }
 
@@ -115,9 +136,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
     <div>
       {devices.map((device) => {
         if (device) {
-          const deviceID = device.slice(0, 21);
-          const deviceName = device.slice(21);
-          return <BluetoothCard deviceName={deviceName} deviceData={deviceID} />;
+          return <BluetoothCard device={device} />;
         }
         return null;
       })}

@@ -18,16 +18,10 @@ export const mockPushNotification = () => {
   };
 };
 
-export const clearNotifMock = function () {
+export function clearNotifMock() {
   notifSettings = {};
   onList = {};
   called = null;
-};
-
-export const getOnList = function () {
-  return onList;
-};
-
-export const getCalled = function () {
-  return called;
-};
+}
+export const getOnList = () => onList;
+export const getCalled = () => called;

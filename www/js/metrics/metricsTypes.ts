@@ -1,3 +1,4 @@
+import { LocalDt } from '../types/serverData';
 import { METRIC_LIST } from './MetricsTab';
 
 type MetricName = (typeof METRIC_LIST)[number];
@@ -6,7 +7,7 @@ export type DayOfMetricData = LabelProps & {
   ts: number;
   fmt_time: string;
   nUsers: number;
-  local_dt: { [k: string]: any }; // TODO type datetime obj
+  local_dt: LocalDt;
 };
 
 export type MetricsData = {

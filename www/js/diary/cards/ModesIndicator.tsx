@@ -4,8 +4,7 @@ import color from 'color';
 import LabelTabContext from '../LabelTabContext';
 import { logDebug } from '../../plugin/logger';
 import { getBaseModeByValue } from '../diaryHelper';
-import { Icon } from '../../components/Icon';
-import { Text, useTheme } from 'react-native-paper';
+import { Text, Icon, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
 const ModesIndicator = ({ trip, detectedModes }) => {
@@ -24,7 +23,7 @@ const ModesIndicator = ({ trip, detectedModes }) => {
     logDebug(`TripCard: got baseMode = ${JSON.stringify(baseMode)}`);
     modeViews = (
       <View style={s.mode}>
-        <Icon icon={baseMode.icon} iconColor={baseMode.color} size={15} />
+        <Icon source={baseMode.icon} color={baseMode.color} size={15} />
         <Text
           accessibilityLabel={`Labeled mode: ${baseMode.icon}`}
           style={{
@@ -47,7 +46,7 @@ const ModesIndicator = ({ trip, detectedModes }) => {
         <Text style={{ fontSize: 12, fontWeight: '500' }}>{t('diary.detected')}</Text>
         {detectedModes?.map?.((pct, i) => (
           <View key={i} style={s.mode}>
-            <Icon icon={pct.icon} iconColor={pct.color} size={15} />
+            <Icon source={pct.icon} color={pct.color} size={15} />
             {/* show percents if there are more than one detected modes */}
             {detectedModes?.length > 1 && (
               <Text

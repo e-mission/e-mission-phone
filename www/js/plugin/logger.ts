@@ -1,11 +1,11 @@
 export const logDebug = (message: string) =>
-  window['Logger'].log(window['Logger'].LEVEL_DEBUG, message);
+  window['Logger']?.log(window['Logger'].LEVEL_DEBUG, message);
 
 export const logInfo = (message: string) =>
-  window['Logger'].log(window['Logger'].LEVEL_INFO, message);
+  window['Logger']?.log(window['Logger'].LEVEL_INFO, message);
 
 export const logWarn = (message: string) =>
-  window['Logger'].log(window['Logger'].LEVEL_WARN, message);
+  window['Logger']?.log(window['Logger'].LEVEL_WARN, message);
 
 export function displayError(error: Error, title?: string) {
   const errorMsg = error.message ? error.message + '\n' + error.stack : JSON.stringify(error);

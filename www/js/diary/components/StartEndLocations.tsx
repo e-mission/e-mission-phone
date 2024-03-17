@@ -1,7 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Icon } from '../../components/Icon';
-import { Text, Divider, useTheme } from 'react-native-paper';
+import { Text, Divider, Icon, useTheme } from 'react-native-paper';
 
 type Props = {
   displayStartTime?: string;
@@ -23,7 +22,7 @@ const StartEndLocations = (props: Props) => {
           <Text style={{ padding: 10, flexShrink: 0 }}>{props.displayStartTime}</Text>
         )}
         <View style={s.locationIcon(colors, fontSize, true)}>
-          <Icon icon="map-marker-star" iconColor={colors.onPrimary} size={fontSize} />
+          <Icon source="map-marker-star" color={colors.onPrimary} size={fontSize} />
         </View>
         <Text numberOfLines={2} style={{ fontSize: fontSize, lineHeight: fontSize }}>
           {props.displayStartName}
@@ -37,7 +36,7 @@ const StartEndLocations = (props: Props) => {
               <Text style={{ padding: 10, flexShrink: 0 }}>{props.displayEndTime}</Text>
             )}
             <View style={s.locationIcon(colors, fontSize)}>
-              <Icon icon="flag" iconColor={colors.primary} size={fontSize} />
+              <Icon source="flag" color={colors.primary} size={fontSize} />
             </View>
             <Text numberOfLines={2} style={{ fontSize: fontSize, lineHeight: fontSize }}>
               {props.displayEndName}

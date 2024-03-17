@@ -1,19 +1,19 @@
 import { addStatReading, statKeys } from './clientStats';
 import { logDebug, logWarn } from './logger';
 
-const mungeValue = (key, value) => {
+function mungeValue(key, value) {
   let store_val = value;
   if (typeof value != 'object') {
     store_val = {};
     store_val[key] = value;
   }
   return store_val;
-};
+}
 
 /*
  * If a non-JSON object was munged for storage, unwrap it.
  */
-const unmungeValue = (key, retData) => {
+function unmungeValue(key, retData) {
   if (retData?.[key]) {
     // it must have been a simple data type that we munged upfront
     return retData[key];
@@ -21,25 +21,25 @@ const unmungeValue = (key, retData) => {
     // it must have been an object
     return retData;
   }
-};
+}
 
-const localStorageSet = (key: string, value: { [k: string]: any }) => {
+function localStorageSet(key: string, value: { [k: string]: any }) {
   //checking for a value to prevent storing undefined
   //case where local was null and native was undefined stored "undefined"
   //see discussion: https://github.com/e-mission/e-mission-phone/pull/1072#discussion_r1373753945
   if (value) {
     localStorage.setItem(key, JSON.stringify(value));
   }
-};
+}
 
-const localStorageGet = (key: string) => {
+function localStorageGet(key: string) {
   const value = localStorage.getItem(key);
   if (value) {
     return JSON.parse(value);
   } else {
     return null;
   }
-};
+}
 
 /* We redundantly store data in both local and native storage. This function checks
     both for a value. If a value is present in only one, it copies it to the other and returns it.
@@ -83,10 +83,8 @@ function getUnifiedValue(key) {
         // both values are present, but they are different
         console.assert(
           ls_stored_val != null && uc_stored_val != null,
-          'ls_stored_val =' +
-            JSON.stringify(ls_stored_val) +
-            'uc_stored_val =' +
-            JSON.stringify(uc_stored_val),
+          `ls_stored_val = ${JSON.stringify(ls_stored_val)}; 
+            uc_stored_val = ${JSON.stringify(uc_stored_val)}`,
         );
         logWarn(`for key ${key}, uc_stored_val = ${JSON.stringify(uc_stored_val)},
                     ls_stored_val = ${JSON.stringify(ls_stored_val)}.
@@ -145,25 +143,21 @@ function findMissing(fromKeys: any[], toKeys: any[]) {
 }
 
 export function storageSyncLocalAndNative() {
-  console.log('STORAGE_PLUGIN: Called syncAllWebAndNativeValues ');
+  logDebug('STORAGE_PLUGIN: Called syncAllWebAndNativeValues');
   const syncKeys = window['cordova'].plugins.BEMUserCache.listAllLocalStorageKeys().then(
     (nativeKeys) => {
-      console.log('STORAGE_PLUGIN: native plugin returned');
       const webKeys = Object.keys(localStorage);
       // I thought about iterating through the lists and copying over
       // only missing values, etc but `getUnifiedValue` already does
       // that, and we don't need to copy it
       // so let's just find all the missing values and read them
-      logDebug('STORAGE_PLUGIN: Comparing web keys ' + webKeys + ' with ' + nativeKeys);
+      logDebug(`STORAGE_PLUGIN: native keys returned = ${JSON.stringify(nativeKeys)}; 
+        comparing against webKeys = ${JSON.stringify(webKeys)}`);
       let [foundNative, missingNative] = findMissing(webKeys, nativeKeys);
       let [foundWeb, missingWeb] = findMissing(nativeKeys, webKeys);
-      logDebug(
-        'STORAGE_PLUGIN: Found native keys ' +
-          foundNative +
-          ' missing native keys ' +
-          missingNative,
-      );
-      logDebug('STORAGE_PLUGIN: Found web keys ' + foundWeb + ' missing web keys ' + missingWeb);
+      logDebug(`STORAGE_PLUGIN:
+        Found native keys = ${foundNative}; Missing native keys = ${missingNative}; 
+        Found web keys = ${foundWeb}; Missing web keys = ${missingWeb}`);
       const allMissing = missingNative.concat(missingWeb);
       logDebug('STORAGE_PLUGIN: Syncing all missing keys ' + allMissing);
       allMissing.forEach(getUnifiedValue);

@@ -1,29 +1,12 @@
 import React, { useState } from 'react';
 import SettingRow from './SettingRow';
 import BluetoothScanPage from '../bluetooth/BluetoothScanPage';
-import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
-import { getConfig } from './ControlSyncHelper';
 
 const BluetoothScanSettingRow = ({}) => {
   const [bluePageVisible, setBluePageVisible] = useState<boolean>(false);
 
   async function openPopover() {
-    // Get the config to determine if user is on Android or iOS
-    let config = await getConfig();
-
-    // Depending on user platform, handle requesting the permissions differently
-    if (!config.ios_use_remote_push) {
-      // Check and prompt for bluetooth scan permission
-      try {
-        let response = await window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions();
-        if (response == 'OK') setBluePageVisible(true);
-      } catch (e) {
-        displayError(e, 'Insufficient Permissions');
-      }
-    } else {
-      // May need to add iOS permission scanning here
-      setBluePageVisible(true);
-    }
+    setBluePageVisible(true);
   }
 
   return (

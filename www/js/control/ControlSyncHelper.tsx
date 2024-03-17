@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { settingStyles } from './ProfileSettings';
 import ActionMenu from '../components/ActionMenu';
 import SettingRow from './SettingRow';
-import AlertBar from './AlertBar';
+import { AlertManager } from '../components/AlertBar';
 import { addStatEvent, statKeys } from '../plugin/clientStats';
 import { updateUser } from '../services/commHelper';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
@@ -14,32 +14,24 @@ import { DateTime } from 'luxon';
 /*
  * BEGIN: Simple read/write wrappers
  */
-export function forcePluginSync() {
-  return window['cordova'].plugins.BEMServerSync.forceSync();
-}
+export const forcePluginSync = () => window['cordova'].plugins.BEMServerSync.forceSync();
+const setConfig = (config) => window['cordova'].plugins.BEMServerSync.setConfig(config);
+const getConfig = () => window['cordova'].plugins.BEMServerSync.getConfig();
 
-const formatConfigForDisplay = (configToFormat) => {
+function formatConfigForDisplay(configToFormat) {
   const formatted: any[] = [];
   for (let prop in configToFormat) {
     formatted.push({ key: prop, val: configToFormat[prop] });
   }
   return formatted;
-};
-
-const setConfig = function (config) {
-  return window['cordova'].plugins.BEMServerSync.setConfig(config);
-};
-
-export const getConfig = function () {
-  return window['cordova'].plugins.BEMServerSync.getConfig();
-};
+}
 
 export async function getHelperSyncSettings() {
   let tempConfig = await getConfig();
   return formatConfigForDisplay(tempConfig);
 }
 
-type syncConfig = { sync_interval: number; ios_use_remote_push: boolean };
+type SyncConfig = { sync_interval: number; ios_use_remote_push: boolean };
 
 //forceSync and endForceSync SettingRows & their actions
 export const ForceSyncRow = ({ getState }) => {
@@ -47,20 +39,17 @@ export const ForceSyncRow = ({ getState }) => {
   const { colors } = useTheme();
 
   const [dataPendingVis, setDataPendingVis] = useState(false);
-  const [dataPushedVis, setDataPushedVis] = useState(false);
 
   async function forceSync() {
     try {
       let addedEvent = await addStatEvent(statKeys.BUTTON_FORCE_SYNC);
-      console.log('Added ' + statKeys.BUTTON_FORCE_SYNC + ' event');
-
       let sync = await forcePluginSync();
       /*
        * Change to sensorKey to "background/location" after fixing issues
        * with getLastSensorData and getLastMessages in the usercache
        * See https://github.com/e-mission/e-mission-phone/issues/279 for details
        */
-      var sensorKey = 'statemachine/transition';
+      const sensorKey = 'statemachine/transition';
       let sensorDataList = await window['cordova'].plugins.BEMUserCache.getAllMessages(
         sensorKey,
         true,
@@ -68,9 +57,7 @@ export const ForceSyncRow = ({ getState }) => {
 
       // If everything has been pushed, we should
       // have no more trip end transitions left
-      let isTripEnd = function (entry) {
-        return entry.metadata == getEndTransitionKey();
-      };
+      let isTripEnd = (entry) => entry.metadata == getEndTransitionKey();
       let syncLaunchedCalls = sensorDataList.filter(isTripEnd);
       let syncPending = syncLaunchedCalls.length > 0;
       logDebug(`sensorDataList.length = ${sensorDataList.length}, 
@@ -81,39 +68,39 @@ export const ForceSyncRow = ({ getState }) => {
         logDebug('data is pending, showing confirm dialog');
         setDataPendingVis(true); //consent handling in modal
       } else {
-        setDataPushedVis(true);
+        AlertManager.addMessage({ text: 'all data pushed!' });
       }
     } catch (error) {
       displayError(error, 'Error while forcing sync');
     }
   }
 
-  const getStartTransitionKey = function () {
+  function getStartTransitionKey() {
     if (window['cordova'].platformId == 'android') {
       return 'local.transition.exited_geofence';
     } else if (window['cordova'].platformId == 'ios') {
       return 'T_EXITED_GEOFENCE';
     }
-  };
+  }
 
-  const getEndTransitionKey = function () {
+  function getEndTransitionKey() {
     if (window['cordova'].platformId == 'android') {
       return 'local.transition.stopped_moving';
     } else if (window['cordova'].platformId == 'ios') {
       return 'T_TRIP_ENDED';
     }
-  };
+  }
 
-  const getOngoingTransitionState = function () {
+  function getOngoingTransitionState() {
     if (window['cordova'].platformId == 'android') {
       return 'local.state.ongoing_trip';
     } else if (window['cordova'].platformId == 'ios') {
       return 'STATE_ONGOING_TRIP';
     }
-  };
+  }
 
   async function getTransition(transKey) {
-    var entry_data = {};
+    const entry_data = {};
     const curr_state = await getState();
     entry_data['curr_state'] = curr_state;
     if (transKey == getEndTransitionKey()) {
@@ -127,7 +114,7 @@ export const ForceSyncRow = ({ getState }) => {
   async function endForceSync() {
     /* First, quickly start and end the trip. Let's listen to the promise
      * result for start so that we ensure ordering */
-    var sensorKey = 'statemachine/transition';
+    const sensorKey = 'statemachine/transition';
     let entry_data = await getTransition(getStartTransitionKey());
     let messagePut = await window['cordova'].plugins.BEMUserCache.putMessage(sensorKey, entry_data);
     entry_data = await getTransition(getEndTransitionKey());
@@ -168,11 +155,6 @@ export const ForceSyncRow = ({ getState }) => {
           </Dialog.Actions>
         </Dialog>
       </Modal>
-
-      <AlertBar
-        visible={dataPushedVis}
-        setVisible={setDataPushedVis}
-        messageKey="all data pushed!"></AlertBar>
     </>
   );
 };
@@ -182,7 +164,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const [localConfig, setLocalConfig] = useState<syncConfig>();
+  const [localConfig, setLocalConfig] = useState<SyncConfig>();
   const [intervalVis, setIntervalVis] = useState<boolean>(false);
 
   /*
@@ -208,7 +190,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
    * Functions to edit and save values
    */
   async function saveAndReload() {
-    console.log('new config = ' + localConfig);
+    logDebug('saveAndReload: new config = ' + JSON.stringify(localConfig));
     try {
       let set = setConfig(localConfig);
       //NOTE -- we need to make sure we update these settings in ProfileSettings :) -- getting rid of broadcast handling for migration!!
@@ -219,24 +201,23 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
         // or continue to store from native
         // this is easier for people to see, but means that calls to
         // native, even through the javascript interface are not complete
-        curr_sync_interval: (localConfig as syncConfig).sync_interval,
+        curr_sync_interval: (localConfig as SyncConfig).sync_interval,
       });
     } catch (err) {
-      console.log('error with setting sync config', err);
       displayError(err, 'Error while setting sync config');
     }
   }
-  const onChooseInterval = function (interval) {
-    let tempConfig = { ...localConfig } as syncConfig;
+  function onChooseInterval(interval) {
+    let tempConfig = { ...localConfig } as SyncConfig;
     tempConfig.sync_interval = interval.value;
     setLocalConfig(tempConfig);
-  };
+  }
 
-  const onTogglePush = function () {
-    let tempConfig = { ...localConfig } as syncConfig;
-    tempConfig.ios_use_remote_push = !(localConfig as syncConfig).ios_use_remote_push;
+  function onTogglePush() {
+    let tempConfig = { ...localConfig } as SyncConfig;
+    tempConfig.ios_use_remote_push = !(localConfig as SyncConfig).ios_use_remote_push;
     setLocalConfig(tempConfig);
-  };
+  }
 
   /*
    * configure the UI
