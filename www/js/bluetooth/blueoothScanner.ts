@@ -1,12 +1,5 @@
 import { logDebug, displayError } from '../plugin/logger';
-
-// Device data, as defined in BluetoothClassicSerial's docs
-type BluetoothClassicDevice = {
-  class: number;
-  id: string;
-  address: string;
-  name: string;
-};
+import { BluetoothClassicDevice } from '../types/bluetoothTypes';
 
 /**
  * gatherBluetoothData scans for viewable Bluetooth Classic Devices
@@ -18,14 +11,10 @@ export default function gatherBluetoothData(t): Promise<string[]> {
     logDebug('Running bluetooth discovery test!');
 
     // Device List "I/O"
-    function handleLogs(devices: Array<BluetoothClassicDevice>) {
+    function handleLogs(pairingType: Boolean, devices: Array<BluetoothClassicDevice>) {
       let logs: string[] = [];
       devices.forEach((device) => {
-        logs.push(
-          `${t('bluetooth.device-info.id')}: ${device.id} ${t('bluetooth.device-info.name')}: ${
-            device.name
-          }`,
-        );
+        device.is_paired;
       });
       return logs;
     }
@@ -34,7 +23,7 @@ export default function gatherBluetoothData(t): Promise<string[]> {
     const unpairedDevicesPromise = new Promise((res, rej) => {
       window['bluetoothClassicSerial'].discoverUnpaired(
         (devices: Array<BluetoothClassicDevice>) => {
-          res(handleLogs(devices));
+          res(handleLogs(false, devices));
         },
         (e: Error) => {
           displayError(e, 'Error');
@@ -46,7 +35,7 @@ export default function gatherBluetoothData(t): Promise<string[]> {
     const pairedDevicesPromise = new Promise((res, rej) => {
       window['bluetoothClassicSerial'].list(
         (devices: Array<BluetoothClassicDevice>) => {
-          res(handleLogs(devices));
+          res(handleLogs(true, devices));
         },
         (e: Error) => {
           displayError(e, 'Error');
