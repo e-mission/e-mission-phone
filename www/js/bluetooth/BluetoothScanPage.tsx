@@ -25,9 +25,9 @@ const BluetoothScanPage = ({ ...props }: any) => {
     let permissionFunction;
     // Depending on user platform, handle requesting the permissions differently
     if (window['cordova'].platformId == 'android') {
-      permissionFunction = window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions();
+      permissionFunction = window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions;
     } else {
-      permissionFunction = window['bluetoothClassicSerial'].initializeBluetooth();
+      permissionFunction = window['bluetoothClassicSerial'].initializeBluetooth;
     }
     if (!permissionFunction) {
       displayErrorMsg('PlatformID Not Found', 'OSError');
