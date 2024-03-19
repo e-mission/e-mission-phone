@@ -153,7 +153,9 @@ const LeafletView = ({ geojson, opts, downscaleTiles, cacheHtml, ...otherProps }
         dangerouslySetInnerHTML={
           /* this is not 'dangerous' here because the content is not user-generated;
           it's just an HTML string that we cached from a previous render */
-          cacheHtml && leafletCache?.has(mapElId) ? { __html: leafletCache.get(mapElId) } : undefined
+          cacheHtml && leafletCache?.has(mapElId)
+            ? { __html: leafletCache.get(mapElId) }
+            : undefined
         }
       />
     </View>
