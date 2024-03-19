@@ -10,6 +10,7 @@ import { withErrorBoundary } from './plugin/ErrorBoundary';
 import LabelTab from './diary/LabelTab';
 import MetricsTab from './metrics/MetricsTab';
 import ProfileSettings from './control/ProfileSettings';
+import TimelineContext, { useTimelineContext } from './TimelineContext';
 
 const defaultRoutes = (t) => [
   {
@@ -47,6 +48,7 @@ const Main = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const { appConfig } = useContext(AppContext);
+  const timelineContext = useTimelineContext();
 
   const routes = useMemo(() => {
     const showMetrics = appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL';
@@ -54,18 +56,20 @@ const Main = () => {
   }, [appConfig, t]);
 
   return (
-    <BottomNavigation
-      navigationState={{ index, routes }}
-      onIndexChange={setIndex}
-      renderScene={renderScene}
-      // Place at bottom, color of 'surface' (white) by default, and 68px tall (default was 80)
-      safeAreaInsets={{ bottom: 0 }}
-      style={{ backgroundColor: colors.surface }}
-      barStyle={{ height: 68, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0)' }}
-      // BottomNavigation uses secondaryContainer color for the background, but we want primaryContainer
-      // (light blue), so we override here.
-      theme={{ colors: { secondaryContainer: colors.primaryContainer } }}
-    />
+    <TimelineContext.Provider value={timelineContext}>
+      <BottomNavigation
+        navigationState={{ index, routes }}
+        onIndexChange={setIndex}
+        renderScene={renderScene}
+        // Place at bottom, color of 'surface' (white) by default, and 68px tall (default was 80)
+        safeAreaInsets={{ bottom: 0 }}
+        style={{ backgroundColor: colors.surface }}
+        barStyle={{ height: 68, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0)' }}
+        // BottomNavigation uses secondaryContainer color for the background, but we want primaryContainer
+        // (light blue), so we override here.
+        theme={{ colors: { secondaryContainer: colors.primaryContainer } }}
+      />
+    </TimelineContext.Provider>
   );
 };
 

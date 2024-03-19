@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from 'react-native-paper';
 import { displayErrorMsg, logDebug } from '../../plugin/logger';
 import EnketoModal from './EnketoModal';
-import LabelTabContext from '../../diary/LabelTabContext';
+import TimelineContext from '../../TimelineContext';
 import useAppConfig from '../../useAppConfig';
 import { getSurveyForTimelineEntry } from './conditionalSurveys';
 
@@ -28,7 +28,7 @@ const UserInputButton = ({ timelineEntry }: Props) => {
 
   const [prevSurveyResponse, setPrevSurveyResponse] = useState<string | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState(false);
-  const { userInputFor, addUserInputToEntry } = useContext(LabelTabContext);
+  const { userInputFor, addUserInputToEntry } = useContext(TimelineContext);
 
   // which survey will this button launch?
   const [surveyName, notFilledInLabel] = useMemo(() => {

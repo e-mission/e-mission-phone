@@ -9,7 +9,7 @@
 import React, { useEffect, useState, useMemo, useContext } from 'react';
 import { StyleSheet } from 'react-native';
 import { DateTime } from 'luxon';
-import LabelTabContext from '../LabelTabContext';
+import TimelineContext from '../../TimelineContext';
 import { DatePickerModal } from 'react-native-paper-dates';
 import { Text, Divider, useTheme } from 'react-native-paper';
 import i18next from 'i18next';
@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { NavBarButton } from '../../components/NavBar';
 
 const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
-  const { pipelineRange } = useContext(LabelTabContext);
+  const { pipelineRange } = useContext(TimelineContext);
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [open, setOpen] = React.useState(false);

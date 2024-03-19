@@ -4,22 +4,21 @@ import { Appbar, useTheme } from 'react-native-paper';
 import DateSelect from './DateSelect';
 import FilterSelect from './FilterSelect';
 import TimelineScrollList from './TimelineScrollList';
-import LabelTabContext from '../LabelTabContext';
 import NavBar from '../../components/NavBar';
+import TimelineContext from '../../TimelineContext';
+import { LabelTabContext } from '../LabelTab';
 
 const LabelListScreen = () => {
+  const { filterInputs, setFilterInputs, displayedEntries } = useContext(LabelTabContext);
   const {
-    filterInputs,
-    setFilterInputs,
     timelineMap,
-    displayedEntries,
     queriedRange,
     loadSpecificWeek,
-    refresh,
+    refreshTimeline,
     pipelineRange,
     loadAnotherWeek,
-    isLoading,
-  } = useContext(LabelTabContext);
+    timelineIsLoading,
+  } = useContext(TimelineContext);
   const { colors } = useTheme();
 
   return (
@@ -38,7 +37,7 @@ const LabelListScreen = () => {
         <Appbar.Action
           icon="refresh"
           size={32}
-          onPress={() => refresh()}
+          onPress={() => refreshTimeline()}
           accessibilityLabel="Refresh"
           style={{ marginLeft: 'auto' }}
         />
@@ -49,7 +48,7 @@ const LabelListScreen = () => {
           queriedRange={queriedRange}
           pipelineRange={pipelineRange}
           loadMoreFn={loadAnotherWeek}
-          isLoading={isLoading}
+          isLoading={timelineIsLoading}
         />
       </View>
     </>

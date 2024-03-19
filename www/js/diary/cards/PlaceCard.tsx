@@ -17,14 +17,14 @@ import { DiaryCard, cardStyles } from './DiaryCard';
 import { useAddressNames } from '../addressNamesHelper';
 import useDerivedProperties from '../useDerivedProperties';
 import StartEndLocations from '../components/StartEndLocations';
-import LabelTabContext from '../LabelTabContext';
+import TimelineContext from '../../TimelineContext';
 import { ConfirmedPlace } from '../../types/diaryTypes';
 import { EnketoUserInputEntry } from '../../survey/enketo/enketoHelper';
 
 type Props = { place: ConfirmedPlace };
 const PlaceCard = ({ place }: Props) => {
   const appConfig = useAppConfig();
-  const { notesFor } = useContext(LabelTabContext);
+  const { notesFor } = useContext(TimelineContext);
   const { displayStartTime, displayEndTime, displayDate } = useDerivedProperties(place);
   let [placeDisplayName] = useAddressNames(place);
 
