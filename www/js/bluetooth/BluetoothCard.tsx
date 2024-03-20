@@ -3,14 +3,14 @@ import { Card, List } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 
 type Props = any;
-const BluetoothCard = (device: Props) => {
+const BluetoothCard = ({ device }: Props) => {
   return (
     <Card style={cardStyles.card}>
       <Card.Title
         title={`Name: ${device.name}`}
         titleVariant="titleLarge"
         subtitle={`ID: ${device.id}`}
-        left={() => <List.Icon icon={device.is_paired ? 'bluetooth-connect' : 'bluetooth-off'} />}
+        left={() => <List.Icon icon={device.is_paired ? 'bluetooth' : 'bluetooth-off'} />}
       />
     </Card>
   );

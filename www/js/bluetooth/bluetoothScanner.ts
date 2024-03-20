@@ -11,19 +11,18 @@ export default function gatherBluetoothData(t): Promise<string[]> {
     logDebug('Running bluetooth discovery test!');
 
     // Device List "I/O"
-    function handleLogs(pairingType: Boolean, devices: Array<BluetoothClassicDevice>) {
-      let logs: string[] = [];
+    function updatePairingStatus(pairingType: boolean, devices: Array<BluetoothClassicDevice>) {
       devices.forEach((device) => {
-        device.is_paired;
+        device.is_paired = pairingType;
       });
-      return logs;
+      return devices;
     }
 
     // Plugin Calls
     const unpairedDevicesPromise = new Promise((res, rej) => {
       window['bluetoothClassicSerial'].discoverUnpaired(
         (devices: Array<BluetoothClassicDevice>) => {
-          res(handleLogs(false, devices));
+          res(updatePairingStatus(false, devices));
         },
         (e: Error) => {
           displayError(e, 'Error');
@@ -35,7 +34,7 @@ export default function gatherBluetoothData(t): Promise<string[]> {
     const pairedDevicesPromise = new Promise((res, rej) => {
       window['bluetoothClassicSerial'].list(
         (devices: Array<BluetoothClassicDevice>) => {
-          res(handleLogs(true, devices));
+          res(updatePairingStatus(true, devices));
         },
         (e: Error) => {
           displayError(e, 'Error');
