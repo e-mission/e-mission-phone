@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Modal, ScrollView, SafeAreaView, View, Text } from 'react-native';
-import { gatherBluetoothData, startBLEScanning } from './blueoothScanner';
+import { StyleSheet, Modal, ScrollView, SafeAreaView, View } from 'react-native';
+import { gatherBluetoothData, startBLEScanning } from './bluetoothScanner';
 import { logWarn, displayError, displayErrorMsg } from '../plugin/logger';
-import { getConfig } from '../config/dynamicConfig';
 import BluetoothCard from './BluetoothCard';
 import { Appbar, useTheme, Button } from 'react-native-paper';
 
@@ -25,26 +24,16 @@ const BluetoothScanPage = ({ ...props }: any) => {
 
   // Function to run Bluetooth Classic test and update logs
   const runBluetoothClassicTest = async () => {
-    let permissionFunction;
-    // Depending on user platform, handle requesting the permissions differently
-    if (window['cordova'].platformId == 'android') {
-      permissionFunction = window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions();
-    } else {
-      permissionFunction = window['bluetoothClassicSerial'].initializeBluetooth();
-    }
-    if (!permissionFunction) {
-      displayErrorMsg('PlatformID Not Found', 'OSError');
+    // Classic not currently supported on iOS
+    if (window['cordova'].platformId == 'ios') {
+      displayErrorMsg('Sorry, iOS is not supported!', 'OSError');
       return;
     }
 
     try {
-      const response = await permissionFunction();
+      let response = await window['cordova'].plugins.BEMDataCollection.bluetoothScanPermissions();
       if (response != 'OK') {
         displayErrorMsg('Please Enable Bluetooth!', 'Insufficient Permissions');
-        return;
-      }
-      if (window['cordova'].platformId == 'ios') {
-        displayErrorMsg('Sorry, iOS is not supported!', 'OSError');
         return;
       }
     } catch (e) {
