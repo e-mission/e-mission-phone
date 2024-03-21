@@ -1,20 +1,20 @@
 import { logWarn, logDebug, displayError } from '../plugin/logger';
-import { BluetoothClassicDevice, BLEBeaconDevice } from '../types/BluetoothDevices';
+import { BluetoothClassicDevice, BLEBeaconDevice } from '../types/bluetoothDevices';
 
-const LouisTestBeacon = {
+const LouisTestBeacon: BLEBeaconDevice = {
   identifier: 'Louis-Beacon',
   uuid: '426C7565-4368-6172-6D42-6561636F6E73',
   broadcast_type: 'iBeacon',
-  major: '4949',
-  minor: '3838',
+  major: 4949,
+  minor: 3838,
 };
 const KatieTestBeacon: BLEBeaconDevice = {
   // System ID: 'DD:34:02:07:EC:04'
   identifier: 'BlueCharm_98105',
   uuid: '426C7565-4368-6172-6D42-6561636F6E73',
   broadcast_type: 'iBeacon',
-  major: '4949',
-  minor: '3838',
+  major: 4949,
+  minor: 3838,
 };
 
 /**

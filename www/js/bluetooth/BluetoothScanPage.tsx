@@ -5,7 +5,7 @@ import { gatherBluetoothClassicData } from './bluetoothScanner';
 import { logWarn, displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import BluetoothCard from './BluetoothCard';
 import { Appbar, useTheme, Button } from 'react-native-paper';
-import { BluetoothClassicDevice } from '../types/BluetoothDevices';
+import { BLEPluginCallback, BluetoothClassicDevice } from '../types/bluetoothDevices';
 
 /**
  * The implementation of this scanner page follows the design of
@@ -68,7 +68,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
 
     let delegate = new window['cordova'].plugins.locationManager.Delegate();
 
-    delegate.didDetermineStateForRegion = function (pluginResult) {
+    delegate.didDetermineStateForRegion = function (pluginResult: BLEPluginCallback) {
       logToDom('[BLE] didDetermineStateForRegion');
       logToDom(JSON.stringify(pluginResult, null, 2));
       window['cordova'].plugins.locationManager.appendToDeviceLog(
@@ -82,6 +82,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
     };
 
     delegate.didRangeBeaconsInRegion = function (pluginResult) {
+      // Not seeing this called...
       logToDom('[BLE] didRangeBeaconsInRegion');
       logToDom(JSON.stringify(pluginResult));
     };
@@ -169,9 +170,6 @@ const BluetoothScanPage = ({ ...props }: any) => {
               : t('bluetooth.scan.for-ble')}
         </Button>
       </View>
-      <Button mode="elevated" onPress={runBLETest} style={s.btn}>
-        {'TEST BLE'}
-      </Button>
       <BluetoothCardList devices={logs} />
       <ScrollView>
         {testLogs.map((log, index) => (

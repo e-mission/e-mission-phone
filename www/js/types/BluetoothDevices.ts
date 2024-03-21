@@ -4,7 +4,7 @@ export type BluetoothClassicDevice = {
   id: string;
   address: string;
   name: string;
-  is_paired?: boolean;
+  is_paired?: boolean; // We keep track of this, because BCS doesn't
 };
 
 /* Config File containg BLEBeaconData, mapped in the format
@@ -17,7 +17,14 @@ export type BluetoothClassicDevice = {
 export type BLEBeaconDevice = {
   identifier: string;
   uuid: string;
-  broadcast_type: string;
-  major: string;
-  minor: string;
+  major: number;
+  minor: number;
+  broadcast_type?: string;
+  typeName?: string; // e.g., "BeaconRegion"; used for callback
+};
+
+export type BLEPluginCallback = {
+  region: BLEBeaconDevice;
+  eventType: string;
+  state: string;
 };
