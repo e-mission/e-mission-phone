@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Modal, ScrollView, SafeAreaView, View } from 'react-native';
-import { gatherBluetoothData, startBLEScanning } from './bluetoothScanner';
-import { logWarn, displayError, displayErrorMsg } from '../plugin/logger';
+import { StyleSheet, Modal, ScrollView, SafeAreaView, View, Text } from 'react-native';
+import { gatherBluetoothClassicData } from './bluetoothScanner';
+import { logWarn, displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import BluetoothCard from './BluetoothCard';
 import { Appbar, useTheme, Button } from 'react-native-paper';
+import { BluetoothClassicDevice } from '../types/BluetoothDevices';
 
 /**
  * The implementation of this scanner page follows the design of
@@ -16,7 +17,7 @@ import { Appbar, useTheme, Button } from 'react-native-paper';
 
 const BluetoothScanPage = ({ ...props }: any) => {
   const { t } = useTranslation();
-  const [logs, setLogs] = useState<string[]>([]);
+  const [logs, setLogs] = useState<BluetoothClassicDevice[]>([]);
   const [testLogs, setTestLogs] = useState<string[]>([]);
   const [isScanning, setIsScanning] = useState(false);
   const [isClassic, setIsClassic] = useState(false);
@@ -43,7 +44,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
 
     try {
       setIsScanning(true);
-      const newLogs = await gatherBluetoothData(t);
+      const newLogs = await gatherBluetoothClassicData(t);
       setLogs(newLogs);
     } catch (error) {
       logWarn(error);
@@ -65,23 +66,19 @@ const BluetoothScanPage = ({ ...props }: any) => {
       setTestLogs((prevLogs) => [...prevLogs, message]);
     };
 
-    logToDom('HELLO');
-    logToDom('HELLO2');
-
     let delegate = new window['cordova'].plugins.locationManager.Delegate();
-    logToDom(delegate);
 
     delegate.didDetermineStateForRegion = function (pluginResult) {
       logToDom('[BLE] didDetermineStateForRegion');
-      logToDom(JSON.stringify(pluginResult));
+      logToDom(JSON.stringify(pluginResult, null, 2));
       window['cordova'].plugins.locationManager.appendToDeviceLog(
-        '[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult),
+        '[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult, null, 2),
       );
     };
 
     delegate.didStartMonitoringForRegion = function (pluginResult) {
-      logToDom('[BLE] didStartMonitoringForRegion');
-      logToDom(JSON.stringify(pluginResult));
+      logDebug('[BLE] didStartMonitoringForRegion');
+      logDebug(JSON.stringify(pluginResult));
     };
 
     delegate.didRangeBeaconsInRegion = function (pluginResult) {
@@ -90,7 +87,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
     };
 
     var uuid = '426C7565-4368-6172-6D42-6561636F6E73';
-    var identifier = 'Louis-Beacon';
+    var identifier = 'BlueCharm_98105';
     var minor = 4949;
     var major = 3838;
 
@@ -177,8 +174,8 @@ const BluetoothScanPage = ({ ...props }: any) => {
       </Button>
       <BluetoothCardList devices={logs} />
       <ScrollView>
-        {testLogs.map((l) => (
-          <div>{l}</div>
+        {testLogs.map((log, index) => (
+          <Text key={index}>{log}</Text>
         ))}
       </ScrollView>
     </div>
