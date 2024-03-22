@@ -5,7 +5,12 @@ import { gatherBluetoothClassicData } from './bluetoothScanner';
 import { logWarn, displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import BluetoothCard from './BluetoothCard';
 import { Appbar, useTheme, Button } from 'react-native-paper';
-import { BLEPluginCallback, BluetoothClassicDevice } from '../types/bluetoothDevices';
+import {
+  BLEBeaconDevice,
+  BLEPluginCallback,
+  BluetoothClassicDevice,
+  BLEDeviceList,
+} from '../types/bluetoothDevices';
 
 /**
  * The implementation of this scanner page follows the design of
@@ -17,12 +22,33 @@ import { BLEPluginCallback, BluetoothClassicDevice } from '../types/bluetoothDev
 
 const BluetoothScanPage = ({ ...props }: any) => {
   const { t } = useTranslation();
-  const [logs, setLogs] = useState<BluetoothClassicDevice[]>([]);
-  const [testLogs, setTestLogs] = useState<string[]>([]);
-  const [isScanning, setIsScanning] = useState(false);
+  const [bluetoothClassicList, setBluetoothClassicList] = useState<BluetoothClassicDevice[]>([]);
+  const [sampleBLEDevices, setSampleBLEDevices] = useState<BLEDeviceList>({
+    '426C7565-4368-6172-6D42-6561636F6E74': {
+      identifier: 'Katie_BLEBeacon',
+      minor: 4949,
+      major: 3838,
+      in_range: false,
+    },
+    '426C7565-4368-6172-6D42-6561636F6E73': {
+      identifier: 'Louis-Beacon',
+      minor: 4949,
+      major: 3838,
+      in_range: false,
+    },
+  });
+
+  const [isScanningClassic, setIsScanningClassic] = useState(false);
   const [isClassic, setIsClassic] = useState(false);
   const { colors } = useTheme();
 
+  // Flattens the `sampleBeacons` into an array of BLEBeaconDevices
+  function beaconsToArray() {
+    return Object.entries(sampleBLEDevices).map(([uuid, device]) => ({
+      uuid,
+      ...device,
+    }));
+  }
   // Function to run Bluetooth Classic test and update logs
   const runBluetoothClassicTest = async () => {
     // Classic not currently supported on iOS
@@ -43,13 +69,13 @@ const BluetoothScanPage = ({ ...props }: any) => {
     }
 
     try {
-      setIsScanning(true);
+      setIsScanningClassic(true);
       const newLogs = await gatherBluetoothClassicData(t);
-      setLogs(newLogs);
+      setBluetoothClassicList(newLogs);
     } catch (error) {
       logWarn(error);
     } finally {
-      setIsScanning(false);
+      setIsScanningClassic(false);
     }
   };
 
@@ -58,19 +84,33 @@ const BluetoothScanPage = ({ ...props }: any) => {
     BeaconMonitor(); // Will combine BeaconMonitor & StartBLE Scanning, if possible
   };
 
+  function setRangeStatus(uuid: string, status: boolean) {
+    setSampleBLEDevices((prevDevices) => {
+      const newList = prevDevices;
+      newList[uuid].in_range = status;
+      return newList;
+    });
+  }
+
   // BLE LOGIC
   const BeaconMonitor = () => {
-    setTestLogs([]);
-
-    const logToDom = (message) => {
-      setTestLogs((prevLogs) => [...prevLogs, message]);
-    };
-
     let delegate = new window['cordova'].plugins.locationManager.Delegate();
 
     delegate.didDetermineStateForRegion = function (pluginResult: BLEPluginCallback) {
-      logToDom('[BLE] didDetermineStateForRegion');
-      logToDom(JSON.stringify(pluginResult, null, 2));
+      // `stateInside`is returned when the user enters the beacon region
+      // `StateOutside` is either (i) left region, or (ii) started scanner (outside region)
+      if (pluginResult.state == 'CLRegionStateInside') {
+        // need toUpperCase(), b/c callback returns with only lowercase values...
+        setRangeStatus(pluginResult.region.uuid.toUpperCase(), true);
+      } else if (pluginResult.state == 'CLRegionStateOutside') {
+        setRangeStatus(pluginResult.region.uuid.toUpperCase(), false);
+      } else {
+        displayErrorMsg('Error: Unknown state recorded during BLE Scanning!');
+        logWarn('Error: Unknown state recorded in BLE Scanning!');
+        return;
+      }
+      logDebug('[BLE] didDetermineStateForRegion');
+      logDebug(JSON.stringify(pluginResult, null, 2));
       window['cordova'].plugins.locationManager.appendToDeviceLog(
         '[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult, null, 2),
       );
@@ -83,52 +123,61 @@ const BluetoothScanPage = ({ ...props }: any) => {
 
     delegate.didRangeBeaconsInRegion = function (pluginResult) {
       // Not seeing this called...
-      logToDom('[BLE] didRangeBeaconsInRegion');
-      logToDom(JSON.stringify(pluginResult));
+      logDebug('[BLE] didRangeBeaconsInRegion');
+      logDebug(JSON.stringify(pluginResult));
     };
-
-    var uuid = '426C7565-4368-6172-6D42-6561636F6E73';
-    var identifier = 'BlueCharm_98105';
-    var minor = 4949;
-    var major = 3838;
-
-    // Use NULL for wildcard
-    // Need UUID value on iOS only, not Android (2nd parameter)
-    // https://stackoverflow.com/questions/38580410/how-to-scan-all-nearby-ibeacons-using-coordova-based-hybrid-application
-    var beaconRegion = new window['cordova'].plugins.locationManager.BeaconRegion(
-      identifier,
-      uuid,
-      major,
-      minor,
-    );
 
     window['cordova'].plugins.locationManager.setDelegate(delegate);
 
-    // TODO:
-    // ADD IN iOS PERMISSION CHECKS HERE
-
-    window['cordova'].plugins.locationManager
-      .startMonitoringForRegion(beaconRegion)
-      .fail(function (e) {
-        logToDom(e);
-      })
-      .done();
+    // Setup regions for each beacon
+    beaconsToArray().forEach((sampleBeacon: BLEBeaconDevice) => {
+      // Use NULL for wildcard
+      // Need UUID value on iOS only, not Android (2nd parameter)
+      // https://stackoverflow.com/questions/38580410/how-to-scan-all-nearby-ibeacons-using-coordova-based-hybrid-application
+      const beaconRegion = new window['cordova'].plugins.locationManager.BeaconRegion(
+        sampleBeacon.identifier,
+        sampleBeacon.uuid,
+        sampleBeacon.major,
+        sampleBeacon.minor,
+      );
+      window['cordova'].plugins.locationManager
+        .startMonitoringForRegion(beaconRegion)
+        .fail(function (e) {
+          logWarn(e);
+        })
+        .done();
+    });
   };
 
   const switchMode = () => {
     setIsClassic(!isClassic);
   };
 
-  const BluetoothCardList = ({ devices }) => (
-    <div>
-      {devices.map((device) => {
-        if (device) {
-          return <BluetoothCard device={device} />;
-        }
-        return null;
-      })}
-    </div>
-  );
+  const BluetoothCardList = ({ devices }) => {
+    if (isClassic) {
+      // When in calssic mode, render devices as normal
+      return (
+        <div>
+          {devices.map((device) => {
+            if (device) {
+              return <BluetoothCard device={device} isClassic={isClassic} />;
+            }
+            return null;
+          })}
+        </div>
+      );
+    }
+    const beaconsAsArray = beaconsToArray();
+    return (
+      <div>
+        {beaconsAsArray.map((beacon) => {
+          if (beacon) {
+            return <BluetoothCard device={beacon} />;
+          }
+        })}
+      </div>
+    );
+  };
 
   const BlueScanContent = () => (
     <div style={{ height: '100%' }}>
@@ -160,22 +209,17 @@ const BluetoothScanPage = ({ ...props }: any) => {
         <Button
           mode="elevated"
           onPress={isClassic ? runBluetoothClassicTest : runBLETest}
-          textColor={isScanning ? colors.onPrimary : colors.primary}
-          buttonColor={isScanning ? colors.primary : colors.onPrimary}
+          textColor={isScanningClassic ? colors.onPrimary : colors.primary}
+          buttonColor={isScanningClassic ? colors.primary : colors.onPrimary}
           style={s.btn}>
-          {isScanning
+          {isScanningClassic
             ? t('bluetooth.is-scanning')
             : isClassic
               ? t('bluetooth.scan.for-bluetooth')
               : t('bluetooth.scan.for-ble')}
         </Button>
       </View>
-      <BluetoothCardList devices={logs} />
-      <ScrollView>
-        {testLogs.map((log, index) => (
-          <Text key={index}>{log}</Text>
-        ))}
-      </ScrollView>
+      <BluetoothCardList devices={isClassic ? bluetoothClassicList : sampleBLEDevices} />
     </div>
   );
 
