@@ -33,8 +33,8 @@ const DateSelect = ({ mode, onChoose, ...rest }: Props) => {
   const minMaxDates = useMemo(() => {
     if (!pipelineRange) return { startDate: new Date(), endDate: new Date() };
     return {
-      startDate: new Date(pipelineRange?.start_ts * 1000),
-      endDate: new Date(pipelineRange?.end_ts * 1000),
+      startDate: new Date(pipelineRange?.start_ts * 1000), // start of pipeline
+      endDate: new Date(), // today
     };
   }, [pipelineRange]);
 
