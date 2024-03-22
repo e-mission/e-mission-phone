@@ -100,8 +100,20 @@ const DateSelect = ({ mode, onChoose, ...rest }: Props) => {
         endDate={mode == 'range' ? queriedRangeAsJsDates?.[1] : undefined}
         validRange={minMaxDates}
         onDismiss={onDismissSingle}
-        onChange={mode == 'single' ? onChoose : undefined}
-        onConfirm={mode == 'single' ? onDismissSingle : onChoose}
+        onChange={(params) => {
+          if (mode == 'single') {
+            onChoose(params);
+            onDismissSingle();
+          }
+        }}
+        onConfirm={(params) => {
+          if (mode == 'range') {
+            onChoose(params);
+            onDismissSingle();
+          } else {
+            onDismissSingle();
+          }
+        }}
         {...rest}
       />
     </>
