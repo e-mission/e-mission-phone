@@ -15,7 +15,7 @@ import DailyActiveMinutesCard from './DailyActiveMinutesCard';
 import CarbonTextCard from './CarbonTextCard';
 import ActiveMinutesTableCard from './ActiveMinutesTableCard';
 import { getAggregateData, getMetrics } from '../services/commHelper';
-import { displayError, logDebug, logWarn } from '../plugin/logger';
+import { displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
 import { ServerConnConfig } from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
@@ -103,12 +103,12 @@ const MetricsTab = () => {
         <Appbar.Content title={t('metrics.dashboard-tab')} />
         <DateSelect
           mode="range"
-          onChoose={({ startDate, endDate }) =>
-            setDateRange([
-              startDate.toISOString().substring(0, 10),
-              endDate.toISOString().substring(0, 10),
-            ])
-          }
+          onChoose={({ startDate, endDate }) => {
+            const start = DateTime.fromJSDate(startDate).toISODate();
+            const end = DateTime.fromJSDate(endDate).toISODate();
+            if (!start || !end) return displayErrorMsg('Invalid date');
+            setDateRange([start, end]);
+          }}
         />
         <Appbar.Action icon="refresh" size={32} onPress={refreshTimeline} />
       </NavBar>

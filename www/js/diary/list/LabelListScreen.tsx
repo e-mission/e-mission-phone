@@ -7,6 +7,8 @@ import TimelineScrollList from './TimelineScrollList';
 import NavBar from '../../components/NavBar';
 import TimelineContext from '../../TimelineContext';
 import { LabelTabContext } from '../LabelTab';
+import { DateTime } from 'luxon';
+import { displayErrorMsg } from '../../plugin/logger';
 
 const LabelListScreen = () => {
   const { filterInputs, setFilterInputs, displayedEntries } = useContext(LabelTabContext);
@@ -25,7 +27,11 @@ const LabelListScreen = () => {
         />
         <DateSelect
           mode="single"
-          onChoose={({ date }) => loadSpecificWeek(date.toISOString().substring(0, 10))}
+          onChoose={({ date }) => {
+            const d = DateTime.fromJSDate(date).toISODate();
+            if (!d) return displayErrorMsg('Invalid date');
+            loadSpecificWeek(d);
+          }}
         />
         <Appbar.Action
           icon="refresh"
