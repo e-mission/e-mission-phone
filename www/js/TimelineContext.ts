@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { CompositeTrip, TimelineEntry, TimestampRange, UserInputEntry } from './types/diaryTypes';
 import useAppConfig from './useAppConfig';
 import { LabelOption, LabelOptions, MultilabelKey } from './types/labelTypes';
@@ -21,9 +21,6 @@ import { getPipelineRangeTs } from './services/commHelper';
 import { getNotDeletedCandidates, mapInputsToTimelineEntries } from './survey/inputMatcher';
 import { publish } from './customEventHandler';
 import { EnketoUserInputEntry } from './survey/enketo/enketoHelper';
-
-const ONE_DAY = 24 * 60 * 60; // seconds
-const ONE_WEEK = ONE_DAY * 7; // seconds
 
 // initial query range is the past 7 days, including today
 const today = DateTime.now().toISODate().substring(0, 10);
@@ -142,7 +139,7 @@ export const useTimelineContext = (): ContextProps => {
     try {
       const pipelineRange = await getPipelineRangeTs();
       await updateAllUnprocessedInputs(pipelineRange, appConfig);
-      logDebug(`LabelTab: After updating unprocessedInputs, 
+      logDebug(`Timeline: After updating unprocessedInputs, 
         unprocessedLabels = ${JSON.stringify(unprocessedLabels)}; 
         unprocessedNotes = ${JSON.stringify(unprocessedNotes)}`);
       setPipelineRange(pipelineRange);
@@ -175,15 +172,15 @@ export const useTimelineContext = (): ContextProps => {
   }
 
   function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
-    logDebug(`LabelTab: handleFetchedTrips with
+    logDebug(`Timeline: handleFetchedTrips with
       mode = ${mode}; 
-      ctList = ${JSON.stringify(ctList)}; 
-      utList = ${JSON.stringify(utList)}`);
+      ctList has ${ctList.length} trips; 
+      utList has ${utList.length} trips`);
 
     const tripsRead = ctList.concat(utList);
     const showPlaces = Boolean(appConfig.survey_info?.buttons?.['place-notes']);
     const readTimelineMap = compositeTrips2TimelineMap(tripsRead, showPlaces);
-    logDebug(`LabelTab: after composite trips converted, 
+    logDebug(`Timeline: after composite trips converted, 
       readTimelineMap = ${[...readTimelineMap.entries()]}`);
     if (mode == 'append') {
       setTimelineMap(new Map([...(timelineMap || []), ...readTimelineMap]));
@@ -199,8 +196,7 @@ export const useTimelineContext = (): ContextProps => {
   async function fetchTripsInRange(dateRange: [string, string]) {
     if (!pipelineRange?.start_ts || !pipelineRange?.end_ts)
       return logWarn('No pipelineRange yet - early return');
-    logDebug('LabelTab: fetchTripsInRange from ' + startTs + ' to ' + endTs);
-    const readCompositePromise = readAllCompositeTrips(startTs, endTs);
+    logDebug('Timeline: fetchTripsInRange from ' + dateRange[0] + ' to ' + dateRange[1]);
     const [startTs, endTs] = isoDateRangeToTsRange(dateRange);
 
     const readCompositePromise = readAllCompositeTrips(
@@ -222,8 +218,8 @@ export const useTimelineContext = (): ContextProps => {
     }
 
     const results = await Promise.all([readCompositePromise, readUnprocessedPromise]);
-    logDebug(`LabelTab: readCompositePromise resolved as: ${JSON.stringify(results[0])}; 
-      readUnprocessedPromise resolved as: ${JSON.stringify(results[1])}`);
+    logDebug(`Timeline: readCompositePromise resolved with ${results[0]?.length} trips; 
+      readUnprocessedPromise resolved with ${results[1]?.length} trips`);
     return results;
   }
 
@@ -263,7 +259,7 @@ export const useTimelineContext = (): ContextProps => {
       for (const [inputType, labelValue] of Object.entries(userInput)) {
         newLabels[inputType] = { data: labelValue, metadata: nowTs };
       }
-      logDebug('LabelTab: newLabels = ' + JSON.stringify(newLabels));
+      logDebug('Timeline: newLabels = ' + JSON.stringify(newLabels));
       const newTimelineLabelMap: TimelineLabelMap = {
         ...timelineLabelMap,
         [oid]: {
