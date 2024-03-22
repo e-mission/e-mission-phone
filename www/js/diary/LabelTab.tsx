@@ -102,11 +102,10 @@ const LabelTab = () => {
     setDisplayedEntries(entriesToDisplay);
   }
 
-  // once pipelineRange is set, load the most recent week of data
+  // once pipelineRange is set, update all unprocessed inputs
   useEffect(() => {
     if (pipelineRange && pipelineRange.end_ts) {
       updateAllUnprocessedInputs(pipelineRange, appConfig);
-      loadAnotherWeek('past');
     }
   }, [pipelineRange]);
 
