@@ -10,15 +10,8 @@ import { LabelTabContext } from '../LabelTab';
 
 const LabelListScreen = () => {
   const { filterInputs, setFilterInputs, displayedEntries } = useContext(LabelTabContext);
-  const {
-    timelineMap,
-    queriedRange,
-    loadSpecificWeek,
-    refreshTimeline,
-    pipelineRange,
-    loadAnotherWeek,
-    timelineIsLoading,
-  } = useContext(TimelineContext);
+  const { timelineMap, loadSpecificWeek, refreshTimeline, loadAnotherWeek } =
+    useContext(TimelineContext);
   const { colors } = useTheme();
 
   return (
@@ -31,8 +24,8 @@ const LabelListScreen = () => {
           numListTotal={timelineMap?.size}
         />
         <DateSelect
-          tsRange={{ oldestTs: queriedRange?.start_ts, latestTs: queriedRange?.end_ts }}
-          loadSpecificWeekFn={loadSpecificWeek}
+          mode="single"
+          onChoose={({ date }) => loadSpecificWeek(date.toISOString().substring(0, 10))}
         />
         <Appbar.Action
           icon="refresh"
@@ -43,13 +36,7 @@ const LabelListScreen = () => {
         />
       </NavBar>
       <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <TimelineScrollList
-          listEntries={displayedEntries}
-          queriedRange={queriedRange}
-          pipelineRange={pipelineRange}
-          loadMoreFn={loadAnotherWeek}
-          isLoading={timelineIsLoading}
-        />
+        <TimelineScrollList listEntries={displayedEntries} loadMoreFn={loadAnotherWeek} />
       </View>
     </>
   );
