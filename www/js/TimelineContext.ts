@@ -166,9 +166,28 @@ export const useTimelineContext = (): ContextProps => {
 
   function loadSpecificWeek(date: string) {
     logDebug('Timeline: loadSpecificWeek for date ' + date);
-    const threeDaysBefore = isoDateWithOffset(date, -3);
-    const threeDaysAfter = isoDateWithOffset(date, 3);
-    setDateRange([threeDaysBefore, threeDaysAfter]);
+    if (!pipelineRange) return logWarn('No pipelineRange yet - early return from loadSpecificWeek');
+    let newStartDate = isoDateWithOffset(date, -3); // three days before
+    let newEndDate = isoDateWithOffset(date, 3); // three days after
+
+    const pipelineStart = DateTime.fromSeconds(pipelineRange.start_ts).toISODate();
+    const todayDate = DateTime.now().toISODate();
+
+    const wentBeforePipeline = newStartDate.replace(/-/g, '') < pipelineStart.replace(/-/g, '');
+    const wentAfterToday = newEndDate.replace(/-/g, '') > todayDate.replace(/-/g, '');
+
+    if (wentBeforePipeline && wentAfterToday) {
+      newStartDate = pipelineStart;
+      newEndDate = todayDate;
+    } else if (wentBeforePipeline) {
+      newStartDate = pipelineStart;
+      newEndDate = isoDateWithOffset(pipelineStart, 6);
+    } else if (wentAfterToday) {
+      newStartDate = isoDateWithOffset(todayDate, -6);
+      newEndDate = todayDate;
+    }
+    logDebug('Timeline: loadSpecificWeek setting new date range = ' + [newStartDate, newEndDate]);
+    setDateRange([newStartDate, newEndDate]);
   }
 
   function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
