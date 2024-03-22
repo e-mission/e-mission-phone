@@ -96,7 +96,9 @@
       "cordova-plugin-androidx-adapter": {},
       "phonegap-plugin-barcodescanner": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
-      }
+      },
+      "cordova-plugin-bluetooth-classic-serial-port": {},
+      "cordova-custom-config": {}
     }
   },
   "dependencies": {
@@ -118,7 +120,7 @@
     "cordova-plugin-app-version": "0.1.14",
     "cordova-plugin-customurlscheme": "5.0.2",
     "cordova-plugin-device": "2.1.0",
-    "cordova-plugin-em-datacollection": "git+https://github.com/e-mission/e-mission-data-collection.git#v1.8.2",
+    "cordova-plugin-em-datacollection": "git+https://github.com/e-mission/e-mission-data-collection.git#v1.8.3",
     "cordova-plugin-em-opcodeauth": "git+https://github.com/e-mission/cordova-jwt-auth.git#v1.7.2",
     "cordova-plugin-em-server-communication": "git+https://github.com/e-mission/cordova-server-communication.git#v1.2.6",
     "cordova-plugin-em-serversync": "git+https://github.com/e-mission/cordova-server-sync.git#v1.3.2",
@@ -132,6 +134,8 @@
     "cordova-plugin-ionic-webview": "5.0.0",
     "cordova-plugin-local-notification-12": "github:e-mission/cordova-plugin-local-notification-12#v0.1.4-fix-android-action",
     "cordova-plugin-x-socialsharing": "6.0.4",
+    "cordova-plugin-bluetooth-classic-serial-port": "git+https://github.com/louisg1337/cordova-plugin-bluetooth-classic-serial-port.git",
+    "cordova-custom-config": "^5.1.1",
     "core-js": "^2.5.7",
     "enketo-core": "^6.1.7",
     "enketo-transformer": "^4.0.0",
