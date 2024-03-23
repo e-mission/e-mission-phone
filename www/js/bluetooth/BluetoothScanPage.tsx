@@ -104,10 +104,6 @@ const BluetoothScanPage = ({ ...props }: any) => {
         setRangeStatus(pluginResult.region.uuid.toUpperCase(), true);
       } else if (pluginResult.state == 'CLRegionStateOutside') {
         setRangeStatus(pluginResult.region.uuid.toUpperCase(), false);
-      } else {
-        displayErrorMsg('Error: Unknown state recorded during BLE Scanning!');
-        logWarn('Error: Unknown state recorded in BLE Scanning!');
-        return;
       }
       logDebug('[BLE] didDetermineStateForRegion');
       logDebug(JSON.stringify(pluginResult, null, 2));
@@ -175,7 +171,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
 
   const BluetoothCardList = ({ devices }) => {
     if (isClassic) {
-      // When in calssic mode, render devices as normal
+      // When in classic mode, render devices as normal
       return (
         <div>
           {devices.map((device) => {
