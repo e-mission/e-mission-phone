@@ -238,7 +238,8 @@
     },
     "scan": {
       "for-ble": "Scan for BLE Beacons",
-      "for-bluetooth": "Scan for Classic Devices"
+      "for-bluetooth": "Scan for Classic Devices",
+      "stop": "Stop Scanning"
     },
     "is-scanning": "Scanning...",
     "device-info": {

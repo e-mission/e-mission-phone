@@ -37,8 +37,8 @@ const BluetoothScanPage = ({ ...props }: any) => {
       in_range: false,
     },
   });
-
   const [isScanningClassic, setIsScanningClassic] = useState(false);
+  const [isScanningBLE, setIsScanningBLE] = useState(false);
   const [isClassic, setIsClassic] = useState(false);
   const { colors } = useTheme();
 
@@ -49,8 +49,9 @@ const BluetoothScanPage = ({ ...props }: any) => {
       ...device,
     }));
   }
+
   // Function to run Bluetooth Classic test and update logs
-  const runBluetoothClassicTest = async () => {
+  async function runBluetoothClassicTest() {
     // Classic not currently supported on iOS
     if (window['cordova'].platformId == 'ios') {
       displayErrorMsg('Sorry, iOS is not supported!', 'OSError');
@@ -77,23 +78,22 @@ const BluetoothScanPage = ({ ...props }: any) => {
     } finally {
       setIsScanningClassic(false);
     }
-  };
-
-  const runBLETest = async () => {
-    //await startBLEScanning();
-    BeaconMonitor(); // Will combine BeaconMonitor & StartBLE Scanning, if possible
-  };
+  }
 
   function setRangeStatus(uuid: string, status: boolean) {
-    setSampleBLEDevices((prevDevices) => {
-      const newList = prevDevices;
-      newList[uuid].in_range = status;
-      return newList;
-    });
+    setSampleBLEDevices((prevDevices) => ({
+      ...prevDevices,
+      [uuid]: {
+        ...prevDevices[uuid],
+        in_range: status,
+      },
+    }));
   }
 
   // BLE LOGIC
-  const BeaconMonitor = () => {
+  async function startBeaconScanning() {
+    setIsScanningBLE(true);
+
     let delegate = new window['cordova'].plugins.locationManager.Delegate();
 
     delegate.didDetermineStateForRegion = function (pluginResult: BLEPluginCallback) {
@@ -147,7 +147,27 @@ const BluetoothScanPage = ({ ...props }: any) => {
         })
         .done();
     });
-  };
+  }
+
+  async function stopBeaconScanning() {
+    setIsScanningBLE(false);
+
+    beaconsToArray().forEach((sampleBeacon: BLEBeaconDevice) => {
+      setRangeStatus(sampleBeacon.uuid, false); // "zero out" the beacons
+      const beaconRegion = new window['cordova'].plugins.locationManager.BeaconRegion(
+        sampleBeacon.identifier,
+        sampleBeacon.uuid,
+        sampleBeacon.major,
+        sampleBeacon.minor,
+      );
+      window['cordova'].plugins.locationManager
+        .stopMonitoringForRegion(beaconRegion)
+        .fail(function (e) {
+          logWarn(e);
+        })
+        .done();
+    });
+  }
 
   const switchMode = () => {
     setIsClassic(!isClassic);
@@ -172,10 +192,40 @@ const BluetoothScanPage = ({ ...props }: any) => {
       <div>
         {beaconsAsArray.map((beacon) => {
           if (beacon) {
-            return <BluetoothCard device={beacon} />;
+            return <BluetoothCard device={beacon} isScanningBLE={isScanningBLE} />;
           }
         })}
       </div>
+    );
+  };
+
+  const ScanButton = () => {
+    if (isClassic) {
+      return (
+        <View style={s.btnContainer}>
+          <Button
+            mode="elevated"
+            onPress={runBluetoothClassicTest}
+            textColor={isScanningClassic ? colors.onPrimary : colors.primary}
+            buttonColor={isScanningClassic ? colors.primary : colors.onPrimary}
+            style={s.btn}>
+            {isScanningClassic ? t('bluetooth.is-scanning') : t('bluetooth.scan.for-bluetooth')}
+          </Button>
+        </View>
+      );
+    }
+    // else, if BLE
+    return (
+      <View style={s.btnContainer}>
+        <Button
+          mode="elevated"
+          onPress={isScanningBLE ? stopBeaconScanning : startBeaconScanning}
+          textColor={isScanningBLE ? colors.onPrimary : colors.primary}
+          buttonColor={isScanningBLE ? colors.primary : colors.onPrimary}
+          style={s.btn}>
+          {isScanningBLE ? t('bluetooth.scan.stop') : t('bluetooth.scan.for-ble')}
+        </Button>
+      </View>
     );
   };
 
@@ -199,26 +249,13 @@ const BluetoothScanPage = ({ ...props }: any) => {
         <Button
           mode="elevated"
           onPress={switchMode}
-          textColor={isClassic ? colors.onPrimary : colors.primary}
+          textColor={colors.primary}
           style={s.btn}
-          buttonColor={isClassic ? colors.primary : colors.onPrimary}>
+          buttonColor={colors.onPrimary}>
           {isClassic ? t('bluetooth.switch-to.ble') : t('bluetooth.switch-to.classic')}
         </Button>
       </View>
-      <View style={s.btnContainer}>
-        <Button
-          mode="elevated"
-          onPress={isClassic ? runBluetoothClassicTest : runBLETest}
-          textColor={isScanningClassic ? colors.onPrimary : colors.primary}
-          buttonColor={isScanningClassic ? colors.primary : colors.onPrimary}
-          style={s.btn}>
-          {isScanningClassic
-            ? t('bluetooth.is-scanning')
-            : isClassic
-              ? t('bluetooth.scan.for-bluetooth')
-              : t('bluetooth.scan.for-ble')}
-        </Button>
-      </View>
+      <ScanButton />
       <BluetoothCardList devices={isClassic ? bluetoothClassicList : sampleBLEDevices} />
     </div>
   );

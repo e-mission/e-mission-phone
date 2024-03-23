@@ -1,9 +1,10 @@
 import React from 'react';
-import { Card, List } from 'react-native-paper';
+import { Card, List, useTheme } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 
 type Props = any;
-const BluetoothCard = ({ device, isClassic }: Props) => {
+const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
+  const { colors } = useTheme();
   if (isClassic) {
     return (
       <Card style={cardStyles.card}>
@@ -16,8 +17,14 @@ const BluetoothCard = ({ device, isClassic }: Props) => {
       </Card>
     );
   }
+
+  let bgColor = colors.onPrimary; // 'rgba(225,225,225,1)'
+  if (isScanningBLE) {
+    bgColor = device.in_range ? `rgba(200,250,200,1)` : `rgba(250,200,200,1)`;
+  }
+
   return (
-    <Card style={cardStyles.card}>
+    <Card style={{ backgroundColor: bgColor, ...cardStyles.card }}>
       <Card.Title
         title={`Name: ${device.identifier}`}
         titleVariant="titleLarge"
