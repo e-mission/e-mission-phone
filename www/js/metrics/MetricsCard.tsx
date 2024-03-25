@@ -4,11 +4,17 @@ import { Card, Checkbox, Text, useTheme } from 'react-native-paper';
 import colorLib from 'color';
 import BarChart from '../components/BarChart';
 import { DayOfMetricData } from './metricsTypes';
-import { formatDateRangeOfDays, getLabelsForDay, getUniqueLabelsForDays } from './metricsHelper';
+import {
+  formatDateRangeOfDays,
+  getLabelsForDay,
+  tsForDayOfMetricData,
+  getUniqueLabelsForDays,
+  valueForModeOnDay,
+} from './metricsHelper';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { cardStyles } from './MetricsTab';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
-import { getBaseModeByKey, getBaseModeByText } from '../diary/diaryHelper';
+import { getBaseModeByKey, getBaseModeByText, modeColors } from '../diary/diaryHelper';
 import { useTranslation } from 'react-i18next';
 
 type Props = {
@@ -42,12 +48,12 @@ const MetricsCard = ({
     metricDataDays.forEach((day) => {
       const labels = getLabelsForDay(day);
       labels.forEach((label) => {
-        const rawVal = day[`label_${label}`];
+        const rawVal = valueForModeOnDay(day, label);
         if (rawVal) {
           records.push({
             label: labelKeyToRichMode(label),
             x: unitFormatFn ? unitFormatFn(rawVal) : rawVal,
-            y: day.ts * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
+            y: tsForDayOfMetricData(day) * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
           });
         }
       });
@@ -76,7 +82,10 @@ const MetricsCard = ({
     // for each label, sum up cumulative values across all days
     const vals = {};
     uniqueLabels.forEach((label) => {
-      const sum = metricDataDays.reduce((acc, day) => acc + (day[`label_${label}`] || 0), 0);
+      const sum = metricDataDays.reduce(
+        (acc, day) => acc + (valueForModeOnDay(day, label) || 0),
+        0,
+      );
       vals[label] = unitFormatFn ? unitFormatFn(sum) : sum;
     });
     return vals;

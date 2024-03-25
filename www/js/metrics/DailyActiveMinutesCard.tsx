@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
 import LineChart from '../components/LineChart';
 import { getBaseModeByText } from '../diary/diaryHelper';
+import { valueForModeOnDay } from './metricsHelper';
 
 const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = (typeof ACTIVE_MODES)[number];
@@ -21,7 +22,7 @@ const DailyActiveMinutesCard = ({ userMetrics }: Props) => {
     const recentDays = userMetrics?.duration?.slice(-14);
     recentDays?.forEach((day) => {
       ACTIVE_MODES.forEach((mode) => {
-        const activeSeconds = day[`label_${mode}`];
+        const activeSeconds = valueForModeOnDay(day, mode);
         if (activeSeconds) {
           records.push({
             label: labelKeyToRichMode(mode),

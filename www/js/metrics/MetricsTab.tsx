@@ -21,6 +21,7 @@ import { ServerConnConfig } from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext from '../TimelineContext';
 import { isoDateRangeToTsRange } from '../diary/timelineHelper';
+import { MetricsSummaries } from '../../../../e-mission-common/js';
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
@@ -54,16 +55,28 @@ const MetricsTab = () => {
   const { t } = useTranslation();
   const { getFormattedSpeed, speedSuffix, getFormattedDistance, distanceSuffix } =
     useImperialConfig();
-  const { dateRange, setDateRange, refreshTimeline } = useContext(TimelineContext);
+  const { dateRange, setDateRange, timelineMap, timelineLabelMap, refreshTimeline } =
+    useContext(TimelineContext);
 
   const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
   const [userMetrics, setUserMetrics] = useState<MetricsData | undefined>(undefined);
 
+  // aggregate metrics are fetched from the server
   useEffect(() => {
     if (!appConfig?.server) return;
-    loadMetricsForPopulation('user', dateRange);
     loadMetricsForPopulation('aggregate', dateRange);
   }, [dateRange, appConfig?.server]);
+
+  // user metrics are computed on the phone from the timeline data
+  useEffect(() => {
+    if (!timelineMap) return;
+    const userMetrics = MetricsSummaries.generate_summaries(
+      METRIC_LIST,
+      [...timelineMap.values()],
+      timelineLabelMap,
+    ) as MetricsData;
+    setUserMetrics(userMetrics);
+  }, [timelineMap]);
 
   async function loadMetricsForPopulation(
     population: 'user' | 'aggregate',

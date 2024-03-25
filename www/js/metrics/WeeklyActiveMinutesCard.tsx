@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardMargin, cardStyles } from './MetricsTab';
-import { formatDateRangeOfDays, segmentDaysByWeeks } from './metricsHelper';
+import { formatDateRangeOfDays, segmentDaysByWeeks, valueForModeOnDay } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
@@ -22,13 +22,16 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
     const records: { x: string; y: number; label: string }[] = [];
     const [recentWeek, prevWeek] = segmentDaysByWeeks(userMetrics?.duration, 2);
     ACTIVE_MODES.forEach((mode) => {
-      const prevSum = prevWeek?.reduce((acc, day) => acc + (day[`label_${mode}`] || 0), 0);
+      const prevSum = prevWeek?.reduce((acc, day) => acc + (valueForModeOnDay(day, mode) || 0), 0);
       if (prevSum) {
         // `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`
         const xLabel = `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(prevWeek)})`;
         records.push({ label: labelKeyToRichMode(mode), x: xLabel, y: prevSum / 60 });
       }
-      const recentSum = recentWeek?.reduce((acc, day) => acc + (day[`label_${mode}`] || 0), 0);
+      const recentSum = recentWeek?.reduce(
+        (acc, day) => acc + (valueForModeOnDay(day, mode) || 0),
+        0,
+      );
       if (recentSum) {
         const xLabel = `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(recentWeek)})`;
         records.push({ label: labelKeyToRichMode(mode), x: xLabel, y: recentSum / 60 });

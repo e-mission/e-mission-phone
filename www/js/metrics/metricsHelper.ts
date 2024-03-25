@@ -7,8 +7,9 @@ export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];
   metricDataDays.forEach((e) => {
     Object.keys(e).forEach((k) => {
-      if (k.startsWith('label_')) {
-        const label = k.substring(6); // remove 'label_' prefix leaving just the mode label
+      if (k.startsWith('label_') || k.startsWith('mode_')) {
+        let i = k.indexOf('_');
+        const label = k.substring(i + 1); // remove prefix leaving just the mode label
         if (!uniqueLabels.includes(label)) uniqueLabels.push(label);
       }
     });
@@ -18,8 +19,9 @@ export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
 
 export const getLabelsForDay = (metricDataDay: DayOfMetricData) =>
   Object.keys(metricDataDay).reduce((acc, k) => {
-    if (k.startsWith('label_')) {
-      acc.push(k.substring(6)); // remove 'label_' prefix leaving just the mode label
+    if (k.startsWith('label_') || k.startsWith('mode_')) {
+      let i = k.indexOf('_');
+      acc.push(k.substring(i + 1)); // remove prefix leaving just the mode label
     }
     return acc;
   }, [] as string[]);
@@ -39,14 +41,18 @@ export function segmentDaysByWeeks(days: DayOfMetricData[], nWeeks?: number) {
 }
 
 export function formatDate(day: DayOfMetricData) {
-  const dt = DateTime.fromISO(day.fmt_time, { zone: 'utc' });
+  const dt = DateTime.fromISO(dateForDayOfMetricData(day), { zone: 'utc' });
   return dt.toLocaleString({ ...DateTime.DATE_SHORT, year: undefined });
 }
 
 export function formatDateRangeOfDays(days: DayOfMetricData[]) {
   if (!days?.length) return '';
-  const firstDayDt = DateTime.fromISO(days[0].fmt_time, { zone: 'utc' });
-  const lastDayDt = DateTime.fromISO(days[days.length - 1].fmt_time, { zone: 'utc' });
+  const firstDayDt = DateTime.fromISO(dateForDayOfMetricData(days[0]), {
+    zone: 'utc',
+  });
+  const lastDayDt = DateTime.fromISO(dateForDayOfMetricData(days[days.length - 1]), {
+    zone: 'utc',
+  });
   const firstDay = firstDayDt.toLocaleString({ ...DateTime.DATE_SHORT, year: undefined });
   const lastDay = lastDayDt.toLocaleString({ ...DateTime.DATE_SHORT, year: undefined });
   return `${firstDay} - ${lastDay}`;
@@ -115,8 +121,9 @@ export function parseDataFromMetrics(metrics, population) {
         }
       }
       //this section handles user lables, assuming 'label_' prefix
-      if (field.startsWith('label_')) {
-        let actualMode = field.slice(6, field.length); //remove prefix
+      if (field.startsWith('label_') || field.startsWith('mode_')) {
+        let i = field.indexOf('_');
+        let actualMode = field.substring(i + 1); // remove prefix
         logDebug('Mapped field ' + field + ' to mode ' + actualMode);
         if (!(actualMode in mode_bins)) {
           mode_bins[actualMode] = [];
@@ -136,6 +143,15 @@ export function parseDataFromMetrics(metrics, population) {
 
   return Object.entries(mode_bins).map(([key, values]) => ({ key, values }));
 }
+
+export const dateForDayOfMetricData = (day: DayOfMetricData) =>
+  'date' in day ? day.date : day.fmt_time.substring(0, 10);
+
+export const tsForDayOfMetricData = (day: DayOfMetricData) =>
+  DateTime.fromISO(dateForDayOfMetricData(day)).toSeconds();
+
+export const valueForModeOnDay = (day: DayOfMetricData, key: string) =>
+  day[`mode_${key}`] || day[`label_${key}`];
 
 export type MetricsSummary = { key: string; values: number };
 export function generateSummaryFromData(modeMap, metric) {
