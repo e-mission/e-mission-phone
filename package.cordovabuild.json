@@ -98,7 +98,8 @@
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       },
       "cordova-plugin-bluetooth-classic-serial-port": {},
-      "cordova-custom-config": {}
+      "cordova-custom-config": {},
+      "cordova-plugin-ibeacon": {}
     }
   },
   "dependencies": {
@@ -136,6 +137,7 @@
     "cordova-plugin-x-socialsharing": "6.0.4",
     "cordova-plugin-bluetooth-classic-serial-port": "git+https://github.com/louisg1337/cordova-plugin-bluetooth-classic-serial-port.git",
     "cordova-custom-config": "^5.1.1",
+    "cordova-plugin-ibeacon": "git+https://github.com/louisg1337/cordova-plugin-ibeacon.git",
     "core-js": "^2.5.7",
     "enketo-core": "^6.1.7",
     "enketo-transformer": "^4.0.0",

@@ -232,12 +232,23 @@
   "list-datepicker-set": "Set",
 
   "bluetooth": {
-    "scan-debug-title": "Bluetooth Scanner",
-    "scan-for-bluetooth": "Scan for Devices",
+    "title": {
+      "ble": "BLE Beacon Scanner",
+      "classic": "Bluetooth Classic Scanner"
+    },
+    "scan": {
+      "for-ble": "Scan for BLE Beacons",
+      "for-bluetooth": "Scan for Classic Devices",
+      "stop": "Stop Scanning"
+    },
     "is-scanning": "Scanning...",
     "device-info": {
       "id": "ID",
       "name": "Name"
+    },
+    "switch-to": {
+      "classic": "Switch to Classic",
+      "ble": "Switch to BLE"
     }
   },
 

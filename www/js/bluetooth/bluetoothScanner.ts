@@ -1,12 +1,12 @@
 import { logDebug, displayError } from '../plugin/logger';
-import { BluetoothClassicDevice } from '../types/bluetoothTypes';
+import { BluetoothClassicDevice } from '../types/bluetoothDevices';
 
 /**
  * gatherBluetoothData scans for viewable Bluetooth Classic Devices
  * @param t is the i18next translation function
  * @returns an array of strings containing device data, formatted ['ID: id Name: name']
  */
-export default function gatherBluetoothData(t): Promise<string[]> {
+export function gatherBluetoothClassicData(t): Promise<BluetoothClassicDevice[]> {
   return new Promise((resolve, reject) => {
     logDebug('Running bluetooth discovery test!');
 
