@@ -31,6 +31,7 @@ import { getNotDeletedCandidates, mapInputsToTimelineEntries } from '../survey/i
 import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
 import LabelTabContext, {
+  LabelTabFilter,
   TimelineLabelMap,
   TimelineMap,
   TimelineNotesMap,
@@ -49,7 +50,7 @@ const LabelTab = () => {
   const { colors } = useTheme();
 
   const [labelOptions, setLabelOptions] = useState<LabelOptions<MultilabelKey> | null>(null);
-  const [filterInputs, setFilterInputs] = useState<any[]>([]);
+  const [filterInputs, setFilterInputs] = useState<LabelTabFilter[]>([]);
   const [lastFilteredTs, setLastFilteredTs] = useState<number | null>(null);
   const [pipelineRange, setPipelineRange] = useState<TimestampRange | null>(null);
   const [queriedRange, setQueriedRange] = useState<TimestampRange | null>(null);
@@ -185,7 +186,8 @@ const LabelTab = () => {
   async function loadAnotherWeek(when: 'past' | 'future') {
     try {
       logDebug('LabelTab: loadAnotherWeek into the ' + when);
-      if (!pipelineRange?.start_ts) return logWarn('No pipelineRange yet - early return');
+      if (!pipelineRange?.start_ts || !pipelineRange?.end_ts)
+        return logWarn('No pipelineRange yet - early return');
 
       const reachedPipelineStart =
         queriedRange?.start_ts && queriedRange.start_ts <= pipelineRange.start_ts;
@@ -248,9 +250,7 @@ const LabelTab = () => {
     tripsRead
       .slice()
       .reverse()
-      .forEach(function (trip, index) {
-        fillLocationNamesOfTrip(trip);
-      });
+      .forEach((trip, index) => fillLocationNamesOfTrip(trip));
     const readTimelineMap = compositeTrips2TimelineMap(tripsRead, showPlaces);
     logDebug(`LabelTab: after composite trips converted, 
       readTimelineMap = ${[...readTimelineMap.entries()]}`);
@@ -266,7 +266,8 @@ const LabelTab = () => {
   }
 
   async function fetchTripsInRange(startTs: number, endTs: number) {
-    if (!pipelineRange?.start_ts) return logWarn('No pipelineRange yet - early return');
+    if (!pipelineRange?.start_ts || !pipelineRange?.end_ts)
+      return logWarn('No pipelineRange yet - early return');
     logDebug('LabelTab: fetchTripsInRange from ' + startTs + ' to ' + endTs);
     const readCompositePromise = readAllCompositeTrips(startTs, endTs);
     let readUnprocessedPromise;

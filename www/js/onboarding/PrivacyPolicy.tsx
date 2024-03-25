@@ -36,7 +36,21 @@ const PrivacyPolicy = () => {
     );
   }
 
-  const templateText = useMemo(() => getTemplateText(appConfig, i18n.language), [appConfig]);
+  // backwards compat hack to fill in the raw_data_use for programs that don't have it
+  if (appConfig?.intro) {
+    const default_raw_data_use = {
+      en: `monitor the ${appConfig?.intro?.program_or_study}, send personalized surveys or provide recommendations to participants`,
+      es: `monitorear el ${appConfig?.intro?.program_or_study}, enviar encuestas personalizadas o proporcionar recomendaciones a los participantes`,
+    };
+    Object.entries(appConfig?.intro?.translated_text).forEach(([lang, val]: [string, any]) => {
+      val.raw_data_use = val.raw_data_use || default_raw_data_use[lang];
+    });
+  }
+
+  const templateText = useMemo(
+    () => getTemplateText(appConfig, i18n.resolvedLanguage),
+    [appConfig],
+  );
 
   return (
     <>

@@ -26,7 +26,7 @@ const DataDatePicker = ({ date, setDate, open, setOpen, minDate }) => {
   return (
     <>
       <DatePickerModal
-        locale={i18n.language}
+        locale={i18n.resolvedLanguage || 'en'}
         mode="single"
         visible={open}
         onDismiss={onDismiss}

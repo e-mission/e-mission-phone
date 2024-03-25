@@ -1,5 +1,5 @@
-import { Dispatch, SetStateAction, createContext } from 'react';
-import { TimelineEntry, UserInputEntry } from '../types/diaryTypes';
+import { createContext } from 'react';
+import { TimelineEntry, TimestampRange, UserInputEntry } from '../types/diaryTypes';
 import { LabelOption, LabelOptions, MultilabelKey } from '../types/labelTypes';
 import { EnketoUserInputEntry } from '../survey/enketo/enketoHelper';
 
@@ -24,6 +24,13 @@ export type CustomLabelMap = {
   [k: string]: string[];
 };
 
+export type LabelTabFilter = {
+  key: string;
+  text: string;
+  filter: (trip: TimelineEntry, userInputForTrip: UserInputMap) => boolean;
+  state?: boolean;
+};
+
 type ContextProps = {
   labelOptions: LabelOptions | null;
   timelineMap: TimelineMap | null;
@@ -32,14 +39,14 @@ type ContextProps = {
   labelFor: (tlEntry: TimelineEntry, labelType: MultilabelKey) => LabelOption | undefined;
   addUserInputToEntry: (oid: string, userInput: any, inputType: 'label' | 'note') => void;
   displayedEntries: TimelineEntry[] | null;
-  filterInputs: any; // TODO
-  setFilterInputs: any; // TODO
-  queriedRange: any; // TODO
-  pipelineRange: any; // TODO
+  filterInputs: LabelTabFilter[];
+  setFilterInputs: (filters: LabelTabFilter[]) => void;
+  queriedRange: TimestampRange | null;
+  pipelineRange: TimestampRange | null;
   isLoading: string | false;
-  loadAnotherWeek: any; // TODO
-  loadSpecificWeek: any; // TODO
-  refresh: any; // TODO
+  loadAnotherWeek: (when: 'past' | 'future') => void;
+  loadSpecificWeek: (d: Date) => void;
+  refresh: () => void;
 };
 
 export default createContext<ContextProps>({} as ContextProps);

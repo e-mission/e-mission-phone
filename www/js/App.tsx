@@ -20,6 +20,7 @@ import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
 import { withErrorBoundary } from './plugin/ErrorBoundary';
 import { getUserCustomLabels } from './services/commHelper';
 import { initCustomDatasetHelper } from './metrics/customMetricsHelper';
+import AlertBar from './components/AlertBar';
 
 const defaultRoutes = (t) => [
   {
@@ -27,18 +28,21 @@ const defaultRoutes = (t) => [
     title: t('diary.label-tab'),
     focusedIcon: 'check-bold',
     unfocusedIcon: 'check-outline',
+    accessibilityLabel: t('diary.label-tab'),
   },
   {
     key: 'metrics',
     title: t('metrics.dashboard-tab'),
     focusedIcon: 'chart-box',
     unfocusedIcon: 'chart-box-outline',
+    accessibilityLabel: t('metrics.dashboard-tab'),
   },
   {
     key: 'control',
     title: t('control.profile-tab'),
     focusedIcon: 'account',
     unfocusedIcon: 'account-outline',
+    accessibilityLabel: t('control.profile-tab'),
   },
 ];
 
@@ -101,8 +105,6 @@ const App = () => {
     setCustomLabelMap,
   };
 
-  console.debug('onboardingState in App', onboardingState);
-
   let appContent;
   if (onboardingState == null) {
     // if onboarding state is not yet determined, show a loading spinner
@@ -139,6 +141,7 @@ const App = () => {
           <AppStatusModal permitVis={permissionsPopupVis} setPermitVis={setPermissionsPopupVis} />
         )}
       </AppContext.Provider>
+      <AlertBar />
     </>
   );
 };

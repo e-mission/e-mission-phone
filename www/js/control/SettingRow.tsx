@@ -12,20 +12,20 @@ type Props = {
   descStyle?: any;
 };
 const SettingRow = ({ textKey, iconName, action, desc, switchValue, descStyle }: Props) => {
-  const { t } = useTranslation(); //this accesses the translations
-  const { colors } = useTheme(); // use this to get the theme colors instead of hardcoded #hex colors
+  const { t } = useTranslation(); // Access translations
+  const { colors } = useTheme(); // Get theme colors
 
   let rightComponent;
   if (iconName) {
-    rightComponent = <List.Icon icon={iconName} />;
+    rightComponent = <List.Icon icon={iconName} aria-hidden={true} />;
   } else {
-    rightComponent = <Switch value={switchValue} />;
-  }
-  let descriptionText;
-  if (desc) {
-    descriptionText = { desc };
-  } else {
-    descriptionText = '';
+    rightComponent = (
+      <Switch
+        value={switchValue}
+        accessibilityLabel={t(textKey as any)}
+        accessibilityHint={switchValue ? t('Currently enabled') : t('Currently disabled')}
+      />
+    );
   }
 
   return (
@@ -36,6 +36,9 @@ const SettingRow = ({ textKey, iconName, action, desc, switchValue, descStyle }:
       description={desc}
       descriptionStyle={descStyle ? descStyle : styles.description}
       descriptionNumberOfLines={4}
+      accessible={true}
+      accessibilityLabel={t(textKey as any)}
+      accessibilityRole="button"
       onPress={(e) => action(e)}
       right={() => rightComponent}
     />

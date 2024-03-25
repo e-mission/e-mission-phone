@@ -6,23 +6,23 @@ import { ServerResponse, BEMData, TimeQuery } from '../types/serverData';
  * @param list An array of values from a BEMUserCache promise
  * @returns an array with duplicate values removed
  */
-export const removeDup = function (list: Array<BEMData<any>>) {
-  return list.filter(function (value, i, array) {
-    const firstIndexOfValue = array.findIndex(function (element) {
-      return element.metadata.write_ts == value.metadata.write_ts;
-    });
+export function removeDup(list: Array<BEMData<any>>) {
+  return list.filter((value, i, array) => {
+    const firstIndexOfValue = array.findIndex(
+      (element) => element.metadata.write_ts == value.metadata.write_ts,
+    );
     return firstIndexOfValue == i;
   });
-};
+}
 
-export const combinedPromises = function (
+export function combinedPromises(
   promiseList: Array<Promise<any>>,
   filter: (list: Array<any>) => Array<any>,
 ) {
   if (promiseList.length === 0) {
     throw new RangeError('combinedPromises needs input array.length >= 1');
   }
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     Promise.allSettled(promiseList).then(
       (results) => {
         let allRej = true;
@@ -42,7 +42,7 @@ export const combinedPromises = function (
       },
     );
   });
-};
+}
 
 /**
  * getUnifiedDataForInterval is a generalized method to fetch data by its timestamps
@@ -51,18 +51,18 @@ export const combinedPromises = function (
  * @param localGetMethod a BEMUserCache method that fetches certain data via a promise
  * @returns A promise that evaluates to the all values found within the queried data
  */
-export const getUnifiedDataForInterval = function (
+export function getUnifiedDataForInterval(
   key: string,
   tq: TimeQuery,
   localGetMethod: (key: string, tq: TimeQuery, flag: boolean) => Promise<any>,
 ) {
   const test = true;
   const getPromise = localGetMethod(key, tq, test);
-  const remotePromise = getRawEntries([key], tq.startTs, tq.endTs).then(function (
-    serverResponse: ServerResponse<any>,
-  ) {
-    return serverResponse.phone_data;
-  });
+  const remotePromise = getRawEntries([key], tq.startTs, tq.endTs).then(
+    (serverResponse: ServerResponse<any>) => {
+      return serverResponse.phone_data;
+    },
+  );
   const promiseList = [getPromise, remotePromise];
   return combinedPromises(promiseList, removeDup);
-};
+}

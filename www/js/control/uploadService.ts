@@ -5,7 +5,7 @@ import i18next from 'i18next';
  * @returns A promise that resolves with an upload URL or rejects with an error
  */
 async function getUploadConfig() {
-  return new Promise<string[]>(async function (resolve, reject) {
+  return new Promise<string[]>(async (resolve, reject) => {
     logInfo('About to get email config');
     let url: string[] = [];
     try {
@@ -19,7 +19,6 @@ async function getUploadConfig() {
         let response = await fetch('json/uploadConfig.json.sample');
         let uploadConfig = await response.json();
         logDebug('default uploadConfigString = ' + JSON.stringify(uploadConfig['url']));
-        console.log('default uploadConfigString = ' + JSON.stringify(uploadConfig['url']));
         url.push(uploadConfig['url']);
         resolve(url);
       } catch (err) {
@@ -39,35 +38,33 @@ function onUploadError(err) {
 }
 
 function readDBFile(parentDir, database, callbackFn) {
-  return new Promise(function (resolve, reject) {
-    window['resolveLocalFileSystemURL'](parentDir, function (fs) {
-      console.log('resolving file system as ', fs);
+  return new Promise((resolve, reject) => {
+    window['resolveLocalFileSystemURL'](parentDir, (fs) => {
+      logDebug('resolving file system as ' + JSON.stringify(fs));
       fs.filesystem.root.getFile(
         fs.fullPath + database,
         null,
         (fileEntry) => {
-          console.log(fileEntry);
-          fileEntry.file(function (file) {
-            console.log(file);
-            var reader = new FileReader();
+          logDebug('fileEntry = ' + JSON.stringify(fileEntry));
+          fileEntry.file((file) => {
+            logDebug('file = ' + JSON.stringify(file));
+            const reader = new FileReader();
 
-            reader.onprogress = function (report) {
-              console.log('Current progress is ' + JSON.stringify(report));
+            reader.onprogress = (report) => {
+              logDebug('Current progress is ' + JSON.stringify(report));
               if (callbackFn != undefined) {
                 callbackFn((report.loaded * 100) / report.total);
               }
             };
 
-            reader.onerror = function (error) {
-              console.log(this.error);
-              reject({ error: { message: this.error } });
+            reader.onerror = (error) => {
+              logDebug('Error while reading file ' + JSON.stringify(reader.error));
+              reject({ error: { message: reader.error } });
             };
 
-            reader.onload = function () {
-              console.log(
-                'Successful file read with ' + this.result?.['byteLength'] + ' characters',
-              );
-              resolve(new DataView(this.result as ArrayBuffer));
+            reader.onload = () => {
+              logDebug(`Successful file read with ${reader.result?.['byteLength']} characters`);
+              resolve(new DataView(reader.result as ArrayBuffer));
             };
 
             reader.readAsArrayBuffer(file);
@@ -93,7 +90,7 @@ const sendToServer = function upload(url, binArray, params) {
 export async function uploadFile(database, reason) {
   try {
     let uploadConfig = await getUploadConfig();
-    var parentDir = 'unknown';
+    let parentDir = 'unknown';
 
     if (window['cordova'].platformId.toLowerCase() == 'android') {
       parentDir = window['cordova'].file.applicationStorageDirectory + '/databases';
@@ -106,7 +103,7 @@ export async function uploadFile(database, reason) {
     logInfo('Going to upload ' + database);
     try {
       let binString: any = await readDBFile(parentDir, database, undefined);
-      console.log('Uploading file of size ' + binString['byteLength']);
+      logDebug('Uploading file of size ' + binString['byteLength']);
       const params = {
         reason: reason,
         tz: Intl.DateTimeFormat().resolvedOptions().timeZone,

@@ -4,7 +4,7 @@ export const mockFileSystem = () => {
     onerror: (e: any) => void;
     write: (obj: Blob) => void;
   };
-  window['resolveLocalFileSystemURL'] = function (parentDir, handleFS) {
+  window['resolveLocalFileSystemURL'] = (parentDir, handleFS) => {
     const fs = {
       filesystem: {
         root: {

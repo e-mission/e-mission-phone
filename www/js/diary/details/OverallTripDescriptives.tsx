@@ -1,8 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Text, Icon } from 'react-native-paper';
 import useDerivedProperties from '../useDerivedProperties';
-import { Icon } from '../../components/Icon';
 import { useTranslation } from 'react-i18next';
 
 const OverallTripDescriptives = ({ trip }) => {
@@ -32,7 +31,7 @@ const OverallTripDescriptives = ({ trip }) => {
         <View style={{ justifyContent: 'center' }}>
           {detectedModes?.map?.((pct, i) => (
             <View key={i} style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon icon={pct.icon} size={16} iconColor={pct.color} />
+              <Icon source={pct.icon} size={16} color={pct.color} />
               <Text style={{ fontSize: 13, fontWeight: 'bold' }}>{pct.pct}%</Text>
             </View>
           ))}

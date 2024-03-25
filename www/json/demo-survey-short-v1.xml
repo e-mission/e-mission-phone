@@ -430,7 +430,7 @@
       <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/aQMhJWsbwsGcgiDJHWyfri/start" type="dateTime"/>
       <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/aQMhJWsbwsGcgiDJHWyfri/end" type="dateTime"/>
       <bind nodeset="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25" required="false()"/>
-      <bind constraint=". &gt;= 1900 and . &lt;= 2005" nodeset="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/In_which_year_were_you_born" required="true()" type="int"/>
+      <bind constraint=". &gt; 1900 and . + 18 &lt;= format-date(today(), '%Y')" nodeset="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/In_which_year_were_you_born" required="true()" type="int"/>
       <bind nodeset="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender" required="true()" type="string"/>
       <bind nodeset="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity" required="true()" type="string"/>
       <bind nodeset="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/Do_you_have_a_driver_license" required="true()" type="string"/>

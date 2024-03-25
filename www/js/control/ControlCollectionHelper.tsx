@@ -4,9 +4,9 @@ import { Dialog, Button, Switch, Text, useTheme, TextInput } from 'react-native-
 import { useTranslation } from 'react-i18next';
 import ActionMenu from '../components/ActionMenu';
 import { settingStyles } from './ProfileSettings';
-import { displayError } from '../plugin/logger';
+import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 
-type collectionConfig = {
+type CollectionConfig = {
   is_duty_cycling: boolean;
   simulate_user_interaction: boolean;
   accuracy: number;
@@ -27,14 +27,14 @@ export async function forceTransition(transition) {
     window.alert('success -> ' + result);
   } catch (err) {
     window.alert('error -> ' + err);
-    console.log('error forcing state', err);
+    displayError(err, 'error forcing state');
   }
 }
 
 async function accuracy2String(config) {
-  var accuracy = config.accuracy;
+  const accuracy = config.accuracy;
   let accuracyOptions = await getAccuracyOptions();
-  for (var k in accuracyOptions) {
+  for (let k in accuracyOptions) {
     if (accuracyOptions[k] == accuracy) {
       return k;
     }
@@ -47,8 +47,7 @@ export async function isMediumAccuracy() {
   if (!config || config == null) {
     return undefined; // config not loaded when loading ui, set default as false
   } else {
-    var v = await accuracy2String(config);
-    console.log('window platform is', window['cordova'].platformId);
+    const v = await accuracy2String(config);
     if (window['cordova'].platformId == 'ios') {
       return (
         v != 'kCLLocationAccuracyBestForNavigation' &&
@@ -58,7 +57,7 @@ export async function isMediumAccuracy() {
     } else if (window['cordova'].platformId == 'android') {
       return v != 'PRIORITY_HIGH_ACCURACY';
     } else {
-      window.alert('Emission does not support this platform');
+      displayErrorMsg('Emission does not support this platform: ' + window['cordova'].platformId);
     }
   }
 }
@@ -82,7 +81,7 @@ export async function helperToggleLowAccuracy() {
   }
   try {
     let set = await setConfig(tempConfig);
-    console.log('setConfig Sucess');
+    logDebug('setConfig Sucess');
   } catch (err) {
     displayError(err, 'Error while setting collection config');
   }
@@ -92,9 +91,12 @@ export async function helperToggleLowAccuracy() {
  * Simple read/write wrappers
  */
 
-export const getState = function () {
-  return window['cordova'].plugins.BEMDataCollection.getState();
-};
+export const getState = () => window['cordova'].plugins.BEMDataCollection.getState();
+const setConfig = (config) => window['cordova'].plugins.BEMDataCollection.setConfig(config);
+const getConfig = () => window['cordova'].plugins.BEMDataCollection.getConfig();
+const getAccuracyOptions = () => window['cordova'].plugins.BEMDataCollection.getAccuracyOptions();
+export const forceTransitionWrapper = (transition) =>
+  window['cordova'].plugins.BEMDataCollection.forceTransition(transition);
 
 export async function getHelperCollectionSettings() {
   let promiseList: Promise<any>[] = [];
@@ -106,22 +108,7 @@ export async function getHelperCollectionSettings() {
   return formatConfigForDisplay(tempConfig, tempAccuracyOptions);
 }
 
-const setConfig = function (config) {
-  return window['cordova'].plugins.BEMDataCollection.setConfig(config);
-};
-
-const getConfig = function () {
-  return window['cordova'].plugins.BEMDataCollection.getConfig();
-};
-const getAccuracyOptions = function () {
-  return window['cordova'].plugins.BEMDataCollection.getAccuracyOptions();
-};
-
-export const forceTransitionWrapper = function (transition) {
-  return window['cordova'].plugins.BEMDataCollection.forceTransition(transition);
-};
-
-const formatConfigForDisplay = function (config, accuracyOptions) {
+function formatConfigForDisplay(config, accuracyOptions) {
   const retVal: { key: string; val: string }[] = [];
   for (let prop in config) {
     if (prop == 'accuracy') {
@@ -135,12 +122,12 @@ const formatConfigForDisplay = function (config, accuracyOptions) {
     }
   }
   return retVal;
-};
+}
 
 const ControlCollectionHelper = ({ editVis, setEditVis }) => {
   const { colors } = useTheme();
 
-  const [localConfig, setLocalConfig] = useState<collectionConfig>();
+  const [localConfig, setLocalConfig] = useState<CollectionConfig>();
   const [accuracyActions, setAccuracyActions] = useState<AccuracyAction[]>([]);
   const [accuracyVis, setAccuracyVis] = useState(false);
 
@@ -158,20 +145,20 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
     getCollectionSettings();
   }, [editVis]);
 
-  const formatAccuracyForActions = function (accuracyOptions) {
+  function formatAccuracyForActions(accuracyOptions) {
     let tempAccuracyActions: AccuracyAction[] = [];
-    for (var name in accuracyOptions) {
+    for (let name in accuracyOptions) {
       tempAccuracyActions.push({ text: name, value: accuracyOptions[name] });
     }
     return tempAccuracyActions;
-  };
+  }
 
   /*
    * Functions to edit and save values
    */
 
   async function saveAndReload() {
-    console.log('new config = ', localConfig);
+    logDebug('new config = ' + JSON.stringify(localConfig));
     try {
       let set = await setConfig(localConfig);
       setEditVis(false);
@@ -180,23 +167,23 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
     }
   }
 
-  const onToggle = function (config_key) {
-    let tempConfig = { ...localConfig } as collectionConfig;
-    tempConfig[config_key] = !(localConfig as collectionConfig)[config_key];
+  function onToggle(config_key) {
+    let tempConfig = { ...localConfig } as CollectionConfig;
+    tempConfig[config_key] = !(localConfig as CollectionConfig)[config_key];
     setLocalConfig(tempConfig);
-  };
+  }
 
-  const onChooseAccuracy = function (accuracyOption) {
-    let tempConfig = { ...localConfig } as collectionConfig;
+  function onChooseAccuracy(accuracyOption) {
+    let tempConfig = { ...localConfig } as CollectionConfig;
     tempConfig.accuracy = accuracyOption.value;
     setLocalConfig(tempConfig);
-  };
+  }
 
-  const onChangeText = function (newText, config_key) {
-    let tempConfig = { ...localConfig } as collectionConfig;
+  function onChangeText(newText, config_key) {
+    let tempConfig = { ...localConfig } as CollectionConfig;
     tempConfig[config_key] = parseInt(newText);
     setLocalConfig(tempConfig);
-  };
+  }
 
   /*ios vs android*/
   let filterComponent;
