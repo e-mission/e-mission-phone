@@ -7,7 +7,7 @@ export type AppConfig = {
   survey_info: {
     'trip-labels': 'MULTILABEL' | 'ENKETO';
     surveys: EnketoSurveyConfig;
-    buttons?: any;
+    buttons?: SurveyButtonsConfig;
   };
   reminderSchemes?: ReminderSchemesConfig;
   [k: string]: any; // TODO fill in all the other fields
@@ -42,6 +42,19 @@ export type EnketoSurveyConfig = {
     compatibleWith: number;
     dataKey?: string;
   };
+};
+
+export type SurveyButtonConfig = {
+  surveyName: string;
+  'not-filled-in-label': {
+    [lang: string]: string;
+  };
+  showsIf: string; // a JS expression that evaluates to a boolean
+};
+export type SurveyButtonsConfig = {
+  [k in 'trip-label' | 'trip-notes' | 'place-label' | 'place-notes']:
+    | SurveyButtonConfig
+    | SurveyButtonConfig[];
 };
 
 export type ReminderSchemesConfig = {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useMemo } from 'react';
 import TripCard from '../cards/TripCard';
 import PlaceCard from '../cards/PlaceCard';
 import UntrackedTimeCard from '../cards/UntrackedTimeCard';
@@ -6,6 +6,8 @@ import { View, FlatList } from 'react-native';
 import { ActivityIndicator, Banner, Icon, Text } from 'react-native-paper';
 import LoadMoreButton from './LoadMoreButton';
 import { useTranslation } from 'react-i18next';
+import { isoDateRangeToTsRange } from '../timelineHelper';
+import TimelineContext from '../../TimelineContext';
 
 function renderCard({ item: listEntry, index }) {
   if (listEntry.origin_key.includes('trip')) {
@@ -25,32 +27,29 @@ const smallSpinner = <ActivityIndicator size="small" style={{ margin: 5 }} />;
 
 type Props = {
   listEntries: any[] | null;
-  queriedRange: any;
-  pipelineRange: any;
   loadMoreFn: (direction: string) => void;
-  isLoading: boolean | string;
 };
-const TimelineScrollList = ({
-  listEntries,
-  queriedRange,
-  pipelineRange,
-  loadMoreFn,
-  isLoading,
-}: Props) => {
+const TimelineScrollList = ({ listEntries, loadMoreFn }: Props) => {
   const { t } = useTranslation();
+  const { pipelineRange, queriedDateRange, timelineIsLoading } = useContext(TimelineContext);
   const listRef = React.useRef<FlatList | null>(null);
 
   // The way that FlashList inverts the scroll view means we have to reverse the order of items too
   const reversedListEntries = listEntries ? [...listEntries].reverse() : [];
 
-  const reachedPipelineStart = queriedRange?.start_ts <= pipelineRange?.start_ts;
+  const [reachedPipelineStart, reachedPipelineEnd] = useMemo(() => {
+    if (!queriedDateRange || !pipelineRange) return [false, false];
+
+    const [queriedStartTs, queriedEndTs] = isoDateRangeToTsRange(queriedDateRange);
+    return [queriedStartTs <= pipelineRange.start_ts, queriedEndTs >= pipelineRange.end_ts];
+  }, [queriedDateRange, pipelineRange]);
+
   const footer = (
     <LoadMoreButton onPressFn={() => loadMoreFn('past')} disabled={reachedPipelineStart}>
       {reachedPipelineStart ? t('diary.no-more-travel') : t('diary.show-older-travel')}
     </LoadMoreButton>
   );
 
-  const reachedPipelineEnd = queriedRange?.end_ts >= pipelineRange?.end_ts;
   const header = (
     <LoadMoreButton onPressFn={() => loadMoreFn('future')} disabled={reachedPipelineEnd}>
       {reachedPipelineEnd ? t('diary.no-more-travel') : t('diary.show-more-travel')}
@@ -70,7 +69,7 @@ const TimelineScrollList = ({
     /* Condition: pipelineRange has been fetched but has no defined end, meaning nothing has been
       processed for this OPCode yet, and there are no unprocessed trips either. Show 'no travel'. */
     return noTravelBanner;
-  } else if (isLoading == 'replace') {
+  } else if (timelineIsLoading == 'replace') {
     /* Condition: we're loading an entirely new batch of trips, so show a big spinner */
     return bigSpinner;
   } else if (listEntries && listEntries.length == 0) {
@@ -90,9 +89,9 @@ const TimelineScrollList = ({
             This might be a nicer experience than the current header and footer buttons. */
         // onScroll={e => console.debug(e.nativeEvent.contentOffset.y)}
         ListHeaderComponent={
-          isLoading == 'append' ? smallSpinner : !reachedPipelineEnd ? header : null
+          timelineIsLoading == 'append' ? smallSpinner : !reachedPipelineEnd ? header : null
         }
-        ListFooterComponent={isLoading == 'prepend' ? smallSpinner : footer}
+        ListFooterComponent={timelineIsLoading == 'prepend' ? smallSpinner : footer}
         ItemSeparatorComponent={separator}
         /* use column-reverse so that the list is 'inverted', meaning it should start
             scrolling from the bottom, and the bottom-most item should be first in the DOM tree

@@ -12,7 +12,7 @@ import { Modal } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RadioButton, Text, Dialog } from 'react-native-paper';
 import { NavBarButton } from '../../components/NavBar';
-import { LabelTabFilter } from '../LabelTabContext';
+import { LabelTabFilter } from '../../TimelineContext';
 
 type Props = {
   filters: LabelTabFilter[];

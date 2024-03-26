@@ -3,10 +3,10 @@ import { View, StyleSheet } from 'react-native';
 import { Icon, Text, useTheme } from 'react-native-paper';
 import useDerivedProperties from '../useDerivedProperties';
 import { getBaseModeByKey, getBaseModeByValue } from '../diaryHelper';
-import LabelTabContext from '../LabelTabContext';
+import TimelineContext from '../../TimelineContext';
 
 const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
-  const { labelOptions, labelFor } = useContext(LabelTabContext);
+  const { labelOptions, labelFor } = useContext(TimelineContext);
   const {
     displayStartTime,
     displayTime,

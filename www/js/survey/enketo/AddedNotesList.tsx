@@ -6,7 +6,7 @@ import React, { useContext, useState } from 'react';
 import { DateTime } from 'luxon';
 import { Modal } from 'react-native';
 import { Text, Button, DataTable, Dialog, Icon } from 'react-native-paper';
-import LabelTabContext from '../../diary/LabelTabContext';
+import TimelineContext from '../../TimelineContext';
 import { getFormattedDateAbbr, isMultiDay } from '../../diary/diaryHelper';
 import EnketoModal from './EnketoModal';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ type Props = {
 };
 const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
   const { t } = useTranslation();
-  const { addUserInputToEntry } = useContext(LabelTabContext);
+  const { addUserInputToEntry } = useContext(TimelineContext);
   const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
   const [surveyModalVisible, setSurveyModalVisible] = useState(false);
   const [editingEntry, setEditingEntry] = useState<EnketoUserInputEntry | undefined>(undefined);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useContext } from 'react';
 import { View, ScrollView, useWindowDimensions } from 'react-native';
 import { Appbar, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,6 @@ import NavBar from '../components/NavBar';
 import { MetricsData } from './metricsTypes';
 import MetricsCard from './MetricsCard';
 import { formatForDisplay, useImperialConfig } from '../config/useImperialConfig';
-import MetricsDateSelect from './MetricsDateSelect';
 import WeeklyActiveMinutesCard from './WeeklyActiveMinutesCard';
 import { secondsToHours, secondsToMinutes } from './metricsHelper';
 import CarbonFootprintCard from './CarbonFootprintCard';
@@ -16,21 +15,26 @@ import DailyActiveMinutesCard from './DailyActiveMinutesCard';
 import CarbonTextCard from './CarbonTextCard';
 import ActiveMinutesTableCard from './ActiveMinutesTableCard';
 import { getAggregateData, getMetrics } from '../services/commHelper';
-import { displayError, logDebug, logWarn } from '../plugin/logger';
+import { displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
 import { ServerConnConfig } from '../types/appConfigTypes';
+import DateSelect from '../diary/list/DateSelect';
+import TimelineContext from '../TimelineContext';
+import { isoDateRangeToTsRange } from '../diary/timelineHelper';
+import { MetricsSummaries } from '../../../../e-mission-common/js';
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
 async function fetchMetricsFromServer(
   type: 'user' | 'aggregate',
-  dateRange: DateTime[],
+  dateRange: [string, string],
   serverConnConfig: ServerConnConfig,
 ) {
+  const [startTs, endTs] = isoDateRangeToTsRange(dateRange);
   const query = {
     freq: 'D',
-    start_time: dateRange[0].toSeconds(),
-    end_time: dateRange[1].toSeconds(),
+    start_time: startTs,
+    end_time: endTs,
     metric_list: METRIC_LIST,
     is_return_aggregate: type == 'aggregate',
   };
@@ -51,18 +55,33 @@ const MetricsTab = () => {
   const { t } = useTranslation();
   const { getFormattedSpeed, speedSuffix, getFormattedDistance, distanceSuffix } =
     useImperialConfig();
+  const { dateRange, setDateRange, timelineMap, timelineLabelMap, refreshTimeline } =
+    useContext(TimelineContext);
 
-  const [dateRange, setDateRange] = useState<DateTime[]>(getLastTwoWeeksDtRange);
   const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
   const [userMetrics, setUserMetrics] = useState<MetricsData | undefined>(undefined);
 
+  // aggregate metrics are fetched from the server
   useEffect(() => {
     if (!appConfig?.server) return;
-    loadMetricsForPopulation('user', dateRange);
     loadMetricsForPopulation('aggregate', dateRange);
   }, [dateRange, appConfig?.server]);
 
-  async function loadMetricsForPopulation(population: 'user' | 'aggregate', dateRange: DateTime[]) {
+  // user metrics are computed on the phone from the timeline data
+  useEffect(() => {
+    if (!timelineMap) return;
+    const userMetrics = MetricsSummaries.generate_summaries(
+      METRIC_LIST,
+      [...timelineMap.values()],
+      timelineLabelMap,
+    ) as MetricsData;
+    setUserMetrics(userMetrics);
+  }, [timelineMap]);
+
+  async function loadMetricsForPopulation(
+    population: 'user' | 'aggregate',
+    dateRange: [string, string],
+  ) {
     try {
       logDebug(`MetricsTab: fetching metrics for population ${population}'
         in date range ${JSON.stringify(dateRange)}`);
@@ -88,10 +107,6 @@ const MetricsTab = () => {
     }
   }
 
-  function refresh() {
-    setDateRange(getLastTwoWeeksDtRange());
-  }
-
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = windowWidth * 0.88;
 
@@ -99,8 +114,16 @@ const MetricsTab = () => {
     <>
       <NavBar>
         <Appbar.Content title={t('metrics.dashboard-tab')} />
-        <MetricsDateSelect dateRange={dateRange} setDateRange={setDateRange} />
-        <Appbar.Action icon="refresh" size={32} onPress={refresh} />
+        <DateSelect
+          mode="range"
+          onChoose={({ startDate, endDate }) => {
+            const start = DateTime.fromJSDate(startDate).toISODate();
+            const end = DateTime.fromJSDate(endDate).toISODate();
+            if (!start || !end) return displayErrorMsg('Invalid date');
+            setDateRange([start, end]);
+          }}
+        />
+        <Appbar.Action icon="refresh" size={32} onPress={refreshTimeline} />
       </NavBar>
       <ScrollView style={{ paddingVertical: 12 }}>
         <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>

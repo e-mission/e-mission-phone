@@ -15,7 +15,7 @@ import {
 
 import initializedI18next from '../js/i18nextInit';
 import { CompositeTrip, UserInputEntry } from '../js/types/diaryTypes';
-import { UserInputMap } from '../js/diary/LabelTabContext';
+import { UserInputMap } from '../js/TimelineContext';
 window['i18next'] = initializedI18next;
 mockLogger();
 

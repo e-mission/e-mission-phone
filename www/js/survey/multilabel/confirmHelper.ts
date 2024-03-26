@@ -4,7 +4,7 @@ import enJson from '../../../i18n/en.json';
 import { logDebug } from '../../plugin/logger';
 import { LabelOption, LabelOptions, MultilabelKey, InputDetails } from '../../types/labelTypes';
 import { CompositeTrip, InferredLabels, TimelineEntry } from '../../types/diaryTypes';
-import { TimelineLabelMap, UserInputMap } from '../../diary/LabelTabContext';
+import { UserInputMap } from '../../TimelineContext';
 
 let appConfig;
 export let labelOptions: LabelOptions<MultilabelKey>;
