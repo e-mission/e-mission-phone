@@ -5,25 +5,23 @@
 
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
+import { logDebug } from './plugin/logger';
 
 const useAppStateChange = (onResume) => {
+  const appState = useRef(AppState.currentState);
 
-    const appState = useRef(AppState.currentState);
-  
-    useEffect(() => {
-      const subscription = AppState.addEventListener('change', nextAppState => {
-        if ( appState.current != 'active' && nextAppState === 'active') {
-          onResume();
-        }
-  
-        appState.current = nextAppState;
-        console.log('AppState', appState.current);
-      });
-  
-    }, []);
-  
-    return {};
-  }
-  
-  export default useAppStateChange;
-  
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (appState.current != 'active' && nextAppState === 'active') {
+        onResume();
+      }
+
+      appState.current = nextAppState;
+      logDebug('new AppState: ' + appState.current);
+    });
+  }, []);
+
+  return {};
+};
+
+export default useAppStateChange;

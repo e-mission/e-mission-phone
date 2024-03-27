@@ -1,14 +1,14 @@
 /* A presentational component that accepts a time (and optional date) and displays them in a badge
   Used in the label screen, on the trip, place, and/or untracked cards */
 
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
 
 type Props = {
-  lightBg: boolean,
-  time: string,
-  date?: string,
+  lightBg: boolean;
+  time: string;
+  date?: string;
 };
 const TimestampBadge = ({ lightBg, time, date, ...otherProps }: Props) => {
   const { colors } = useTheme();
@@ -16,14 +16,18 @@ const TimestampBadge = ({ lightBg, time, date, ...otherProps }: Props) => {
   const textColor = lightBg ? 'black' : 'white';
 
   return (
-    <View style={{backgroundColor: bgColor, borderColor: colors.primary, ...styles.badge}} {...otherProps}>
-      <Text style={{color: textColor, ...styles.time}}>
-        {time}
-      </Text>
-      {/* if date is not passed as prop, it will not be shown */
-      date && <Text style={{color: textColor, ...styles.date}}>
-        {`\xa0(${date})` /* date shown in parentheses with space before */}
-      </Text>}
+    <View
+      style={{ backgroundColor: bgColor, borderColor: colors.primary, ...styles.badge }}
+      {...otherProps}>
+      <Text style={{ color: textColor, ...styles.time }}>{time}</Text>
+      {
+        /* if date is not passed as prop, it will not be shown */
+        date && (
+          <Text style={{ color: textColor, ...styles.date }}>
+            {`\xa0(${date})` /* date shown in parentheses with space before */}
+          </Text>
+        )
+      }
     </View>
   );
 };

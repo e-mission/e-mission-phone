@@ -6,51 +6,65 @@
   PlaceCards use the blueish 'place' theme flavor.
 */
 
-import React from "react";
+import React, { useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
-import useAppConfig from "../../useAppConfig";
-import AddNoteButton from "../../survey/enketo/AddNoteButton";
-import AddedNotesList from "../../survey/enketo/AddedNotesList";
-import { getTheme } from "../../appTheme";
-import { DiaryCard, cardStyles } from "./DiaryCard";
-import { useAddressNames } from "../addressNamesHelper";
-import useDerivedProperties from "../useDerivedProperties";
-import StartEndLocations from "../components/StartEndLocations";
+import useAppConfig from '../../useAppConfig';
+import AddNoteButton from '../../survey/enketo/AddNoteButton';
+import AddedNotesList from '../../survey/enketo/AddedNotesList';
+import { getTheme } from '../../appTheme';
+import { DiaryCard, cardStyles } from './DiaryCard';
+import { useAddressNames } from '../addressNamesHelper';
+import useDerivedProperties from '../useDerivedProperties';
+import StartEndLocations from '../components/StartEndLocations';
+import LabelTabContext from '../LabelTabContext';
+import { ConfirmedPlace } from '../../types/diaryTypes';
+import { EnketoUserInputEntry } from '../../survey/enketo/enketoHelper';
 
-type Props = { place: {[key: string]: any} };
+type Props = { place: ConfirmedPlace };
 const PlaceCard = ({ place }: Props) => {
-
   const appConfig = useAppConfig();
+  const { notesFor } = useContext(LabelTabContext);
   const { displayStartTime, displayEndTime, displayDate } = useDerivedProperties(place);
-  let [ placeDisplayName ] = useAddressNames(place);
+  let [placeDisplayName] = useAddressNames(place);
 
   const flavoredTheme = getTheme('place');
 
   return (
     <DiaryCard timelineEntry={place} flavoredTheme={flavoredTheme}>
-      <View style={[cardStyles.cardContent, s.placeCardContent]} focusable={true}
-          accessibilityLabel={`Place from ${displayStartTime} to ${displayEndTime}`}>
-        <View>{/*  date and distance */}
+      <View
+        style={[cardStyles.cardContent, s.placeCardContent]}
+        focusable={true}
+        accessibilityLabel={`Place from ${displayStartTime} to ${displayEndTime}`}>
+        <View>
+          {/*  date and distance */}
           <Text style={{ fontSize: 14, textAlign: 'center' }}>
-            <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>{displayDate}</Text>
+            <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>
+              {displayDate}
+            </Text>
           </Text>
         </View>
-        <View style={cardStyles.panelSection}>{/*  place name */}
-          <StartEndLocations centered={true}
-            displayStartName={placeDisplayName} />
+        <View style={cardStyles.panelSection}>
+          {/*  place name */}
+          <StartEndLocations centered={true} displayStartName={placeDisplayName} />
         </View>
-        <View style={{margin: 'auto'}}>{/*  add note button */}
-          <View style={s.notesButton}>
-            <AddNoteButton timelineEntry={place}
-              notesConfig={appConfig?.survey_info?.buttons?.['place-notes']}
-              storeKey={'manual/place_addition_input'} />
-          </View>
+        {/*  add note button */}
+        <View style={[cardStyles.notesButton, { paddingTop: 0 }]}>
+          <AddNoteButton
+            timelineEntry={place}
+            notesConfig={appConfig?.survey_info?.buttons?.['place-notes']}
+            storeKey={'manual/place_addition_input'}
+          />
         </View>
       </View>
-      <View style={cardStyles.cardFooter}>
-        <AddedNotesList timelineEntry={place} additionEntries={place.additionsList} />
-      </View>
+      {notesFor(place)?.length && (
+        <View style={cardStyles.cardFooter}>
+          <AddedNotesList
+            timelineEntry={place}
+            additionEntries={(notesFor(place) as EnketoUserInputEntry[]) || []}
+          />
+        </View>
+      )}
     </DiaryCard>
   );
 };
@@ -59,11 +73,6 @@ const s = StyleSheet.create({
   placeCardContent: {
     marginTop: 12,
     marginBottom: 6,
-  },
-  notesButton: {
-    paddingHorizontal: 8,
-    minWidth: 150,
-    margin: 'auto',
   },
   locationText: {
     fontSize: 14,

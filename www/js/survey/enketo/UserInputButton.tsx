@@ -8,68 +8,85 @@
   The start and end times of the addition are the same as the trip or place.
 */
 
-import React, { useContext, useMemo, useState } from "react";
-import { getAngularService } from "../../angular-react-helper";
-import DiaryButton from "../../components/DiaryButton";
-import { useTranslation } from "react-i18next";
-import { useTheme } from "react-native-paper";
-import { displayErrorMsg, logDebug } from "../../plugin/logger";
-import EnketoModal from "./EnketoModal";
-import { LabelTabContext } from "../../diary/LabelTab";
+import React, { useContext, useMemo, useState } from 'react';
+import DiaryButton from '../../components/DiaryButton';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from 'react-native-paper';
+import { displayErrorMsg, logDebug } from '../../plugin/logger';
+import EnketoModal from './EnketoModal';
+import LabelTabContext from '../../diary/LabelTabContext';
+import useAppConfig from '../../useAppConfig';
+import { getSurveyForTimelineEntry } from './conditionalSurveys';
 
 type Props = {
-  timelineEntry: any,
-}
+  timelineEntry: any;
+};
 const UserInputButton = ({ timelineEntry }: Props) => {
   const { colors } = useTheme();
+  const appConfig = useAppConfig();
   const { t, i18n } = useTranslation();
 
-  const [prevSurveyResponse, setPrevSurveyResponse] = useState(null);
+  const [prevSurveyResponse, setPrevSurveyResponse] = useState<string | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState(false);
-  const { repopulateTimelineEntry } = useContext(LabelTabContext);
+  const { userInputFor, addUserInputToEntry } = useContext(LabelTabContext);
 
-  const EnketoTripButtonService = getAngularService("EnketoTripButtonService");
-  const etbsSingleKey = EnketoTripButtonService.SINGLE_KEY;
+  // which survey will this button launch?
+  const [surveyName, notFilledInLabel] = useMemo(() => {
+    const tripLabelConfig = appConfig?.survey_info?.buttons?.['trip-label'];
+    if (!tripLabelConfig) {
+      // config doesn't specify; use default
+      return ['TripConfirmSurvey', t('diary.choose-survey')];
+    }
+    // config lists one or more surveys; find which one to use
+    const s = getSurveyForTimelineEntry(tripLabelConfig, timelineEntry);
+    const lang = i18n.resolvedLanguage || 'en';
+    return [s?.surveyName, s?.['not-filled-in-label'][lang]];
+  }, [appConfig, timelineEntry, i18n.resolvedLanguage]);
 
   // the label resolved from the survey response, or null if there is no response yet
-  const responseLabel = useMemo<string|null>(() => (
-    timelineEntry.userInput?.[etbsSingleKey]?.data?.label || null
-  ), [timelineEntry]);
+  const responseLabel = useMemo<string | undefined>(
+    () => userInputFor(timelineEntry)?.['SURVEY']?.data.label || undefined,
+    [userInputFor(timelineEntry)?.['SURVEY']?.data.label],
+  );
 
   function launchUserInputSurvey() {
     logDebug('UserInputButton: About to launch survey');
-    const prevResponse = timelineEntry.userInput?.[etbsSingleKey];
-    setPrevSurveyResponse(prevResponse?.data?.xmlResponse);
+    const prevResponse = userInputFor(timelineEntry)?.['SURVEY'];
+    if (prevResponse?.data?.xmlResponse) {
+      setPrevSurveyResponse(prevResponse.data.xmlResponse);
+    }
     setModalVisible(true);
   }
 
   function onResponseSaved(result) {
     if (result) {
-      logDebug('UserInputButton: response was saved, about to repopulateTimelineEntry; result=' + JSON.stringify(result));
-      repopulateTimelineEntry(timelineEntry._id.$oid);
+      logDebug(`UserInputButton: response was saved, about to addUserInputToEntry; 
+        result = ${JSON.stringify(result)}`);
+      addUserInputToEntry(timelineEntry._id.$oid, { SURVEY: result }, 'label');
     } else {
       displayErrorMsg('UserInputButton: response was not saved, result=', result);
     }
   }
 
-  return (<>
-    <DiaryButton fillColor={responseLabel && colors.primary}
-      onPress={() => launchUserInputSurvey()}>
-      {/* if no response yet, show the default label */}
-      {responseLabel || t('diary.choose-survey')}
-    </DiaryButton>
+  if (!surveyName) return <></>; // no survey to launch
+  return (
+    <>
+      <DiaryButton
+        // if a response has been been recorded, the button is 'filled in'
+        fillColor={responseLabel && colors.primary}
+        onPress={() => launchUserInputSurvey()}>
+        {responseLabel || notFilledInLabel}
+      </DiaryButton>
 
-    <EnketoModal visible={modalVisible}
-      onDismiss={() => setModalVisible(false)}
-      onResponseSaved={onResponseSaved}
-      surveyName={'TripConfirmSurvey'} /* As of now, the survey name is hardcoded.
-                                        In the future, if we ever implement something like
-                                        a "Place Details" survey, we may want to make this
-                                        configurable. */
-      opts={{ timelineEntry,
-              prefilledSurveyResponse: prevSurveyResponse
-      }} />
-  </>);
+      <EnketoModal
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
+        onResponseSaved={onResponseSaved}
+        surveyName={surveyName}
+        opts={{ timelineEntry, prefilledSurveyResponse: prevSurveyResponse }}
+      />
+    </>
+  );
 };
 
 export default UserInputButton;

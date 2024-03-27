@@ -4,6 +4,7 @@
 node_modules/
 platforms/
 plugins/
+dist/
 www/lib/
 package-hooks/
 .DS_Store
@@ -16,3 +17,4 @@ app-settings.json
 www/dist/
 config.xml
 package.json
+coverage/

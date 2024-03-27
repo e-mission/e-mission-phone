@@ -8,7 +8,6 @@ import StudySummary from './StudySummary';
 import { setSummaryDone } from './onboardingHelper';
 
 const SummaryPage = () => {
-
   const { t } = useTranslation();
   const context = useContext(AppContext);
   const { refreshOnboardingState } = context;
@@ -16,21 +15,26 @@ const SummaryPage = () => {
   function next() {
     setSummaryDone(true);
     refreshOnboardingState();
-  };
+  }
 
   // summary of the study, followed by 'next' button
-  return (<>
-    <ScrollView contentContainerStyle={{flex: 1}}>
-      <Surface style={[onboardingStyles.page, {flex: 1, padding: 32}]}>
-        <View style={{ gap: 40, margin: 'auto' }}>
-          <StudySummary />
-        </View>
-        <View style={[onboardingStyles.buttonRow, {marginTop: 'auto'}]}>
-          <Button mode='contained' onPress={next}> {t('intro.proceed')} </Button>
-        </View>
-      </Surface>
-    </ScrollView>
-  </>);
-}
+  return (
+    <>
+      <ScrollView contentContainerStyle={{ flex: 1 }}>
+        <Surface style={[onboardingStyles.page, { flex: 1, padding: 32 }]}>
+          <View style={{ gap: 40, margin: 'auto' }}>
+            <StudySummary />
+          </View>
+          <View style={[onboardingStyles.buttonRow, { marginTop: 'auto' }]}>
+            <Button mode="contained" onPress={next}>
+              {' '}
+              {t('intro.proceed')}{' '}
+            </Button>
+          </View>
+        </Surface>
+      </ScrollView>
+    </>
+  );
+};
 
 export default SummaryPage;

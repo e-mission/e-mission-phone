@@ -9,10 +9,13 @@ on:
     branches:
         - master
         - maint_upgrade_**
+        - ui_feature_**
   pull_request:
     branches:
         - master
         - maint_upgrade_**
+        - ui_feature_**
+        - service_rewrite_2023
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '5 4 * * 0'
@@ -55,11 +58,6 @@ jobs:
         npx cordova -version
         echo "ionic version"
         npx ionic --version
-
-    - name: Run Jest tests
-      shell: bash -l {0}
-      run: |
-        npx jest
 
 # TODO: figure out how to check that a server started correctly
 #    - name: Try starting it
