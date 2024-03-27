@@ -67,7 +67,6 @@ const LabelTab = () => {
       if (!appConfig) return;
       showPlaces = appConfig.survey_info?.buttons?.['place-notes'];
       getLabelOptions(appConfig).then((labelOptions) => setLabelOptions(labelOptions));
-
       // we will show filters if 'additions' are not configured
       // https://github.com/e-mission/e-mission-docs/issues/894
       if (appConfig.survey_info?.buttons == undefined) {
