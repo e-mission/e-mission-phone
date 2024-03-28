@@ -4,7 +4,7 @@ import { StyleSheet, Modal, ScrollView, SafeAreaView, View, Text } from 'react-n
 import { gatherBluetoothClassicData } from './bluetoothScanner';
 import { logWarn, displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import BluetoothCard from './BluetoothCard';
-import { Appbar, useTheme, Button } from 'react-native-paper';
+import { Appbar, useTheme, TextInput, Button } from 'react-native-paper';
 import {
   BLEBeaconDevice,
   BLEPluginCallback,
@@ -40,6 +40,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
   const [isScanningClassic, setIsScanningClassic] = useState(false);
   const [isScanningBLE, setIsScanningBLE] = useState(false);
   const [isClassic, setIsClassic] = useState(false);
+  const [newUUID, setNewUUID] = useState<string | null>(null);
   const { colors } = useTheme();
 
   // Flattens the `sampleBeacons` into an array of BLEBeaconDevices
@@ -169,6 +170,19 @@ const BluetoothScanPage = ({ ...props }: any) => {
     setIsClassic(!isClassic);
   };
 
+  // Add a beacon with the new UUID to the list of BLE devices to scan
+  function addNewUUID(newUUID: string) {
+    console.log("Before adding UUID "+newUUID+" entries = "+sampleBLEDevices);
+    const devicesWithAddition = {...sampleBLEDevices};
+    devicesWithAddition[newUUID] = {
+      identifier: 'Test-Beacon',
+      minor: 4949,
+      major: 3838,
+      in_range: false,
+    }
+    setSampleBLEDevices(devicesWithAddition);
+  }
+
   const BluetoothCardList = ({ devices }) => {
     if (isClassic) {
       // When in classic mode, render devices as normal
@@ -263,6 +277,14 @@ const BluetoothScanPage = ({ ...props }: any) => {
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flex: 1 }}>
             <BlueScanContent />
           </ScrollView>
+	    <TextInput
+		  label="New UUID"
+		  value={newUUID || ''}
+		  onChangeText={(t) => setNewUUID(t)}
+	    />
+	    <Button onPress={() => addNewUUID(newUUID)}>
+		  Add
+	    </Button>
         </SafeAreaView>
       </Modal>
     </>
