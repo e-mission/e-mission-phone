@@ -176,7 +176,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
         <div>
           {devices.map((device) => {
             if (device) {
-              return <BluetoothCard device={device} isClassic={isClassic} />;
+              return <BluetoothCard device={device} isClassic={isClassic} key={device.id} />;
             }
             return null;
           })}
@@ -188,7 +188,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
       <div>
         {beaconsAsArray.map((beacon) => {
           if (beacon) {
-            return <BluetoothCard device={beacon} isScanningBLE={isScanningBLE} />;
+            return <BluetoothCard device={beacon} isScanningBLE={isScanningBLE} key={beacon.uuid} />;
           }
         })}
       </div>
