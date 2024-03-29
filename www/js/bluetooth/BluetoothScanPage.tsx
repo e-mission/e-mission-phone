@@ -85,13 +85,23 @@ const BluetoothScanPage = ({ ...props }: any) => {
     }
   }
 
-  function setRangeStatus(uuid: string, result: string, status: boolean) {
+  function setMonitorStatus(uuid: string, result: string, status: boolean) {
     setSampleBLEDevices((prevDevices) => ({
       ...prevDevices,
       [uuid]: {
         ...prevDevices[uuid],
-        result: result,
+        monitorResult: result,
         in_range: status,
+      },
+    }));
+  }
+
+  function setRangeStatus(uuid: string, result: string) {
+    setSampleBLEDevices((prevDevices) => ({
+      ...prevDevices,
+      [uuid]: {
+        ...prevDevices[uuid],
+        rangeResult: result,
       },
     }));
   }
@@ -108,15 +118,27 @@ const BluetoothScanPage = ({ ...props }: any) => {
       const pluginResultStr = JSON.stringify(pluginResult, null, 2);
       if (pluginResult.state == 'CLRegionStateInside') {
         // need toUpperCase(), b/c callback returns with only lowercase values...
-        setRangeStatus(pluginResult.region.uuid.toUpperCase(), pluginResultStr, true);
+        setMonitorStatus(pluginResult.region.uuid.toUpperCase(), pluginResultStr, true);
       } else if (pluginResult.state == 'CLRegionStateOutside') {
-        setRangeStatus(pluginResult.region.uuid.toUpperCase(), pluginResultStr, false);
+        setMonitorStatus(pluginResult.region.uuid.toUpperCase(), pluginResultStr, false);
       }
       logDebug('[BLE] didDetermineStateForRegion');
       logDebug(pluginResultStr);
       window['cordova'].plugins.locationManager.appendToDeviceLog(
         '[DOM] didDetermineStateForRegion: ' + pluginResultStr,
       );
+      const beaconRegion = new window['cordova'].plugins.locationManager.BeaconRegion(
+        STATIC_ID,
+        pluginResult.region.uuid,
+        pluginResult.region.major,
+        pluginResult.region.minor,
+      );
+      window['cordova'].plugins.locationManager
+        .startRangingBeaconsInRegion(beaconRegion)
+        .fail(function (e) {
+          logWarn(e);
+        })
+        .done();
     };
 
     delegate.didStartMonitoringForRegion = function (pluginResult) {
@@ -127,7 +149,9 @@ const BluetoothScanPage = ({ ...props }: any) => {
     delegate.didRangeBeaconsInRegion = function (pluginResult) {
       // Not seeing this called...
       logDebug('[BLE] didRangeBeaconsInRegion');
-      logDebug(JSON.stringify(pluginResult));
+      const pluginResultStr = JSON.stringify(pluginResult, null, 2);
+      logDebug(pluginResultStr);
+      setRangeStatus(pluginResult.region.uuid.toUpperCase(), pluginResultStr);
     };
 
     window['cordova'].plugins.locationManager.setDelegate(delegate);
@@ -156,7 +180,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
     setIsScanningBLE(false);
 
     beaconsToArray().forEach((sampleBeacon: BLEBeaconDevice) => {
-      setRangeStatus(sampleBeacon.uuid, false); // "zero out" the beacons
+      setMonitorStatus(sampleBeacon.uuid, false); // "zero out" the beacons
       const beaconRegion = new window['cordova'].plugins.locationManager.BeaconRegion(
         STATIC_ID,
         sampleBeacon.uuid,

@@ -26,7 +26,8 @@ export type BLEDeviceList = {
     identifier: string;
     minor: number;
     major: number;
-    result: string;
+    monitorResult: string;
+    rangeResult: string;
     in_range: boolean;
   };
 };
