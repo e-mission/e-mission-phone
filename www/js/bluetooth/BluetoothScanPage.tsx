@@ -85,11 +85,12 @@ const BluetoothScanPage = ({ ...props }: any) => {
     }
   }
 
-  function setRangeStatus(uuid: string, status: boolean) {
+  function setRangeStatus(uuid: string, result: string, status: boolean) {
     setSampleBLEDevices((prevDevices) => ({
       ...prevDevices,
       [uuid]: {
         ...prevDevices[uuid],
+	result: result,
         in_range: status,
       },
     }));
@@ -104,16 +105,17 @@ const BluetoothScanPage = ({ ...props }: any) => {
     delegate.didDetermineStateForRegion = function (pluginResult: BLEPluginCallback) {
       // `stateInside`is returned when the user enters the beacon region
       // `StateOutside` is either (i) left region, or (ii) started scanner (outside region)
+      const pluginResultStr = JSON.stringify(pluginResult, null, 2);
       if (pluginResult.state == 'CLRegionStateInside') {
         // need toUpperCase(), b/c callback returns with only lowercase values...
-        setRangeStatus(pluginResult.region.uuid.toUpperCase(), true);
+        setRangeStatus(pluginResult.region.uuid.toUpperCase(), pluginResultStr, true);
       } else if (pluginResult.state == 'CLRegionStateOutside') {
-        setRangeStatus(pluginResult.region.uuid.toUpperCase(), false);
+        setRangeStatus(pluginResult.region.uuid.toUpperCase(), pluginResultStr, false);
       }
       logDebug('[BLE] didDetermineStateForRegion');
-      logDebug(JSON.stringify(pluginResult, null, 2));
+      logDebug(pluginResultStr);
       window['cordova'].plugins.locationManager.appendToDeviceLog(
-        '[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult, null, 2),
+        '[DOM] didDetermineStateForRegion: ' + pluginResultStr,
       );
     };
 
@@ -287,7 +289,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
 		    <TextInput
 			  label="New UUID (mandatory)"
 			  value={newUUID || ''}
-			  onChangeText={(t) => setNewUUID(t)}
+			  onChangeText={(t) => setNewUUID(t.toUpperCase())}
 		    />
 		    <TextInput
 			  label="Major (optional)"

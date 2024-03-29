@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, List, useTheme } from 'react-native-paper';
+import { Card, List, Text, Button, useTheme } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 
 type Props = any;
@@ -23,6 +23,19 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
     bgColor = device.in_range ? `rgba(200,250,200,1)` : `rgba(250,200,200,1)`;
   }
 
+  async function fakeCallback() {
+    // If we don't do this, the results start accumulating in the device object
+    // first call, we put a result into the device
+    // second call, the device already has a result, so we put another one in...
+    const deviceWithoutResult = {...device};
+    deviceWithoutResult.result = undefined;
+    window['cordova'].plugins.locationManager.getDelegate().didDetermineStateForRegion({
+      region: deviceWithoutResult,
+      eventType: "didDetermineStateForRegion",
+      state: "CLRegionStateInside"
+    });
+  }
+
   return (
     <Card style={{ backgroundColor: bgColor, ...cardStyles.card }}>
       <Card.Title
@@ -31,6 +44,14 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
         subtitle={`Configured major ${device.major} and minor ${device.minor}`} // e.g.,
         left={() => <List.Icon icon={device.in_range ? 'access-point' : 'access-point-off'} />}
       />
+      <Card.Content>
+	<Text style={{ borderColor: colors.primary }} variant="bodyMedium">{device.result}</Text>
+	<Button
+                mode="elevated"
+                onPress={fakeCallback}>
+		        Fake callback
+		    </Button>
+      </Card.Content>
     </Card>
   );
 };

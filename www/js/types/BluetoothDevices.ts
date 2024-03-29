@@ -22,7 +22,7 @@ export type BLEBeaconDevice = {
   type_name?: string; // e.g., "BeaconRegion"; used for callback
 };
 export type BLEDeviceList = {
-  [key: string]: { identifier: string; minor: number; major: number; in_range: boolean };
+  [key: string]: { identifier: string; minor: number; major: number; result: string, in_range: boolean };
 };
 
 export type BLEPluginCallback = {
