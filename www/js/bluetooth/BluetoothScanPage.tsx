@@ -21,17 +21,19 @@ import {
  */
 
 const BluetoothScanPage = ({ ...props }: any) => {
+  const STATIC_ID = "edu.berkeley.eecs.emission";
+
   const { t } = useTranslation();
   const [bluetoothClassicList, setBluetoothClassicList] = useState<BluetoothClassicDevice[]>([]);
   const [sampleBLEDevices, setSampleBLEDevices] = useState<BLEDeviceList>({
     '426C7565-4368-6172-6D42-6561636F6E74': {
-      identifier: 'Katie_BLEBeacon',
+      identifier: STATIC_ID,
       minor: 4949,
       major: 3838,
       in_range: false,
     },
     '426C7565-4368-6172-6D42-6561636F6E73': {
-      identifier: 'Louis-Beacon',
+      identifier: STATIC_ID,
       minor: 4949,
       major: 3838,
       in_range: false,
@@ -41,9 +43,8 @@ const BluetoothScanPage = ({ ...props }: any) => {
   const [isScanningBLE, setIsScanningBLE] = useState(false);
   const [isClassic, setIsClassic] = useState(false);
   const [newUUID, setNewUUID] = useState<String>(null);
-  const [newIdentifier, setNewIdentifier] = useState<String>(null);
-  const [newMajor, setNewMajor] = useState<number>(0);
-  const [newMinor, setNewMinor] = useState<number>(0);
+  const [newMajor, setNewMajor] = useState<number>(undefined);
+  const [newMinor, setNewMinor] = useState<number>(undefined);
   const { colors } = useTheme();
 
   // Flattens the `sampleBeacons` into an array of BLEBeaconDevices
@@ -135,7 +136,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
       // Need UUID value on iOS only, not Android (2nd parameter)
       // https://stackoverflow.com/questions/38580410/how-to-scan-all-nearby-ibeacons-using-coordova-based-hybrid-application
       const beaconRegion = new window['cordova'].plugins.locationManager.BeaconRegion(
-        sampleBeacon.identifier,
+        STATIC_ID,
         sampleBeacon.uuid,
         sampleBeacon.major,
         sampleBeacon.minor,
@@ -155,7 +156,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
     beaconsToArray().forEach((sampleBeacon: BLEBeaconDevice) => {
       setRangeStatus(sampleBeacon.uuid, false); // "zero out" the beacons
       const beaconRegion = new window['cordova'].plugins.locationManager.BeaconRegion(
-        sampleBeacon.identifier,
+        STATIC_ID,
         sampleBeacon.uuid,
         sampleBeacon.major,
         sampleBeacon.minor,
@@ -174,20 +175,19 @@ const BluetoothScanPage = ({ ...props }: any) => {
   };
 
   // Add a beacon with the new UUID to the list of BLE devices to scan
-  function addNewUUID(newUUID: string, newIdentifier: string, newMajor: number, newMinor: number) {
+  function addNewUUID(newUUID: string, newMajor: number, newMinor: number) {
     console.log("Before adding UUID "+newUUID+" entries = "+sampleBLEDevices);
     const devicesWithAddition = {...sampleBLEDevices};
     devicesWithAddition[newUUID] = {
-      identifier: newIdentifier,
+      identifier: STATIC_ID,
       minor: newMajor,
       major: newMinor,
       in_range: false,
     }
     setSampleBLEDevices(devicesWithAddition);
     setNewUUID(null);
-    setNewIdentifier(null);
-    setNewMajor(null);
-    setNewMinor(null);
+    setNewMajor(undefined);
+    setNewMinor(undefined);
   }
 
   const BluetoothCardList = ({ devices }) => {
@@ -285,27 +285,22 @@ const BluetoothScanPage = ({ ...props }: any) => {
             <BlueScanContent />
           </ScrollView>
 		    <TextInput
-			  label="New UUID"
+			  label="New UUID (mandatory)"
 			  value={newUUID || ''}
 			  onChangeText={(t) => setNewUUID(t)}
 		    />
 		    <TextInput
-			  label="New identifier"
-			  value={newIdentifier || ''}
-			  onChangeText={(t) => setNewIdentifier(t)}
-		    />
-		    <TextInput
-			  label="Major"
+			  label="Major (optional)"
 			  value={newMajor || ''}
 			  onChangeText={(t) => setNewMajor(t)}
 		    />
 		    <TextInput
-			  label="Minor"
+			  label="Minor (optional)"
 			  value={newMinor || ''}
 			  onChangeText={(t) => setNewMinor(t)}
 		    />
-	    <Button disabled={!(newUUID && newIdentifier && newMajor && newMinor)}
-		  onPress={() => addNewUUID(newUUID, newIdentifier, newMajor, newMinor)}>
+	    <Button disabled={!(newUUID)}
+		  onPress={() => addNewUUID(newUUID, newMajor, newMinor)}>
 		  Add
 	    </Button>
         </SafeAreaView>
