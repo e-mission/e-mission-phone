@@ -27,11 +27,11 @@ const smallSpinner = <ActivityIndicator size="small" style={{ margin: 5 }} />;
 
 type Props = {
   listEntries: any[] | null;
-  loadMoreFn: (direction: string) => void;
 };
-const TimelineScrollList = ({ listEntries, loadMoreFn }: Props) => {
+const TimelineScrollList = ({ listEntries }: Props) => {
   const { t } = useTranslation();
-  const { pipelineRange, queriedDateRange, timelineIsLoading } = useContext(TimelineContext);
+  const { pipelineRange, queriedDateRange, timelineIsLoading, loadMoreDays } =
+    useContext(TimelineContext);
   const listRef = React.useRef<FlatList | null>(null);
 
   // The way that FlashList inverts the scroll view means we have to reverse the order of items too
@@ -45,13 +45,13 @@ const TimelineScrollList = ({ listEntries, loadMoreFn }: Props) => {
   }, [queriedDateRange, pipelineRange]);
 
   const footer = (
-    <LoadMoreButton onPressFn={() => loadMoreFn('past')} disabled={reachedPipelineStart}>
+    <LoadMoreButton onPressFn={() => loadMoreDays('past', 7)} disabled={reachedPipelineStart}>
       {reachedPipelineStart ? t('diary.no-more-travel') : t('diary.show-older-travel')}
     </LoadMoreButton>
   );
 
   const header = (
-    <LoadMoreButton onPressFn={() => loadMoreFn('future')} disabled={reachedPipelineEnd}>
+    <LoadMoreButton onPressFn={() => loadMoreDays('future', 7)} disabled={reachedPipelineEnd}>
       {reachedPipelineEnd ? t('diary.no-more-travel') : t('diary.show-more-travel')}
     </LoadMoreButton>
   );

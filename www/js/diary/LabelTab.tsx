@@ -29,7 +29,7 @@ export const LabelTabContext = createContext<LabelContextProps>({} as LabelConte
 
 const LabelTab = () => {
   const { appConfig } = useContext(AppContext);
-  const { pipelineRange, timelineMap, loadAnotherWeek } = useContext(TimelineContext);
+  const { pipelineRange, timelineMap } = useContext(TimelineContext);
 
   const [filterInputs, setFilterInputs] = useState<LabelTabFilter[]>([]);
   const [displayedEntries, setDisplayedEntries] = useState<TimelineEntry[] | null>(null);

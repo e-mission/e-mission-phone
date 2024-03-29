@@ -12,8 +12,7 @@ import { displayErrorMsg } from '../../plugin/logger';
 
 const LabelListScreen = () => {
   const { filterInputs, setFilterInputs, displayedEntries } = useContext(LabelTabContext);
-  const { timelineMap, loadSpecificWeek, refreshTimeline, loadAnotherWeek } =
-    useContext(TimelineContext);
+  const { timelineMap, loadSpecificWeek, refreshTimeline } = useContext(TimelineContext);
   const { colors } = useTheme();
 
   return (
@@ -42,7 +41,7 @@ const LabelListScreen = () => {
         />
       </NavBar>
       <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <TimelineScrollList listEntries={displayedEntries} loadMoreFn={loadAnotherWeek} />
+        <TimelineScrollList listEntries={displayedEntries} />
       </View>
     </>
   );

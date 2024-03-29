@@ -39,7 +39,7 @@ type ContextProps = {
   dateRange: [string, string]; // YYYY-MM-DD format
   setDateRange: (d: [string, string]) => void;
   timelineIsLoading: string | false;
-  loadAnotherWeek: (when: 'past' | 'future') => void;
+  loadMoreDays: (when: 'past' | 'future', nDays: number) => void;
   loadSpecificWeek: (d: string) => void;
   refreshTimeline: () => void;
 };
@@ -149,18 +149,18 @@ export const useTimelineContext = (): ContextProps => {
     }
   }
 
-  function loadAnotherWeek(when: 'past' | 'future') {
+  function loadMoreDays(when: 'past' | 'future', nDays: number) {
     const existingRange = queriedDateRange || initialQueryRange;
-    logDebug(`Timeline: loadAnotherWeek for ${when}; 
+    logDebug(`Timeline: loadMoreDays, ${nDays} days into the ${when}; 
       queriedDateRange = ${queriedDateRange}; 
       existingRange = ${existingRange}`);
     let newDateRange: [string, string];
     if (when == 'past') {
-      newDateRange = [isoDateWithOffset(existingRange[0], -7), existingRange[1]];
+      newDateRange = [isoDateWithOffset(existingRange[0], -nDays), existingRange[1]];
     } else {
-      newDateRange = [existingRange[0], isoDateWithOffset(existingRange[1], 7)];
+      newDateRange = [existingRange[0], isoDateWithOffset(existingRange[1], nDays)];
     }
-    logDebug('Timeline: loadAnotherWeek setting new date range = ' + newDateRange);
+    logDebug('Timeline: loadMoreDays setting new date range = ' + newDateRange);
     setDateRange(newDateRange);
   }
 
@@ -319,7 +319,7 @@ export const useTimelineContext = (): ContextProps => {
     timelineIsLoading,
     timelineLabelMap,
     labelOptions,
-    loadAnotherWeek,
+    loadMoreDays,
     loadSpecificWeek,
     refreshTimeline,
     userInputFor,
