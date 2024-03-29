@@ -301,7 +301,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
 		    />
 	    <Button disabled={!(newUUID)}
 		  onPress={() => addNewUUID(newUUID, newMajor, newMinor)}>
-		  Add
+		  Add New Beacon To Scan
 	    </Button>
         </SafeAreaView>
       </Modal>

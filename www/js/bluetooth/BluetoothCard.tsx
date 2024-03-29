@@ -26,9 +26,9 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
   return (
     <Card style={{ backgroundColor: bgColor, ...cardStyles.card }}>
       <Card.Title
-        title={`Name: ${device.identifier}`}
-        titleVariant="titleLarge"
-        subtitle={`UUID: ...${device.uuid.slice(-13)}`} // e.g.,
+        title={`UUID: ${device.uuid}`}
+        titleVariant="titleSmall"
+        subtitle={`Configured major ${device.major} and minor ${device.minor}`} // e.g.,
         left={() => <List.Icon icon={device.in_range ? 'access-point' : 'access-point-off'} />}
       />
     </Card>
