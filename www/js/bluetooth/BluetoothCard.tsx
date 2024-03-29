@@ -27,12 +27,12 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
     // If we don't do this, the results start accumulating in the device object
     // first call, we put a result into the device
     // second call, the device already has a result, so we put another one in...
-    const deviceWithoutResult = {...device};
+    const deviceWithoutResult = { ...device };
     deviceWithoutResult.result = undefined;
     window['cordova'].plugins.locationManager.getDelegate().didDetermineStateForRegion({
       region: deviceWithoutResult,
-      eventType: "didDetermineStateForRegion",
-      state: "CLRegionStateInside"
+      eventType: 'didDetermineStateForRegion',
+      state: 'CLRegionStateInside',
     });
   }
 
@@ -45,12 +45,12 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
         left={() => <List.Icon icon={device.in_range ? 'access-point' : 'access-point-off'} />}
       />
       <Card.Content>
-	<Text style={{ borderColor: colors.primary }} variant="bodyMedium">{device.result}</Text>
-	<Button
-                mode="elevated"
-                onPress={fakeCallback}>
-		        Fake callback
-		    </Button>
+        <Text style={{ borderColor: colors.primary }} variant="bodyMedium">
+          {device.result}
+        </Text>
+        <Button mode="elevated" onPress={fakeCallback}>
+          Fake callback
+        </Button>
       </Card.Content>
     </Card>
   );

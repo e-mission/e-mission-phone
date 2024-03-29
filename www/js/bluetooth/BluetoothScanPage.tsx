@@ -21,7 +21,7 @@ import {
  */
 
 const BluetoothScanPage = ({ ...props }: any) => {
-  const STATIC_ID = "edu.berkeley.eecs.emission";
+  const STATIC_ID = 'edu.berkeley.eecs.emission';
 
   const { t } = useTranslation();
   const [bluetoothClassicList, setBluetoothClassicList] = useState<BluetoothClassicDevice[]>([]);
@@ -90,7 +90,7 @@ const BluetoothScanPage = ({ ...props }: any) => {
       ...prevDevices,
       [uuid]: {
         ...prevDevices[uuid],
-	result: result,
+        result: result,
         in_range: status,
       },
     }));
@@ -178,14 +178,14 @@ const BluetoothScanPage = ({ ...props }: any) => {
 
   // Add a beacon with the new UUID to the list of BLE devices to scan
   function addNewUUID(newUUID: string, newMajor: number, newMinor: number) {
-    console.log("Before adding UUID "+newUUID+" entries = "+sampleBLEDevices);
-    const devicesWithAddition = {...sampleBLEDevices};
+    console.log('Before adding UUID ' + newUUID + ' entries = ' + sampleBLEDevices);
+    const devicesWithAddition = { ...sampleBLEDevices };
     devicesWithAddition[newUUID] = {
       identifier: STATIC_ID,
       minor: newMajor,
       major: newMinor,
       in_range: false,
-    }
+    };
     setSampleBLEDevices(devicesWithAddition);
     setNewUUID(null);
     setNewMajor(undefined);
@@ -211,7 +211,9 @@ const BluetoothScanPage = ({ ...props }: any) => {
       <div>
         {beaconsAsArray.map((beacon) => {
           if (beacon) {
-            return <BluetoothCard device={beacon} isScanningBLE={isScanningBLE} key={beacon.uuid} />;
+            return (
+              <BluetoothCard device={beacon} isScanningBLE={isScanningBLE} key={beacon.uuid} />
+            );
           }
         })}
       </div>
@@ -286,25 +288,24 @@ const BluetoothScanPage = ({ ...props }: any) => {
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flex: 1 }}>
             <BlueScanContent />
           </ScrollView>
-		    <TextInput
-			  label="New UUID (mandatory)"
-			  value={newUUID || ''}
-			  onChangeText={(t) => setNewUUID(t.toUpperCase())}
-		    />
-		    <TextInput
-			  label="Major (optional)"
-			  value={newMajor || ''}
-			  onChangeText={(t) => setNewMajor(t)}
-		    />
-		    <TextInput
-			  label="Minor (optional)"
-			  value={newMinor || ''}
-			  onChangeText={(t) => setNewMinor(t)}
-		    />
-	    <Button disabled={!(newUUID)}
-		  onPress={() => addNewUUID(newUUID, newMajor, newMinor)}>
-		  Add New Beacon To Scan
-	    </Button>
+          <TextInput
+            label="New UUID (mandatory)"
+            value={newUUID || ''}
+            onChangeText={(t) => setNewUUID(t.toUpperCase())}
+          />
+          <TextInput
+            label="Major (optional)"
+            value={newMajor || ''}
+            onChangeText={(t) => setNewMajor(t)}
+          />
+          <TextInput
+            label="Minor (optional)"
+            value={newMinor || ''}
+            onChangeText={(t) => setNewMinor(t)}
+          />
+          <Button disabled={!newUUID} onPress={() => addNewUUID(newUUID, newMajor, newMinor)}>
+            Add New Beacon To Scan
+          </Button>
         </SafeAreaView>
       </Modal>
     </>
