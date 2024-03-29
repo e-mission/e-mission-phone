@@ -40,7 +40,10 @@ const BluetoothScanPage = ({ ...props }: any) => {
   const [isScanningClassic, setIsScanningClassic] = useState(false);
   const [isScanningBLE, setIsScanningBLE] = useState(false);
   const [isClassic, setIsClassic] = useState(false);
-  const [newUUID, setNewUUID] = useState<string | null>(null);
+  const [newUUID, setNewUUID] = useState<String>(null);
+  const [newIdentifier, setNewIdentifier] = useState<String>(null);
+  const [newMajor, setNewMajor] = useState<number>(0);
+  const [newMinor, setNewMinor] = useState<number>(0);
   const { colors } = useTheme();
 
   // Flattens the `sampleBeacons` into an array of BLEBeaconDevices
@@ -171,16 +174,20 @@ const BluetoothScanPage = ({ ...props }: any) => {
   };
 
   // Add a beacon with the new UUID to the list of BLE devices to scan
-  function addNewUUID(newUUID: string) {
+  function addNewUUID(newUUID: string, newIdentifier: string, newMajor: number, newMinor: number) {
     console.log("Before adding UUID "+newUUID+" entries = "+sampleBLEDevices);
     const devicesWithAddition = {...sampleBLEDevices};
     devicesWithAddition[newUUID] = {
-      identifier: 'Test-Beacon',
-      minor: 4949,
-      major: 3838,
+      identifier: newIdentifier,
+      minor: newMajor,
+      major: newMinor,
       in_range: false,
     }
     setSampleBLEDevices(devicesWithAddition);
+    setNewUUID(null);
+    setNewIdentifier(null);
+    setNewMajor(null);
+    setNewMinor(null);
   }
 
   const BluetoothCardList = ({ devices }) => {
@@ -277,12 +284,28 @@ const BluetoothScanPage = ({ ...props }: any) => {
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flex: 1 }}>
             <BlueScanContent />
           </ScrollView>
-	    <TextInput
-		  label="New UUID"
-		  value={newUUID || ''}
-		  onChangeText={(t) => setNewUUID(t)}
-	    />
-	    <Button onPress={() => addNewUUID(newUUID)}>
+		    <TextInput
+			  label="New UUID"
+			  value={newUUID || ''}
+			  onChangeText={(t) => setNewUUID(t)}
+		    />
+		    <TextInput
+			  label="New identifier"
+			  value={newIdentifier || ''}
+			  onChangeText={(t) => setNewIdentifier(t)}
+		    />
+		    <TextInput
+			  label="Major"
+			  value={newMajor || ''}
+			  onChangeText={(t) => setNewMajor(t)}
+		    />
+		    <TextInput
+			  label="Minor"
+			  value={newMinor || ''}
+			  onChangeText={(t) => setNewMinor(t)}
+		    />
+	    <Button disabled={!(newUUID && newIdentifier && newMajor && newMinor)}
+		  onPress={() => addNewUUID(newUUID, newIdentifier, newMajor, newMinor)}>
 		  Add
 	    </Button>
         </SafeAreaView>
