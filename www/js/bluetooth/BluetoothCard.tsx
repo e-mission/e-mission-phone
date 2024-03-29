@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, List, useTheme } from 'react-native-paper';
+import { Card, List, Text, Button, useTheme } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 
 type Props = any;
@@ -23,14 +23,52 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
     bgColor = device.in_range ? `rgba(200,250,200,1)` : `rgba(250,200,200,1)`;
   }
 
+  async function fakeMonitorCallback() {
+    // If we don't do this, the results start accumulating in the device object
+    // first call, we put a result into the device
+    // second call, the device already has a result, so we put another one in...
+    const deviceWithoutResult = { ...device };
+    deviceWithoutResult.monitorResult = undefined;
+    deviceWithoutResult.rangeResult = undefined;
+    window['cordova'].plugins.locationManager.getDelegate().didDetermineStateForRegion({
+      region: deviceWithoutResult,
+      eventType: 'didDetermineStateForRegion',
+      state: 'CLRegionStateInside',
+    });
+    let timer: ReturnType<typeof setTimeout> = setTimeout(fakeRangeCallback, 500);
+  }
+
+  async function fakeRangeCallback() {
+    // If we don't do this, the results start accumulating in the device object
+    // first call, we put a result into the device
+    // second call, the device already has a result, so we put another one in...
+    const deviceWithMajorMinor = { ...device, major: 1234, minor: 4567 };
+    window['cordova'].plugins.locationManager.getDelegate().didRangeBeaconsInRegion({
+      region: deviceWithMajorMinor,
+      eventType: 'didRangeBeaconsInRegion',
+      state: 'CLRegionStateInside',
+    });
+  }
+
   return (
     <Card style={{ backgroundColor: bgColor, ...cardStyles.card }}>
       <Card.Title
-        title={`Name: ${device.identifier}`}
-        titleVariant="titleLarge"
-        subtitle={`UUID: ...${device.uuid.slice(-13)}`} // e.g.,
+        title={`UUID: ${device.uuid}`}
+        titleVariant="titleSmall"
+        subtitle={`Configured major ${device.major} and minor ${device.minor}`} // e.g.,
         left={() => <List.Icon icon={device.in_range ? 'access-point' : 'access-point-off'} />}
       />
+      <Card.Content>
+        <Text style={{ backgroundColor: colors.primaryContainer }} variant="bodyMedium">
+          {device.monitorResult}
+        </Text>
+        <Text style={{ backgroundColor: colors.secondaryContainer }} variant="bodyMedium">
+          {device.rangeResult}
+        </Text>
+        <Button mode="elevated" onPress={fakeMonitorCallback}>
+          Fake callback
+        </Button>
+      </Card.Content>
     </Card>
   );
 };
