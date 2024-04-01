@@ -31,6 +31,7 @@ async function fetchMetricsFromServer(
   serverConnConfig: ServerConnConfig,
 ) {
   const [startTs, endTs] = isoDateRangeToTsRange(dateRange);
+  logDebug('MetricsTab: fetching metrics from server for ts range ' + startTs + ' to ' + endTs);
   const query = {
     freq: 'D',
     start_time: startTs,
@@ -40,13 +41,6 @@ async function fetchMetricsFromServer(
   };
   if (type == 'user') return getMetrics('timestamp', query);
   return getAggregateData('result/metrics/timestamp', query, serverConnConfig);
-}
-
-function getLastTwoWeeksDtRange() {
-  const now = DateTime.now().startOf('day');
-  const start = now.minus({ days: 15 });
-  const end = now.minus({ days: 1 });
-  return [start, end];
 }
 
 const MetricsTab = () => {
@@ -83,7 +77,7 @@ const MetricsTab = () => {
     return result;
   }, [timelineMap]);
 
-  // aggregate metrics are fetched from the server
+  // at least 2 weeks of timeline data should be loaded for the user metrics
   useEffect(() => {
     if (!appConfig?.server) return;
     const dateRangeDays = isoDatesDifference(...dateRange);
@@ -91,19 +85,26 @@ const MetricsTab = () => {
     // this tab uses the last 2 weeks of data; if we need more, we should fetch it
     if (dateRangeDays < 14) {
       if (timelineIsLoading) {
-        console.debug('MetricsTab: timeline is still loading, not loading more days yet');
+        logDebug('MetricsTab: timeline is still loading, not loading more days yet');
       } else {
-        console.debug('MetricsTab: loading more days');
+        logDebug('MetricsTab: loading more days');
         loadMoreDays('past', 14 - dateRangeDays);
       }
     } else {
-      loadMetricsForPopulation('aggregate', dateRange);
+      logDebug('MetricsTab: date range >= 14 days, not loading more days');
     }
   }, [dateRange, timelineIsLoading, appConfig?.server]);
 
+  // aggregate metrics fetched from the server whenever the date range is set
   useEffect(() => {
-    console.debug('MetricsTab: userMetrics updated to ' + JSON.stringify(userMetrics));
-  }, [userMetrics]);
+    logDebug('MetricsTab: dateRange updated to ' + JSON.stringify(dateRange));
+    const dateRangeDays = isoDatesDifference(...dateRange);
+    if (dateRangeDays < 14) {
+      logDebug('MetricsTab: date range < 14 days, not loading aggregate metrics yet');
+    } else {
+      loadMetricsForPopulation('aggregate', dateRange);
+    }
+  }, [dateRange]);
 
   async function loadMetricsForPopulation(
     population: 'user' | 'aggregate',
