@@ -21,7 +21,7 @@ import { ServerConnConfig } from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext from '../TimelineContext';
 import { isoDateRangeToTsRange, isoDatesDifference } from '../diary/timelineHelper';
-import { MetricsSummaries } from '../../../../e-mission-common/js';
+import { MetricsSummaries } from 'e-mission-common';
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
