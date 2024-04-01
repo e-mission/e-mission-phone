@@ -69,12 +69,18 @@ const MetricsTab = () => {
 
   // user metrics are computed on the phone from the timeline data
   const userMetrics = useMemo(() => {
+    console.time('MetricsTab: generate_summaries');
     if (!timelineMap) return;
-    return MetricsSummaries.generate_summaries(
+    console.time('MetricsTab: timelineMap.values()');
+    const timelineValues = [...timelineMap.values()];
+    console.timeEnd('MetricsTab: timelineMap.values()');
+    const result = MetricsSummaries.generate_summaries(
       METRIC_LIST,
-      [...timelineMap.values()],
+      timelineValues,
       timelineLabelMap,
     ) as MetricsData;
+    console.timeEnd('MetricsTab: generate_summaries');
+    return result;
   }, [timelineMap]);
 
   // aggregate metrics are fetched from the server
