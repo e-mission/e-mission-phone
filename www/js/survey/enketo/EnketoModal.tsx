@@ -108,17 +108,20 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
           </a>
           <a
             id="validate-form"
-            className="btn"
+            className="btn btn-primary"
             onClick={() => validateAndSave()}
             style={{ width: 200, margin: 'auto' }}>
-            <Button id="validate-form" icon="check-bold" mode="contained">
-              {t('survey.save')}
-            </Button>
+            {/* <Button icon="check-bold" mode="contained"> */}
+            {t('survey.save')}
+            {/* </Button> */}
           </a>
-          <a href="#" className="btn next-page disabled" style={{ width: 200, margin: 'auto' }}>
-            <Button icon="arrow-right-thick" mode="contained">
-              {t('survey.next')}
-            </Button>
+          <a
+            href="#"
+            className="btn btn-primary next-page disabled"
+            style={{ width: 200, margin: 'auto' }}>
+            {/* <Button icon="arrow-right-thick" mode="contained"> */}
+            {t('survey.next')}
+            {/* </Button> */}
           </a>
           <div className="enketo-power" style={{ marginBottom: 30 }}>
             <span>{t('survey.powered-by')}</span>{' '}
