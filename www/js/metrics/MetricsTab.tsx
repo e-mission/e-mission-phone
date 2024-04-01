@@ -20,7 +20,7 @@ import useAppConfig from '../useAppConfig';
 import { ServerConnConfig } from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext from '../TimelineContext';
-import { isoDateRangeToTsRange } from '../diary/timelineHelper';
+import { isoDateRangeToTsRange, isoDatesDifference } from '../diary/timelineHelper';
 import { MetricsSummaries } from '../../../../e-mission-common/js';
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
@@ -55,28 +55,49 @@ const MetricsTab = () => {
   const { t } = useTranslation();
   const { getFormattedSpeed, speedSuffix, getFormattedDistance, distanceSuffix } =
     useImperialConfig();
-  const { dateRange, setDateRange, timelineMap, timelineLabelMap, refreshTimeline } =
-    useContext(TimelineContext);
+  const {
+    dateRange,
+    setDateRange,
+    timelineMap,
+    timelineLabelMap,
+    timelineIsLoading,
+    refreshTimeline,
+    loadMoreDays,
+  } = useContext(TimelineContext);
 
   const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
-  const [userMetrics, setUserMetrics] = useState<MetricsData | undefined>(undefined);
-
-  // aggregate metrics are fetched from the server
-  useEffect(() => {
-    if (!appConfig?.server) return;
-    loadMetricsForPopulation('aggregate', dateRange);
-  }, [dateRange, appConfig?.server]);
 
   // user metrics are computed on the phone from the timeline data
-  useEffect(() => {
+  const userMetrics = useMemo(() => {
     if (!timelineMap) return;
-    const userMetrics = MetricsSummaries.generate_summaries(
+    return MetricsSummaries.generate_summaries(
       METRIC_LIST,
       [...timelineMap.values()],
       timelineLabelMap,
     ) as MetricsData;
-    setUserMetrics(userMetrics);
   }, [timelineMap]);
+
+  // aggregate metrics are fetched from the server
+  useEffect(() => {
+    if (!appConfig?.server) return;
+    const dateRangeDays = isoDatesDifference(...dateRange);
+
+    // this tab uses the last 2 weeks of data; if we need more, we should fetch it
+    if (dateRangeDays < 14) {
+      if (timelineIsLoading) {
+        console.debug('MetricsTab: timeline is still loading, not loading more days yet');
+      } else {
+        console.debug('MetricsTab: loading more days');
+        loadMoreDays('past', 14 - dateRangeDays);
+      }
+    } else {
+      loadMetricsForPopulation('aggregate', dateRange);
+    }
+  }, [dateRange, timelineIsLoading, appConfig?.server]);
+
+  useEffect(() => {
+    console.debug('MetricsTab: userMetrics updated to ' + JSON.stringify(userMetrics));
+  }, [userMetrics]);
 
   async function loadMetricsForPopulation(
     population: 'user' | 'aggregate',
@@ -98,7 +119,7 @@ const MetricsTab = () => {
       });
       logDebug('MetricsTab: parsed metrics: ' + JSON.stringify(metrics));
       if (population == 'user') {
-        setUserMetrics(metrics as MetricsData);
+        // setUserMetrics(metrics as MetricsData);
       } else {
         setAggMetrics(metrics as MetricsData);
       }
