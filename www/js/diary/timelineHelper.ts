@@ -579,3 +579,11 @@ export const isoDateRangeToTsRange = (dateRange: [string, string], zone?) => [
   DateTime.fromISO(dateRange[0], { zone: zone }).startOf('day').toSeconds(),
   DateTime.fromISO(dateRange[1], { zone: zone }).endOf('day').toSeconds(),
 ];
+
+/**
+ * @example isoDatesDifference('2024-03-22', '2024-03-29') -> 7
+ * @example isoDatesDifference('2024-03-22', '2021-06-26') -> 1000
+ * @example isoDatesDifference('2024-03-29', '2024-03-25') -> -4
+ */
+export const isoDatesDifference = (date1: string, date2: string) =>
+  -DateTime.fromISO(date1).diff(DateTime.fromISO(date2), 'days').days;

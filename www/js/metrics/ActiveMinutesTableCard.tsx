@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Card, DataTable, useTheme } from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardStyles } from './MetricsTab';
@@ -12,10 +12,12 @@ import {
 import { useTranslation } from 'react-i18next';
 import { ACTIVE_MODES } from './WeeklyActiveMinutesCard';
 import { labelKeyToRichMode } from '../survey/multilabel/confirmHelper';
+import TimelineContext from '../TimelineContext';
 
 type Props = { userMetrics?: MetricsData };
 const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
   const { colors } = useTheme();
+  const { dateRange } = useContext(TimelineContext);
   const { t } = useTranslation();
 
   const cumulativeTotals = useMemo(() => {
@@ -34,7 +36,7 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
 
   const recentWeeksActiveModesTotals = useMemo(() => {
     if (!userMetrics?.duration) return [];
-    return segmentDaysByWeeks(userMetrics.duration)
+    return segmentDaysByWeeks(userMetrics.duration, dateRange[1])
       .reverse()
       .map((week) => {
         const totals = {};

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
@@ -16,23 +16,33 @@ import {
   calculatePercentChange,
   segmentDaysByWeeks,
   MetricsSummary,
+  dateForDayOfMetricData,
 } from './metricsHelper';
 import { logDebug, logWarn } from '../plugin/logger';
+import TimelineContext from '../TimelineContext';
+import { isoDatesDifference } from '../diary/timelineHelper';
 
 type Props = { userMetrics?: MetricsData; aggMetrics?: MetricsData };
 const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
   const { colors } = useTheme();
+  const { dateRange } = useContext(TimelineContext);
   const { t } = useTranslation();
 
   const userText = useMemo(() => {
     if (userMetrics?.distance?.length) {
       //separate data into weeks
-      const [thisWeekDistance, lastWeekDistance] = segmentDaysByWeeks(userMetrics?.distance, 2);
+      const [thisWeekDistance, lastWeekDistance] = segmentDaysByWeeks(
+        userMetrics?.distance,
+        dateRange[1],
+      );
 
       //formatted data from last week, if exists (14 days ago -> 8 days ago)
       let userLastWeekModeMap = {};
       let userLastWeekSummaryMap = {};
-      if (lastWeekDistance && lastWeekDistance?.length == 7) {
+      if (
+        lastWeekDistance &&
+        isoDatesDifference(dateRange[0], dateForDayOfMetricData(lastWeekDistance[0])) >= 0
+      ) {
         userLastWeekModeMap = parseDataFromMetrics(lastWeekDistance, 'user');
         userLastWeekSummaryMap = generateSummaryFromData(userLastWeekModeMap, 'distance');
       }
@@ -89,7 +99,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
   const groupText = useMemo(() => {
     if (aggMetrics?.distance?.length) {
       //separate data into weeks
-      const thisWeekDistance = segmentDaysByWeeks(aggMetrics?.distance, 1)[0];
+      const thisWeekDistance = segmentDaysByWeeks(aggMetrics?.distance, dateRange[1])[0];
 
       let aggThisWeekModeMap = parseDataFromMetrics(thisWeekDistance, 'aggregate');
       let aggThisWeekSummary = generateSummaryFromData(aggThisWeekModeMap, 'distance');
@@ -139,7 +149,8 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
 
   const cardSubtitleText = useMemo(() => {
     if (!aggMetrics?.distance?.length) return;
-    const recentEntries = segmentDaysByWeeks(aggMetrics?.distance, 2)
+    const recentEntries = segmentDaysByWeeks(aggMetrics?.distance, dateRange[1])
+      .slice(0, 2)
       .reverse()
       .flat();
     const recentEntriesRange = formatDateRangeOfDays(recentEntries);

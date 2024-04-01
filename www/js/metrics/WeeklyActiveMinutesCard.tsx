@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
 import { getBaseModeByText } from '../diary/diaryHelper';
+import TimelineContext from '../TimelineContext';
 
 export const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = (typeof ACTIVE_MODES)[number];
@@ -15,12 +16,13 @@ type ActiveMode = (typeof ACTIVE_MODES)[number];
 type Props = { userMetrics?: MetricsData };
 const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
   const { colors } = useTheme();
+  const { dateRange } = useContext(TimelineContext);
   const { t } = useTranslation();
 
   const weeklyActiveMinutesRecords = useMemo(() => {
     if (!userMetrics?.duration) return [];
     const records: { x: string; y: number; label: string }[] = [];
-    const [recentWeek, prevWeek] = segmentDaysByWeeks(userMetrics?.duration, 2);
+    const [recentWeek, prevWeek] = segmentDaysByWeeks(userMetrics?.duration, dateRange[1]);
     ACTIVE_MODES.forEach((mode) => {
       const prevSum = prevWeek?.reduce((acc, day) => acc + (valueForModeOnDay(day, mode) || 0), 0);
       if (prevSum) {

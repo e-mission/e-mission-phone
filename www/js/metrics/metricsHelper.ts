@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { formatForDisplay } from '../config/useImperialConfig';
 import { DayOfMetricData } from './metricsTypes';
 import { logDebug } from '../plugin/logger';
+import { isoDateWithOffset, isoDatesDifference } from '../diary/timelineHelper';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];
@@ -31,13 +32,21 @@ export const secondsToMinutes = (seconds: number) => formatForDisplay(seconds / 
 export const secondsToHours = (seconds: number) => formatForDisplay(seconds / 3600);
 
 // segments metricsDays into weeks, with the most recent week first
-export function segmentDaysByWeeks(days: DayOfMetricData[], nWeeks?: number) {
+export function segmentDaysByWeeks(days: DayOfMetricData[], lastDate: string) {
   const weeks: DayOfMetricData[][] = [];
-  for (let i = days?.length - 1; i >= 0; i -= 7) {
-    weeks.push(days.slice(Math.max(i - 6, 0), i + 1));
-  }
-  if (nWeeks) return weeks.slice(0, nWeeks);
-  return weeks;
+  let weekIndex = 0;
+  let cutoff = isoDateWithOffset(lastDate, -7 * (weekIndex + 1));
+  [...days].reverse().forEach((d) => {
+    const date = dateForDayOfMetricData(d);
+    // if date is older than cutoff, start a new week
+    if (isoDatesDifference(date, cutoff) > 0) {
+      weekIndex += 1;
+      cutoff = isoDateWithOffset(lastDate, -7 * (weekIndex + 1));
+    }
+    if (!weeks[weekIndex]) weeks[weekIndex] = [];
+    weeks[weekIndex].push(d);
+  });
+  return weeks.map((week) => week.reverse());
 }
 
 export function formatDate(day: DayOfMetricData) {
