@@ -246,7 +246,8 @@ export const useTimelineContext = (): ContextProps => {
     try {
       logDebug('timelineContext: refreshTimeline');
       setTimelineIsLoading('replace');
-      setQueriedDateRange(initialQueryRange);
+      setDateRange(initialQueryRange);
+      setQueriedDateRange(null);
       setTimelineMap(null);
       setRefreshTime(new Date());
     } catch (e) {
