@@ -23,7 +23,7 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
     bgColor = device.in_range ? `rgba(200,250,200,1)` : `rgba(250,200,200,1)`;
   }
 
-  async function fakeMonitorCallback() {
+  async function fakeMonitorCallback(state: String) {
     // If we don't do this, the results start accumulating in the device object
     // first call, we put a result into the device
     // second call, the device already has a result, so we put another one in...
@@ -33,16 +33,16 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
     window['cordova'].plugins.locationManager.getDelegate().didDetermineStateForRegion({
       region: deviceWithoutResult,
       eventType: 'didDetermineStateForRegion',
-      state: 'CLRegionStateInside',
+      state: state,
     });
-    let timer: ReturnType<typeof setTimeout> = setTimeout(fakeRangeCallback, 500);
   }
 
   async function fakeRangeCallback() {
-    // If we don't do this, the results start accumulating in the device object
-    // first call, we put a result into the device
-    // second call, the device already has a result, so we put another one in...
-    const deviceWithMajorMinor = { ...device, major: 1234, minor: 4567 };
+    const deviceWithMajorMinor = { ...device };
+    deviceWithMajorMinor.major = device.major | 1234;
+    deviceWithMajorMinor.minor = device.minor | 4567;
+    deviceWithMajorMinor.monitorResult = undefined;
+    deviceWithMajorMinor.rangeResult = undefined;
     window['cordova'].plugins.locationManager.getDelegate().didRangeBeaconsInRegion({
       region: deviceWithMajorMinor,
       eventType: 'didRangeBeaconsInRegion',
@@ -65,9 +65,17 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
         <Text style={{ backgroundColor: colors.secondaryContainer }} variant="bodyMedium">
           {device.rangeResult}
         </Text>
-        <Button mode="elevated" onPress={fakeMonitorCallback}>
-          Fake callback
-        </Button>
+        <Card.Actions>
+          <Button mode="elevated" onPress={() => fakeMonitorCallback('CLRegionStateInside')}>
+            Enter
+          </Button>
+          <Button mode="elevated" onPress={fakeRangeCallback}>
+            Range
+          </Button>
+          <Button mode="elevated" onPress={() => fakeMonitorCallback('CLRegionStateOutside')}>
+            Exit
+          </Button>
+        </Card.Actions>
       </Card.Content>
     </Card>
   );

@@ -317,16 +317,18 @@ const BluetoothScanPage = ({ ...props }: any) => {
             value={newUUID || ''}
             onChangeText={(t) => setNewUUID(t.toUpperCase())}
           />
-          <TextInput
-            label="Major (optional)"
-            value={newMajor || ''}
-            onChangeText={(t) => setNewMajor(t)}
-          />
-          <TextInput
-            label="Minor (optional)"
-            value={newMinor || ''}
-            onChangeText={(t) => setNewMinor(t)}
-          />
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TextInput
+              label="Major (optional)"
+              value={newMajor || ''}
+              onChangeText={(t) => setNewMajor(t)}
+            />
+            <TextInput
+              label="Minor (optional)"
+              value={newMinor || ''}
+              onChangeText={(t) => setNewMinor(t)}
+            />
+          </View>
           <Button disabled={!newUUID} onPress={() => addNewUUID(newUUID, newMajor, newMinor)}>
             Add New Beacon To Scan
           </Button>
