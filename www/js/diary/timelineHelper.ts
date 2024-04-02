@@ -249,12 +249,13 @@ function locations2GeojsonTrajectory(
 // DB entries retrieved from the server have '_id', 'metadata', and 'data' fields.
 // This function returns a shallow copy of the obj, which flattens the
 // 'data' field into the top level, while also including '_id' and 'metadata.key'
-const unpackServerData = (obj: BEMData<any>) => ({
-  ...obj.data,
-  _id: obj._id,
-  key: obj.metadata.key,
-  origin_key: obj.metadata.origin_key || obj.metadata.key,
-});
+const unpackServerData = (obj: BEMData<any>) =>
+  obj && {
+    ...obj.data,
+    _id: obj._id,
+    key: obj.metadata.key,
+    origin_key: obj.metadata.origin_key || obj.metadata.key,
+  };
 
 export function readAllCompositeTrips(startTs: number, endTs: number) {
   const readPromises = [getRawEntries(['analysis/composite_trip'], startTs, endTs, 'data.end_ts')];

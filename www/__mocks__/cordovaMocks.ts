@@ -178,7 +178,7 @@ export const mockBEMUserCache = (config?) => {
           }, 100),
         );
       } else {
-        return undefined;
+        return Promise.resolve([]);
       }
     },
   };
@@ -229,6 +229,8 @@ export const mockBEMServerCom = () => {
       }, 100);
     },
   };
+  window['cordova'] ||= {};
+  window['cordova'].plugins ||= {};
   window['cordova'].plugins.BEMServerComm = mockBEMServerCom;
 };
 
