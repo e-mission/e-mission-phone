@@ -33,18 +33,16 @@ export const secondsToHours = (seconds: number) => formatForDisplay(seconds / 36
 
 // segments metricsDays into weeks, with the most recent week first
 export function segmentDaysByWeeks(days: DayOfMetricData[], lastDate: string) {
-  const weeks: DayOfMetricData[][] = [];
-  let weekIndex = 0;
-  let cutoff = isoDateWithOffset(lastDate, -7 * (weekIndex + 1));
+  const weeks: DayOfMetricData[][] = [[]];
+  let cutoff = isoDateWithOffset(lastDate, -7 * weeks.length);
   [...days].reverse().forEach((d) => {
     const date = dateForDayOfMetricData(d);
     // if date is older than cutoff, start a new week
     if (isoDatesDifference(date, cutoff) > 0) {
-      weekIndex += 1;
-      cutoff = isoDateWithOffset(lastDate, -7 * (weekIndex + 1));
+      weeks.push([]);
+      cutoff = isoDateWithOffset(lastDate, -7 * weeks.length);
     }
-    if (!weeks[weekIndex]) weeks[weekIndex] = [];
-    weeks[weekIndex].push(d);
+    weeks[weeks.length - 1].push(d);
   });
   return weeks.map((week) => week.reverse());
 }
