@@ -140,7 +140,7 @@ const MetricsTab = () => {
 
   return (
     <>
-      <NavBar>
+      <NavBar isLoading={Boolean(timelineIsLoading)}>
         <Appbar.Content title={t('metrics.dashboard-tab')} />
         <DateSelect
           mode="range"

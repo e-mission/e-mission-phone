@@ -12,12 +12,13 @@ import { displayErrorMsg } from '../../plugin/logger';
 
 const LabelListScreen = () => {
   const { filterInputs, setFilterInputs, displayedEntries } = useContext(LabelTabContext);
-  const { timelineMap, loadSpecificWeek, refreshTimeline } = useContext(TimelineContext);
+  const { timelineMap, loadSpecificWeek, timelineIsLoading, refreshTimeline } =
+    useContext(TimelineContext);
   const { colors } = useTheme();
 
   return (
     <>
-      <NavBar>
+      <NavBar isLoading={Boolean(timelineIsLoading)}>
         <FilterSelect
           filters={filterInputs}
           setFilters={setFilterInputs}

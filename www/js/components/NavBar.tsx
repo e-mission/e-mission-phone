@@ -1,13 +1,22 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import color from 'color';
-import { Appbar, Button, ButtonProps, Icon, useTheme } from 'react-native-paper';
+import { Appbar, Button, ButtonProps, Icon, ProgressBar, useTheme } from 'react-native-paper';
 
-const NavBar = ({ children }) => {
+type NavBarProps = { children: React.ReactNode; isLoading?: boolean };
+const NavBar = ({ children, isLoading }: NavBarProps) => {
   const { colors } = useTheme();
   return (
     <Appbar.Header statusBarHeight={0} elevated={true} style={s.navBar(colors.surface)}>
       {children}
+      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2 }}>
+        <ProgressBar
+          visible={isLoading}
+          indeterminate={true}
+          color={colors.primary}
+          style={{ height: 2 }}
+        />
+      </View>
     </Appbar.Header>
   );
 };
@@ -16,8 +25,8 @@ export default NavBar;
 
 // NavBarButton, a greyish button with outline, to be used inside a NavBar
 
-type Props = ButtonProps & { icon?: string; iconSize?: number };
-export const NavBarButton = ({ children, icon, iconSize, ...rest }: Props) => {
+type NavBarButtonProps = ButtonProps & { icon?: string; iconSize?: number };
+export const NavBarButton = ({ children, icon, iconSize, ...rest }: NavBarButtonProps) => {
   const { colors } = useTheme();
   const buttonColor = color(colors.onBackground).alpha(0.07).rgb().string();
   const outlineColor = color(colors.onBackground).alpha(0.2).rgb().string();
