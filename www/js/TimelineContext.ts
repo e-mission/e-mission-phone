@@ -216,13 +216,12 @@ export const useTimelineContext = (): ContextProps => {
     if (!pipelineRange?.start_ts || !pipelineRange?.end_ts)
       return logWarn('No pipelineRange yet - early return');
     logDebug('Timeline: fetchTripsInRange from ' + dateRange[0] + ' to ' + dateRange[1]);
+
     const [startTs, endTs] = isoDateRangeToTsRange(dateRange);
+    const maxStartTs = Math.max(startTs, pipelineRange.start_ts); // ensure that we don't read before the pipeline start
+    const minEndTs = Math.min(endTs, pipelineRange.end_ts); // ensure that we don't read after the pipeline end
 
-    const readCompositePromise = readAllCompositeTrips(
-      Math.max(startTs, pipelineRange.start_ts), // ensure that we don't read before the pipeline start
-      Math.min(endTs, pipelineRange.end_ts), // ensure that we don't read after the pipeline end
-    );
-
+    const readCompositePromise = readAllCompositeTrips(maxStartTs, minEndTs);
     let readUnprocessedPromise;
     if (endTs >= pipelineRange.end_ts) {
       let lastProcessedTrip: CompositeTrip | undefined;
@@ -231,7 +230,7 @@ export const useTimelineContext = (): ContextProps => {
           .reverse()
           .find((trip) => trip.origin_key.includes('trip')) as CompositeTrip;
       }
-      readUnprocessedPromise = readUnprocessedTrips(pipelineRange.end_ts, endTs, lastProcessedTrip);
+      readUnprocessedPromise = readUnprocessedTrips(maxStartTs, endTs, lastProcessedTrip);
     } else {
       readUnprocessedPromise = Promise.resolve([]);
     }
