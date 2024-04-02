@@ -24,9 +24,11 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
     const records: { x: string; y: number; label: string }[] = [];
     const [recentWeek, prevWeek] = segmentDaysByWeeks(userMetrics?.duration, dateRange[1]);
     ACTIVE_MODES.forEach((mode) => {
-      const prevSum = prevWeek?.reduce((acc, day) => acc + (valueForModeOnDay(day, mode) || 0), 0);
-      if (prevSum) {
-        // `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`
+      if (prevWeek) {
+        const prevSum = prevWeek?.reduce(
+          (acc, day) => acc + (valueForModeOnDay(day, mode) || 0),
+          0,
+        );
         const xLabel = `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(prevWeek)})`;
         records.push({ label: labelKeyToRichMode(mode), x: xLabel, y: prevSum / 60 });
       }
@@ -34,10 +36,8 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
         (acc, day) => acc + (valueForModeOnDay(day, mode) || 0),
         0,
       );
-      if (recentSum) {
-        const xLabel = `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(recentWeek)})`;
-        records.push({ label: labelKeyToRichMode(mode), x: xLabel, y: recentSum / 60 });
-      }
+      const xLabel = `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(recentWeek)})`;
+      records.push({ label: labelKeyToRichMode(mode), x: xLabel, y: recentSum / 60 });
     });
     return records as { label: ActiveMode; x: string; y: number }[];
   }, [userMetrics?.duration]);

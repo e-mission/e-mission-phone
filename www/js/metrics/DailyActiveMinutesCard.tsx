@@ -18,21 +18,19 @@ const DailyActiveMinutesCard = ({ userMetrics }: Props) => {
   const { t } = useTranslation();
 
   const dailyActiveMinutesRecords = useMemo(() => {
-    const records: { label: string; x: string; y: number }[] = [];
+    const records: { label: string; x: number; y: number }[] = [];
     const recentDays = userMetrics?.duration?.slice(-14);
     recentDays?.forEach((day) => {
       ACTIVE_MODES.forEach((mode) => {
         const activeSeconds = valueForModeOnDay(day, mode);
-        if (activeSeconds) {
-          records.push({
-            label: labelKeyToRichMode(mode),
-            x: `${tsForDayOfMetricData(day) * 1000}`, // vertical chart, milliseconds on X axis
-            y: activeSeconds && activeSeconds / 60, // minutes on Y axis
-          });
-        }
+        records.push({
+          label: labelKeyToRichMode(mode),
+          x: tsForDayOfMetricData(day) * 1000, // vertical chart, milliseconds on X axis
+          y: activeSeconds ? activeSeconds / 60 : null, // minutes on Y axis
+        });
       });
     });
-    return records as { label: ActiveMode; x: string; y: number }[];
+    return records as { label: ActiveMode; x: number; y: number }[];
   }, [userMetrics?.duration]);
 
   return (
