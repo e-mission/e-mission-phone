@@ -230,7 +230,11 @@ export const useTimelineContext = (): ContextProps => {
           .reverse()
           .find((trip) => trip.origin_key.includes('trip')) as CompositeTrip;
       }
-      readUnprocessedPromise = readUnprocessedTrips(maxStartTs, endTs, lastProcessedTrip);
+      readUnprocessedPromise = readUnprocessedTrips(
+        Math.max(pipelineRange.end_ts, startTs),
+        endTs,
+        lastProcessedTrip,
+      );
     } else {
       readUnprocessedPromise = Promise.resolve([]);
     }
