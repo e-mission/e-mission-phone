@@ -14,6 +14,7 @@ import {
   TimestampRange,
   CompositeTrip,
   UnprocessedTrip,
+  SectionData,
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
@@ -288,7 +289,7 @@ const dateTime2localdate = (currtime: DateTime, tz: string) => ({
   second: currtime.second,
 });
 
-function points2TripProps(locationPoints: Array<BEMData<FilteredLocation>>) {
+function points2TripProps(locationPoints: Array<BEMData<FilteredLocation>>): UnprocessedTrip {
   const startPoint = locationPoints[0];
   const endPoint = locationPoints[locationPoints.length - 1];
   const tripAndSectionId = `unprocessed_${startPoint.data.ts}_${endPoint.data.ts}`;
@@ -318,24 +319,51 @@ function points2TripProps(locationPoints: Array<BEMData<FilteredLocation>>) {
     speed: speeds[i],
   }));
 
-  return {
-    _id: { $oid: tripAndSectionId },
-    key: 'UNPROCESSED_trip',
-    origin_key: 'UNPROCESSED_trip',
-    additions: [],
-    confidence_threshold: 0,
+  // baseProps: these are the properties that are the same between the trip and its section
+  const baseProps = {
     distance: dists.reduce((a, b) => a + b, 0),
     duration: endPoint.data.ts - startPoint.data.ts,
     end_fmt_time: endTime.toISO() || displayErrorMsg('end_fmt_time: invalid DateTime') || '',
+    end_loc: {
+      type: 'Point',
+      coordinates: [endPoint.data.longitude, endPoint.data.latitude],
+    } as Point,
     end_local_dt: dateTime2localdate(endTime, endPoint.metadata.time_zone),
     end_ts: endPoint.data.ts,
-    expectation: { to_label: true },
-    inferred_labels: [],
-    locations: locations,
     source: 'unprocessed',
     start_fmt_time: startTime.toISO() || displayErrorMsg('start_fmt_time: invalid DateTime') || '',
+    start_loc: {
+      type: 'Point',
+      coordinates: [startPoint.data.longitude, startPoint.data.latitude],
+    } as Point,
     start_local_dt: dateTime2localdate(startTime, startPoint.metadata.time_zone),
     start_ts: startPoint.data.ts,
+  };
+
+  // section: baseProps + some properties that are unique to the section
+  const singleSection: SectionData = {
+    ...baseProps,
+    _id: { $oid: `unprocessed_section_${tripAndSectionId}` },
+    cleaned_section: { $oid: `unprocessed_section_${tripAndSectionId}` },
+    key: 'UNPROCESSED_section',
+    origin_key: 'UNPROCESSED_section',
+    sensed_mode: 4, // MotionTypes.UNKNOWN (4)
+    sensed_mode_str: 'UNKNOWN',
+    trip_id: { $oid: tripAndSectionId },
+  };
+
+  // the complete UnprocessedTrip: baseProps + properties that are unique to the trip, including the section
+  return {
+    ...baseProps,
+    _id: { $oid: tripAndSectionId },
+    additions: [],
+    confidence_threshold: 0,
+    expectation: { to_label: true },
+    inferred_labels: [],
+    key: 'UNPROCESSED_trip',
+    locations: locations,
+    origin_key: 'UNPROCESSED_trip',
+    sections: [singleSection],
     user_input: {},
   };
 }
@@ -386,19 +414,7 @@ function transitionTrip2TripObj(trip: Array<any>): Promise<UnprocessedTrip | und
           end = ${JSON.stringify(tripEndTransition.data)}`);
       }
 
-      const tripProps = points2TripProps(filteredLocationList);
-
-      return {
-        ...tripProps,
-        start_loc: {
-          type: 'Point',
-          coordinates: [tripStartPoint.data.longitude, tripStartPoint.data.latitude],
-        },
-        end_loc: {
-          type: 'Point',
-          coordinates: [tripEndPoint.data.longitude, tripEndPoint.data.latitude],
-        },
-      };
+      return points2TripProps(filteredLocationList);
     },
   );
 }
