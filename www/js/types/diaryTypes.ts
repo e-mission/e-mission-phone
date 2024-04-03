@@ -45,11 +45,6 @@ export type TripTransition = {
   ts: number;
 };
 
-export type LocationCoord = {
-  type: string; // e.x., "Point"
-  coordinates: [number, number];
-};
-
 type CompTripLocations = {
   loc: {
     coordinates: number[]; // e.g. [1, 2.3]
@@ -68,12 +63,15 @@ export type UnprocessedTrip = {
   end_fmt_time: string;
   end_loc: Point;
   end_local_dt: LocalDt;
+  end_ts: number;
   expectation: any; // TODO "{to_label: boolean}"
   inferred_labels: any[]; // TODO
   key: string;
   locations?: CompTripLocations[];
   origin_key: string; // e.x., UNPROCESSED_trip
+  sections: SectionData[];
   source: string;
+  start_fmt_time: string;
   start_local_dt: LocalDt;
   start_ts: number;
   start_loc: Point;
@@ -107,7 +105,7 @@ export type CompositeTrip = {
   locations: any[]; // TODO
   origin_key: string;
   raw_trip: ObjectId;
-  sections: any[]; // TODO
+  sections: SectionData[];
   source: string;
   start_confirmed_place: BEMData<ConfirmedPlace>;
   start_fmt_time: string;
@@ -188,23 +186,25 @@ export type Location = {
   latitude: number;
   fmt_time: string; // ISO
   mode: number;
-  loc: LocationCoord;
+  loc: Point;
   ts: number; // Unix
   altitude: number;
   distance: number;
 };
 
-// used in readAllCompositeTrips
 export type SectionData = {
+  _id: ObjectId;
   end_ts: number; // Unix time, e.x. 1696352498.804
-  end_loc: LocationCoord;
+  end_loc: Point;
   start_fmt_time: string; // ISO time
   end_fmt_time: string;
+  key: string;
+  origin_key: string;
   trip_id: ObjectId;
   sensed_mode: number;
   source: string; // e.x., "SmoothedHighConfidenceMotion"
   start_ts: number; // Unix
-  start_loc: LocationCoord;
+  start_loc: Point;
   cleaned_section: ObjectId;
   start_local_dt: LocalDt;
   end_local_dt: LocalDt;
@@ -213,7 +213,7 @@ export type SectionData = {
   distance: number;
 };
 
-// used in timelineHelper's `transitionTrip2TripObj`
+// used in timelineHelper's `transitionTrip2UnprocessedTrip`
 export type FilteredLocation = {
   accuracy: number;
   altitude: number;
