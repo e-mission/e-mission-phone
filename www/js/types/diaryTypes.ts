@@ -5,7 +5,7 @@
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
 import { MultilabelKey } from './labelTypes';
 import { BEMData, LocalDt } from './serverData';
-import { FeatureCollection, Feature, Geometry, Point } from 'geojson';
+import { FeatureCollection, Feature, Geometry, Point, Position } from 'geojson';
 
 type ObjectId = { $oid: string };
 
@@ -45,9 +45,9 @@ export type TripTransition = {
   ts: number;
 };
 
-type CompTripLocations = {
+export type CompositeTripLocation = {
   loc: {
-    coordinates: number[]; // e.g. [1, 2.3]
+    coordinates: Position; // [lon, lat]
   };
   speed: number;
   ts: number;
@@ -56,7 +56,7 @@ type CompTripLocations = {
 //  Used for return type of readUnprocessedTrips
 export type UnprocessedTrip = {
   _id: ObjectId;
-  additions: UserInputEntry[];
+  additions: []; // unprocessed trips won't have any matched processed inputs, so this is always empty
   confidence_threshold: number;
   distance: number;
   duration: number;
@@ -64,19 +64,19 @@ export type UnprocessedTrip = {
   end_loc: Point;
   end_local_dt: LocalDt;
   end_ts: number;
-  expectation: any; // TODO "{to_label: boolean}"
-  inferred_labels: any[]; // TODO
-  key: string;
-  locations?: CompTripLocations[];
-  origin_key: string; // e.x., UNPROCESSED_trip
+  expectation: { to_label: true }; // unprocessed trips are always expected to be labeled
+  inferred_labels: []; // unprocessed trips won't have inferred labels
+  key: 'UNPROCESSED_trip';
+  locations?: CompositeTripLocation[];
+  origin_key: 'UNPROCESSED_trip';
   sections: SectionData[];
-  source: string;
+  source: 'unprocessed';
   start_fmt_time: string;
   start_local_dt: LocalDt;
   start_ts: number;
   start_loc: Point;
   starting_trip?: any;
-  user_input: UserInput;
+  user_input: {}; // unprocessed trips won't have any matched processed inputs, so this is always empty
 };
 
 /* These are the properties received from the server (basically matches Python code)
@@ -96,13 +96,13 @@ export type CompositeTrip = {
   end_local_dt: LocalDt;
   end_place: ObjectId;
   end_ts: number;
-  expectation: any; // TODO "{to_label: boolean}"
+  expectation: { to_label: boolean };
   expected_trip: ObjectId;
   inferred_labels: InferredLabels;
   inferred_section_summary: SectionSummary;
   inferred_trip: ObjectId;
   key: string;
-  locations: any[]; // TODO
+  locations: CompositeTripLocation[];
   origin_key: string;
   raw_trip: ObjectId;
   sections: SectionData[];

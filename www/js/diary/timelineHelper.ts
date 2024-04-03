@@ -15,6 +15,7 @@ import {
   CompositeTrip,
   UnprocessedTrip,
   SectionData,
+  CompositeTripLocation,
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
@@ -216,10 +217,10 @@ const location2GeojsonPoint = (locationPoint: Point, featureType: string): Featu
  */
 function locations2GeojsonTrajectory(
   trip: CompositeTrip,
-  locationList: Array<Point>,
+  locationList: CompositeTripLocation[],
   trajectoryColor?: string,
-) {
-  let sectionsPoints;
+): Feature[] {
+  let sectionsPoints: CompositeTripLocation[][];
   if (!trip.sections) {
     // this is a unimodal trip so we put all the locations in one section
     sectionsPoints = [locationList];
@@ -242,6 +243,9 @@ function locations2GeojsonTrajectory(
         /* If a color was passed as arg, use it for the whole trajectory. Otherwise, use the
           color for the sensed mode of this section, and fall back to dark grey */
         color: trajectoryColor || getBaseModeByKey(section?.sensed_mode_str)?.color || '#333',
+      },
+      properties: {
+        feature_type: 'section_trajectory',
       },
     };
   });
@@ -341,7 +345,7 @@ function points2UnprocessedTrip(locationPoints: Array<BEMData<FilteredLocation>>
     } as Point,
     start_local_dt: dateTime2localdate(startTime, startPoint.metadata.time_zone),
     start_ts: startPoint.data.ts,
-  };
+  } as const;
 
   // section: baseProps + some properties that are unique to the section
   const singleSection: SectionData = {
