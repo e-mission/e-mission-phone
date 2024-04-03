@@ -289,7 +289,10 @@ const dateTime2localdate = (currtime: DateTime, tz: string) => ({
   second: currtime.second,
 });
 
-function points2TripProps(locationPoints: Array<BEMData<FilteredLocation>>): UnprocessedTrip {
+/**
+ * @description Given an array of location points, creates an UnprocessedTrip object.
+ */
+function points2UnprocessedTrip(locationPoints: Array<BEMData<FilteredLocation>>): UnprocessedTrip {
   const startPoint = locationPoints[0];
   const endPoint = locationPoints[locationPoints.length - 1];
   const tripAndSectionId = `unprocessed_${startPoint.data.ts}_${endPoint.data.ts}`;
@@ -371,7 +374,11 @@ function points2TripProps(locationPoints: Array<BEMData<FilteredLocation>>): Unp
 const tsEntrySort = (e1: BEMData<FilteredLocation>, e2: BEMData<FilteredLocation>) =>
   e1.data.ts - e2.data.ts; // compare timestamps
 
-function transitionTrip2TripObj(trip: Array<any>): Promise<UnprocessedTrip | undefined> {
+/**
+ * @description Given an array of 2 transitions, queries the location data during that time and promises an UnprocessedTrip object.
+ * @param trip An array of transitions representing one trip; i.e. [start transition, end transition]
+ */
+function tripTransitions2UnprocessedTrip(trip: Array<any>): Promise<UnprocessedTrip | undefined> {
   const tripStartTransition = trip[0];
   const tripEndTransition = trip[1];
   const tq = {
@@ -413,8 +420,7 @@ function transitionTrip2TripObj(trip: Array<any>): Promise<UnprocessedTrip | und
         logDebug(`transitions: start = ${JSON.stringify(tripStartTransition.data)}; 
           end = ${JSON.stringify(tripEndTransition.data)}`);
       }
-
-      return points2TripProps(filteredLocationList);
+      return points2UnprocessedTrip(filteredLocationList);
     },
   );
 }
@@ -443,22 +449,26 @@ function isEndingTransition(transWrapper: BEMData<TripTransition>) {
   // Logger.log("Returning false");
   return false;
 }
-/*
- * This is going to be a bit tricky. As we can see from
- * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163,
- * when we read local transitions, they have a string for the transition
- * (e.g. `T_DATA_PUSHED`), while the remote transitions have an integer
- * (e.g. `2`).
- * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286338606
- *
- * Also, at least on iOS, it is possible for trip end to be detected way
- * after the end of the trip, so the trip end transition of a processed
- * trip may actually show up as an unprocessed transition.
- * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163
- *
- * Let's abstract this out into our own minor state machine.
+
+/**
+ * @description Given an array of transitions, finds which transitions represent the start and end of a detected trip and returns them as pairs.
+ * @returns An 2D array of transitions, where each inner array represents one trip; i.e. [start transition, end transition]
  */
-function transitions2Trips(transitionList: Array<BEMData<TripTransition>>) {
+function transitions2TripTransitions(transitionList: Array<BEMData<TripTransition>>) {
+  /* This is going to be a bit tricky. As we can see from
+   * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163,
+   * when we read local transitions, they have a string for the transition
+   * (e.g. `T_DATA_PUSHED`), while the remote transitions have an integer
+   * (e.g. `2`).
+   * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286338606
+   *
+   * Also, at least on iOS, it is possible for trip end to be detected way
+   * after the end of the trip, so the trip end transition of a processed
+   * trip may actually show up as an unprocessed transition.
+   * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163
+   *
+   * Let's abstract this out into our own minor state machine.
+   */
   let inTrip = false;
   const tripList: [BEMData<TripTransition>, BEMData<TripTransition>][] = [];
   let currStartTransitionIndex = -1;
@@ -536,12 +546,12 @@ export function readUnprocessedTrips(
         return [];
       } else {
         logDebug(`Found ${transitionList.length} transitions. yay!`);
-        const tripsList = transitions2Trips(transitionList);
+        const tripsList = transitions2TripTransitions(transitionList);
         logDebug(`Mapped into ${tripsList.length} trips. yay!`);
         tripsList.forEach((trip) => {
           logDebug(JSON.stringify(trip, null, 2));
         });
-        const tripFillPromises = tripsList.map(transitionTrip2TripObj);
+        const tripFillPromises = tripsList.map(tripTransitions2UnprocessedTrip);
         return Promise.all(tripFillPromises).then(
           (rawTripObjs: (UnprocessedTrip | undefined)[]) => {
             // Now we need to link up the trips. linking unprocessed trips
