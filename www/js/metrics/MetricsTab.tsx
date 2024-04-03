@@ -23,6 +23,7 @@ import TimelineContext from '../TimelineContext';
 import { isoDateRangeToTsRange, isoDatesDifference } from '../diary/timelineHelper';
 import { MetricsSummaries } from 'e-mission-common';
 
+const DEFAULT_SECTIONS_TO_SHOW = ['footprint', 'active_travel', 'summary'] as const;
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
 async function fetchMetricsFromServer(
@@ -135,6 +136,8 @@ const MetricsTab = () => {
     }
   }
 
+  const sectionsToShow =
+    appConfig?.metrics?.phone_dashboard_ui?.sections || DEFAULT_SECTIONS_TO_SHOW;
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = windowWidth * 0.88;
 
@@ -154,43 +157,49 @@ const MetricsTab = () => {
         <Appbar.Action icon="refresh" size={32} onPress={refreshTimeline} />
       </NavBar>
       <ScrollView style={{ paddingVertical: 12 }}>
-        <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-          <CarbonFootprintCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
-          <CarbonTextCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
-        </Carousel>
-        <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-          <WeeklyActiveMinutesCard userMetrics={userMetrics} />
-          <DailyActiveMinutesCard userMetrics={userMetrics} />
-          <ActiveMinutesTableCard userMetrics={userMetrics} />
-        </Carousel>
-        <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-          <MetricsCard
-            cardTitle={t('main-metrics.distance')}
-            userMetricsDays={userMetrics?.distance}
-            aggMetricsDays={aggMetrics?.distance}
-            axisUnits={distanceSuffix}
-            unitFormatFn={getFormattedDistance}
-          />
-          <MetricsCard
-            cardTitle={t('main-metrics.trips')}
-            userMetricsDays={userMetrics?.count}
-            aggMetricsDays={aggMetrics?.count}
-            axisUnits={t('metrics.trips')}
-            unitFormatFn={formatForDisplay}
-          />
-          <MetricsCard
-            cardTitle={t('main-metrics.duration')}
-            userMetricsDays={userMetrics?.duration}
-            aggMetricsDays={aggMetrics?.duration}
-            axisUnits={t('metrics.hours')}
-            unitFormatFn={secondsToHours}
-          />
-          {/* <MetricsCard cardTitle={t('main-metrics.mean-speed')}
-          userMetricsDays={userMetrics?.mean_speed}
-          aggMetricsDays={aggMetrics?.mean_speed}
-          axisUnits={speedSuffix}
-          unitFormatFn={getFormattedSpeed} /> */}
-        </Carousel>
+        {sectionsToShow.includes('footprint') && (
+          <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
+            <CarbonFootprintCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
+            <CarbonTextCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
+          </Carousel>
+        )}
+        {sectionsToShow.includes('active_travel') && (
+          <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
+            <WeeklyActiveMinutesCard userMetrics={userMetrics} />
+            <DailyActiveMinutesCard userMetrics={userMetrics} />
+            <ActiveMinutesTableCard userMetrics={userMetrics} />
+          </Carousel>
+        )}
+        {sectionsToShow.includes('summary') && (
+          <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
+            <MetricsCard
+              cardTitle={t('main-metrics.distance')}
+              userMetricsDays={userMetrics?.distance}
+              aggMetricsDays={aggMetrics?.distance}
+              axisUnits={distanceSuffix}
+              unitFormatFn={getFormattedDistance}
+            />
+            <MetricsCard
+              cardTitle={t('main-metrics.trips')}
+              userMetricsDays={userMetrics?.count}
+              aggMetricsDays={aggMetrics?.count}
+              axisUnits={t('metrics.trips')}
+              unitFormatFn={formatForDisplay}
+            />
+            <MetricsCard
+              cardTitle={t('main-metrics.duration')}
+              userMetricsDays={userMetrics?.duration}
+              aggMetricsDays={aggMetrics?.duration}
+              axisUnits={t('metrics.hours')}
+              unitFormatFn={secondsToHours}
+            />
+            {/* <MetricsCard cardTitle={t('main-metrics.mean-speed')}
+              userMetricsDays={userMetrics?.mean_speed}
+              aggMetricsDays={aggMetrics?.mean_speed}
+              axisUnits={speedSuffix}
+              unitFormatFn={getFormattedSpeed} /> */}
+          </Carousel>
+        )}
       </ScrollView>
     </>
   );
