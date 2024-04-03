@@ -51,7 +51,9 @@ const Main = () => {
   const timelineContext = useTimelineContext();
 
   const routes = useMemo(() => {
-    const showMetrics = appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL';
+    const showMetrics =
+      appConfig?.metrics?.phone_dashboard_ui ||
+      appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL';
     return showMetrics ? defaultRoutes(t) : defaultRoutes(t).filter((r) => r.key != 'metrics');
   }, [appConfig, t]);
 

@@ -9,6 +9,21 @@ export type AppConfig = {
     surveys: EnketoSurveyConfig;
     buttons?: SurveyButtonsConfig;
   };
+  metrics: {
+    include_test_users: boolean;
+    phone_dashboard_ui?: {
+      sections: ('footprint' | 'active_travel' | 'summary' | 'engagement' | 'surveys')[];
+      footprint_options?: {
+        unlabeled_uncertainty: boolean;
+      };
+      summary_options?: {
+        metrics_list: ('distance' | 'count' | 'duration')[];
+      };
+      engagement_options?: {
+        leaderboard_metric: [string, string];
+      };
+    };
+  };
   reminderSchemes?: ReminderSchemesConfig;
   [k: string]: any; // TODO fill in all the other fields
 };
