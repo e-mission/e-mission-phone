@@ -22,6 +22,9 @@ export type AppConfig = {
       engagement_options?: {
         leaderboard_metric: [string, string];
       };
+      active_travel_options?: {
+        modes_list: string[];
+      };
     };
   };
   reminderSchemes?: ReminderSchemesConfig;

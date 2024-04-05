@@ -9,6 +9,7 @@ import BarChart from '../components/BarChart';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
 import { getBaseModeByText } from '../diary/diaryHelper';
 import TimelineContext from '../TimelineContext';
+import useAppConfig from '../useAppConfig';
 
 export const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = (typeof ACTIVE_MODES)[number];
@@ -18,12 +19,15 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
   const { colors } = useTheme();
   const { dateRange } = useContext(TimelineContext);
   const { t } = useTranslation();
-
+  const appConfig = useAppConfig();
+  // modes to consider as "active" for the purpose of calculating "active minutes", default : ['walk', 'bike']
+  const activeModes =
+    appConfig?.metrics?.phone_dashboard_ui?.active_travel_options?.modes_list ?? ACTIVE_MODES;
   const weeklyActiveMinutesRecords = useMemo(() => {
     if (!userMetrics?.duration) return [];
     const records: { x: string; y: number; label: string }[] = [];
     const [recentWeek, prevWeek] = segmentDaysByWeeks(userMetrics?.duration, dateRange[1]);
-    ACTIVE_MODES.forEach((mode) => {
+    activeModes.forEach((mode) => {
       if (prevWeek) {
         const prevSum = prevWeek?.reduce(
           (acc, day) => acc + (valueForModeOnDay(day, mode) || 0),

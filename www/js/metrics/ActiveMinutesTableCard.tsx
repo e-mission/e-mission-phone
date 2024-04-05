@@ -13,17 +13,22 @@ import { useTranslation } from 'react-i18next';
 import { ACTIVE_MODES } from './WeeklyActiveMinutesCard';
 import { labelKeyToRichMode } from '../survey/multilabel/confirmHelper';
 import TimelineContext from '../TimelineContext';
+import useAppConfig from '../useAppConfig';
 
 type Props = { userMetrics?: MetricsData };
 const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
   const { colors } = useTheme();
   const { dateRange } = useContext(TimelineContext);
   const { t } = useTranslation();
+  const appConfig = useAppConfig();
+  // modes to consider as "active" for the purpose of calculating "active minutes", default : ['walk', 'bike']
+  const activeModes =
+    appConfig?.metrics?.phone_dashboard_ui?.active_travel_options?.modes_list ?? ACTIVE_MODES;
 
   const cumulativeTotals = useMemo(() => {
     if (!userMetrics?.duration) return [];
     const totals = {};
-    ACTIVE_MODES.forEach((mode) => {
+    activeModes.forEach((mode) => {
       const sum = userMetrics.duration.reduce(
         (acc, day) => acc + (valueForModeOnDay(day, mode) || 0),
         0,
@@ -40,7 +45,7 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
       .reverse()
       .map((week) => {
         const totals = {};
-        ACTIVE_MODES.forEach((mode) => {
+        activeModes.forEach((mode) => {
           const sum = week.reduce((acc, day) => acc + (valueForModeOnDay(day, mode) || 0), 0);
           totals[mode] = secondsToMinutes(sum);
         });
@@ -54,7 +59,7 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
     return userMetrics.duration
       .map((day) => {
         const totals = {};
-        ACTIVE_MODES.forEach((mode) => {
+        activeModes.forEach((mode) => {
           const sum = valueForModeOnDay(day, mode) || 0;
           totals[mode] = secondsToMinutes(sum);
         });
@@ -85,7 +90,7 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
         <DataTable>
           <DataTable.Header>
             <DataTable.Title> </DataTable.Title>
-            {ACTIVE_MODES.map((mode, i) => (
+            {activeModes.map((mode, i) => (
               <DataTable.Title style={{ padding: 5 }} key={i}>
                 {labelKeyToRichMode(mode)}
               </DataTable.Title>
@@ -94,7 +99,7 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
           {allTotals.slice(from, to).map((total, i) => (
             <DataTable.Row key={i} style={{ minHeight: 0, padding: 5 }}>
               <DataTable.Cell>{total['period']}</DataTable.Cell>
-              {ACTIVE_MODES.map((mode, j) => (
+              {activeModes.map((mode, j) => (
                 <DataTable.Cell key={j}>
                   {total[mode]} {t('metrics.minutes')}
                 </DataTable.Cell>
