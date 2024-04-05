@@ -25,6 +25,7 @@ import { MetricsSummaries } from 'e-mission-common';
 
 const DEFAULT_SECTIONS_TO_SHOW = ['footprint', 'active_travel', 'summary'] as const;
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
+const DEFAULT_SUMMARY_LIST = ['distance', 'count', 'duration'] as const;
 
 async function fetchMetricsFromServer(
   type: 'user' | 'aggregate',
@@ -138,6 +139,8 @@ const MetricsTab = () => {
 
   const sectionsToShow =
     appConfig?.metrics?.phone_dashboard_ui?.sections || DEFAULT_SECTIONS_TO_SHOW;
+  const summaryList =
+    appConfig?.metrics?.phone_dashboard_ui?.summary_options?.metrics_list ?? DEFAULT_SUMMARY_LIST;
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = windowWidth * 0.88;
 
@@ -172,27 +175,33 @@ const MetricsTab = () => {
         )}
         {sectionsToShow.includes('summary') && (
           <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-            <MetricsCard
-              cardTitle={t('main-metrics.distance')}
-              userMetricsDays={userMetrics?.distance}
-              aggMetricsDays={aggMetrics?.distance}
-              axisUnits={distanceSuffix}
-              unitFormatFn={getFormattedDistance}
-            />
-            <MetricsCard
-              cardTitle={t('main-metrics.trips')}
-              userMetricsDays={userMetrics?.count}
-              aggMetricsDays={aggMetrics?.count}
-              axisUnits={t('metrics.trips')}
-              unitFormatFn={formatForDisplay}
-            />
-            <MetricsCard
-              cardTitle={t('main-metrics.duration')}
-              userMetricsDays={userMetrics?.duration}
-              aggMetricsDays={aggMetrics?.duration}
-              axisUnits={t('metrics.hours')}
-              unitFormatFn={secondsToHours}
-            />
+            {summaryList.includes('distance') && (
+              <MetricsCard
+                cardTitle={t('main-metrics.distance')}
+                userMetricsDays={userMetrics?.distance}
+                aggMetricsDays={aggMetrics?.distance}
+                axisUnits={distanceSuffix}
+                unitFormatFn={getFormattedDistance}
+              />
+            )}
+            {summaryList.includes('count') && (
+              <MetricsCard
+                cardTitle={t('main-metrics.trips')}
+                userMetricsDays={userMetrics?.count}
+                aggMetricsDays={aggMetrics?.count}
+                axisUnits={t('metrics.trips')}
+                unitFormatFn={formatForDisplay}
+              />
+            )}
+            {summaryList.includes('duration') && (
+              <MetricsCard
+                cardTitle={t('main-metrics.duration')}
+                userMetricsDays={userMetrics?.duration}
+                aggMetricsDays={aggMetrics?.duration}
+                axisUnits={t('metrics.hours')}
+                unitFormatFn={secondsToHours}
+              />
+            )}
             {/* <MetricsCard cardTitle={t('main-metrics.mean-speed')}
               userMetricsDays={userMetrics?.mean_speed}
               aggMetricsDays={aggMetrics?.mean_speed}
