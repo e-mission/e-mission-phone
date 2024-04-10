@@ -20,6 +20,9 @@ export type TimelineLabelMap = {
 export type TimelineNotesMap = {
   [k: string]: UserInputEntry[];
 };
+export type CustomLabelMap = {
+  [k: string]: string[];
+};
 
 export type LabelTabFilter = {
   key: string;

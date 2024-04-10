@@ -8,7 +8,10 @@
   "trip-confirm": {
     "services-please-fill-in": "Please fill in the {{text}} not listed.",
     "services-cancel": "Cancel",
-    "services-save": "Save"
+    "services-save": "Save",
+    "custom-mode": "Custom Mode",
+    "custom-purpose": "Custom Purpose",
+    "custom-labels": "Custom Labels"
   },
 
   "control": {
@@ -48,7 +51,8 @@
     "reminders-time-of-day": "Time of Day for Reminders ({{time}})",
     "upcoming-notifications": "Upcoming Notifications",
     "dummy-notification": "Dummy Notification in 5 Seconds",
-    "log-out": "Log Out"
+    "log-out": "Log Out",
+    "manage-custom-labels": "Manage Custom Labels"
   },
 
   "general-settings": {

@@ -18,4 +18,6 @@ module.exports = {
   moduleDirectories: ["node_modules", "src"],
   globals: {"__DEV__": false},
   collectCoverage: true,
+  // several functions in commHelper do not have unit tests; see note in commHelper.test.ts
+  coveragePathIgnorePatterns: ['www/js/services/commHelper.ts'],
 };

@@ -47,4 +47,8 @@ it('fetches text from a URL and caches it so the next call is faster', async () 
   * - updateUser
   * - getUser
   * - putOne
+  * - getUserCustomLabels
+  * - insertUserCustomLabel
+  * - updateUserCustomLabel
+  * - deleteUserCustomLabel
 */
