@@ -38,13 +38,21 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
   }
 
   async function fakeRangeCallback() {
-    const deviceWithMajorMinor = { ...device };
-    deviceWithMajorMinor.major = device.major | 1234;
-    deviceWithMajorMinor.minor = device.minor | 4567;
-    deviceWithMajorMinor.monitorResult = undefined;
-    deviceWithMajorMinor.rangeResult = undefined;
+    const deviceWithBeacons = { ...device };
+    deviceWithBeacons.monitorResult = undefined;
+    deviceWithBeacons.rangeResult = undefined;
+    deviceWithBeacons.beacons = [
+        {uuid: device.uuid,
+        major: device.major | 4567,
+        minor: device.minor | 1945,
+        proximity: "ProximityNear",
+        accuracy: Math.random() * 1.33,
+        rssi: Math.random() * -62}
+    ]
+    deviceWithBeacons.minor = device.minor | 4567;
+    deviceWithBeacons.minor = device.minor | 4567;
     window['cordova'].plugins.locationManager.getDelegate().didRangeBeaconsInRegion({
-      region: deviceWithMajorMinor,
+      region: deviceWithBeacons,
       eventType: 'didRangeBeaconsInRegion',
       state: 'CLRegionStateInside',
     });
@@ -65,7 +73,7 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
         <Text style={{ backgroundColor: colors.secondaryContainer }} variant="bodyMedium">
           {device.rangeResult}
         </Text>
-        <Card.Actions>
+        <Card.Actions >
           <Button mode="elevated" onPress={() => fakeMonitorCallback('CLRegionStateInside')}>
             Enter
           </Button>

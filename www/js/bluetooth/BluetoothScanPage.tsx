@@ -90,7 +90,8 @@ const BluetoothScanPage = ({ ...props }: any) => {
       ...prevDevices,
       [uuid]: {
         ...prevDevices[uuid],
-        monitorResult: result,
+        monitorResult: status? result : undefined,
+        rangeResult: undefined,
         in_range: status,
       },
     }));
