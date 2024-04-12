@@ -21,7 +21,7 @@ import { ServerConnConfig } from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext from '../TimelineContext';
 import { isoDateRangeToTsRange, isoDatesDifference } from '../diary/timelineHelper';
-import { MetricsSummaries } from 'e-mission-common';
+import { metrics_summaries } from 'e-mission-common';
 
 // 2 weeks of data is needed in order to compare "past week" vs "previous week"
 const N_DAYS_TO_LOAD = 14; // 2 weeks
@@ -70,7 +70,7 @@ const MetricsTab = () => {
     console.time('MetricsTab: timelineMap.values()');
     const timelineValues = [...timelineMap.values()];
     console.timeEnd('MetricsTab: timelineMap.values()');
-    const result = MetricsSummaries.generate_summaries(
+    const result = metrics_summaries.generate_summaries(
       METRIC_LIST,
       timelineValues,
       timelineLabelMap,
