@@ -3,22 +3,22 @@ import { View, StyleSheet } from 'react-native';
 import color from 'color';
 import LabelTabContext from '../LabelTabContext';
 import { logDebug } from '../../plugin/logger';
-import { getBaseModeByValue } from '../diaryHelper';
+import { getBaseModeByKey, getBaseModeByValue } from '../diaryHelper';
 import { Text, Icon, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
 const ModesIndicator = ({ trip, detectedModes }) => {
   const { t } = useTranslation();
-  const { labelOptions, labelFor } = useContext(LabelTabContext);
+  const { labelOptions, labelFor, confirmedModeFor } = useContext(LabelTabContext);
   const { colors } = useTheme();
 
   const indicatorBackgroundColor = color(colors.onPrimary).alpha(0.8).rgb().string();
   let indicatorBorderColor = color('black').alpha(0.5).rgb().string();
 
   let modeViews;
-  const labeledModeForTrip = labelFor(trip, 'MODE');
-  if (labelOptions && labeledModeForTrip?.value) {
-    const baseMode = getBaseModeByValue(labeledModeForTrip.value, labelOptions);
+  const confirmedModeForTrip = confirmedModeFor(trip);
+  if (labelOptions && confirmedModeForTrip?.value) {
+    const baseMode = getBaseModeByKey(confirmedModeForTrip.baseMode);
     indicatorBorderColor = baseMode.color;
     logDebug(`TripCard: got baseMode = ${JSON.stringify(baseMode)}`);
     modeViews = (
@@ -32,7 +32,7 @@ const ModesIndicator = ({ trip, detectedModes }) => {
             fontWeight: '500',
             textDecorationLine: 'underline',
           }}>
-          {labelFor(trip, 'MODE')?.text}
+          {confirmedModeForTrip.text}
         </Text>
       </View>
     );

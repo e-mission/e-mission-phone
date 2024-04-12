@@ -331,6 +331,14 @@ const LabelTab = () => {
     return chosenLabel ? labelOptionByValue(chosenLabel, labelType) : undefined;
   };
 
+  /**
+   * @param tlEntry The trip or place object to get the confirmed mode for
+   * @returns Confirmed mode, which could be a vehicle identity as determined by Bluetooth scans,
+   *  or the label option from a user-given 'MODE' label, or undefined if neither exists.
+   */
+  const confirmedModeFor = (tlEntry: TimelineEntry) =>
+    timelineBleMap?.[tlEntry._id.$oid] || labelFor(tlEntry, 'MODE');
+
   function addUserInputToEntry(oid: string, userInput: any, inputType: 'label' | 'note') {
     const tlEntry = timelineMap?.get(oid);
     if (!pipelineRange || !tlEntry)
@@ -372,6 +380,7 @@ const LabelTab = () => {
     userInputFor,
     labelFor,
     notesFor,
+    confirmedModeFor,
     addUserInputToEntry,
     displayedEntries,
     filterInputs,

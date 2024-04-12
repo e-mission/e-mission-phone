@@ -27,19 +27,14 @@ const cachedGeojsons: Map<string, GeoJSONData> = new Map();
 /**
  * @description Gets a formatted GeoJSON object for a trip, including the start and end places and the trajectory.
  */
-export function useGeojsonForTrip(
-  trip: CompositeTrip,
-  labelOptions: LabelOptions,
-  labeledMode?: string,
-) {
+export function useGeojsonForTrip(trip: CompositeTrip, baseMode?: string) {
   if (!trip?._id?.$oid) return;
-  const gjKey = `trip-${trip._id.$oid}-${labeledMode || 'detected'}`;
+  const gjKey = `trip-${trip._id.$oid}-${baseMode || 'detected'}`;
   if (cachedGeojsons.has(gjKey)) {
     return cachedGeojsons.get(gjKey);
   }
 
-  const trajectoryColor =
-    (labeledMode && getBaseModeByValue(labeledMode, labelOptions)?.color) || undefined;
+  const trajectoryColor = (baseMode && getBaseModeByKey(baseMode)?.color) || undefined;
 
   logDebug("Reading trip's " + trip.locations.length + ' location points at ' + new Date());
   const features = [
