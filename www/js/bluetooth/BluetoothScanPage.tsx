@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DateTime } from 'luxon';
 import { StyleSheet, Modal, ScrollView, SafeAreaView, View, Text } from 'react-native';
 import { gatherBluetoothClassicData } from './bluetoothScanner';
 import { logWarn, displayError, displayErrorMsg, logDebug } from '../plugin/logger';
@@ -11,6 +12,7 @@ import {
   BluetoothClassicDevice,
   BLEDeviceList,
 } from '../types/bluetoothDevices';
+import { forceTransition } from '../control/ControlCollectionHelper';
 
 /**
  * The implementation of this scanner page follows the design of
@@ -95,6 +97,18 @@ const BluetoothScanPage = ({ ...props }: any) => {
         in_range: status,
       },
     }));
+    // using putMessage instead of putSensorData as a temporary hack for now
+    // since putSensorData is not exposed through javascript
+    let { monitorResult: _, in_range: _, ...noResultDevice } = sampleBLEDevices[uuid];
+    window['cordova']?.plugins?.BEMUserCache.putMessage('background/bluetooth_ble', {
+      eventType: status ? 'REGION_ENTER' : 'REGION_EXIT',
+      ts: Date.now() / 1000, // our convention is to have timestamps in seconds
+      uuid: uuid,
+      ...noResultDevice, // gives us uuid, major, minor
+    });
+    if (!status) {
+      forceTransition('BLE_BEACON_LOST');
+    }
   }
 
   function setRangeStatus(uuid: string, result: string) {
@@ -105,7 +119,56 @@ const BluetoothScanPage = ({ ...props }: any) => {
         rangeResult: result,
       },
     }));
+    // we don't want to exclude monitorResult and rangeResult from the values
+    // that we save because they are the current or previous result, just
+    // in a different format
+    // https://stackoverflow.com/a/34710102
+    let {
+      monitorResult: _,
+      rangeResult: _,
+      in_range: _,
+      ...noResultDevice
+    } = sampleBLEDevices[uuid];
+    let parsedResult = JSON.parse(result);
+    parsedResult.beacons.forEach((beacon) => {
+      window['cordova']?.plugins?.BEMUserCache.putMessage('background/bluetooth_ble', {
+        eventType: 'RANGE_UPDATE',
+        ts: Date.now() / 1000, // our convention is to have timestamps in seconds
+        uuid: uuid,
+        ...noResultDevice, // gives us uuid, major, minor
+        ...beacon, // gives us proximity, accuracy and rssi
+      });
+    });
+    // we only check for the transition on "real" callbacks to avoid excessive
+    // spurious callbacks on android
+    if (parsedResult.beacons.length > 0) {
+      // if we have received 3 range responses for the same beacon in the
+      // last 5 minutes, we generate the transition. we read without metadata
+      // (last param)
+      let nowSec = DateTime.now().toUnixInteger();
+      let tq = { key: 'write_ts', startTs: nowSec - 5 * 60, endTs: nowSec };
+      let readBLEReadingsPromise = window['cordova']?.plugins?.BEMUserCache.getMessagesForInterval(
+        'background/bluetooth_ble',
+        tq,
+        false,
+      );
+      readBLEReadingsPromise.then((bleResponses) => {
+        let lastThreeResponses = bleResponses.slice(0, 3);
+        if (!lastThreeResponses.every((x) => x.eventType == 'RANGE_UPDATE')) {
+          console.log(
+            'Last three entries ' +
+              lastThreeResponses.map((x) => x.eventType) +
+              ' are not all RANGE_UPDATE, skipping transition',
+          );
+          return;
+        }
+
+        forceTransition('BLE_BEACON_FOUND');
+      });
+    }
   }
+
+  async function simulateLocation(state: String) {}
 
   // BLE LOGIC
   async function startBeaconScanning() {
@@ -128,18 +191,21 @@ const BluetoothScanPage = ({ ...props }: any) => {
       window['cordova'].plugins.locationManager.appendToDeviceLog(
         '[DOM] didDetermineStateForRegion: ' + pluginResultStr,
       );
-      const beaconRegion = new window['cordova'].plugins.locationManager.BeaconRegion(
-        STATIC_ID,
-        pluginResult.region.uuid,
-        pluginResult.region.major,
-        pluginResult.region.minor,
-      );
-      window['cordova'].plugins.locationManager
-        .startRangingBeaconsInRegion(beaconRegion)
-        .fail(function (e) {
-          logWarn(e);
-        })
-        .done();
+      if (pluginResult.state == 'CLRegionStateInside') {
+        const beaconRegion = new window['cordova'].plugins.locationManager.BeaconRegion(
+          STATIC_ID,
+          pluginResult.region.uuid,
+          pluginResult.region.major,
+          pluginResult.region.minor,
+        );
+        console.log('About to start ranging beacons for region ', beaconRegion);
+        window['cordova'].plugins.locationManager
+          .startRangingBeaconsInRegion(beaconRegion)
+          .fail(function (e) {
+            logWarn(e);
+          })
+          .done();
+      }
     };
 
     delegate.didStartMonitoringForRegion = function (pluginResult) {
@@ -333,6 +399,28 @@ const BluetoothScanPage = ({ ...props }: any) => {
           <Button disabled={!newUUID} onPress={() => addNewUUID(newUUID, newMajor, newMinor)}>
             Add New Beacon To Scan
           </Button>
+          <View
+            style={{
+              flexDirection: 'column',
+              alignItems: 'center',
+              backgroundColor: colors.danger,
+              color: colors.background,
+            }}>
+            <Text
+              style={{ backgroundColor: colors.danger, color: colors.background }}
+              variant="bodyLarge">
+              Simulate by sending UI transitions
+            </Text>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Button mode="elevated" onPress={() => simulateLocation('EXITED_GEOFENCE')}>
+                Geofence exit
+              </Button>
+              <Button mode="elevated" onPress={() => simulateLocation('STOPPED_MOVING')}>
+                Stopped Moving
+              </Button>
+            </View>
+          </View>
         </SafeAreaView>
       </Modal>
     </>

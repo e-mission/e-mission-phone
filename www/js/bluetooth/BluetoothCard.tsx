@@ -41,7 +41,7 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
     const deviceWithBeacons = { ...device };
     deviceWithBeacons.monitorResult = undefined;
     deviceWithBeacons.rangeResult = undefined;
-    deviceWithBeacons.beacons = [
+    const beacons = [
       {
         uuid: device.uuid,
         major: device.major | 4567,
@@ -55,6 +55,7 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
     deviceWithBeacons.minor = device.minor | 4567;
     window['cordova'].plugins.locationManager.getDelegate().didRangeBeaconsInRegion({
       region: deviceWithBeacons,
+      beacons: beacons,
       eventType: 'didRangeBeaconsInRegion',
       state: 'CLRegionStateInside',
     });
@@ -77,18 +78,18 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
         </Text>
         <Text
           style={{ backgroundColor: colors.danger, color: colors.background }}
-          variant="bodyMedium">
+          variant="bodyLarge">
           Simulate by sending UI transitions
         </Text>
         <Card.Actions style={{ backgroundColor: colors.danger, color: colors.background }}>
           <Button mode="elevated" onPress={() => fakeMonitorCallback('CLRegionStateInside')}>
-            Enter
+            Region Enter
           </Button>
           <Button mode="elevated" onPress={fakeRangeCallback}>
             Range
           </Button>
           <Button mode="elevated" onPress={() => fakeMonitorCallback('CLRegionStateOutside')}>
-            Exit
+            Region Exit
           </Button>
         </Card.Actions>
       </Card.Content>
