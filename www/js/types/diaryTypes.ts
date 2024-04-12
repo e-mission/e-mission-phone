@@ -178,6 +178,17 @@ export type UserInputEntry<T = UserInputData> = {
   key?: string;
 };
 
+export type BluetoothBleData = {
+  ts: number;
+  eventType: 'REGION_ENTER' | 'REGION_EXIT' | 'RANGE_UPDATE';
+  uuid: string;
+  major: number; // for our use case, missing for REGION_ENTER or REGION_EXIT
+  minor: number; // for our use case, missing for REGION_ENTER or REGION_EXIT
+  proximity?: string; // only available for RANGE_UPDATE
+  rssi?: string; // only available for RANGE_UPDATE
+  accuracy?: string; // only available for RANGE_UPDATE
+};
+
 export type Location = {
   speed: number;
   heading: number;

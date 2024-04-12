@@ -9,6 +9,10 @@ export type AppConfig = {
     surveys: EnketoSurveyConfig;
     buttons?: SurveyButtonsConfig;
   };
+  vehicle_identities?: VehicleIdentity[];
+  tracking?: {
+    bluetooth_only: boolean;
+  };
   reminderSchemes?: ReminderSchemesConfig;
   [k: string]: any; // TODO fill in all the other fields
 };
@@ -55,6 +59,24 @@ export type SurveyButtonsConfig = {
   [k in 'trip-label' | 'trip-notes' | 'place-label' | 'place-notes']:
     | SurveyButtonConfig
     | SurveyButtonConfig[];
+};
+
+export type VehicleIdentity = {
+  value: string;
+  bluetooth_major_minor: string[]; // e.g. ['aaaa:bbbb', 'cccc:dddd']
+  text: string;
+  baseMode: string;
+  met_equivalent: string;
+  kgCo2PerKm: number;
+  vehicle_info: {
+    type: string;
+    license: string;
+    make: string;
+    model: string;
+    year: number;
+    color: string;
+    engine: 'ICE' | 'HEV' | 'PHEV' | 'BEV' | 'HYDROGENV' | 'BIOV';
+  };
 };
 
 export type ReminderSchemesConfig = {
