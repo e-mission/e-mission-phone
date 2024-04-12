@@ -21,8 +21,10 @@ import { ServerConnConfig } from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext from '../TimelineContext';
 import { isoDateRangeToTsRange, isoDatesDifference } from '../diary/timelineHelper';
-import { MetricsSummaries } from 'e-mission-common';
+import { metrics_summaries } from 'e-mission-common';
 
+// 2 weeks of data is needed in order to compare "past week" vs "previous week"
+const N_DAYS_TO_LOAD = 14; // 2 weeks
 const DEFAULT_SECTIONS_TO_SHOW = ['footprint', 'active_travel', 'summary'] as const;
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 const DEFAULT_SUMMARY_LIST = ['distance', 'count', 'duration'] as const;
@@ -70,7 +72,7 @@ const MetricsTab = () => {
     console.time('MetricsTab: timelineMap.values()');
     const timelineValues = [...timelineMap.values()];
     console.timeEnd('MetricsTab: timelineMap.values()');
-    const result = MetricsSummaries.generate_summaries(
+    const result = metrics_summaries.generate_summaries(
       METRIC_LIST,
       timelineValues,
       timelineLabelMap,
@@ -79,21 +81,21 @@ const MetricsTab = () => {
     return result;
   }, [timelineMap]);
 
-  // at least 2 weeks of timeline data should be loaded for the user metrics
+  // at least N_DAYS_TO_LOAD of timeline data should be loaded for the user metrics
   useEffect(() => {
     if (!appConfig?.server) return;
     const dateRangeDays = isoDatesDifference(...dateRange);
 
-    // this tab uses the last 2 weeks of data; if we need more, we should fetch it
-    if (dateRangeDays < 14) {
+    // this tab uses the last N_DAYS_TO_LOAD of data; if we need more, we should fetch it
+    if (dateRangeDays < N_DAYS_TO_LOAD) {
       if (timelineIsLoading) {
         logDebug('MetricsTab: timeline is still loading, not loading more days yet');
       } else {
         logDebug('MetricsTab: loading more days');
-        loadMoreDays('past', 14 - dateRangeDays);
+        loadMoreDays('past', N_DAYS_TO_LOAD - dateRangeDays);
       }
     } else {
-      logDebug('MetricsTab: date range >= 14 days, not loading more days');
+      logDebug(`MetricsTab: date range >= ${N_DAYS_TO_LOAD} days, not loading more days`);
     }
   }, [dateRange, timelineIsLoading, appConfig?.server]);
 
@@ -101,8 +103,10 @@ const MetricsTab = () => {
   useEffect(() => {
     logDebug('MetricsTab: dateRange updated to ' + JSON.stringify(dateRange));
     const dateRangeDays = isoDatesDifference(...dateRange);
-    if (dateRangeDays < 14) {
-      logDebug('MetricsTab: date range < 14 days, not loading aggregate metrics yet');
+    if (dateRangeDays < N_DAYS_TO_LOAD) {
+      logDebug(
+        `MetricsTab: date range < ${N_DAYS_TO_LOAD} days, not loading aggregate metrics yet`,
+      );
     } else {
       loadMetricsForPopulation('aggregate', dateRange);
     }
