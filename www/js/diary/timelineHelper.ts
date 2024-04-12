@@ -14,6 +14,7 @@ import {
   TimestampRange,
   CompositeTrip,
   UnprocessedTrip,
+  BluetoothBleData,
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
@@ -173,6 +174,23 @@ export async function updateAllUnprocessedInputs(
     getUnifiedDataForInterval(key, tq, getMethod),
   );
   await updateUnprocessedInputs(labelsPromises, notesPromises, appConfig);
+}
+
+export let unprocessedBleScans: BEMData<BluetoothBleData>[] = [];
+
+export async function updateUnprocessedBleScans(queryRange: TimestampRange) {
+  const tq = {
+    key: 'write_ts',
+    startTs: queryRange.start_ts,
+    endTs: queryRange.end_ts,
+  };
+  const getMethod = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
+  getUnifiedDataForInterval('background/background_ble', tq, getMethod).then(
+    (bleScans: BEMData<BluetoothBleData>[]) => {
+      logDebug(`Read ${bleScans.length} BLE scans`);
+      unprocessedBleScans = bleScans;
+    },
+  );
 }
 
 export function keysForLabelInputs(appConfig: AppConfig) {
