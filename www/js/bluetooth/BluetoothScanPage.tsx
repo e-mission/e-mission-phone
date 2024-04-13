@@ -97,15 +97,14 @@ const BluetoothScanPage = ({ ...props }: any) => {
         in_range: status,
       },
     }));
-    // using putMessage instead of putSensorData as a temporary hack for now
-    // since putSensorData is not exposed through javascript
     let { monitorResult: _, in_range: _, ...noResultDevice } = sampleBLEDevices[uuid];
-    window['cordova']?.plugins?.BEMUserCache.putMessage('background/bluetooth_ble', {
-      eventType: status ? 'REGION_ENTER' : 'REGION_EXIT',
-      ts: Date.now() / 1000, // our convention is to have timestamps in seconds
-      uuid: uuid,
-      ...noResultDevice, // gives us uuid, major, minor
-    });
+    window['cordova']?.plugins?.BEMDataCollection.mockBLEObjects(
+      status ? 'REGION_ENTER' : 'REGION_EXIT',
+      uuid,
+      undefined,
+      undefined,
+      1,
+    );
     if (!status) {
       forceTransition('BLE_BEACON_LOST');
     }
@@ -131,13 +130,13 @@ const BluetoothScanPage = ({ ...props }: any) => {
     } = sampleBLEDevices[uuid];
     let parsedResult = JSON.parse(result);
     parsedResult.beacons.forEach((beacon) => {
-      window['cordova']?.plugins?.BEMUserCache.putMessage('background/bluetooth_ble', {
-        eventType: 'RANGE_UPDATE',
-        ts: Date.now() / 1000, // our convention is to have timestamps in seconds
-        uuid: uuid,
-        ...noResultDevice, // gives us uuid, major, minor
-        ...beacon, // gives us proximity, accuracy and rssi
-      });
+      window['cordova']?.plugins?.BEMDataCollection.mockBLEObjects(
+        'RANGE_UPDATE',
+        uuid,
+        beacon.major,
+        beacon.minor,
+        5,
+      );
     });
     // we only check for the transition on "real" callbacks to avoid excessive
     // spurious callbacks on android
@@ -147,17 +146,17 @@ const BluetoothScanPage = ({ ...props }: any) => {
       // (last param)
       let nowSec = DateTime.now().toUnixInteger();
       let tq = { key: 'write_ts', startTs: nowSec - 5 * 60, endTs: nowSec };
-      let readBLEReadingsPromise = window['cordova']?.plugins?.BEMUserCache.getMessagesForInterval(
-        'background/bluetooth_ble',
-        tq,
-        false,
-      );
+      let readBLEReadingsPromise = window[
+        'cordova'
+      ]?.plugins?.BEMUserCache.getSensorDataForInterval('background/bluetooth_ble', tq, false);
       readBLEReadingsPromise.then((bleResponses) => {
-        let lastThreeResponses = bleResponses.slice(0, 3);
-        if (!lastThreeResponses.every((x) => x.eventType == 'RANGE_UPDATE')) {
+        // we add 5 entries at a time, so if we want 3 button presses,
+        // we really want 15 entries
+        let lastFifteenResponses = bleResponses.slice(0, 15);
+        if (!lastFifteenResponses.every((x) => x.eventType == 'RANGE_UPDATE')) {
           console.log(
             'Last three entries ' +
-              lastThreeResponses.map((x) => x.eventType) +
+              lastFifteenResponses.map((x) => x.eventType) +
               ' are not all RANGE_UPDATE, skipping transition',
           );
           return;
@@ -168,7 +167,9 @@ const BluetoothScanPage = ({ ...props }: any) => {
     }
   }
 
-  async function simulateLocation(state: String) {}
+  async function simulateLocation(state: String) {
+    forceTransition(state);
+  }
 
   // BLE LOGIC
   async function startBeaconScanning() {
