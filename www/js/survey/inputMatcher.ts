@@ -379,6 +379,19 @@ function getBleScansForTimelineEntry(
   return bleScans.filter((scan) => validBleScanForTimelineEntry(tlEntry, scan));
 }
 
+/**
+ * @description Convert a decimal number to a hexadecimal string, with optional padding
+ * @example decimalToHex(245) => 'f5'
+ * @example decimalToHex(245, 4) => '00f5'
+ */
+function decimalToHex(d: string | number, padding?: number) {
+  let hex = Number(d).toString(16);
+  while (hex.length < (padding || 0)) {
+    hex = '0' + hex;
+  }
+  return hex;
+}
+
 export function mapBleScansToTimelineEntries(allEntries: TimelineEntry[], appConfig: AppConfig) {
   const timelineBleMap = {};
   for (const tlEntry of allEntries) {
@@ -390,7 +403,9 @@ export function mapBleScansToTimelineEntries(allEntries: TimelineEntry[], appCon
     // count the number of occurrences of each major:minor pair
     const majorMinorCounts = {};
     matches.forEach((match) => {
-      const majorMinor = match.data.major + ':' + match.data.minor;
+      const major = decimalToHex(match.data.major, 4);
+      const minor = decimalToHex(match.data.minor, 4);
+      const majorMinor = major + ':' + minor;
       majorMinorCounts[majorMinor] = majorMinorCounts[majorMinor]
         ? majorMinorCounts[majorMinor] + 1
         : 1;
