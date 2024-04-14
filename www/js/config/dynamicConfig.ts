@@ -143,7 +143,11 @@ async function fetchConfig(studyLabel: string, alreadyTriedLocal?: boolean) {
   } else {
     logDebug('Running in dev environment, checking for locally hosted config');
     try {
-      downloadURL = `http://localhost:9090/configs/${studyLabel}.nrel-op.json`;
+      if (window['cordova'].platformId == 'android') {
+        downloadURL = `http://10.0.2.2:9090/configs/${studyLabel}.nrel-op.json`;
+      } else {
+        downloadURL = `http://localhost:9090/configs/${studyLabel}.nrel-op.json`;
+      }
       const r = await fetch(downloadURL, { cache: 'reload' });
       if (!r.ok) throw new Error('Local config not found');
       return r.json();
