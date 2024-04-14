@@ -2,6 +2,7 @@
 // examples of configs: https://github.com/e-mission/nrel-openpath-deploy-configs/tree/main/configs
 
 export type AppConfig = {
+  version: number;
   server: ServerConnConfig;
   intro: IntroConfig;
   survey_info: {
