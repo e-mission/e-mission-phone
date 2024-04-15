@@ -1,6 +1,6 @@
 import { displayError } from '../../plugin/logger';
 import { SurveyButtonConfig } from '../../types/appConfigTypes';
-import { TimelineEntry } from '../../types/diaryTypes';
+import { DerivedProperties, TimelineEntry } from '../../types/diaryTypes';
 import { Position } from 'geojson';
 
 const conditionalSurveyFunctions = {
@@ -31,6 +31,7 @@ const scopedEval = (script: string, scope: { [k: string]: any }) =>
 export function getSurveyForTimelineEntry(
   tripLabelConfig: SurveyButtonConfig | SurveyButtonConfig[],
   tlEntry: TimelineEntry,
+  derivedProperties: DerivedProperties,
 ) {
   // if only one survey is given, just return it
   if (!(tripLabelConfig instanceof Array)) return tripLabelConfig;
@@ -40,6 +41,7 @@ export function getSurveyForTimelineEntry(
     if (!surveyConfig.showsIf) return surveyConfig; // survey shows unconditionally
     const scope = {
       ...tlEntry,
+      ...derivedProperties,
       ...conditionalSurveyFunctions,
     };
     try {

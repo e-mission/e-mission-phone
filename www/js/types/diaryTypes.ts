@@ -3,6 +3,7 @@
  As much as possible, these types parallel the types used in the server code. */
 
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
+import useDerivedProperties from '../diary/useDerivedProperties';
 import { MultilabelKey } from './labelTypes';
 import { BEMData, LocalDt } from './serverData';
 import { FeatureCollection, Feature, Geometry, Point, Position } from 'geojson';
@@ -129,18 +130,7 @@ export type TimestampRange = { start_ts: number; end_ts: number };
 
 /* These properties aren't received from the server, but are derived from the above properties.
   They are used in the UI to display trip/place details and are computed by the useDerivedProperties hook. */
-export type DerivedProperties = {
-  displayDate: string;
-  displayStartTime: string;
-  displayEndTime: string;
-  displayTime: string;
-  displayStartDateAbbr: string;
-  displayEndDateAbbr: string;
-  formattedDistance: string;
-  formattedSectionProperties: any[]; // TODO
-  distanceSuffix: string;
-  detectedModes: { mode: string; icon: string; color: string; pct: number | string }[];
-};
+export type DerivedProperties = ReturnType<typeof useDerivedProperties>;
 
 export type SectionSummary = {
   count: { [k: MotionTypeKey | BaseModeKey]: number };

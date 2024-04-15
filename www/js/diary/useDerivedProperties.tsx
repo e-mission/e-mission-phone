@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { useImperialConfig } from '../config/useImperialConfig';
 import {
   getFormattedDate,
@@ -9,9 +9,11 @@ import {
   getDetectedModes,
   isMultiDay,
 } from './diaryHelper';
+import LabelTabContext from './LabelTabContext';
 
 const useDerivedProperties = (tlEntry) => {
   const imperialConfig = useImperialConfig();
+  const { confirmedModeFor } = useContext(LabelTabContext);
 
   return useMemo(() => {
     const beginFmt = tlEntry.start_fmt_time || tlEntry.enter_fmt_time;
@@ -21,6 +23,7 @@ const useDerivedProperties = (tlEntry) => {
     const tlEntryIsMultiDay = isMultiDay(beginFmt, endFmt);
 
     return {
+      confirmedMode: confirmedModeFor(tlEntry),
       displayDate: getFormattedDate(beginFmt, endFmt),
       displayStartTime: getLocalTimeString(beginDt),
       displayEndTime: getLocalTimeString(endDt),
@@ -32,7 +35,7 @@ const useDerivedProperties = (tlEntry) => {
       distanceSuffix: imperialConfig.distanceSuffix,
       detectedModes: getDetectedModes(tlEntry),
     };
-  }, [tlEntry, imperialConfig]);
+  }, [tlEntry, imperialConfig, confirmedModeFor(tlEntry)]);
 };
 
 export default useDerivedProperties;

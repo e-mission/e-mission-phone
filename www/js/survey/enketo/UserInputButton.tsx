@@ -17,6 +17,7 @@ import EnketoModal from './EnketoModal';
 import LabelTabContext from '../../diary/LabelTabContext';
 import useAppConfig from '../../useAppConfig';
 import { getSurveyForTimelineEntry } from './conditionalSurveys';
+import useDerivedProperties from '../../diary/useDerivedProperties';
 
 type Props = {
   timelineEntry: any;
@@ -29,6 +30,7 @@ const UserInputButton = ({ timelineEntry }: Props) => {
   const [prevSurveyResponse, setPrevSurveyResponse] = useState<string | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState(false);
   const { userInputFor, addUserInputToEntry } = useContext(LabelTabContext);
+  const derivedTripProps = useDerivedProperties(timelineEntry);
 
   // which survey will this button launch?
   const [surveyName, notFilledInLabel] = useMemo(() => {
@@ -38,7 +40,7 @@ const UserInputButton = ({ timelineEntry }: Props) => {
       return ['TripConfirmSurvey', t('diary.choose-survey')];
     }
     // config lists one or more surveys; find which one to use
-    const s = getSurveyForTimelineEntry(tripLabelConfig, timelineEntry);
+    const s = getSurveyForTimelineEntry(tripLabelConfig, timelineEntry, derivedTripProps);
     const lang = i18n.resolvedLanguage || 'en';
     return [s?.surveyName, s?.['not-filled-in-label'][lang]];
   }, [appConfig, timelineEntry, i18n.resolvedLanguage]);
