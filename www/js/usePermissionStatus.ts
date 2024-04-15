@@ -315,8 +315,8 @@ const usePermissionStatus = () => {
       };
 
       let bluetoothPermissionsCheck = {
-        name: "Bluetooth scan permission",
-        desc: "Scan for BLE beacons to automatically match trips to vehicles",
+        name: 'Bluetooth scan permission',
+        desc: 'Scan for BLE beacons to automatically match trips to vehicles',
         fix: fixPerms,
         refresh: checkPerms,
       };
