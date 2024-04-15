@@ -21,13 +21,19 @@ import {
   updateLocalUnprocessedInputs,
   unprocessedLabels,
   unprocessedNotes,
+  updateUnprocessedBleScans,
+  unprocessedBleScans,
 } from './timelineHelper';
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from './addressNamesHelper';
 import { getLabelOptions, labelOptionByValue } from '../survey/multilabel/confirmHelper';
 import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { useTheme } from 'react-native-paper';
 import { getPipelineRangeTs } from '../services/commHelper';
-import { getNotDeletedCandidates, mapInputsToTimelineEntries } from '../survey/inputMatcher';
+import {
+  getNotDeletedCandidates,
+  mapBleScansToTimelineEntries,
+  mapInputsToTimelineEntries,
+} from '../survey/inputMatcher';
 import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
 import LabelTabContext, {
@@ -57,6 +63,7 @@ const LabelTab = () => {
   const [timelineMap, setTimelineMap] = useState<TimelineMap | null>(null);
   const [timelineLabelMap, setTimelineLabelMap] = useState<TimelineLabelMap | null>(null);
   const [timelineNotesMap, setTimelineNotesMap] = useState<TimelineNotesMap | null>(null);
+  const [timelineBleMap, setTimelineBleMap] = useState<any>(null);
   const [displayedEntries, setDisplayedEntries] = useState<TimelineEntry[] | null>(null);
   const [refreshTime, setRefreshTime] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState<string | false>('replace');
@@ -101,6 +108,11 @@ const LabelTab = () => {
 
       setTimelineLabelMap(newTimelineLabelMap);
       setTimelineNotesMap(newTimelineNotesMap);
+
+      if (appConfig.vehicle_identities?.length) {
+        const newTimelineBleMap = mapBleScansToTimelineEntries(allEntries, appConfig);
+        setTimelineBleMap(newTimelineBleMap);
+      }
 
       applyFilters(timelineMap, newTimelineLabelMap);
     } catch (e) {
@@ -157,6 +169,15 @@ const LabelTab = () => {
       logDebug(`LabelTab: After updating unprocessedInputs, 
         unprocessedLabels = ${JSON.stringify(unprocessedLabels)}; 
         unprocessedNotes = ${JSON.stringify(unprocessedNotes)}`);
+      if (appConfig.vehicle_identities?.length) {
+        await updateUnprocessedBleScans({
+          start_ts: pipelineRange.start_ts,
+          end_ts: Date.now() / 1000,
+        });
+        logDebug(`LabelTab: After updating unprocessedBleScans,
+          unprocessedBleScans = ${JSON.stringify(unprocessedBleScans)};
+        `);
+      }
       setPipelineRange(pipelineRange);
     } catch (e) {
       displayError(e, t('errors.while-loading-pipeline-range'));
@@ -310,6 +331,14 @@ const LabelTab = () => {
     return chosenLabel ? labelOptionByValue(chosenLabel, labelType) : undefined;
   };
 
+  /**
+   * @param tlEntry The trip or place object to get the confirmed mode for
+   * @returns Confirmed mode, which could be a vehicle identity as determined by Bluetooth scans,
+   *  or the label option from a user-given 'MODE' label, or undefined if neither exists.
+   */
+  const confirmedModeFor = (tlEntry: TimelineEntry) =>
+    timelineBleMap?.[tlEntry._id.$oid] || labelFor(tlEntry, 'MODE');
+
   function addUserInputToEntry(oid: string, userInput: any, inputType: 'label' | 'note') {
     const tlEntry = timelineMap?.get(oid);
     if (!pipelineRange || !tlEntry)
@@ -351,6 +380,7 @@ const LabelTab = () => {
     userInputFor,
     labelFor,
     notesFor,
+    confirmedModeFor,
     addUserInputToEntry,
     displayedEntries,
     filterInputs,

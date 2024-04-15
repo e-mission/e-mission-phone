@@ -134,16 +134,21 @@ async function readConfigFromServer(studyLabel: string) {
  */
 async function fetchConfig(studyLabel: string, alreadyTriedLocal?: boolean) {
   logDebug('Received request to join ' + studyLabel);
-  const downloadURL = `https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/${studyLabel}.nrel-op.json`;
+  let downloadURL = `https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/${studyLabel}.nrel-op.json`;
   if (!__DEV__ || alreadyTriedLocal) {
     logDebug('Fetching config from github');
-    const r = await fetch(downloadURL);
+    const r = await fetch(downloadURL, { cache: 'reload' });
     if (!r.ok) throw new Error('Unable to fetch config from github');
     return r.json(); // TODO: validate, make sure it has required fields
   } else {
     logDebug('Running in dev environment, checking for locally hosted config');
     try {
-      const r = await fetch('http://localhost:9090/configs/' + studyLabel + '.nrel-op.json');
+      if (window['cordova'].platformId == 'android') {
+        downloadURL = `http://10.0.2.2:9090/configs/${studyLabel}.nrel-op.json`;
+      } else {
+        downloadURL = `http://localhost:9090/configs/${studyLabel}.nrel-op.json`;
+      }
+      const r = await fetch(downloadURL, { cache: 'reload' });
       if (!r.ok) throw new Error('Local config not found');
       return r.json();
     } catch (err) {
@@ -227,7 +232,7 @@ function extractSubgroup(token: string, config: AppConfig): string | undefined {
  * @param existingVersion If the new config's version is the same, we won't update
  * @returns boolean representing whether the config was updated or not
  */
-function loadNewConfig(newToken: string, existingVersion?: number): Promise<boolean> {
+export function loadNewConfig(newToken: string, existingVersion?: number): Promise<boolean> {
   const newStudyLabel = extractStudyName(newToken);
   return readConfigFromServer(newStudyLabel)
     .then((downloadedConfig) => {
