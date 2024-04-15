@@ -168,7 +168,7 @@ export type UserInputEntry<T = UserInputData> = {
 
 export type BluetoothBleData = {
   ts: number;
-  eventType: 'REGION_ENTER' | 'REGION_EXIT' | 'RANGE_UPDATE';
+  eventType: 'REGION_ENTER' | 'REGION_EXIT' | 'RANGE_UPDATE' | number;
   uuid: string;
   major: number; // for our use case, missing for REGION_ENTER or REGION_EXIT
   minor: number; // for our use case, missing for REGION_ENTER or REGION_EXIT

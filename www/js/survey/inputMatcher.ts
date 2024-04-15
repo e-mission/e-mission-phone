@@ -372,11 +372,19 @@ function validBleScanForTimelineEntry(tlEntry: TimelineEntry, bleScan: BEMData<B
   return bleScan.data.ts >= entryStart && bleScan.data.ts <= entryEnd;
 }
 
-function getBleScansForTimelineEntry(
+/**
+ * @description Get BLE scans that are of type RANGE_UPDATE and are within the time range of the timeline entry
+ */
+function getBleRangingScansForTimelineEntry(
   tlEntry: TimelineEntry,
   bleScans: BEMData<BluetoothBleData>[],
 ) {
-  return bleScans.filter((scan) => validBleScanForTimelineEntry(tlEntry, scan));
+  return bleScans.filter(
+    (scan) =>
+      /* RANGE_UPDATE is the string value, but the server uses an enum, so once processed it becomes 2 */
+      (scan.data.eventType == 'RANGE_UPDATE' || scan.data.eventType == 2) &&
+      validBleScanForTimelineEntry(tlEntry, scan),
+  );
 }
 
 /**
@@ -395,16 +403,16 @@ function decimalToHex(d: string | number, padding?: number) {
 export function mapBleScansToTimelineEntries(allEntries: TimelineEntry[], appConfig: AppConfig) {
   const timelineBleMap = {};
   for (const tlEntry of allEntries) {
-    const matches = getBleScansForTimelineEntry(tlEntry, unprocessedBleScans);
-    if (!matches.length) {
+    const rangingScans = getBleRangingScansForTimelineEntry(tlEntry, unprocessedBleScans);
+    if (!rangingScans.length) {
       continue;
     }
 
     // count the number of occurrences of each major:minor pair
     const majorMinorCounts = {};
-    matches.forEach((match) => {
-      const major = decimalToHex(match.data.major, 4);
-      const minor = decimalToHex(match.data.minor, 4);
+    rangingScans.forEach((scan) => {
+      const major = decimalToHex(scan.data.major, 4);
+      const minor = decimalToHex(scan.data.minor, 4);
       const majorMinor = major + ':' + minor;
       majorMinorCounts[majorMinor] = majorMinorCounts[majorMinor]
         ? majorMinorCounts[majorMinor] + 1
