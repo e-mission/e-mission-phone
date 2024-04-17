@@ -11,7 +11,7 @@ const NavBar = ({ children, isLoading }: NavBarProps) => {
       {children}
       <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2 }}>
         <ProgressBar
-          visible={isLoading}
+          visible={Boolean(isLoading)}
           indeterminate={true}
           color={colors.primary}
           style={{ height: 2 }}
