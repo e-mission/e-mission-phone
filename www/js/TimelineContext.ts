@@ -13,14 +13,21 @@ import {
   readUnprocessedTrips,
   unprocessedLabels,
   unprocessedNotes,
+  updateUnprocessedBleScans,
+  unprocessedBleScans,
   updateAllUnprocessedInputs,
   updateLocalUnprocessedInputs,
   isoDateRangeToTsRange,
 } from './diary/timelineHelper';
 import { getPipelineRangeTs } from './services/commHelper';
-import { getNotDeletedCandidates, mapInputsToTimelineEntries } from './survey/inputMatcher';
+import {
+  getNotDeletedCandidates,
+  mapBleScansToTimelineEntries,
+  mapInputsToTimelineEntries,
+} from './survey/inputMatcher';
 import { publish } from './customEventHandler';
 import { EnketoUserInputEntry } from './survey/enketo/enketoHelper';
+import { VehicleIdentity } from './types/appConfigTypes';
 
 // initial query range is the past 7 days, including today
 const today = DateTime.now().toISODate().substring(0, 10);
@@ -32,7 +39,11 @@ type ContextProps = {
   timelineLabelMap: TimelineLabelMap | null;
   userInputFor: (tlEntry: TimelineEntry) => UserInputMap | undefined;
   notesFor: (tlEntry: TimelineEntry) => UserInputEntry[] | undefined;
-  labelFor: (tlEntry: TimelineEntry, labelType: MultilabelKey) => LabelOption | undefined;
+  labelFor: (
+    tlEntry: TimelineEntry,
+    labelType: MultilabelKey,
+  ) => VehicleIdentity | LabelOption | undefined;
+  confirmedModeFor: (tlEntry: TimelineEntry) => LabelOption | undefined;
   addUserInputToEntry: (oid: string, userInput: any, inputType: 'label' | 'note') => void;
   pipelineRange: TimestampRange | null;
   queriedDateRange: [string, string] | null; // YYYY-MM-DD format
@@ -60,6 +71,7 @@ export const useTimelineContext = (): ContextProps => {
   const [timelineIsLoading, setTimelineIsLoading] = useState<string | false>('replace');
   const [timelineLabelMap, setTimelineLabelMap] = useState<TimelineLabelMap | null>(null);
   const [timelineNotesMap, setTimelineNotesMap] = useState<TimelineNotesMap | null>(null);
+  const [timelineBleMap, setTimelineBleMap] = useState<any>(null);
   const [refreshTime, setRefreshTime] = useState<Date | null>(null);
 
   // initialization, once the appConfig is loaded
@@ -128,6 +140,11 @@ export const useTimelineContext = (): ContextProps => {
     setTimelineLabelMap(newTimelineLabelMap);
     setTimelineNotesMap(newTimelineNotesMap);
 
+    if (appConfig.vehicle_identities?.length) {
+      const newTimelineBleMap = mapBleScansToTimelineEntries(allEntries, appConfig);
+      setTimelineBleMap(newTimelineBleMap);
+    }
+
     publish('applyLabelTabFilters', {
       timelineMap,
       timelineLabelMap: newTimelineLabelMap,
@@ -142,6 +159,15 @@ export const useTimelineContext = (): ContextProps => {
       logDebug(`Timeline: After updating unprocessedInputs, 
         unprocessedLabels = ${JSON.stringify(unprocessedLabels)}; 
         unprocessedNotes = ${JSON.stringify(unprocessedNotes)}`);
+      if (appConfig.vehicle_identities?.length) {
+        await updateUnprocessedBleScans({
+          start_ts: pipelineRange.start_ts,
+          end_ts: Date.now() / 1000,
+        });
+        logDebug(`Timeline: After updating unprocessedBleScans,
+          unprocessedBleScans = ${JSON.stringify(unprocessedBleScans)};
+        `);
+      }
       setPipelineRange(pipelineRange);
     } catch (e) {
       displayError(e, t('errors.while-loading-pipeline-range'));
@@ -272,6 +298,14 @@ export const useTimelineContext = (): ContextProps => {
     return chosenLabel ? labelOptionByValue(chosenLabel, labelType) : undefined;
   };
 
+  /**
+   * @param tlEntry The trip or place object to get the confirmed mode for
+   * @returns Confirmed mode, which could be a vehicle identity as determined by Bluetooth scans,
+   *  or the label option from a user-given 'MODE' label, or undefined if neither exists.
+   */
+  const confirmedModeFor = (tlEntry: TimelineEntry) =>
+    timelineBleMap?.[tlEntry._id.$oid] || labelFor(tlEntry, 'MODE');
+
   function addUserInputToEntry(oid: string, userInput: any, inputType: 'label' | 'note') {
     const tlEntry = timelineMap?.get(oid);
     if (!pipelineRange || !tlEntry)
@@ -329,6 +363,7 @@ export const useTimelineContext = (): ContextProps => {
     userInputFor,
     labelFor,
     notesFor,
+    confirmedModeFor,
     addUserInputToEntry,
   };
 };

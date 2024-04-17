@@ -5,8 +5,8 @@ import useDerivedProperties from '../useDerivedProperties';
 import { getBaseModeByKey, getBaseModeByValue } from '../diaryHelper';
 import TimelineContext from '../../TimelineContext';
 
-const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
-  const { labelOptions, labelFor } = useContext(TimelineContext);
+const TripSectionsDescriptives = ({ trip, showConfirmedMode = false }) => {
+  const { labelOptions, labelFor, confirmedModeFor } = useContext(TimelineContext);
   const {
     displayStartTime,
     displayTime,
@@ -17,14 +17,14 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
 
   const { colors } = useTheme();
 
-  const labeledModeForTrip = labelFor(trip, 'MODE');
+  const confirmedModeForTrip = confirmedModeFor(trip);
   let sections = formattedSectionProperties;
   /* if we're only showing the labeled mode, or there are no sections (i.e. unprocessed trip),
     we treat this as unimodal and use trip-level attributes to construct a single section */
-  if ((showLabeledMode && labeledModeForTrip) || !trip.sections?.length) {
+  if ((showConfirmedMode && confirmedModeForTrip) || !trip.sections?.length) {
     let baseMode;
-    if (showLabeledMode && labelOptions && labeledModeForTrip) {
-      baseMode = getBaseModeByValue(labeledModeForTrip.value, labelOptions);
+    if (showConfirmedMode && labelOptions && confirmedModeForTrip) {
+      baseMode = getBaseModeByKey(confirmedModeForTrip.baseMode);
     } else {
       baseMode = getBaseModeByKey('UNPROCESSED');
     }
@@ -62,9 +62,9 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode = false }) => {
             <View style={s.modeIconContainer(section.color)}>
               <Icon source={section.icon} color={colors.onPrimary} size={18} />
             </View>
-            {showLabeledMode && labeledModeForTrip && (
+            {showConfirmedMode && confirmedModeForTrip && (
               <Text variant="labelSmall" numberOfLines={2} style={{ textAlign: 'center' }}>
-                {labeledModeForTrip.text}
+                {confirmedModeForTrip.text}
               </Text>
             )}
           </View>
