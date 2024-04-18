@@ -14,6 +14,9 @@ import {
   TimestampRange,
   CompositeTrip,
   UnprocessedTrip,
+  BluetoothBleData,
+  SectionData,
+  CompositeTripLocation,
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
@@ -26,19 +29,14 @@ const cachedGeojsons: Map<string, GeoJSONData> = new Map();
 /**
  * @description Gets a formatted GeoJSON object for a trip, including the start and end places and the trajectory.
  */
-export function useGeojsonForTrip(
-  trip: CompositeTrip,
-  labelOptions: LabelOptions,
-  labeledMode?: string,
-) {
+export function useGeojsonForTrip(trip: CompositeTrip, baseMode?: string) {
   if (!trip?._id?.$oid) return;
-  const gjKey = `trip-${trip._id.$oid}-${labeledMode || 'detected'}`;
+  const gjKey = `trip-${trip._id.$oid}-${baseMode || 'detected'}`;
   if (cachedGeojsons.has(gjKey)) {
     return cachedGeojsons.get(gjKey);
   }
 
-  const trajectoryColor =
-    (labeledMode && getBaseModeByValue(labeledMode, labelOptions)?.color) || undefined;
+  const trajectoryColor = (baseMode && getBaseModeByKey(baseMode)?.color) || undefined;
 
   logDebug("Reading trip's " + trip.locations.length + ' location points at ' + new Date());
   const features = [
@@ -175,6 +173,23 @@ export async function updateAllUnprocessedInputs(
   await updateUnprocessedInputs(labelsPromises, notesPromises, appConfig);
 }
 
+export let unprocessedBleScans: BEMData<BluetoothBleData>[] = [];
+
+export async function updateUnprocessedBleScans(queryRange: TimestampRange) {
+  const tq = {
+    key: 'write_ts',
+    startTs: queryRange.start_ts,
+    endTs: queryRange.end_ts,
+  };
+  const getMethod = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
+  getUnifiedDataForInterval('background/bluetooth_ble', tq, getMethod).then(
+    (bleScans: BEMData<BluetoothBleData>[]) => {
+      logDebug(`Read ${bleScans.length} BLE scans`);
+      unprocessedBleScans = bleScans;
+    },
+  );
+}
+
 export function keysForLabelInputs(appConfig: AppConfig) {
   if (appConfig.survey_info?.['trip-labels'] == 'ENKETO') {
     return ['manual/trip_user_input'];
@@ -215,10 +230,10 @@ const location2GeojsonPoint = (locationPoint: Point, featureType: string): Featu
  */
 function locations2GeojsonTrajectory(
   trip: CompositeTrip,
-  locationList: Array<Point>,
+  locationList: CompositeTripLocation[],
   trajectoryColor?: string,
-) {
-  let sectionsPoints;
+): Feature[] {
+  let sectionsPoints: CompositeTripLocation[][];
   if (!trip.sections) {
     // this is a unimodal trip so we put all the locations in one section
     sectionsPoints = [locationList];
@@ -241,6 +256,9 @@ function locations2GeojsonTrajectory(
         /* If a color was passed as arg, use it for the whole trajectory. Otherwise, use the
           color for the sensed mode of this section, and fall back to dark grey */
         color: trajectoryColor || getBaseModeByKey(section?.sensed_mode_str)?.color || '#333',
+      },
+      properties: {
+        feature_type: 'section_trajectory',
       },
     };
   });
@@ -289,7 +307,10 @@ const dateTime2localdate = (currtime: DateTime, tz: string) => ({
   second: currtime.second,
 });
 
-function points2TripProps(locationPoints: Array<BEMData<FilteredLocation>>) {
+/**
+ * @description Given an array of location points, creates an UnprocessedTrip object.
+ */
+function points2UnprocessedTrip(locationPoints: Array<BEMData<FilteredLocation>>): UnprocessedTrip {
   const startPoint = locationPoints[0];
   const endPoint = locationPoints[locationPoints.length - 1];
   const tripAndSectionId = `unprocessed_${startPoint.data.ts}_${endPoint.data.ts}`;
@@ -319,24 +340,51 @@ function points2TripProps(locationPoints: Array<BEMData<FilteredLocation>>) {
     speed: speeds[i],
   }));
 
-  return {
-    _id: { $oid: tripAndSectionId },
-    key: 'UNPROCESSED_trip',
-    origin_key: 'UNPROCESSED_trip',
-    additions: [],
-    confidence_threshold: 0,
+  // baseProps: these are the properties that are the same between the trip and its section
+  const baseProps = {
     distance: dists.reduce((a, b) => a + b, 0),
     duration: endPoint.data.ts - startPoint.data.ts,
     end_fmt_time: endTime.toISO() || displayErrorMsg('end_fmt_time: invalid DateTime') || '',
+    end_loc: {
+      type: 'Point',
+      coordinates: [endPoint.data.longitude, endPoint.data.latitude],
+    } as Point,
     end_local_dt: dateTime2localdate(endTime, endPoint.metadata.time_zone),
     end_ts: endPoint.data.ts,
-    expectation: { to_label: true },
-    inferred_labels: [],
-    locations: locations,
     source: 'unprocessed',
     start_fmt_time: startTime.toISO() || displayErrorMsg('start_fmt_time: invalid DateTime') || '',
+    start_loc: {
+      type: 'Point',
+      coordinates: [startPoint.data.longitude, startPoint.data.latitude],
+    } as Point,
     start_local_dt: dateTime2localdate(startTime, startPoint.metadata.time_zone),
     start_ts: startPoint.data.ts,
+  } as const;
+
+  // section: baseProps + some properties that are unique to the section
+  const singleSection: SectionData = {
+    ...baseProps,
+    _id: { $oid: `unprocessed_section_${tripAndSectionId}` },
+    cleaned_section: { $oid: `unprocessed_section_${tripAndSectionId}` },
+    key: 'UNPROCESSED_section',
+    origin_key: 'UNPROCESSED_section',
+    sensed_mode: 4, // MotionTypes.UNKNOWN (4)
+    sensed_mode_str: 'UNKNOWN',
+    trip_id: { $oid: tripAndSectionId },
+  };
+
+  // the complete UnprocessedTrip: baseProps + properties that are unique to the trip, including the section
+  return {
+    ...baseProps,
+    _id: { $oid: tripAndSectionId },
+    additions: [],
+    confidence_threshold: 0,
+    expectation: { to_label: true },
+    inferred_labels: [],
+    key: 'UNPROCESSED_trip',
+    locations: locations,
+    origin_key: 'UNPROCESSED_trip',
+    sections: [singleSection],
     user_input: {},
   };
 }
@@ -344,7 +392,11 @@ function points2TripProps(locationPoints: Array<BEMData<FilteredLocation>>) {
 const tsEntrySort = (e1: BEMData<FilteredLocation>, e2: BEMData<FilteredLocation>) =>
   e1.data.ts - e2.data.ts; // compare timestamps
 
-function transitionTrip2TripObj(trip: Array<any>): Promise<UnprocessedTrip | undefined> {
+/**
+ * @description Given an array of 2 transitions, queries the location data during that time and promises an UnprocessedTrip object.
+ * @param trip An array of transitions representing one trip; i.e. [start transition, end transition]
+ */
+function tripTransitions2UnprocessedTrip(trip: Array<any>): Promise<UnprocessedTrip | undefined> {
   const tripStartTransition = trip[0];
   const tripEndTransition = trip[1];
   const tq = {
@@ -386,20 +438,7 @@ function transitionTrip2TripObj(trip: Array<any>): Promise<UnprocessedTrip | und
         logDebug(`transitions: start = ${JSON.stringify(tripStartTransition.data)}; 
           end = ${JSON.stringify(tripEndTransition.data)}`);
       }
-
-      const tripProps = points2TripProps(filteredLocationList);
-
-      return {
-        ...tripProps,
-        start_loc: {
-          type: 'Point',
-          coordinates: [tripStartPoint.data.longitude, tripStartPoint.data.latitude],
-        },
-        end_loc: {
-          type: 'Point',
-          coordinates: [tripEndPoint.data.longitude, tripEndPoint.data.latitude],
-        },
-      };
+      return points2UnprocessedTrip(filteredLocationList);
     },
   );
 }
@@ -428,22 +467,26 @@ function isEndingTransition(transWrapper: BEMData<TripTransition>) {
   // Logger.log("Returning false");
   return false;
 }
-/*
- * This is going to be a bit tricky. As we can see from
- * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163,
- * when we read local transitions, they have a string for the transition
- * (e.g. `T_DATA_PUSHED`), while the remote transitions have an integer
- * (e.g. `2`).
- * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286338606
- *
- * Also, at least on iOS, it is possible for trip end to be detected way
- * after the end of the trip, so the trip end transition of a processed
- * trip may actually show up as an unprocessed transition.
- * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163
- *
- * Let's abstract this out into our own minor state machine.
+
+/**
+ * @description Given an array of transitions, finds which transitions represent the start and end of a detected trip and returns them as pairs.
+ * @returns An 2D array of transitions, where each inner array represents one trip; i.e. [start transition, end transition]
  */
-function transitions2Trips(transitionList: Array<BEMData<TripTransition>>) {
+function transitions2TripTransitions(transitionList: Array<BEMData<TripTransition>>) {
+  /* This is going to be a bit tricky. As we can see from
+   * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163,
+   * when we read local transitions, they have a string for the transition
+   * (e.g. `T_DATA_PUSHED`), while the remote transitions have an integer
+   * (e.g. `2`).
+   * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286338606
+   *
+   * Also, at least on iOS, it is possible for trip end to be detected way
+   * after the end of the trip, so the trip end transition of a processed
+   * trip may actually show up as an unprocessed transition.
+   * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163
+   *
+   * Let's abstract this out into our own minor state machine.
+   */
   let inTrip = false;
   const tripList: [BEMData<TripTransition>, BEMData<TripTransition>][] = [];
   let currStartTransitionIndex = -1;
@@ -521,12 +564,12 @@ export function readUnprocessedTrips(
         return [];
       } else {
         logDebug(`Found ${transitionList.length} transitions. yay!`);
-        const tripsList = transitions2Trips(transitionList);
+        const tripsList = transitions2TripTransitions(transitionList);
         logDebug(`Mapped into ${tripsList.length} trips. yay!`);
         tripsList.forEach((trip) => {
           logDebug(JSON.stringify(trip, null, 2));
         });
-        const tripFillPromises = tripsList.map(transitionTrip2TripObj);
+        const tripFillPromises = tripsList.map(tripTransitions2UnprocessedTrip);
         return Promise.all(tripFillPromises).then(
           (rawTripObjs: (UnprocessedTrip | undefined)[]) => {
             // Now we need to link up the trips. linking unprocessed trips

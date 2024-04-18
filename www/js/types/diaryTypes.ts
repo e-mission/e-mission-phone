@@ -3,9 +3,10 @@
  As much as possible, these types parallel the types used in the server code. */
 
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
+import useDerivedProperties from '../diary/useDerivedProperties';
 import { MultilabelKey } from './labelTypes';
 import { BEMData, LocalDt } from './serverData';
-import { FeatureCollection, Feature, Geometry, Point } from 'geojson';
+import { FeatureCollection, Feature, Geometry, Point, Position } from 'geojson';
 
 type ObjectId = { $oid: string };
 
@@ -45,14 +46,9 @@ export type TripTransition = {
   ts: number;
 };
 
-export type LocationCoord = {
-  type: string; // e.x., "Point"
-  coordinates: [number, number];
-};
-
-type CompTripLocations = {
+export type CompositeTripLocation = {
   loc: {
-    coordinates: number[]; // e.g. [1, 2.3]
+    coordinates: Position; // [lon, lat]
   };
   speed: number;
   ts: number;
@@ -61,24 +57,27 @@ type CompTripLocations = {
 //  Used for return type of readUnprocessedTrips
 export type UnprocessedTrip = {
   _id: ObjectId;
-  additions: UserInputEntry[];
+  additions: []; // unprocessed trips won't have any matched processed inputs, so this is always empty
   confidence_threshold: number;
   distance: number;
   duration: number;
   end_fmt_time: string;
   end_loc: Point;
   end_local_dt: LocalDt;
-  expectation: any; // TODO "{to_label: boolean}"
-  inferred_labels: any[]; // TODO
-  key: string;
-  locations?: CompTripLocations[];
-  origin_key: string; // e.x., UNPROCESSED_trip
-  source: string;
+  end_ts: number;
+  expectation: { to_label: true }; // unprocessed trips are always expected to be labeled
+  inferred_labels: []; // unprocessed trips won't have inferred labels
+  key: 'UNPROCESSED_trip';
+  locations?: CompositeTripLocation[];
+  origin_key: 'UNPROCESSED_trip';
+  sections: SectionData[];
+  source: 'unprocessed';
+  start_fmt_time: string;
   start_local_dt: LocalDt;
   start_ts: number;
   start_loc: Point;
   starting_trip?: any;
-  user_input: UserInput;
+  user_input: {}; // unprocessed trips won't have any matched processed inputs, so this is always empty
 };
 
 /* These are the properties received from the server (basically matches Python code)
@@ -98,16 +97,16 @@ export type CompositeTrip = {
   end_local_dt: LocalDt;
   end_place: ObjectId;
   end_ts: number;
-  expectation: any; // TODO "{to_label: boolean}"
+  expectation: { to_label: boolean };
   expected_trip: ObjectId;
   inferred_labels: InferredLabels;
   inferred_section_summary: SectionSummary;
   inferred_trip: ObjectId;
   key: string;
-  locations: any[]; // TODO
+  locations: CompositeTripLocation[];
   origin_key: string;
   raw_trip: ObjectId;
-  sections: any[]; // TODO
+  sections: SectionData[];
   source: string;
   start_confirmed_place: BEMData<ConfirmedPlace>;
   start_fmt_time: string;
@@ -131,18 +130,7 @@ export type TimestampRange = { start_ts: number; end_ts: number };
 
 /* These properties aren't received from the server, but are derived from the above properties.
   They are used in the UI to display trip/place details and are computed by the useDerivedProperties hook. */
-export type DerivedProperties = {
-  displayDate: string;
-  displayStartTime: string;
-  displayEndTime: string;
-  displayTime: string;
-  displayStartDateAbbr: string;
-  displayEndDateAbbr: string;
-  formattedDistance: string;
-  formattedSectionProperties: any[]; // TODO
-  distanceSuffix: string;
-  detectedModes: { mode: string; icon: string; color: string; pct: number | string }[];
-};
+export type DerivedProperties = ReturnType<typeof useDerivedProperties>;
 
 export type SectionSummary = {
   count: { [k: MotionTypeKey | BaseModeKey]: number };
@@ -178,6 +166,17 @@ export type UserInputEntry<T = UserInputData> = {
   key?: string;
 };
 
+export type BluetoothBleData = {
+  ts: number;
+  eventType: 'REGION_ENTER' | 'REGION_EXIT' | 'RANGE_UPDATE' | number;
+  uuid: string;
+  major: number; // for our use case, missing for REGION_ENTER or REGION_EXIT
+  minor: number; // for our use case, missing for REGION_ENTER or REGION_EXIT
+  proximity?: string; // only available for RANGE_UPDATE
+  rssi?: string; // only available for RANGE_UPDATE
+  accuracy?: string; // only available for RANGE_UPDATE
+};
+
 export type Location = {
   speed: number;
   heading: number;
@@ -188,23 +187,25 @@ export type Location = {
   latitude: number;
   fmt_time: string; // ISO
   mode: number;
-  loc: LocationCoord;
+  loc: Point;
   ts: number; // Unix
   altitude: number;
   distance: number;
 };
 
-// used in readAllCompositeTrips
 export type SectionData = {
+  _id: ObjectId;
   end_ts: number; // Unix time, e.x. 1696352498.804
-  end_loc: LocationCoord;
+  end_loc: Point;
   start_fmt_time: string; // ISO time
   end_fmt_time: string;
+  key: string;
+  origin_key: string;
   trip_id: ObjectId;
   sensed_mode: number;
   source: string; // e.x., "SmoothedHighConfidenceMotion"
   start_ts: number; // Unix
-  start_loc: LocationCoord;
+  start_loc: Point;
   cleaned_section: ObjectId;
   start_local_dt: LocalDt;
   end_local_dt: LocalDt;
@@ -213,7 +214,7 @@ export type SectionData = {
   distance: number;
 };
 
-// used in timelineHelper's `transitionTrip2TripObj`
+// used in timelineHelper's `transitionTrip2UnprocessedTrip`
 export type FilteredLocation = {
   accuracy: number;
   altitude: number;

@@ -2,12 +2,17 @@
 // examples of configs: https://github.com/e-mission/nrel-openpath-deploy-configs/tree/main/configs
 
 export type AppConfig = {
+  version: number;
   server: ServerConnConfig;
   intro: IntroConfig;
   survey_info: {
     'trip-labels': 'MULTILABEL' | 'ENKETO';
     surveys: EnketoSurveyConfig;
     buttons?: SurveyButtonsConfig;
+  };
+  vehicle_identities?: VehicleIdentity[];
+  tracking?: {
+    bluetooth_only: boolean;
   };
   metrics: {
     include_test_users: boolean;
@@ -73,6 +78,24 @@ export type SurveyButtonsConfig = {
   [k in 'trip-label' | 'trip-notes' | 'place-label' | 'place-notes']:
     | SurveyButtonConfig
     | SurveyButtonConfig[];
+};
+
+export type VehicleIdentity = {
+  value: string;
+  bluetooth_major_minor: string[]; // e.g. ['aaaa:bbbb', 'cccc:dddd']
+  text: string;
+  baseMode: string;
+  met_equivalent: string;
+  kgCo2PerKm: number;
+  vehicle_info: {
+    type: string;
+    license: string;
+    make: string;
+    model: string;
+    year: number;
+    color: string;
+    engine: 'ICE' | 'HEV' | 'PHEV' | 'BEV' | 'HYDROGENV' | 'BIOV';
+  };
 };
 
 export type ReminderSchemesConfig = {
