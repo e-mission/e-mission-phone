@@ -226,7 +226,7 @@
     "footprint-label": "Footprint (kg CO₂)",
     "surveys": "Surveys",
     "leaderboard": "Leaderboard",
-    "survey-response-rate": "Survey Response Rate",
+    "survey-response-rate": "Survey Response Rate (%)",
     "comparison": "Comparison",
     "you": "You",
     "others": "Others in group",
@@ -235,7 +235,9 @@
     "ev-return-trip": "EV Return trip",
     "gas-car-trip": "Gas Car trip",
     "response": "Response",
-    "no-response": "No Response"
+    "no-response": "No Response",
+    "you-are-in": "You're in",
+    "place": " place!"
   },
 
   "details": {

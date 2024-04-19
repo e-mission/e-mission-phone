@@ -31,6 +31,8 @@ export type Props = {
   isHorizontal?: boolean;
   timeAxis?: boolean;
   stacked?: boolean;
+  hideLegend?: boolean;
+  reverse?: boolean;
 };
 const Chart = ({
   records,
@@ -43,6 +45,8 @@ const Chart = ({
   isHorizontal,
   timeAxis,
   stacked,
+  hideLegend = false,
+  reverse = true,
 }: Props) => {
   const { colors } = useTheme();
   const [numVisibleDatasets, setNumVisibleDatasets] = useState(1);
@@ -149,7 +153,7 @@ const Chart = ({
                           },
                           font: { size: 11 }, // default is 12, we want a tad smaller
                         },
-                    reverse: true,
+                    reverse: reverse,
                     stacked,
                   },
                   x: {
@@ -196,6 +200,9 @@ const Chart = ({
                 }),
           },
           plugins: {
+            legend: {
+              display: hideLegend,
+            },
             ...(lineAnnotations?.length && {
               annotation: {
                 clip: false,

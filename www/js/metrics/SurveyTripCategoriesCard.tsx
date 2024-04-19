@@ -1,11 +1,18 @@
 import React from 'react';
-import { Card, useTheme } from 'react-native-paper';
+import { Card } from 'react-native-paper';
 import { cardStyles } from './MetricsTab';
 import { useTranslation } from 'react-i18next';
+import BarChart from '../components/BarChart';
+import { useAppTheme } from '../appTheme';
 
 const SurveyTripCategoriesCard = () => {
-  const { colors } = useTheme();
+  const { colors } = useAppTheme();
   const { t } = useTranslation();
+  const records = [
+    { label: 'EV Roaming trip', x: 'EV Roaming trip', y: 91 },
+    { label: 'EV Return trip', x: 'EV Return trip', y: 72 },
+    { label: 'Gas Car trip', x: 'Gas Car trip', y: 68 },
+  ];
 
   return (
     <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
@@ -17,7 +24,19 @@ const SurveyTripCategoriesCard = () => {
         subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
         style={cardStyles.title(colors)}
       />
-      <Card.Content style={cardStyles.content}>Trip Categories</Card.Content>
+      <Card.Content style={cardStyles.content}>
+        <BarChart
+          records={records}
+          axisTitle=""
+          isHorizontal={false}
+          timeAxis={false}
+          stacked={false}
+          getColorForLabel={() => colors.navy}
+          getColorForChartEl={() => colors.navy}
+          hideLegend={true}
+          reverse={false}
+        />
+      </Card.Content>
     </Card>
   );
 };
