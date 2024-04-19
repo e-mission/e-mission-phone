@@ -21,12 +21,17 @@ import {
 import { logDebug, logWarn } from '../plugin/logger';
 import TimelineContext from '../TimelineContext';
 import { isoDatesDifference } from '../diary/timelineHelper';
+import useAppConfig from '../useAppConfig';
 
 type Props = { userMetrics?: MetricsData; aggMetrics?: MetricsData };
 const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
   const { colors } = useTheme();
   const { dateRange } = useContext(TimelineContext);
   const { t } = useTranslation();
+  const appConfig = useAppConfig();
+  // Whether to show the uncertainty on the carbon footprint charts, default: true
+  const showUnlabeledMetrics =
+    appConfig?.metrics?.phone_dashboard_ui?.footprint_options?.unlabeled_uncertainty ?? true;
 
   const userText = useMemo(() => {
     if (userMetrics?.distance?.length) {
@@ -181,11 +186,13 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
               <Text>{textEntries[i].value + ' ' + 'kg CO₂'}</Text>
             </View>
           ))}
-        <Text
-          variant="labelSmall"
-          style={{ textAlign: 'left', fontWeight: '400', marginTop: 'auto', paddingTop: 10 }}>
-          {t('main-metrics.range-uncertain-footnote')}
-        </Text>
+        {showUnlabeledMetrics && (
+          <Text
+            variant="labelSmall"
+            style={{ textAlign: 'left', fontWeight: '400', marginTop: 'auto', paddingTop: 10 }}>
+            {t('main-metrics.range-uncertain-footnote')}
+          </Text>
+        )}
       </Card.Content>
     </Card>
   );
