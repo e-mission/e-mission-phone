@@ -22,6 +22,8 @@ import DateSelect from '../diary/list/DateSelect';
 import TimelineContext from '../TimelineContext';
 import { isoDateRangeToTsRange, isoDatesDifference } from '../diary/timelineHelper';
 import { metrics_summaries } from 'e-mission-common';
+import SurveyLeaderboardCard from './SurveyLeaderboardCard';
+import SurveyTripCategoriesCard from './SurveyTripCategoriesCard';
 
 // 2 weeks of data is needed in order to compare "past week" vs "previous week"
 const N_DAYS_TO_LOAD = 14; // 2 weeks
@@ -211,6 +213,12 @@ const MetricsTab = () => {
               aggMetricsDays={aggMetrics?.mean_speed}
               axisUnits={speedSuffix}
               unitFormatFn={getFormattedSpeed} /> */}
+          </Carousel>
+        )}
+        {!sectionsToShow.includes('engagement') && (
+          <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
+            <SurveyLeaderboardCard />
+            <SurveyTripCategoriesCard />
           </Carousel>
         )}
       </ScrollView>
