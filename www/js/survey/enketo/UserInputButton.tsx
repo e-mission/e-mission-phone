@@ -34,6 +34,7 @@ const UserInputButton = ({ timelineEntry }: Props) => {
 
   // which survey will this button launch?
   const [surveyName, notFilledInLabel] = useMemo(() => {
+    if (!appConfig) return []; // no config loaded yet; show blank for now
     const tripLabelConfig = appConfig?.survey_info?.buttons?.['trip-label'];
     if (!tripLabelConfig) {
       // config doesn't specify; use default

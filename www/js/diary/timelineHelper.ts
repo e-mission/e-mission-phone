@@ -182,7 +182,7 @@ export async function updateUnprocessedBleScans(queryRange: TimestampRange) {
     endTs: queryRange.end_ts,
   };
   const getMethod = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
-  getUnifiedDataForInterval('background/bluetooth_ble', tq, getMethod).then(
+  await getUnifiedDataForInterval('background/bluetooth_ble', tq, getMethod).then(
     (bleScans: BEMData<BluetoothBleData>[]) => {
       logDebug(`Read ${bleScans.length} BLE scans`);
       unprocessedBleScans = bleScans;
