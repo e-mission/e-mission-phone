@@ -14,19 +14,11 @@ const SurveyLeaderboardCard = () => {
   const [tab, setTab] = useState('leaderboard');
   const myLabel = '#3';
 
-  const getLeaderboardLabelColor = (l) => {
-    if (l === myLabel) {
-      return colors.skyblue;
-    } else {
-      return colors.silver;
-    }
-  };
-
   const renderBarChart = () => {
     const records = [
-      { label: '#1', x: 91, y: '#1: 🏆' },
-      { label: '#2', x: 72, y: '#2: 🥈' },
-      { label: '#3', x: 68, y: '#3: 🥉' },
+      { label: '#1', x: 91, y: '🏆 #1:' },
+      { label: '#2', x: 72, y: '🥈 #2:' },
+      { label: '#3', x: 68, y: '🥉 #3:' },
       { label: '#4', x: 57, y: '#4:' },
       { label: '#5', x: 50, y: '#5:' },
       { label: '#6', x: 40, y: '#6:' },
@@ -41,10 +33,11 @@ const SurveyLeaderboardCard = () => {
           isHorizontal={true}
           timeAxis={false}
           stacked={false}
-          getColorForLabel={(l) => getLeaderboardLabelColor(l)}
-          getColorForChartEl={(l) => getLeaderboardLabelColor(l)}
-          hideLegend={true}
+          getColorForLabel={(l) => (l === myLabel ? colors.skyblue : colors.silver)}
+          getColorForChartEl={(l) => (l === myLabel ? colors.skyblue : colors.silver)}
+          showLegend={false}
           reverse={false}
+          enableTooltip={false}
         />
         <View style={styles.statusTextWrapper}>
           <Text>{t('main-metrics.you-are-in')}</Text>

@@ -36,6 +36,7 @@ const AppTheme = {
     silver: '#d9d9d9',
     skyblue: '#7fcaea',
     navy: '#0077aa',
+    orange: '#f6a063',
   },
   roundness: 5,
 };

@@ -31,8 +31,9 @@ export type Props = {
   isHorizontal?: boolean;
   timeAxis?: boolean;
   stacked?: boolean;
-  hideLegend?: boolean;
+  showLegend?: boolean;
   reverse?: boolean;
+  enableTooltip?: boolean;
 };
 const Chart = ({
   records,
@@ -45,8 +46,9 @@ const Chart = ({
   isHorizontal,
   timeAxis,
   stacked,
-  hideLegend = false,
+  showLegend = true,
   reverse = true,
+  enableTooltip = true,
 }: Props) => {
   const { colors } = useTheme();
   const [numVisibleDatasets, setNumVisibleDatasets] = useState(1);
@@ -201,7 +203,10 @@ const Chart = ({
           },
           plugins: {
             legend: {
-              display: hideLegend,
+              display: showLegend,
+            },
+            tooltip: {
+              enabled: enableTooltip,
             },
             ...(lineAnnotations?.length && {
               annotation: {
