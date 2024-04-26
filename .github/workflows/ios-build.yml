@@ -33,6 +33,13 @@ jobs:
     - name: Print the xcode path
       run: xcode-select --print-path
 
+    # Temporarily revert to 14.1 until we migrate to 15
+    - name: Print the xcode path
+      run: |
+        sudo xcode-select -s /Applications/Xcode_14.3.1.app
+        echo "Version should now be 14.1, re-checking "
+        xcode-select --print-path
+
     - name: Print the xcode setup
       run: xcodebuild -version -sdk
 
