@@ -87,9 +87,9 @@ If you wish to connect to a different server, create your own config file accord
 
 Updating the e-mission-\* plugins or adding new plugins
 ---
-[![osx-build-ios](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml)
-[![osx-build-android](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml)
-[![osx-android-prereq-sdk-install](https://github.com/e-mission/e-mission-phone/actions/workflows/android-automated-sdk-install.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/android-automated-sdk-install.yml)
+[![osx-build-ios](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml/badge.svg?event=push)](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml?event-push)
+[![osx-build-android](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml/badge.svg?event=push)](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml?event=push)
+[![osx-android-prereq-sdk-install](https://github.com/e-mission/e-mission-phone/actions/workflows/android-automated-sdk-install.yml/badge.svg?event=push)](https://github.com/e-mission/e-mission-phone/actions/workflows/android-automated-sdk-install.yml?event=push)
 
 Pre-requisites
 ---
