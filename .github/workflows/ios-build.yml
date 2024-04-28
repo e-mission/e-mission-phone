@@ -33,6 +33,12 @@ jobs:
     - name: Print the xcode path
       run: xcode-select --print-path
 
+    - name: Set xcode to 14.1
+      run: |
+        xcode-select --switch /Applications/Xcode_14.1.app
+        echo "After setting xcode version "`xcode-select --print-path`
+
+
     - name: Print the xcode setup
       run: xcodebuild -version -sdk
 
