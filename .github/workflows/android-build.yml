@@ -38,11 +38,8 @@ jobs:
       run: |
         echo "Default java version"
         java -version
-        echo "Java full path"
-        which java
         echo "Setting to Java 11 instead"
-        export JAVA_HOME=$JAVA_HOME_11_arm64
-        which java
+        export JAVA_HOME=$JAVA_HOME_11_X64
         java -version
         echo "Checking gradle"
         which gradle
