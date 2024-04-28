@@ -41,8 +41,7 @@ jobs:
         echo "Java full path"
         which java
         echo "Setting to Java 11 instead"
-        export JAVA_HOME=$JAVA_HOME_11_X64
-        export PATH=$JAVA_HOME_11_X64:$PATH
+        export JAVA_HOME=$JAVA_HOME_11_arm64
         which java
         java -version
         echo "Checking gradle"
