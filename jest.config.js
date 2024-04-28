@@ -18,4 +18,9 @@ module.exports = {
   moduleDirectories: ["node_modules", "src"],
   globals: {"__DEV__": false},
   collectCoverage: true,
+  collectCoverageFrom: [
+    "www/js/**/*.{ts,tsx,js,jsx}",
+    "!www/js/**/index.{ts,tsx,js,jsx}",
+    "!www/js/types/**/*.{ts,tsx,js,jsx}",
+  ],
 };
