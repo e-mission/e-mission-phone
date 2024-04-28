@@ -35,7 +35,7 @@ jobs:
 
     - name: Set xcode to 14.1
       run: |
-        xcode-select --switch /Applications/Xcode_14.1.app
+        sudo xcode-select --switch /Applications/Xcode_14.1.app
         echo "After setting xcode version "`xcode-select --print-path`
 
 
