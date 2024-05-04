@@ -135,6 +135,21 @@ export function getMetrics(timeType: 'timestamp' | 'local_date', metricsQuery) {
   });
 }
 
+export function getSurveyMetric() {
+  console.log('hahaha')
+  return new Promise((rs, rj) => {
+    console.log(rs);
+    window['cordova'].plugins.BEMServerComm.getUserPersonalData(
+      '/get/metrics/survey',
+      rs,
+      rj,
+    );
+  }).catch((error) => {
+    error = `While getting survey metric, ${error}`;
+    throw error;
+  });
+}
+
 export function getAggregateData(path: string, query, serverConnConfig: ServerConnConfig) {
   return new Promise((rs, rj) => {
     const fullUrl = `${serverConnConfig.connectUrl}/${path}`;
