@@ -14,7 +14,7 @@ import Carousel from '../components/Carousel';
 import DailyActiveMinutesCard from './DailyActiveMinutesCard';
 import CarbonTextCard from './CarbonTextCard';
 import ActiveMinutesTableCard from './ActiveMinutesTableCard';
-import { getAggregateData, getMetrics } from '../services/commHelper';
+import { getAggregateData, getMetrics, getSurveyMetric } from '../services/commHelper';
 import { displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
 import { ServerConnConfig } from '../types/appConfigTypes';
@@ -30,6 +30,26 @@ const N_DAYS_TO_LOAD = 14; // 2 weeks
 const DEFAULT_SECTIONS_TO_SHOW = ['footprint', 'active_travel', 'summary'] as const;
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 const DEFAULT_SUMMARY_LIST = ['distance', 'count', 'duration'] as const;
+
+export type SurveyObject = {
+  'answered': number,
+  'unanswered': number,
+  'mismatched': number,
+}
+
+export type SurveyMetric = {
+  'me' : {
+    'overview' : SurveyObject,
+    'rank' : number,
+    'details': {
+      [key: string]: SurveyObject,
+    }  
+  },
+  'others' : {
+    'overview' : SurveyObject,
+    'leaderboard': SurveyObject[],
+  }
+}
 
 async function fetchMetricsFromServer(
   type: 'user' | 'aggregate',
@@ -63,9 +83,11 @@ const MetricsTab = () => {
     timelineIsLoading,
     refreshTimeline,
     loadMoreDays,
+    lastUpdateMetricDateTime
   } = useContext(TimelineContext);
 
   const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
+  const [surveyMetric, setSurveyMetric] = useState<null | SurveyMetric>(null);
 
   // user metrics are computed on the phone from the timeline data
   const userMetrics = useMemo(() => {
@@ -150,6 +172,18 @@ const MetricsTab = () => {
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = windowWidth * 0.88;
 
+  useEffect(() => {
+    async function getSurveyMetricData() {
+      const res = await getSurveyMetric();
+      setSurveyMetric(res as SurveyMetric);
+    }
+    
+    // 'lastUpdateMetricDate' is used to get new survey data when the last data was 24 hours ago
+    if(lastUpdateMetricDateTime && sectionsToShow.includes('engagement')) {
+      getSurveyMetricData();
+    }
+  }, [lastUpdateMetricDateTime])
+
   return (
     <>
       <NavBar isLoading={Boolean(timelineIsLoading)}>
@@ -215,10 +249,10 @@ const MetricsTab = () => {
               unitFormatFn={getFormattedSpeed} /> */}
           </Carousel>
         )}
-        {!sectionsToShow.includes('engagement') && (
+        {surveyMetric && (
           <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-            <SurveyLeaderboardCard />
-            <SurveyTripCategoriesCard />
+            <SurveyLeaderboardCard surveyMetric={surveyMetric} />
+            <SurveyTripCategoriesCard surveyTripCategoryMetric={surveyMetric.me?.details} />
           </Carousel>
         )}
       </ScrollView>
