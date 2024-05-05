@@ -407,7 +407,11 @@ const usePermissionStatus = () => {
       refresh: checkBatteryOpt,
     };
     let tempChecks = checkList;
-    tempChecks.push(unusedAppsUnrestrictedCheck, ignoreBatteryOptCheck);
+    if (appConfig.tracking?.bluetooth_only) {
+      tempChecks.push(ignoreBatteryOptCheck);
+    } else {
+      tempChecks.push(unusedAppsUnrestrictedCheck, ignoreBatteryOptCheck);
+    }
     setCheckList(tempChecks);
   }
 
@@ -446,10 +450,9 @@ const usePermissionStatus = () => {
       setupAndroidFitnessChecks();
       if (appConfig.tracking?.bluetooth_only) {
         setupAndroidBluetoothChecks();
-      } else {
-        setupAndroidBackgroundRestrictionChecks();
       }
       setupAndroidNotificationChecks();
+      setupAndroidBackgroundRestrictionChecks();
     } else if (window['device'].platform.toLowerCase() == 'ios') {
       setupIOSLocChecks();
       setupIOSFitnessChecks();
