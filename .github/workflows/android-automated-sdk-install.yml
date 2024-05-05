@@ -6,10 +6,12 @@ on:
   push:
     paths:
       - 'setup/prereq_android_sdk_install.sh'
+      - 'setup/android_sdk_packages'
       - '.github/workflows/android-automated-sdk-install.yml'
   pull_request:
     paths:
       - 'setup/prereq_android_sdk_install.sh'
+      - 'setup/android_sdk_packages'
       - '.github/workflows/android-automated-sdk-install.yml'
   schedule:
     # * is a special character in YAML so you have to quote this string
@@ -64,7 +66,6 @@ jobs:
         ls -al $ANDROID_SDK_ROOT
         if [ ! -d $ANDROID_SDK_ROOT/emulator ]; then exit 1; fi
         if [ ! -d $ANDROID_SDK_ROOT/build-tools ]; then exit 1; fi
-        if [ ! -d $ANDROID_SDK_ROOT/patcher ]; then exit 1; fi
         if [ ! -d $ANDROID_SDK_ROOT/extras ]; then exit 1; fi
         if [ ! -d $ANDROID_SDK_ROOT/platforms ]; then exit 1; fi
         if [ ! -d $ANDROID_SDK_ROOT/platform-tools ]; then exit 1; fi
