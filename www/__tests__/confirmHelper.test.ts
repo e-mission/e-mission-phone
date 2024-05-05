@@ -47,12 +47,12 @@ const fakeDefaultLabelOptions = {
 };
 const fakeInputs = {
   MODE: [
-    { data: { label: 'walk', start_ts: 1245, end_ts: 5678}},
-    { data: { label: 'bike', start_ts: 1245, end_ts: 5678}},
+    { data: { label: 'walk', start_ts: 1245, end_ts: 5678 } },
+    { data: { label: 'bike', start_ts: 1245, end_ts: 5678 } },
   ],
   PURPOSE: [
-    { data: {label: 'home', start_ts: 1245, end_ts: 5678 }},
-    { data: {label: 'work', start_ts: 1245, end_ts: 5678 }}
+    { data: { label: 'home', start_ts: 1245, end_ts: 5678 } },
+    { data: { label: 'work', start_ts: 1245, end_ts: 5678 } },
   ],
 };
 
