@@ -446,9 +446,10 @@ const usePermissionStatus = () => {
       setupAndroidFitnessChecks();
       if (appConfig.tracking?.bluetooth_only) {
         setupAndroidBluetoothChecks();
+      } else {
+        setupAndroidBackgroundRestrictionChecks();
       }
       setupAndroidNotificationChecks();
-      setupAndroidBackgroundRestrictionChecks();
     } else if (window['device'].platform.toLowerCase() == 'ios') {
       setupIOSLocChecks();
       setupIOSFitnessChecks();
