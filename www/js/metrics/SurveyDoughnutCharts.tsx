@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppTheme } from '../appTheme';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
+import { SurveyComparison } from './SurveyLeaderboardCard';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -25,12 +26,13 @@ export const LabelPanel = ({ first, second }) => {
   );
 };
 
-const SurveyDoughnutCharts = () => {
+type Props = {
+  surveyComparison : SurveyComparison
+}
+
+const SurveyDoughnutCharts = ({surveyComparison} : Props) => {
   const { colors } = useAppTheme();
   const { t } = useTranslation();
-  const myResonseRate = 68;
-  const othersResponseRate = 41;
-
   const renderDoughnutChart = (rate, chartColor, myResponse) => {
     const data = {
       datasets: [
@@ -76,8 +78,8 @@ const SurveyDoughnutCharts = () => {
     <View>
       <Text style={styles.chartTitle}>{t('main-metrics.survey-response-rate')}</Text>
       <View style={styles.chartWrapper}>
-        {renderDoughnutChart(myResonseRate, colors.navy, true)}
-        {renderDoughnutChart(othersResponseRate, colors.orange, false)}
+        {renderDoughnutChart(surveyComparison.me, colors.navy, true)}
+        {renderDoughnutChart(surveyComparison.others, colors.orange, false)}
       </View>
       <LabelPanel first={t('main-metrics.you')} second={t('main-metrics.others')} />
     </View>

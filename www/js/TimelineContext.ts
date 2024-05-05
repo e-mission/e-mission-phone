@@ -55,6 +55,8 @@ type ContextProps = {
   refreshTimeline: () => void;
   shouldUpdateTimeline: Boolean;
   setShouldUpdateTimeline: React.Dispatch<React.SetStateAction<boolean>>;
+  lastUpdateMetricDateTime: number;
+  setLastUpdateMetricDateTime: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export const useTimelineContext = (): ContextProps => {
@@ -78,6 +80,7 @@ export const useTimelineContext = (): ContextProps => {
   // Leaflet map encounters an error when prerendered, so we need to render the TimelineScrollList component when the active tab is 'label'
   // 'shouldUpdateTimeline' gets updated based on the current tab index, and we can use it to determine whether to render the timeline or not
   const [shouldUpdateTimeline, setShouldUpdateTimeline] = useState(true);
+  const [lastUpdateMetricDateTime, setLastUpdateMetricDateTime] = useState<number>(0);
 
   // initialization, once the appConfig is loaded
   useEffect(() => {
@@ -372,6 +375,8 @@ export const useTimelineContext = (): ContextProps => {
     addUserInputToEntry,
     shouldUpdateTimeline,
     setShouldUpdateTimeline,
+    lastUpdateMetricDateTime,
+    setLastUpdateMetricDateTime,
   };
 };
 

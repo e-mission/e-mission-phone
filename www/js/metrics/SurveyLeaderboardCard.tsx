@@ -1,47 +1,104 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text } from 'react-native';
 import { Card } from 'react-native-paper';
-import { cardStyles } from './MetricsTab';
+import { cardStyles, SurveyMetric, SurveyObject } from './MetricsTab';
 import { useTranslation } from 'react-i18next';
 import ToggleSwitch from '../components/ToggleSwitch';
 import BarChart from '../components/BarChart';
 import { useAppTheme } from '../appTheme';
 import SurveyComparisonChart from './SurveyDoughnutCharts';
+import { Chart as ChartJS, registerables } from 'chart.js';
+import Annotation from 'chartjs-plugin-annotation';
 
-const SurveyLeaderboardCard = () => {
+ChartJS.register(...registerables, Annotation);
+
+type Props = {
+  surveyMetric: SurveyMetric
+}
+
+type LeaderboardRecord = {
+  label: string,
+  x: number,
+  y: string
+}
+export type SurveyComparison = {
+  'me' : number,
+  'others' : number,
+}
+
+const SurveyLeaderboardCard = ( { surveyMetric }: Props) => {
   const { colors } = useAppTheme();
   const { t } = useTranslation();
   const [tab, setTab] = useState('leaderboard');
-  const myLabel = '#3';
+  
+  const myRank = surveyMetric.me.rank;
+  const mySurveyMetric = surveyMetric.me.overview;
+  const othersSurveyMetric = surveyMetric.others.overview;
+  const mySurveyRate = Math.round(mySurveyMetric.answered / (mySurveyMetric.answered + mySurveyMetric.unanswered) * 100);
 
+  const surveyComparison: SurveyComparison = {
+    'me' : mySurveyRate,
+    'others' : Math.round(othersSurveyMetric.answered / (othersSurveyMetric.answered + othersSurveyMetric.unanswered) * 100)
+  }
+
+  function getLabel(rank: number): string {
+    if(rank === 0) {
+      return '🏆 #1:';
+    }else if(rank === 1) {
+      return '🥈 #2:';
+    }else if(rank === 2) {
+      return '🥉 #3:';
+    }else {
+      return `#${rank+1}:`;
+    }
+  }
+
+  const leaderboardRecords: LeaderboardRecord[] = useMemo(() => {
+    const combinedLeaderboard:SurveyObject[] = [...surveyMetric.others.leaderboard];
+    combinedLeaderboard.splice(myRank, 0, mySurveyMetric);
+
+    // This is to prevent the leaderboard from being too long for UX purposes.
+    // For a total of 20 members, we only show the top 5 members, myself, and the bottom 3 members.
+    const numberOfTopUsers = 5
+    const numberOfBottomUsers = surveyMetric.others.leaderboard.length -3;
+    
+    return combinedLeaderboard.map((item, idx) => (
+      {
+        'isMe': idx === myRank,
+        'rank': idx,
+        'answered': item.answered,
+        'unanswered': item.unanswered,
+        'mismatched': item.mismatched,
+      }
+    )).filter((item) => ( item.isMe || item.rank < numberOfTopUsers || item.rank >= numberOfBottomUsers))
+    .map((item) => (
+      {
+        label: item.isMe ? `${item.rank}-me` : `${item.rank}-other`,
+        x: Math.round(item.answered / (item.answered + item.unanswered) * 100),
+        y: getLabel(item.rank)
+      }
+    ))
+  }, [surveyMetric])
+  
   const renderBarChart = () => {
-    const records = [
-      { label: '#1', x: 91, y: '🏆 #1:' },
-      { label: '#2', x: 72, y: '🥈 #2:' },
-      { label: '#3', x: 68, y: '🥉 #3:' },
-      { label: '#4', x: 57, y: '#4:' },
-      { label: '#5', x: 50, y: '#5:' },
-      { label: '#6', x: 40, y: '#6:' },
-      { label: '#7', x: 30, y: '#7:' },
-    ];
     return (
       <View>
         <Text style={styles.chartTitle}>{t('main-metrics.survey-response-rate')}</Text>
         <BarChart
-          records={records}
+          records={leaderboardRecords}
           axisTitle=""
           isHorizontal={true}
           timeAxis={false}
           stacked={false}
-          getColorForLabel={(l) => (l === myLabel ? colors.skyblue : colors.silver)}
-          getColorForChartEl={(l) => (l === myLabel ? colors.skyblue : colors.silver)}
+          getColorForLabel={(l) => (l === `${myRank}-me` ? colors.skyblue : colors.silver)}
+          getColorForChartEl={(l) => (l === `${myRank}-me` ? colors.skyblue : colors.silver)}
           showLegend={false}
           reverse={false}
           enableTooltip={false}
         />
         <View style={styles.statusTextWrapper}>
           <Text>{t('main-metrics.you-are-in')}</Text>
-          <Text style={{ color: colors.navy, fontWeight: 'bold' }}> {myLabel} </Text>
+          <Text style={{ color: colors.navy, fontWeight: 'bold' }}> #{myRank+1} </Text>
           <Text>{t('main-metrics.place')}</Text>
         </View>
       </View>
@@ -74,7 +131,7 @@ const SurveyLeaderboardCard = () => {
         )}
       />
       <Card.Content style={cardStyles.content}>
-        {tab === 'leaderboard' ? renderBarChart() : <SurveyComparisonChart />}
+        {tab === 'leaderboard' ? renderBarChart() : <SurveyComparisonChart surveyComparison={surveyComparison} />}
       </Card.Content>
     </Card>
   );

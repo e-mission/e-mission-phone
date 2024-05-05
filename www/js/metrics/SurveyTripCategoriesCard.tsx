@@ -1,47 +1,37 @@
 import React from 'react';
-import { View, Text } from 'react-native';
 import { Card } from 'react-native-paper';
-import { cardStyles } from './MetricsTab';
+import { cardStyles, SurveyObject } from './MetricsTab';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 import { useAppTheme } from '../appTheme';
 import { LabelPanel } from './SurveyDoughnutCharts';
 
-const SurveyTripCategoriesCard = () => {
+type SurveyTripRecord = {
+  label: string,
+  x: string,
+  y: number
+}
+
+type Props = {
+  surveyTripCategoryMetric : {[key: string]: SurveyObject}
+}
+const SurveyTripCategoriesCard = ( {surveyTripCategoryMetric}: Props ) => {
   const { colors } = useAppTheme();
   const { t } = useTranslation();
-  const records = [
-    {
-      label: 'Response',
-      x: 'EV Roaming trip',
-      y: 20,
-    },
-    {
-      label: 'No Response',
-      x: 'EV Roaming trip',
-      y: 20,
-    },
-    {
-      label: 'Response',
-      x: 'EV Return trip',
-      y: 30,
-    },
-    {
-      label: 'No Response',
-      x: 'EV Return trip',
-      y: 40,
-    },
-    {
-      label: 'Response',
-      x: 'Gas Car trip',
-      y: 50,
-    },
-    {
-      label: 'No Response',
-      x: 'Gas Car trip',
-      y: 10,
-    },
-  ];
+  const records: SurveyTripRecord[] = [];
+
+  for(const category in surveyTripCategoryMetric) {
+    const metricByCategory = surveyTripCategoryMetric[category];
+    for(const key in metricByCategory) {
+      // we don't consider "mismatched" survey result for now
+      if(key === "mismatched") continue;
+      records.push({
+        label: key === 'answered' ? 'Response' : 'No Response',
+        x: category,
+        y: metricByCategory[key]
+      })
+    }
+  }
 
   return (
     <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
