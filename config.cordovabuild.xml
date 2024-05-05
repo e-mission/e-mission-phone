@@ -36,6 +36,8 @@
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     <platform name="ios">
+        <preference name="deployment-target" value="13.0"/>
+        <hook src="hooks/before_build/ios/ios_change_deployment.js" type="before_build" />
         <hook src="hooks/after_platform_add/ios/ios_copy_locales.js" type="after_platform_add" />
         <resource-file src="GoogleService-Info.plist" />
         <preference name="WKWebViewOnly" value="true" />
