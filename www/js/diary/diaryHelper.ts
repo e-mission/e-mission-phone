@@ -192,6 +192,15 @@ export function getFormattedSectionProperties(trip: CompositeTrip, imperialConfi
   }));
 }
 
+/**
+ * @param trip A composite trip object
+ * @return the primary section of the trip, i.e. the section with the greatest distance
+ */
+export function primarySectionForTrip(trip: CompositeTrip) {
+  if (!trip.sections?.length) return undefined;
+  return trip.sections.reduce((prev, curr) => (prev.distance > curr.distance ? prev : curr));
+}
+
 export function getLocalTimeString(dt?: LocalDt) {
   if (!dt) return;
   const dateTime = DateTime.fromObject({

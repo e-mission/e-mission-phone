@@ -29,11 +29,7 @@ import { getLabelOptions, labelOptionByValue } from '../survey/multilabel/confir
 import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import { useTheme } from 'react-native-paper';
 import { getPipelineRangeTs } from '../services/commHelper';
-import {
-  getNotDeletedCandidates,
-  mapBleScansToTimelineEntries,
-  mapInputsToTimelineEntries,
-} from '../survey/inputMatcher';
+import { getNotDeletedCandidates, mapInputsToTimelineEntries } from '../survey/inputMatcher';
 import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
 import LabelTabContext, {
@@ -45,6 +41,7 @@ import LabelTabContext, {
 import { readAllCompositeTrips, readUnprocessedTrips } from './timelineHelper';
 import { LabelOptions, MultilabelKey } from '../types/labelTypes';
 import { CompositeTrip, TimelineEntry, TimestampRange, UserInputEntry } from '../types/diaryTypes';
+import { primarySectionForTrip } from './diaryHelper';
 
 let showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -63,7 +60,6 @@ const LabelTab = () => {
   const [timelineMap, setTimelineMap] = useState<TimelineMap | null>(null);
   const [timelineLabelMap, setTimelineLabelMap] = useState<TimelineLabelMap | null>(null);
   const [timelineNotesMap, setTimelineNotesMap] = useState<TimelineNotesMap | null>(null);
-  const [timelineBleMap, setTimelineBleMap] = useState<any>(null);
   const [displayedEntries, setDisplayedEntries] = useState<TimelineEntry[] | null>(null);
   const [refreshTime, setRefreshTime] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState<string | false>('replace');
@@ -105,15 +101,8 @@ const LabelTab = () => {
         allEntries,
         appConfig,
       );
-
       setTimelineLabelMap(newTimelineLabelMap);
       setTimelineNotesMap(newTimelineNotesMap);
-
-      if (appConfig.vehicle_identities?.length) {
-        const newTimelineBleMap = mapBleScansToTimelineEntries(allEntries, appConfig);
-        setTimelineBleMap(newTimelineBleMap);
-      }
-
       applyFilters(timelineMap, newTimelineLabelMap);
     } catch (e) {
       displayError(e, t('errors.while-updating-timeline'));
@@ -171,7 +160,7 @@ const LabelTab = () => {
         unprocessedNotes = ${JSON.stringify(unprocessedNotes)}`);
       if (appConfig.vehicle_identities?.length) {
         await updateUnprocessedBleScans({
-          start_ts: pipelineRange.start_ts,
+          start_ts: pipelineRange.end_ts,
           end_ts: Date.now() / 1000,
         });
         logDebug(`LabelTab: After updating unprocessedBleScans,
@@ -301,7 +290,12 @@ const LabelTab = () => {
           .reverse()
           .find((trip) => trip.origin_key.includes('trip')) as CompositeTrip;
       }
-      readUnprocessedPromise = readUnprocessedTrips(pipelineRange.end_ts, nowTs, lastProcessedTrip);
+      readUnprocessedPromise = readUnprocessedTrips(
+        pipelineRange.end_ts,
+        nowTs,
+        appConfig,
+        lastProcessedTrip,
+      );
     } else {
       readUnprocessedPromise = Promise.resolve([]);
     }
@@ -336,8 +330,8 @@ const LabelTab = () => {
    * @returns Confirmed mode, which could be a vehicle identity as determined by Bluetooth scans,
    *  or the label option from a user-given 'MODE' label, or undefined if neither exists.
    */
-  const confirmedModeFor = (tlEntry: TimelineEntry) =>
-    timelineBleMap?.[tlEntry._id.$oid] || labelFor(tlEntry, 'MODE');
+  const confirmedModeFor = (tlEntry: CompositeTrip) =>
+    primarySectionForTrip(tlEntry)?.ble_sensed_mode || labelFor(tlEntry, 'MODE');
 
   function addUserInputToEntry(oid: string, userInput: any, inputType: 'label' | 'note') {
     const tlEntry = timelineMap?.get(oid);
