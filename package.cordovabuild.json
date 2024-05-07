@@ -139,7 +139,7 @@
     "cordova-custom-config": "^5.1.1",
     "cordova-plugin-ibeacon": "git+https://github.com/louisg1337/cordova-plugin-ibeacon.git",
     "core-js": "^2.5.7",
-    "e-mission-common": "git+https://github.com/JGreenlee/e-mission-common.git",
+    "e-mission-common": "git+https://github.com/JGreenlee/e-mission-common.git#0.4.4",
     "enketo-core": "^6.1.7",
     "enketo-transformer": "^4.0.0",
     "fast-xml-parser": "^4.2.2",
