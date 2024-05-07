@@ -291,13 +291,14 @@ jest.mock('../js/services/unifiedDataLoader', () => ({
 }));
 
 it('works when there are no unprocessed trips...', async () => {
-  expect(readUnprocessedTrips(-1, -1, {} as any)).resolves.toEqual([]);
+  expect(readUnprocessedTrips(-1, -1, {} as any, {} as any)).resolves.toEqual([]);
 });
 
 it('works when there are one or more unprocessed trips...', async () => {
   const testValueOne = await readUnprocessedTrips(
     mockTLH.fakeStartTsOne,
     mockTLH.fakeEndTsOne,
+    {} as any,
     {} as any,
   );
   expect(testValueOne.length).toEqual(1);
