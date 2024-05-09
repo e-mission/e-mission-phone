@@ -216,9 +216,8 @@ export function getAdditionsForTimelineEntry(
     return [];
   }
 
-  // get additions that have not been deleted and filter out additions that do not start within the bounds of the timeline entry
-  const notDeleted = getNotDeletedCandidates(additionsList);
-  const matchingAdditions = notDeleted.filter((ui) =>
+  // filter out additions that do not start within the bounds of the timeline entry
+  const matchingAdditions = additionsList.filter((ui) =>
     validUserInputForTimelineEntry(entry, nextEntry, ui, logsEnabled),
   );
 
