@@ -29,26 +29,22 @@ const scopedEval = (script: string, scope: { [k: string]: any }) =>
 
 // the first survey in the list that passes its condition will be returned
 export function getSurveyForTimelineEntry(
-  tripLabelConfig: SurveyButtonConfig | SurveyButtonConfig[],
+  possibleSurveys: SurveyButtonConfig[],
   tlEntry: TimelineEntry,
   derivedProperties: DerivedProperties,
 ) {
-  // if only one survey is given, just return it
-  if (!(tripLabelConfig instanceof Array)) return tripLabelConfig;
-  if (tripLabelConfig.length == 1) return tripLabelConfig[0];
-  // else we have an array of possible surveys, we need to find which one to use for this entry
-  for (let surveyConfig of tripLabelConfig) {
-    if (!surveyConfig.showsIf) return surveyConfig; // survey shows unconditionally
+  for (let survey of possibleSurveys) {
+    if (!survey.showsIf) return survey; // survey shows unconditionally
     const scope = {
       ...tlEntry,
       ...derivedProperties,
       ...conditionalSurveyFunctions,
     };
     try {
-      const evalResult = scopedEval(surveyConfig.showsIf, scope);
-      if (evalResult) return surveyConfig;
+      const evalResult = scopedEval(survey.showsIf, scope);
+      if (evalResult) return survey;
     } catch (e) {
-      displayError(e, `Error evaluating survey condition "${surveyConfig.showsIf}"`);
+      displayError(e, `Error evaluating survey condition "${survey.showsIf}"`);
     }
   }
   // TODO if none of the surveys passed conditions?? should we return null, throw error, or return a default?
