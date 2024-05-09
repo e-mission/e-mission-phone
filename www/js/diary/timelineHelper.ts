@@ -120,6 +120,7 @@ function updateUnprocessedInputs(
     const labelResults = comboResults.slice(0, labelsPromises.length);
     const notesResults = comboResults.slice(labelsPromises.length).flat(2);
     // fill in the unprocessedLabels object with the labels we just read
+    unprocessedLabels = {};
     labelResults.forEach((r, i) => {
       if (appConfig.survey_info?.['trip-labels'] == 'ENKETO') {
         const tripSurveys = resolveSurveyButtonConfig(appConfig, 'trip-label');

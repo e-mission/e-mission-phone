@@ -1,6 +1,6 @@
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
-import { unprocessedLabels, updateLocalUnprocessedInputs } from '../js/diary/timelineHelper';
+import { updateLocalUnprocessedInputs } from '../js/diary/timelineHelper';
 import * as logger from '../js/plugin/logger';
 import { EnketoUserInputEntry } from '../js/survey/enketo/enketoHelper';
 import {
@@ -376,9 +376,9 @@ describe('mapInputsToTimelineEntries on an ENKETO configuration', () => {
       user_input: {
         trip_user_input: {
           data: {
-            name: 'TripConfirmSurvey',
+            name: 'MyCustomSurvey',
             version: 1,
-            xmlResponse: '<processed TripConfirmSurvey response>',
+            xmlResponse: '<processed MyCustomSurvey response>',
             start_ts: 1000,
             end_ts: 3000,
           },
@@ -417,6 +417,12 @@ describe('mapInputsToTimelineEntries on an ENKETO configuration', () => {
       ],
     },
   ] as any as TimelineEntry[];
+
+  // reset local unprocessed inputs to ensure MUTLILABEL inputs don't leak into ENKETO tests
+  beforeAll(async () => {
+    await updateLocalUnprocessedInputs({ start_ts: 1000, end_ts: 5000 }, fakeConfigEnketo);
+  });
+
   it('creates a map that has the processed responses and notes', () => {
     const [labelMap, notesMap] = mapInputsToTimelineEntries(
       timelineEntriesEnketo,
@@ -424,8 +430,8 @@ describe('mapInputsToTimelineEntries on an ENKETO configuration', () => {
     );
     expect(labelMap).toMatchObject({
       trip1: {
-        SURVEY: {
-          data: { xmlResponse: '<processed TripConfirmSurvey response>' },
+        MyCustomSurvey: {
+          data: { xmlResponse: '<processed MyCustomSurvey response>' },
         },
       },
     });
@@ -460,12 +466,12 @@ describe('mapInputsToTimelineEntries on an ENKETO configuration', () => {
 
     expect(labelMap).toMatchObject({
       trip1: {
-        SURVEY: {
-          data: { xmlResponse: '<processed TripConfirmSurvey response>' },
+        MyCustomSurvey: {
+          data: { xmlResponse: '<processed MyCustomSurvey response>' },
         },
       },
       trip2: {
-        SURVEY: {
+        TripConfirmSurvey: {
           data: { xmlResponse: '<unprocessed TripConfirmSurvey response>' },
         },
       },
