@@ -5,13 +5,13 @@ import { EnketoUserInputEntry } from '../survey/enketo/enketoHelper';
 import { VehicleIdentity } from '../types/appConfigTypes';
 
 export type UserInputMap = {
-  /* if the key here is 'SURVEY', we are in the ENKETO configuration, meaning the user input
-    value will have the raw 'xmlResponse' string */
-  SURVEY?: EnketoUserInputEntry;
-} & {
-  /* all other keys, (e.g. 'MODE', 'PURPOSE') are from the MULTILABEL configuration
-    and will have the 'label' string but no 'xmlResponse' string */
+  /* If keys are 'MODE', 'PURPOSE', 'REPLACED_MODE', this is the MULTILABEL configuration.
+    Values are entries that have a 'label' value in their 'data' */
   [k in MultilabelKey]?: UserInputEntry;
+} & {
+  /* Otherwise we are in the ENKETO configuration, and keys are names of surveys.
+    Values are entries that have an 'xmlResponse' value in their 'data' */
+  [k: string]: EnketoUserInputEntry | undefined;
 };
 
 export type TimelineMap = Map<string, TimelineEntry>; // Todo: update to reflect unpacked trips (origin_Key, etc)

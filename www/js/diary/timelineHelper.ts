@@ -21,7 +21,11 @@ import {
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
-import { EnketoUserInputEntry, filterByNameAndVersion } from '../survey/enketo/enketoHelper';
+import {
+  EnketoUserInputEntry,
+  filterByNameAndVersion,
+  resolveSurveyButtonConfig,
+} from '../survey/enketo/enketoHelper';
 import { AppConfig } from '../types/appConfigTypes';
 import { Point, Feature } from 'geojson';
 import { ble_matching } from 'e-mission-common';
@@ -91,7 +95,8 @@ export function compositeTrips2TimelineMap(ctList: Array<any>, unpackPlaces?: bo
 }
 
 /* 'LABELS' are 1:1 - each trip or place has a single label for each label type
-  (e.g. 'MODE' and 'PURPOSE' for MULTILABEL configuration, or 'SURVEY' for ENKETO configuration) */
+  (e.g. 'MODE' and 'PURPOSE' for MULTILABEL configuration, or the name of the survey
+    for ENKETO configuration) */
 export let unprocessedLabels: { [key: string]: UserInputEntry[] } = {};
 /* 'NOTES' are 1:n - each trip or place can have any number of notes */
 export let unprocessedNotes: EnketoUserInputEntry[] = [];
@@ -115,10 +120,14 @@ function updateUnprocessedInputs(
     const labelResults = comboResults.slice(0, labelsPromises.length);
     const notesResults = comboResults.slice(labelsPromises.length).flat(2);
     // fill in the unprocessedLabels object with the labels we just read
+    unprocessedLabels = {};
     labelResults.forEach((r, i) => {
       if (appConfig.survey_info?.['trip-labels'] == 'ENKETO') {
-        const filtered = filterByNameAndVersion('TripConfirmSurvey', r, appConfig);
-        unprocessedLabels['SURVEY'] = filtered as UserInputEntry[];
+        const tripSurveys = resolveSurveyButtonConfig(appConfig, 'trip-label');
+        tripSurveys.forEach((survey) => {
+          const filtered = filterByNameAndVersion(survey.surveyName, r, appConfig);
+          unprocessedLabels[survey.surveyName] = filtered as UserInputEntry[];
+        });
       } else {
         unprocessedLabels[getLabelInputs()[i]] = r;
       }
