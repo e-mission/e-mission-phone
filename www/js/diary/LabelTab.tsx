@@ -76,7 +76,7 @@ const LabelTab = () => {
         const labels = labelMap[e._id.$oid];
         for (let labelValue of Object.values(labels || [])) {
           logDebug(`LabelTab filtering: labelValue = ${JSON.stringify(labelValue)}`);
-          if (labelValue?.metadata?.write_ts > cutoffTs) {
+          if (labelValue?.metadata?.write_ts || 0 > cutoffTs) {
             logDebug('LabelTab filtering: entry has recent user input, keeping');
             return true;
           }

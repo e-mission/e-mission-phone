@@ -291,6 +291,41 @@ const usePermissionStatus = () => {
     setCheckList(tempChecks);
   }
 
+  function setupAndroidBluetoothChecks() {
+    if (window['device'].version.split('.')[0] >= 10) {
+      let fixPerms = () => {
+        logDebug('fix and refresh bluetooth permissions');
+        return checkOrFix(
+          bluetoothPermissionsCheck,
+          window['cordova'].plugins.BEMDataCollection.fixBluetoothPermissions,
+          true,
+        ).then((error) => {
+          if (error) {
+            bluetoothPermissionsCheck.desc = error;
+          }
+        });
+      };
+      let checkPerms = () => {
+        logDebug('fix and refresh bluetooth permissions');
+        return checkOrFix(
+          bluetoothPermissionsCheck,
+          window['cordova'].plugins.BEMDataCollection.isValidBluetoothPermissions,
+          false,
+        );
+      };
+
+      let bluetoothPermissionsCheck = {
+        name: 'Bluetooth scan permission',
+        desc: 'Scan for BLE beacons to automatically match trips to vehicles',
+        fix: fixPerms,
+        refresh: checkPerms,
+      };
+      let tempChecks = checkList;
+      tempChecks.push(bluetoothPermissionsCheck);
+      setCheckList(tempChecks);
+    }
+  }
+
   function setupAndroidNotificationChecks() {
     let fixPerms = () => {
       logDebug('fix and refresh notification permissions');
@@ -372,7 +407,11 @@ const usePermissionStatus = () => {
       refresh: checkBatteryOpt,
     };
     let tempChecks = checkList;
-    tempChecks.push(unusedAppsUnrestrictedCheck, ignoreBatteryOptCheck);
+    if (appConfig.tracking?.bluetooth_only) {
+      tempChecks.push(ignoreBatteryOptCheck);
+    } else {
+      tempChecks.push(unusedAppsUnrestrictedCheck, ignoreBatteryOptCheck);
+    }
     setCheckList(tempChecks);
   }
 
@@ -409,6 +448,9 @@ const usePermissionStatus = () => {
     if (window['device'].platform.toLowerCase() == 'android') {
       setupAndroidLocChecks();
       setupAndroidFitnessChecks();
+      if (appConfig.tracking?.bluetooth_only) {
+        setupAndroidBluetoothChecks();
+      }
       setupAndroidNotificationChecks();
       setupAndroidBackgroundRestrictionChecks();
     } else if (window['device'].platform.toLowerCase() == 'ios') {

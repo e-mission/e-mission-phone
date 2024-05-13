@@ -20,14 +20,11 @@ import {
   isoDateRangeToTsRange,
 } from './diary/timelineHelper';
 import { getPipelineRangeTs } from './services/commHelper';
-import {
-  getNotDeletedCandidates,
-  mapBleScansToTimelineEntries,
-  mapInputsToTimelineEntries,
-} from './survey/inputMatcher';
+import { getNotDeletedCandidates, mapInputsToTimelineEntries } from './survey/inputMatcher';
 import { publish } from './customEventHandler';
 import { EnketoUserInputEntry } from './survey/enketo/enketoHelper';
 import { VehicleIdentity } from './types/appConfigTypes';
+import { primarySectionForTrip } from './diary/diaryHelper';
 
 // initial query range is the past 7 days, including today
 const today = DateTime.now().toISODate().substring(0, 10);
@@ -75,7 +72,6 @@ export const useTimelineContext = (): ContextProps => {
   const [timelineIsLoading, setTimelineIsLoading] = useState<string | false>('replace');
   const [timelineLabelMap, setTimelineLabelMap] = useState<TimelineLabelMap | null>(null);
   const [timelineNotesMap, setTimelineNotesMap] = useState<TimelineNotesMap | null>(null);
-  const [timelineBleMap, setTimelineBleMap] = useState<any>(null);
   const [refreshTime, setRefreshTime] = useState<Date | null>(null);
   // Leaflet map encounters an error when prerendered, so we need to render the TimelineScrollList component when the active tab is 'label'
   // 'shouldUpdateTimeline' gets updated based on the current tab index, and we can use it to determine whether to render the timeline or not
@@ -147,12 +143,6 @@ export const useTimelineContext = (): ContextProps => {
     );
     setTimelineLabelMap(newTimelineLabelMap);
     setTimelineNotesMap(newTimelineNotesMap);
-
-    if (appConfig.vehicle_identities?.length) {
-      const newTimelineBleMap = mapBleScansToTimelineEntries(allEntries, appConfig);
-      setTimelineBleMap(newTimelineBleMap);
-    }
-
     publish('applyLabelTabFilters', {
       timelineMap,
       timelineLabelMap: newTimelineLabelMap,
@@ -169,7 +159,7 @@ export const useTimelineContext = (): ContextProps => {
         unprocessedNotes = ${JSON.stringify(unprocessedNotes)}`);
       if (appConfig.vehicle_identities?.length) {
         await updateUnprocessedBleScans({
-          start_ts: pipelineRange.start_ts,
+          start_ts: pipelineRange.end_ts,
           end_ts: Date.now() / 1000,
         });
         logDebug(`Timeline: After updating unprocessedBleScans,
@@ -267,6 +257,7 @@ export const useTimelineContext = (): ContextProps => {
       readUnprocessedPromise = readUnprocessedTrips(
         Math.max(pipelineRange.end_ts, startTs),
         endTs,
+        appConfig,
         lastProcessedTrip,
       );
     } else {
@@ -311,8 +302,8 @@ export const useTimelineContext = (): ContextProps => {
    * @returns Confirmed mode, which could be a vehicle identity as determined by Bluetooth scans,
    *  or the label option from a user-given 'MODE' label, or undefined if neither exists.
    */
-  const confirmedModeFor = (tlEntry: TimelineEntry) =>
-    timelineBleMap?.[tlEntry._id.$oid] || labelFor(tlEntry, 'MODE');
+  const confirmedModeFor = (tlEntry: CompositeTrip) =>
+    primarySectionForTrip(tlEntry)?.ble_sensed_mode || labelFor(tlEntry, 'MODE');
 
   function addUserInputToEntry(oid: string, userInput: any, inputType: 'label' | 'note') {
     const tlEntry = timelineMap?.get(oid);
@@ -320,9 +311,9 @@ export const useTimelineContext = (): ContextProps => {
       return displayErrorMsg('Item with oid: ' + oid + ' not found in timeline');
     const nowTs = new Date().getTime() / 1000; // epoch seconds
     if (inputType == 'label') {
-      const newLabels = {};
-      for (const [inputType, labelValue] of Object.entries(userInput)) {
-        newLabels[inputType] = { data: labelValue, metadata: nowTs };
+      const newLabels: UserInputMap = {};
+      for (const [inputType, labelValue] of Object.entries<any>(userInput)) {
+        newLabels[inputType] = { data: labelValue, metadata: { write_ts: nowTs } as any };
       }
       logDebug('Timeline: newLabels = ' + JSON.stringify(newLabels));
       const newTimelineLabelMap: TimelineLabelMap = {
@@ -381,13 +372,13 @@ export const useTimelineContext = (): ContextProps => {
 };
 
 export type UserInputMap = {
-  /* if the key here is 'SURVEY', we are in the ENKETO configuration, meaning the user input
-    value will have the raw 'xmlResponse' string */
-  SURVEY?: EnketoUserInputEntry;
-} & {
-  /* all other keys, (e.g. 'MODE', 'PURPOSE') are from the MULTILABEL configuration
-    and will have the 'label' string but no 'xmlResponse' string */
+  /* If keys are 'MODE', 'PURPOSE', 'REPLACED_MODE', this is the MULTILABEL configuration.
+    Values are entries that have a 'label' value in their 'data' */
   [k in MultilabelKey]?: UserInputEntry;
+} & {
+  /* Otherwise we are in the ENKETO configuration, and keys are names of surveys.
+    Values are entries that have an 'xmlResponse' value in their 'data' */
+  [k: string]: EnketoUserInputEntry | undefined;
 };
 
 export type TimelineMap = Map<string, TimelineEntry>; // Todo: update to reflect unpacked trips (origin_Key, etc)

@@ -4,6 +4,7 @@
 
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
 import useDerivedProperties from '../diary/useDerivedProperties';
+import { VehicleIdentity } from './appConfigTypes';
 import { MultilabelKey } from './labelTypes';
 import { BEMData, LocalDt } from './serverData';
 import { FeatureCollection, Feature, Geometry, Point, Position } from 'geojson';
@@ -58,6 +59,8 @@ export type CompositeTripLocation = {
 export type UnprocessedTrip = {
   _id: ObjectId;
   additions: []; // unprocessed trips won't have any matched processed inputs, so this is always empty
+  ble_sensed_summary: SectionSummary;
+  cleaned_section_summary: SectionSummary;
   confidence_threshold: number;
   distance: number;
   duration: number;
@@ -67,6 +70,7 @@ export type UnprocessedTrip = {
   end_ts: number;
   expectation: { to_label: true }; // unprocessed trips are always expected to be labeled
   inferred_labels: []; // unprocessed trips won't have inferred labels
+  inferred_section_summary: SectionSummary;
   key: 'UNPROCESSED_trip';
   locations?: CompositeTripLocation[];
   origin_key: 'UNPROCESSED_trip';
@@ -85,6 +89,7 @@ export type UnprocessedTrip = {
 export type CompositeTrip = {
   _id: ObjectId;
   additions: UserInputEntry[];
+  ble_sensed_summary: SectionSummary;
   cleaned_section_summary: SectionSummary;
   cleaned_trip: ObjectId;
   confidence_threshold: number;
@@ -202,6 +207,7 @@ export type SectionData = {
   key: string;
   origin_key: string;
   trip_id: ObjectId;
+  ble_sensed_mode: VehicleIdentity;
   sensed_mode: number;
   source: string; // e.x., "SmoothedHighConfidenceMotion"
   start_ts: number; // Unix

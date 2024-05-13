@@ -18,7 +18,7 @@ import {
   inputType2retKey,
   removeManualPrefix,
 } from './multilabel/confirmHelper';
-import { TimelineLabelMap, TimelineNotesMap } from '../TimelineContext';
+import { TimelineLabelMap, TimelineNotesMap, UserInputMap } from '../TimelineContext';
 import { MultilabelKey } from '../types/labelTypes';
 import { EnketoUserInputEntry } from './enketo/enketoHelper';
 import { AppConfig } from '../types/appConfigTypes';
@@ -216,9 +216,8 @@ export function getAdditionsForTimelineEntry(
     return [];
   }
 
-  // get additions that have not been deleted and filter out additions that do not start within the bounds of the timeline entry
-  const notDeleted = getNotDeletedCandidates(additionsList);
-  const matchingAdditions = notDeleted.filter((ui) =>
+  // filter out additions that do not start within the bounds of the timeline entry
+  const matchingAdditions = additionsList.filter((ui) =>
     validUserInputForTimelineEntry(entry, nextEntry, ui, logsEnabled),
   );
 
@@ -280,16 +279,16 @@ export function mapInputsToTimelineEntries(
   allEntries.forEach((tlEntry, i) => {
     const nextEntry = i + 1 < allEntries.length ? allEntries[i + 1] : null;
     if (appConfig?.survey_info?.['trip-labels'] == 'ENKETO') {
-      // ENKETO configuration: just look for the 'SURVEY' key in the unprocessedInputs
+      // ENKETO configuration: consider reponses from all surveys in unprocessedLabels
       const userInputForTrip = getUserInputForTimelineEntry(
         tlEntry,
         nextEntry,
-        unprocessedLabels['SURVEY'],
+        Object.values(unprocessedLabels).flat(1),
       ) as EnketoUserInputEntry;
       if (userInputForTrip) {
-        timelineLabelMap[tlEntry._id.$oid] = { SURVEY: userInputForTrip };
+        timelineLabelMap[tlEntry._id.$oid] = { [userInputForTrip.data.name]: userInputForTrip };
       } else {
-        let processedSurveyResponse;
+        let processedSurveyResponse: EnketoUserInputEntry | undefined;
         for (const dataKey of keysForLabelInputs(appConfig)) {
           const key = removeManualPrefix(dataKey);
           if (tlEntry.user_input?.[key]) {
@@ -297,12 +296,16 @@ export function mapInputsToTimelineEntries(
             break;
           }
         }
-        timelineLabelMap[tlEntry._id.$oid] = { SURVEY: processedSurveyResponse };
+        if (processedSurveyResponse) {
+          timelineLabelMap[tlEntry._id.$oid] = {
+            [processedSurveyResponse.data.name]: processedSurveyResponse,
+          };
+        }
       }
     } else {
       // MULTILABEL configuration: use the label inputs from the labelOptions to determine which
       // keys to look for in the unprocessedInputs
-      const labelsForTrip: { [k: string]: UserInputEntry | undefined } = {};
+      const labelsForTrip: UserInputMap = {};
       Object.keys(getLabelInputDetails(appConfig)).forEach((label: MultilabelKey) => {
         // Check unprocessed labels first since they are more recent
         const userInputForTrip = getUserInputForTimelineEntry(

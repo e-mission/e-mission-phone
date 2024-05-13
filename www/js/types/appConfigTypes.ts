@@ -72,7 +72,7 @@ export type SurveyButtonConfig = {
   'not-filled-in-label': {
     [lang: string]: string;
   };
-  showsIf: string; // a JS expression that evaluates to a boolean
+  showsIf?: string; // a JS expression that evaluates to a boolean
 };
 export type SurveyButtonsConfig = {
   [k in 'trip-label' | 'trip-notes' | 'place-label' | 'place-notes']:

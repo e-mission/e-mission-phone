@@ -97,7 +97,6 @@ const BluetoothScanPage = ({ ...props }: any) => {
         in_range: status,
       },
     }));
-    let { monitorResult: _, in_range: _, ...noResultDevice } = sampleBLEDevices[uuid];
     window['cordova']?.plugins?.BEMDataCollection.mockBLEObjects(
       status ? 'REGION_ENTER' : 'REGION_EXIT',
       uuid,
@@ -118,16 +117,6 @@ const BluetoothScanPage = ({ ...props }: any) => {
         rangeResult: result,
       },
     }));
-    // we don't want to exclude monitorResult and rangeResult from the values
-    // that we save because they are the current or previous result, just
-    // in a different format
-    // https://stackoverflow.com/a/34710102
-    let {
-      monitorResult: _,
-      rangeResult: _,
-      in_range: _,
-      ...noResultDevice
-    } = sampleBLEDevices[uuid];
     let parsedResult = JSON.parse(result);
     parsedResult.beacons.forEach((beacon) => {
       window['cordova']?.plugins?.BEMDataCollection.mockBLEObjects(
