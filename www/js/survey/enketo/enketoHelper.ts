@@ -8,7 +8,7 @@ import { getConfig } from '../../config/dynamicConfig';
 import { DateTime } from 'luxon';
 import { fetchUrlCached } from '../../services/commHelper';
 import { getUnifiedDataForInterval } from '../../services/unifiedDataLoader';
-import { AppConfig, EnketoSurveyConfig } from '../../types/appConfigTypes';
+import { AppConfig, EnketoSurveyConfig, SurveyButtonConfig } from '../../types/appConfigTypes';
 import {
   CompositeTrip,
   ConfirmedPlace,
@@ -313,6 +313,32 @@ export function loadPreviousResponseForSurvey(dataKey: string) {
   return getUnifiedDataForInterval(dataKey, tq, getMethod).then((responses) =>
     _getMostRecent(responses),
   );
+}
+
+/**
+ * @description Returns an array of surveys that could be prompted for one button in the UI (trip label, trip notes, place label, or place notes)
+ *  (If multiple are returned, they will show conditionally in the UI based on their `showsIf` field)
+ *  Includes backwards compats for app config fields that didn't use to exist
+ */
+export function resolveSurveyButtonConfig(
+  config: AppConfig,
+  button: 'trip-label' | 'trip-notes' | 'place-label' | 'place-notes',
+): SurveyButtonConfig[] {
+  const buttonConfig = config.survey_info.buttons?.[button];
+  // backwards compat: default to the trip confirm survey if this button isn't configured
+  if (!buttonConfig) {
+    return [
+      {
+        surveyName: 'TripConfirmSurvey',
+        'not-filled-in-label': {
+          en: 'Add Trip Details',
+          es: 'Agregar detalles del viaje',
+          lo: 'ເພີ່ມລາຍລະອຽດການເດີນທາງ',
+        },
+      },
+    ];
+  }
+  return buttonConfig instanceof Array ? buttonConfig : [buttonConfig];
 }
 
 export async function fetchSurvey(url: string) {

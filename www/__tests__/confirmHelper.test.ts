@@ -45,6 +45,16 @@ const fakeDefaultLabelOptions = {
     },
   },
 };
+const fakeInputs = {
+  MODE: [
+    { data: { label: 'walk', start_ts: 1245, end_ts: 5678 } },
+    { data: { label: 'bike', start_ts: 1245, end_ts: 5678 } },
+  ],
+  PURPOSE: [
+    { data: { label: 'home', start_ts: 1245, end_ts: 5678 } },
+    { data: { label: 'work', start_ts: 1245, end_ts: 5678 } },
+  ],
+};
 
 jest.mock('../js/services/commHelper', () => ({
   ...jest.requireActual('../js/services/commHelper'),
@@ -62,8 +72,8 @@ describe('confirmHelper', () => {
 
   it('returns base labelInputDetails for a labelUserInput which does not have mode of study', () => {
     const fakeLabelUserInput = {
-      MODE: fakeDefaultLabelOptions.MODE[1],
-      PURPOSE: fakeDefaultLabelOptions.PURPOSE[0],
+      MODE: fakeInputs.MODE[1],
+      PURPOSE: fakeInputs.PURPOSE[0],
     };
     const labelInputDetails = labelInputDetailsForTrip(
       fakeLabelUserInput,
@@ -74,8 +84,8 @@ describe('confirmHelper', () => {
 
   it('returns full labelInputDetails for a labelUserInput which has the mode of study', () => {
     const fakeLabelUserInput = {
-      MODE: fakeDefaultLabelOptions.MODE[0], // 'walk' is mode of study
-      PURPOSE: fakeDefaultLabelOptions.PURPOSE[0],
+      MODE: fakeInputs.MODE[0], // 'walk' is mode of study
+      PURPOSE: fakeInputs.PURPOSE[0],
     };
     const labelInputDetails = labelInputDetailsForTrip(
       fakeLabelUserInput,

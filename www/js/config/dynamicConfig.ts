@@ -92,11 +92,11 @@ function cacheResourcesFromConfig(config: AppConfig) {
   if (config.survey_info?.surveys) {
     Object.values(config.survey_info.surveys).forEach((survey) => {
       if (!survey?.['formPath']) throw new Error(i18next.t('config.survey-missing-formpath'));
-      fetchUrlCached(survey['formPath']);
+      fetchUrlCached(survey['formPath'], { cache: 'reload' });
     });
   }
   if (config.label_options) {
-    fetchUrlCached(config.label_options);
+    fetchUrlCached(config.label_options, { cache: 'reload' });
   }
 }
 

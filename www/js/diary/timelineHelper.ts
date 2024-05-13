@@ -17,12 +17,18 @@ import {
   BluetoothBleData,
   SectionData,
   CompositeTripLocation,
+  SectionSummary,
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { LabelOptions } from '../types/labelTypes';
-import { EnketoUserInputEntry, filterByNameAndVersion } from '../survey/enketo/enketoHelper';
+import {
+  EnketoUserInputEntry,
+  filterByNameAndVersion,
+  resolveSurveyButtonConfig,
+} from '../survey/enketo/enketoHelper';
 import { AppConfig } from '../types/appConfigTypes';
 import { Point, Feature } from 'geojson';
+import { ble_matching } from 'e-mission-common';
 
 const cachedGeojsons: Map<string, GeoJSONData> = new Map();
 
@@ -89,7 +95,8 @@ export function compositeTrips2TimelineMap(ctList: Array<any>, unpackPlaces?: bo
 }
 
 /* 'LABELS' are 1:1 - each trip or place has a single label for each label type
-  (e.g. 'MODE' and 'PURPOSE' for MULTILABEL configuration, or 'SURVEY' for ENKETO configuration) */
+  (e.g. 'MODE' and 'PURPOSE' for MULTILABEL configuration, or the name of the survey
+    for ENKETO configuration) */
 export let unprocessedLabels: { [key: string]: UserInputEntry[] } = {};
 /* 'NOTES' are 1:n - each trip or place can have any number of notes */
 export let unprocessedNotes: EnketoUserInputEntry[] = [];
@@ -113,10 +120,14 @@ function updateUnprocessedInputs(
     const labelResults = comboResults.slice(0, labelsPromises.length);
     const notesResults = comboResults.slice(labelsPromises.length).flat(2);
     // fill in the unprocessedLabels object with the labels we just read
+    unprocessedLabels = {};
     labelResults.forEach((r, i) => {
       if (appConfig.survey_info?.['trip-labels'] == 'ENKETO') {
-        const filtered = filterByNameAndVersion('TripConfirmSurvey', r, appConfig);
-        unprocessedLabels['SURVEY'] = filtered as UserInputEntry[];
+        const tripSurveys = resolveSurveyButtonConfig(appConfig, 'trip-label');
+        tripSurveys.forEach((survey) => {
+          const filtered = filterByNameAndVersion(survey.surveyName, r, appConfig);
+          unprocessedLabels[survey.surveyName] = filtered as UserInputEntry[];
+        });
       } else {
         unprocessedLabels[getLabelInputs()[i]] = r;
       }
@@ -182,7 +193,7 @@ export async function updateUnprocessedBleScans(queryRange: TimestampRange) {
     endTs: queryRange.end_ts,
   };
   const getMethod = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
-  getUnifiedDataForInterval('background/bluetooth_ble', tq, getMethod).then(
+  await getUnifiedDataForInterval('background/bluetooth_ble', tq, getMethod).then(
     (bleScans: BEMData<BluetoothBleData>[]) => {
       logDebug(`Read ${bleScans.length} BLE scans`);
       unprocessedBleScans = bleScans;
@@ -307,10 +318,25 @@ const dateTime2localdate = (currtime: DateTime, tz: string) => ({
   second: currtime.second,
 });
 
+/* Compute a section summary, which is really simple for unprocessed trips because they are
+  always assumed to be unimodal.
+/* maybe unify with eaum.get_section_summary on e-mission-server at some point */
+const getSectionSummaryForUnprocessed = (section: SectionData, modeProp): SectionSummary => {
+  const baseMode = section[modeProp] || 'UNKNOWN';
+  return {
+    count: { [baseMode]: 1 },
+    distance: { [baseMode]: section.distance },
+    duration: { [baseMode]: section.duration },
+  };
+};
+
 /**
  * @description Given an array of location points, creates an UnprocessedTrip object.
  */
-function points2UnprocessedTrip(locationPoints: Array<BEMData<FilteredLocation>>): UnprocessedTrip {
+function points2UnprocessedTrip(
+  locationPoints: Array<BEMData<FilteredLocation>>,
+  appConfig: AppConfig,
+): UnprocessedTrip {
   const startPoint = locationPoints[0];
   const endPoint = locationPoints[locationPoints.length - 1];
   const tripAndSectionId = `unprocessed_${startPoint.data.ts}_${endPoint.data.ts}`;
@@ -370,6 +396,12 @@ function points2UnprocessedTrip(locationPoints: Array<BEMData<FilteredLocation>>
     origin_key: 'UNPROCESSED_section',
     sensed_mode: 4, // MotionTypes.UNKNOWN (4)
     sensed_mode_str: 'UNKNOWN',
+    ble_sensed_mode: ble_matching.get_ble_sensed_vehicle_for_section(
+      unprocessedBleScans,
+      baseProps.start_ts,
+      baseProps.end_ts,
+      appConfig,
+    ),
     trip_id: { $oid: tripAndSectionId },
   };
 
@@ -378,6 +410,9 @@ function points2UnprocessedTrip(locationPoints: Array<BEMData<FilteredLocation>>
     ...baseProps,
     _id: { $oid: tripAndSectionId },
     additions: [],
+    ble_sensed_summary: getSectionSummaryForUnprocessed(singleSection, 'ble_sensed_mode'),
+    cleaned_section_summary: getSectionSummaryForUnprocessed(singleSection, 'sensed_mode_str'),
+    inferred_section_summary: getSectionSummaryForUnprocessed(singleSection, 'sensed_mode_str'),
     confidence_threshold: 0,
     expectation: { to_label: true },
     inferred_labels: [],
@@ -396,7 +431,10 @@ const tsEntrySort = (e1: BEMData<FilteredLocation>, e2: BEMData<FilteredLocation
  * @description Given an array of 2 transitions, queries the location data during that time and promises an UnprocessedTrip object.
  * @param trip An array of transitions representing one trip; i.e. [start transition, end transition]
  */
-function tripTransitions2UnprocessedTrip(trip: Array<any>): Promise<UnprocessedTrip | undefined> {
+function tripTransitions2UnprocessedTrip(
+  trip: Array<any>,
+  appConfig: AppConfig,
+): Promise<UnprocessedTrip | undefined> {
   const tripStartTransition = trip[0];
   const tripEndTransition = trip[1];
   const tq = {
@@ -438,7 +476,7 @@ function tripTransitions2UnprocessedTrip(trip: Array<any>): Promise<UnprocessedT
         logDebug(`transitions: start = ${JSON.stringify(tripStartTransition.data)}; 
           end = ${JSON.stringify(tripEndTransition.data)}`);
       }
-      return points2UnprocessedTrip(filteredLocationList);
+      return points2UnprocessedTrip(filteredLocationList, appConfig);
     },
   );
 }
@@ -552,6 +590,7 @@ function linkTrips(trip1, trip2) {
 export function readUnprocessedTrips(
   startTs: number,
   endTs: number,
+  appConfig: AppConfig,
   lastProcessedTrip?: CompositeTrip,
 ) {
   const tq = { key: 'write_ts', startTs, endTs };
@@ -569,7 +608,9 @@ export function readUnprocessedTrips(
         tripsList.forEach((trip) => {
           logDebug(JSON.stringify(trip, null, 2));
         });
-        const tripFillPromises = tripsList.map(tripTransitions2UnprocessedTrip);
+        const tripFillPromises = tripsList.map((t) =>
+          tripTransitions2UnprocessedTrip(t, appConfig),
+        );
         return Promise.all(tripFillPromises).then(
           (rawTripObjs: (UnprocessedTrip | undefined)[]) => {
             // Now we need to link up the trips. linking unprocessed trips
