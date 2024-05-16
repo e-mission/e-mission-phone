@@ -58,18 +58,9 @@ const Main = () => {
   }, [appConfig, t]);
 
   useEffect(() => {
-    const { setShouldUpdateTimeline, lastUpdateMetricDateTime, setLastUpdateMetricDateTime } = timelineContext;
+    const { setShouldUpdateTimeline } = timelineContext;
     // update TimelineScrollList component only when the active tab is 'label' to fix leaflet map issue
     setShouldUpdateTimeline(!index);
-
-    // update it when the last updated data is more than 24 hours ago to get new survey data from server
-    // purpose : to prevent too much API call 
-    if(index === 1) {
-      var oneDayAgo = new Date().getTime() - (24 * 60 * 60 * 1000)
-      if (!lastUpdateMetricDateTime || lastUpdateMetricDateTime < oneDayAgo) {
-        setLastUpdateMetricDateTime(new Date().getTime());
-      }
-    } 
   }, [index]);
 
   return (

@@ -14,7 +14,7 @@ import Carousel from '../components/Carousel';
 import DailyActiveMinutesCard from './DailyActiveMinutesCard';
 import CarbonTextCard from './CarbonTextCard';
 import ActiveMinutesTableCard from './ActiveMinutesTableCard';
-import { getAggregateData, getMetrics, getSurveyMetric } from '../services/commHelper';
+import { getAggregateData, getMetrics } from '../services/commHelper';
 import { displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
 import { ServerConnConfig } from '../types/appConfigTypes';
@@ -32,24 +32,101 @@ export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as co
 const DEFAULT_SUMMARY_LIST = ['distance', 'count', 'duration'] as const;
 
 export type SurveyObject = {
-  'answered': number,
-  'unanswered': number,
-  'mismatched': number,
-}
+  answered: number;
+  unanswered: number;
+  mismatched: number;
+};
 
 export type SurveyMetric = {
-  'me' : {
-    'overview' : SurveyObject,
-    'rank' : number,
-    'details': {
-      [key: string]: SurveyObject,
-    }  
+  me: {
+    overview: SurveyObject;
+    rank: number;
+    details: {
+      [key: string]: SurveyObject;
+    };
+  };
+  others: {
+    overview: SurveyObject;
+    leaderboard: SurveyObject[];
+  };
+};
+
+const DUMMY_SURVEY_METRIC: SurveyMetric = {
+  me: {
+    overview: {
+      answered: 5,
+      unanswered: 5,
+      mismatched: 0,
+    },
+    rank: 5,
+    details: {
+      ev_roaming_trip: {
+        answered: 10,
+        unanswered: 5,
+        mismatched: 0,
+      },
+      ev_return_trip: {
+        answered: 10,
+        unanswered: 10,
+        mismatched: 0,
+      },
+      gas_car_trip: {
+        answered: 5,
+        unanswered: 10,
+        mismatched: 0,
+      },
+    },
   },
-  'others' : {
-    'overview' : SurveyObject,
-    'leaderboard': SurveyObject[],
-  }
-}
+  others: {
+    overview: {
+      answered: 30,
+      unanswered: 60,
+      mismatched: 0,
+    },
+    leaderboard: [
+      {
+        answered: 10,
+        unanswered: 0,
+        mismatched: 0,
+      },
+      {
+        answered: 9,
+        unanswered: 1,
+        mismatched: 0,
+      },
+      {
+        answered: 8,
+        unanswered: 2,
+        mismatched: 0,
+      },
+      {
+        answered: 7,
+        unanswered: 3,
+        mismatched: 0,
+      },
+      {
+        answered: 6,
+        unanswered: 4,
+        mismatched: 0,
+      },
+      {
+        answered: 4,
+        unanswered: 6,
+        mismatched: 0,
+      },
+      {
+        answered: 2,
+        unanswered: 8,
+        mismatched: 0,
+      },
+      {
+        answered: 1,
+        unanswered: 9,
+        mismatched: 0,
+      },
+    ],
+  },
+};
 
 async function fetchMetricsFromServer(
   type: 'user' | 'aggregate',
@@ -83,12 +160,10 @@ const MetricsTab = () => {
     timelineIsLoading,
     refreshTimeline,
     loadMoreDays,
-    lastUpdateMetricDateTime
+    lastUpdateMetricDateTime,
   } = useContext(TimelineContext);
 
   const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
-  const [surveyMetric, setSurveyMetric] = useState<null | SurveyMetric>(null);
-
   // user metrics are computed on the phone from the timeline data
   const userMetrics = useMemo(() => {
     console.time('MetricsTab: generate_summaries');
@@ -172,18 +247,6 @@ const MetricsTab = () => {
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = windowWidth * 0.88;
 
-  useEffect(() => {
-    async function getSurveyMetricData() {
-      const res = await getSurveyMetric();
-      setSurveyMetric(res as SurveyMetric);
-    }
-    
-    // 'lastUpdateMetricDate' is used to get new survey data when the last data was 24 hours ago
-    if(lastUpdateMetricDateTime && sectionsToShow.includes('engagement')) {
-      getSurveyMetricData();
-    }
-  }, [lastUpdateMetricDateTime])
-
   return (
     <>
       <NavBar isLoading={Boolean(timelineIsLoading)}>
@@ -249,10 +312,10 @@ const MetricsTab = () => {
               unitFormatFn={getFormattedSpeed} /> */}
           </Carousel>
         )}
-        {surveyMetric && (
+        {DUMMY_SURVEY_METRIC && (
           <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-            <SurveyLeaderboardCard surveyMetric={surveyMetric} />
-            <SurveyTripCategoriesCard surveyTripCategoryMetric={surveyMetric.me?.details} />
+            <SurveyLeaderboardCard surveyMetric={DUMMY_SURVEY_METRIC} />
+            <SurveyTripCategoriesCard surveyTripCategoryMetric={DUMMY_SURVEY_METRIC.me?.details} />
           </Carousel>
         )}
       </ScrollView>
