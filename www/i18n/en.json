@@ -226,6 +226,7 @@
     "surveys": "Surveys",
     "leaderboard": "Leaderboard",
     "survey-response-rate": "Survey Response Rate (%)",
+    "survey-leaderboard-desc": "This data has been accumulated since ",
     "comparison": "Comparison",
     "you": "You",
     "others": "Others in group",

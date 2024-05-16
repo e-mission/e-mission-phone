@@ -1,13 +1,21 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Icon } from 'react-native-paper';
+import { Icon, Card } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useAppTheme } from '../appTheme';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { SurveyComparison } from './SurveyLeaderboardCard';
-
+import { cardStyles, SurveyMetric } from './MetricsTab';
 ChartJS.register(ArcElement, Tooltip, Legend);
+
+type Props = {
+  surveyMetric: SurveyMetric;
+};
+
+export type SurveyComparison = {
+  me: number;
+  others: number;
+};
 
 export const LabelPanel = ({ first, second }) => {
   const { colors } = useAppTheme();
@@ -26,13 +34,25 @@ export const LabelPanel = ({ first, second }) => {
   );
 };
 
-type Props = {
-  surveyComparison : SurveyComparison
-}
-
-const SurveyDoughnutCharts = ({surveyComparison} : Props) => {
+const SurveyComparisonCard = ({ surveyMetric }: Props) => {
   const { colors } = useAppTheme();
   const { t } = useTranslation();
+
+  const mySurveyMetric = surveyMetric.me.overview;
+  const othersSurveyMetric = surveyMetric.others.overview;
+  const mySurveyRate = Math.round(
+    (mySurveyMetric.answered / (mySurveyMetric.answered + mySurveyMetric.unanswered)) * 100,
+  );
+
+  const surveyComparison: SurveyComparison = {
+    me: mySurveyRate,
+    others: Math.round(
+      (othersSurveyMetric.answered /
+        (othersSurveyMetric.answered + othersSurveyMetric.unanswered)) *
+        100,
+    ),
+  };
+
   const renderDoughnutChart = (rate, chartColor, myResponse) => {
     const data = {
       datasets: [
@@ -56,8 +76,8 @@ const SurveyDoughnutCharts = ({surveyComparison} : Props) => {
         </View>
         <Doughnut
           data={data}
-          width={150}
-          height={150}
+          width={140}
+          height={140}
           options={{
             cutout: 50,
             plugins: {
@@ -75,14 +95,26 @@ const SurveyDoughnutCharts = ({surveyComparison} : Props) => {
   };
 
   return (
-    <View>
-      <Text style={styles.chartTitle}>{t('main-metrics.survey-response-rate')}</Text>
-      <View style={styles.chartWrapper}>
-        {renderDoughnutChart(surveyComparison.me, colors.navy, true)}
-        {renderDoughnutChart(surveyComparison.others, colors.orange, false)}
-      </View>
-      <LabelPanel first={t('main-metrics.you')} second={t('main-metrics.others')} />
-    </View>
+    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+      <Card.Title
+        title={t('main-metrics.surveys')}
+        titleVariant="titleLarge"
+        titleStyle={cardStyles.titleText(colors)}
+        subtitle={t('main-metrics.comparison')}
+        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
+        style={cardStyles.title(colors)}
+      />
+      <Card.Content style={cardStyles.content}>
+        <View>
+          <Text style={styles.chartTitle}>{t('main-metrics.survey-response-rate')}</Text>
+          <View style={styles.chartWrapper}>
+            {renderDoughnutChart(surveyComparison.me, colors.navy, true)}
+            {renderDoughnutChart(surveyComparison.others, colors.orange, false)}
+          </View>
+          <LabelPanel first={t('main-metrics.you')} second={t('main-metrics.others')} />
+        </View>
+      </Card.Content>
+    </Card>
   );
 };
 
@@ -91,18 +123,23 @@ const styles: any = {
     alignSelf: 'center',
     fontWeight: 'bold',
     fontSize: 14,
-    marginBottom: 20,
+    marginBottom: 10,
+  },
+  statusTextWrapper: {
+    alignSelf: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    fontSize: 16,
   },
   chartWrapper: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+    justifyContent: 'space-around',
   },
   textWrapper: {
     position: 'absolute',
-    width: 150,
-    height: 150,
+    width: 140,
+    height: 140,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -111,6 +148,7 @@ const styles: any = {
     alignSelf: 'center',
     display: 'flex',
     gap: 10,
+    marginTop: 10,
   },
   labelItem: {
     display: 'flex',
@@ -120,4 +158,4 @@ const styles: any = {
   },
 };
 
-export default SurveyDoughnutCharts;
+export default SurveyComparisonCard;

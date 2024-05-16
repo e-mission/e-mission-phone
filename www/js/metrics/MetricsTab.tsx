@@ -24,6 +24,7 @@ import { isoDateRangeToTsRange, isoDatesDifference } from '../diary/timelineHelp
 import { metrics_summaries } from 'e-mission-common';
 import SurveyLeaderboardCard from './SurveyLeaderboardCard';
 import SurveyTripCategoriesCard from './SurveyTripCategoriesCard';
+import SurveyComparisonCard from './SurveyComparisonCard';
 
 // 2 weeks of data is needed in order to compare "past week" vs "previous week"
 const N_DAYS_TO_LOAD = 14; // 2 weeks
@@ -160,7 +161,6 @@ const MetricsTab = () => {
     timelineIsLoading,
     refreshTimeline,
     loadMoreDays,
-    lastUpdateMetricDateTime,
   } = useContext(TimelineContext);
 
   const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
@@ -246,6 +246,7 @@ const MetricsTab = () => {
     appConfig?.metrics?.phone_dashboard_ui?.summary_options?.metrics_list ?? DEFAULT_SUMMARY_LIST;
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = windowWidth * 0.88;
+  const studyStartDate = `${appConfig?.intro.start_month} / ${appConfig?.intro.start_year}`;
 
   return (
     <>
@@ -312,10 +313,18 @@ const MetricsTab = () => {
               unitFormatFn={getFormattedSpeed} /> */}
           </Carousel>
         )}
-        {DUMMY_SURVEY_METRIC && (
+        {sectionsToShow.includes('surveys') && (
           <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-            <SurveyLeaderboardCard surveyMetric={DUMMY_SURVEY_METRIC} />
+            <SurveyComparisonCard surveyMetric={DUMMY_SURVEY_METRIC} />
             <SurveyTripCategoriesCard surveyTripCategoryMetric={DUMMY_SURVEY_METRIC.me?.details} />
+          </Carousel>
+        )}
+        {sectionsToShow.includes('engagement') && (
+          <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
+            <SurveyLeaderboardCard
+              surveyMetric={DUMMY_SURVEY_METRIC}
+              studyStartDate={studyStartDate}
+            />
           </Carousel>
         )}
       </ScrollView>

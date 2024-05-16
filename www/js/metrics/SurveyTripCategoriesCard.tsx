@@ -4,32 +4,32 @@ import { cardStyles, SurveyObject } from './MetricsTab';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 import { useAppTheme } from '../appTheme';
-import { LabelPanel } from './SurveyDoughnutCharts';
+import { LabelPanel } from './SurveyComparisonCard';
 
 type SurveyTripRecord = {
-  label: string,
-  x: string,
-  y: number
-}
+  label: string;
+  x: string;
+  y: number;
+};
 
 type Props = {
-  surveyTripCategoryMetric : {[key: string]: SurveyObject}
-}
-const SurveyTripCategoriesCard = ( {surveyTripCategoryMetric}: Props ) => {
+  surveyTripCategoryMetric: { [key: string]: SurveyObject };
+};
+const SurveyTripCategoriesCard = ({ surveyTripCategoryMetric }: Props) => {
   const { colors } = useAppTheme();
   const { t } = useTranslation();
   const records: SurveyTripRecord[] = [];
 
-  for(const category in surveyTripCategoryMetric) {
+  for (const category in surveyTripCategoryMetric) {
     const metricByCategory = surveyTripCategoryMetric[category];
-    for(const key in metricByCategory) {
+    for (const key in metricByCategory) {
       // we don't consider "mismatched" survey result for now
-      if(key === "mismatched") continue;
+      if (key === 'mismatched') continue;
       records.push({
         label: key === 'answered' ? 'Response' : 'No Response',
         x: category,
-        y: metricByCategory[key]
-      })
+        y: metricByCategory[key],
+      });
     }
   }
 
