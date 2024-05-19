@@ -407,11 +407,7 @@ const usePermissionStatus = () => {
       refresh: checkBatteryOpt,
     };
     let tempChecks = checkList;
-    if (appConfig.tracking?.bluetooth_only) {
-      tempChecks.push(ignoreBatteryOptCheck);
-    } else {
-      tempChecks.push(unusedAppsUnrestrictedCheck, ignoreBatteryOptCheck);
-    }
+    tempChecks.push(unusedAppsUnrestrictedCheck, ignoreBatteryOptCheck);
     setCheckList(tempChecks);
   }
 
