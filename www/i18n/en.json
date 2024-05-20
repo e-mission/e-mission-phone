@@ -115,6 +115,7 @@
     "trips": "trips",
     "hours": "hours",
     "minutes": "minutes",
+    "responses": "responses",
     "custom": "Custom"
   },
 
@@ -192,8 +193,9 @@
     "chart": "Chart",
     "change-data": "Change dates:",
     "distance": "Distance",
-    "trips": "Trips",
+    "count": "Trip Count",
     "duration": "Duration",
+    "response_count": "Response Count",
     "fav-mode": "My Favorite Mode",
     "speed": "My Speed",
     "footprint": "My Footprint",
