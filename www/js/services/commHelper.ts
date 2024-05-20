@@ -136,8 +136,13 @@ export function getMetrics(timeType: 'timestamp' | 'local_date', metricsQuery) {
   });
 }
 
-export function getAggregateData(path: string, query, serverConnConfig: ServerConnConfig) {
+export function getAggregateData(path: string, query, serverConnConfig?: ServerConnConfig) {
   return new Promise((rs, rj) => {
+    // when app config does not have "server", localhost is used and no user authentication is required
+    serverConnConfig ||= {
+      connectUrl: 'http://localhost:8080' as any,
+      aggregate_call_auth: 'no_auth',
+    };
     const fullUrl = `${serverConnConfig.connectUrl}/${path}`;
     query['aggregate'] = true;
 
