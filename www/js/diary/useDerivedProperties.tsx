@@ -8,6 +8,7 @@ import {
   getLocalTimeString,
   getDetectedModes,
   isMultiDay,
+  primarySectionForTrip,
 } from './diaryHelper';
 import TimelineContext from '../TimelineContext';
 
@@ -24,6 +25,7 @@ const useDerivedProperties = (tlEntry) => {
 
     return {
       confirmedMode: confirmedModeFor(tlEntry),
+      primary_ble_sensed_mode: primarySectionForTrip(tlEntry)?.ble_sensed_mode?.baseMode,
       displayDate: getFormattedDate(beginFmt, endFmt),
       displayStartTime: getLocalTimeString(beginDt),
       displayEndTime: getLocalTimeString(endDt),
