@@ -7,7 +7,7 @@ import {
   formatDateRangeOfDays,
   secondsToMinutes,
   segmentDaysByWeeks,
-  valueForModeOnDay,
+  valueForFieldOnDay,
 } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import { ACTIVE_MODES } from './WeeklyActiveMinutesCard';
@@ -30,7 +30,7 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
     const totals = {};
     activeModes.forEach((mode) => {
       const sum = userMetrics.duration.reduce(
-        (acc, day) => acc + (valueForModeOnDay(day, mode) || 0),
+        (acc, day) => acc + (valueForFieldOnDay(day, 'mode_confirm', mode) || 0),
         0,
       );
       totals[mode] = secondsToMinutes(sum);
@@ -46,7 +46,10 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
       .map((week) => {
         const totals = {};
         activeModes.forEach((mode) => {
-          const sum = week.reduce((acc, day) => acc + (valueForModeOnDay(day, mode) || 0), 0);
+          const sum = week.reduce(
+            (acc, day) => acc + (valueForFieldOnDay(day, 'mode_confirm', mode) || 0),
+            0,
+          );
           totals[mode] = secondsToMinutes(sum);
         });
         totals['period'] = formatDateRangeOfDays(week);
@@ -60,7 +63,7 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
       .map((day) => {
         const totals = {};
         activeModes.forEach((mode) => {
-          const sum = valueForModeOnDay(day, mode) || 0;
+          const sum = valueForFieldOnDay(day, 'mode_confirm', mode) || 0;
           totals[mode] = secondsToMinutes(sum);
         });
         totals['period'] = formatDate(day);

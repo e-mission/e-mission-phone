@@ -3,27 +3,39 @@ import { formatForDisplay } from '../config/useImperialConfig';
 import { DayOfMetricData } from './metricsTypes';
 import { logDebug } from '../plugin/logger';
 import { isoDateWithOffset, isoDatesDifference } from '../diary/timelineHelper';
+import { groupingFields } from '../types/appConfigTypes';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];
   metricDataDays.forEach((e) => {
     Object.keys(e).forEach((k) => {
-      if (k.startsWith('label_') || k.startsWith('mode_')) {
-        let i = k.indexOf('_');
-        const label = k.substring(i + 1); // remove prefix leaving just the mode label
-        if (!uniqueLabels.includes(label)) uniqueLabels.push(label);
+      const trimmed = trimGroupingPrefix(k);
+      if (trimmed && !uniqueLabels.includes(trimmed)) {
+        uniqueLabels.push(trimmed);
       }
     });
   });
   return uniqueLabels;
 }
 
+/**
+ * @description Trims the "grouping field" prefix from a metrics key. Grouping fields are defined in appConfigTypes.ts
+ * @example removeGroupingPrefix('mode_purpose_access_recreation') => 'access_recreation'
+ * @example removeGroupingPrefix('primary_ble_sensed_mode_CAR') => 'CAR'
+ * @returns The key without the prefix (or undefined if the key didn't start with a grouping field)
+ */
+export const trimGroupingPrefix = (label: string) => {
+  for (let field of groupingFields) {
+    if (label.startsWith(field)) {
+      return label.substring(field.length + 1);
+    }
+  }
+};
+
 export const getLabelsForDay = (metricDataDay: DayOfMetricData) =>
   Object.keys(metricDataDay).reduce((acc, k) => {
-    if (k.startsWith('label_') || k.startsWith('mode_')) {
-      let i = k.indexOf('_');
-      acc.push(k.substring(i + 1)); // remove prefix leaving just the mode label
-    }
+    const trimmed = trimGroupingPrefix(k);
+    if (trimmed) acc.push(trimmed);
     return acc;
   }, [] as string[]);
 
@@ -127,15 +139,13 @@ export function parseDataFromMetrics(metrics, population) {
           ]);
         }
       }
-      //this section handles user lables, assuming 'label_' prefix
-      if (field.startsWith('label_') || field.startsWith('mode_')) {
-        let i = field.indexOf('_');
-        let actualMode = field.substring(i + 1); // remove prefix
-        logDebug('Mapped field ' + field + ' to mode ' + actualMode);
-        if (!(actualMode in mode_bins)) {
-          mode_bins[actualMode] = [];
+      const trimmedField = trimGroupingPrefix(field);
+      if (trimmedField) {
+        logDebug('Mapped field ' + field + ' to mode ' + trimmedField);
+        if (!(trimmedField in mode_bins)) {
+          mode_bins[trimmedField] = [];
         }
-        mode_bins[actualMode].push([
+        mode_bins[trimmedField].push([
           metric.ts,
           Math.round(metricToValue(population, metric, field)),
           DateTime.fromISO(metric.fmt_time).toISO() as string,
@@ -157,8 +167,8 @@ export const dateForDayOfMetricData = (day: DayOfMetricData) =>
 export const tsForDayOfMetricData = (day: DayOfMetricData) =>
   DateTime.fromISO(dateForDayOfMetricData(day)).toSeconds();
 
-export const valueForModeOnDay = (day: DayOfMetricData, key: string) =>
-  day[`mode_${key}`] || day[`label_${key}`];
+export const valueForFieldOnDay = (day: DayOfMetricData, field: string, key: string) =>
+  day[`${field}_${key}`] || day[`${field}_${key}`];
 
 export type MetricsSummary = { key: string; values: number };
 export function generateSummaryFromData(modeMap, metric) {

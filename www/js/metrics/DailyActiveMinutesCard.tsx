@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
 import LineChart from '../components/LineChart';
 import { getBaseModeByText } from '../diary/diaryHelper';
-import { tsForDayOfMetricData, valueForModeOnDay } from './metricsHelper';
+import { tsForDayOfMetricData, valueForFieldOnDay } from './metricsHelper';
 import useAppConfig from '../useAppConfig';
 import { ACTIVE_MODES } from './WeeklyActiveMinutesCard';
 
@@ -25,7 +25,7 @@ const DailyActiveMinutesCard = ({ userMetrics }: Props) => {
     const recentDays = userMetrics?.duration?.slice(-14);
     recentDays?.forEach((day) => {
       activeModes.forEach((mode) => {
-        const activeSeconds = valueForModeOnDay(day, mode);
+        const activeSeconds = valueForFieldOnDay(day, 'mode_confirm', mode);
         records.push({
           label: labelKeyToRichMode(mode),
           x: tsForDayOfMetricData(day) * 1000, // vertical chart, milliseconds on X axis

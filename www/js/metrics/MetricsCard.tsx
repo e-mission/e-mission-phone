@@ -9,7 +9,7 @@ import {
   getLabelsForDay,
   tsForDayOfMetricData,
   getUniqueLabelsForDays,
-  valueForModeOnDay,
+  valueForFieldOnDay,
 } from './metricsHelper';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { cardStyles } from './MetricsTab';
@@ -48,7 +48,7 @@ const MetricsCard = ({
     metricDataDays.forEach((day) => {
       const labels = getLabelsForDay(day);
       labels.forEach((label) => {
-        const rawVal = valueForModeOnDay(day, label);
+        const rawVal = valueForFieldOnDay(day, 'mode_confirm', label);
         if (rawVal) {
           records.push({
             label: labelKeyToRichMode(label),
@@ -83,7 +83,7 @@ const MetricsCard = ({
     const vals = {};
     uniqueLabels.forEach((label) => {
       const sum = metricDataDays.reduce(
-        (acc, day) => acc + (valueForModeOnDay(day, label) || 0),
+        (acc, day) => acc + (valueForFieldOnDay(day, 'mode_confirm', label) || 0),
         0,
       );
       vals[label] = unitFormatFn ? unitFormatFn(sum) : sum;
