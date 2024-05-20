@@ -1,7 +1,5 @@
 import { LocalDt } from '../types/serverData';
-import { METRIC_LIST } from './MetricsTab';
-
-type MetricName = (typeof METRIC_LIST)[number];
+import { MetricName } from '../types/appConfigTypes';
 
 type LabelProps = { [k in `label_${string}`]?: number }; // label_<mode>, where <mode> could be anything
 export type DayOfServerMetricData = LabelProps & {

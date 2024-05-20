@@ -17,7 +17,7 @@ import ActiveMinutesTableCard from './ActiveMinutesTableCard';
 import { getAggregateData, getMetrics } from '../services/commHelper';
 import { displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
-import { ServerConnConfig } from '../types/appConfigTypes';
+import { AppConfig, MetricsList, MetricsUiSection } from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext from '../TimelineContext';
 import { isoDateRangeToTsRange, isoDatesDifference } from '../diary/timelineHelper';
@@ -28,9 +28,17 @@ import SurveyComparisonCard from './SurveyComparisonCard';
 
 // 2 weeks of data is needed in order to compare "past week" vs "previous week"
 const N_DAYS_TO_LOAD = 14; // 2 weeks
-const DEFAULT_SECTIONS_TO_SHOW = ['footprint', 'active_travel', 'summary'] as const;
-export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
-const DEFAULT_SUMMARY_LIST = ['distance', 'count', 'duration'] as const;
+const DEFAULT_SECTIONS_TO_SHOW: MetricsUiSection[] = [
+  'footprint',
+  'active_travel',
+  'summary',
+] as const;
+export const DEFAULT_METRICS_LIST: MetricsList = {
+  distance: ['mode_confirm'],
+  duration: ['mode_confirm'],
+  count: ['mode_confirm'],
+  response_count: ['mode_confirm'],
+};
 
 export type SurveyObject = {
   answered: number;
@@ -132,19 +140,21 @@ const DUMMY_SURVEY_METRIC: SurveyMetric = {
 async function fetchMetricsFromServer(
   type: 'user' | 'aggregate',
   dateRange: [string, string],
-  serverConnConfig: ServerConnConfig,
+  metricsList: MetricsList,
+  appConfig: AppConfig,
 ) {
   const [startTs, endTs] = isoDateRangeToTsRange(dateRange);
   logDebug('MetricsTab: fetching metrics from server for ts range ' + startTs + ' to ' + endTs);
   const query = {
     freq: 'D',
-    start_time: startTs,
-    end_time: endTs,
-    metric_list: METRIC_LIST,
+    start_time: dateRange[0],
+    end_time: dateRange[1],
+    metric_list: metricsList,
     is_return_aggregate: type == 'aggregate',
+    app_config: { survey_info: appConfig.survey_info },
   };
   if (type == 'user') return getMetrics('timestamp', query);
-  return getAggregateData('result/metrics/timestamp', query, serverConnConfig);
+  return getAggregateData('result/metrics/yyyy_mm_dd', query, appConfig.server);
 }
 
 const MetricsTab = () => {
@@ -163,26 +173,25 @@ const MetricsTab = () => {
     loadMoreDays,
   } = useContext(TimelineContext);
 
+  const metricsList = appConfig?.metrics?.phone_dashboard_ui?.metrics_list ?? DEFAULT_METRICS_LIST;
+
   const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
   // user metrics are computed on the phone from the timeline data
   const userMetrics = useMemo(() => {
-    console.time('MetricsTab: generate_summaries');
     if (!timelineMap) return;
-    console.time('MetricsTab: timelineMap.values()');
     const timelineValues = [...timelineMap.values()];
-    console.timeEnd('MetricsTab: timelineMap.values()');
     const result = metrics_summaries.generate_summaries(
-      METRIC_LIST,
+      { ...metricsList },
       timelineValues,
       timelineLabelMap,
     ) as MetricsData;
-    console.timeEnd('MetricsTab: generate_summaries');
+    logDebug('MetricsTab: computed userMetrics' + JSON.stringify(result));
     return result;
   }, [timelineMap]);
 
   // at least N_DAYS_TO_LOAD of timeline data should be loaded for the user metrics
   useEffect(() => {
-    if (!appConfig?.server) return;
+    if (!appConfig) return;
     const dateRangeDays = isoDatesDifference(...dateRange);
 
     // this tab uses the last N_DAYS_TO_LOAD of data; if we need more, we should fetch it
@@ -196,10 +205,11 @@ const MetricsTab = () => {
     } else {
       logDebug(`MetricsTab: date range >= ${N_DAYS_TO_LOAD} days, not loading more days`);
     }
-  }, [dateRange, timelineIsLoading, appConfig?.server]);
+  }, [dateRange, timelineIsLoading, appConfig]);
 
   // aggregate metrics fetched from the server whenever the date range is set
   useEffect(() => {
+    if (!appConfig) return;
     logDebug('MetricsTab: dateRange updated to ' + JSON.stringify(dateRange));
     const dateRangeDays = isoDatesDifference(...dateRange);
     if (dateRangeDays < N_DAYS_TO_LOAD) {
@@ -207,13 +217,14 @@ const MetricsTab = () => {
         `MetricsTab: date range < ${N_DAYS_TO_LOAD} days, not loading aggregate metrics yet`,
       );
     } else {
-      loadMetricsForPopulation('aggregate', dateRange);
+      loadMetricsForPopulation('aggregate', dateRange, appConfig);
     }
-  }, [dateRange]);
+  }, [dateRange, appConfig]);
 
   async function loadMetricsForPopulation(
     population: 'user' | 'aggregate',
     dateRange: [string, string],
+    appConfig: AppConfig,
   ) {
     try {
       logDebug(`MetricsTab: fetching metrics for population ${population}'
@@ -221,20 +232,22 @@ const MetricsTab = () => {
       const serverResponse: any = await fetchMetricsFromServer(
         population,
         dateRange,
-        appConfig.server,
+        metricsList,
+        appConfig,
       );
       logDebug('MetricsTab: received metrics: ' + JSON.stringify(serverResponse));
-      const metrics = {};
-      const dataKey = population == 'user' ? 'user_metrics' : 'aggregate_metrics';
-      METRIC_LIST.forEach((metricName, i) => {
-        metrics[metricName] = serverResponse[dataKey][i];
-      });
-      logDebug('MetricsTab: parsed metrics: ' + JSON.stringify(metrics));
-      if (population == 'user') {
-        // setUserMetrics(metrics as MetricsData);
-      } else {
-        setAggMetrics(metrics as MetricsData);
-      }
+      // const metrics = {};
+      // const dataKey = population == 'user' ? 'user_metrics' : 'aggregate_metrics';
+      // METRIC_LIST.forEach((metricName, i) => {
+      //   metrics[metricName] = serverResponse[dataKey][i];
+      // });
+      // logDebug('MetricsTab: parsed metrics: ' + JSON.stringify(metrics));
+      // if (population == 'user') {
+      //   // setUserMetrics(metrics as MetricsData);
+      // } else {
+      console.debug('MetricsTab: aggMetrics', serverResponse);
+      setAggMetrics(serverResponse as MetricsData);
+      // }
     } catch (e) {
       logWarn(e + t('errors.while-loading-metrics')); // replace with displayErr
     }
@@ -242,8 +255,6 @@ const MetricsTab = () => {
 
   const sectionsToShow =
     appConfig?.metrics?.phone_dashboard_ui?.sections || DEFAULT_SECTIONS_TO_SHOW;
-  const summaryList =
-    appConfig?.metrics?.phone_dashboard_ui?.summary_options?.metrics_list ?? DEFAULT_SUMMARY_LIST;
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = windowWidth * 0.88;
   const studyStartDate = `${appConfig?.intro.start_month} / ${appConfig?.intro.start_year}`;
@@ -279,7 +290,7 @@ const MetricsTab = () => {
         )}
         {sectionsToShow.includes('summary') && (
           <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-            {summaryList.includes('distance') && (
+            {(userMetrics?.distance || aggMetrics?.distance) && (
               <MetricsCard
                 cardTitle={t('main-metrics.distance')}
                 userMetricsDays={userMetrics?.distance}
@@ -288,7 +299,7 @@ const MetricsTab = () => {
                 unitFormatFn={getFormattedDistance}
               />
             )}
-            {summaryList.includes('count') && (
+            {(userMetrics?.count || aggMetrics?.count) && (
               <MetricsCard
                 cardTitle={t('main-metrics.trips')}
                 userMetricsDays={userMetrics?.count}
@@ -297,13 +308,22 @@ const MetricsTab = () => {
                 unitFormatFn={formatForDisplay}
               />
             )}
-            {summaryList.includes('duration') && (
+            {(userMetrics?.duration || aggMetrics?.duration) && (
               <MetricsCard
                 cardTitle={t('main-metrics.duration')}
                 userMetricsDays={userMetrics?.duration}
                 aggMetricsDays={aggMetrics?.duration}
                 axisUnits={t('metrics.hours')}
                 unitFormatFn={secondsToHours}
+              />
+            )}
+            {(userMetrics?.response_count || aggMetrics?.response_count) && (
+              <MetricsCard
+                cardTitle={t('main-metrics.responses')}
+                userMetricsDays={userMetrics?.response_count}
+                aggMetricsDays={aggMetrics?.response_count}
+                axisUnits={t('metrics.responses')}
+                unitFormatFn={formatForDisplay}
               />
             )}
             {/* <MetricsCard cardTitle={t('main-metrics.mean-speed')}
