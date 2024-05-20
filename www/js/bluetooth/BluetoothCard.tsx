@@ -20,7 +20,7 @@ const BluetoothCard = ({ device, isClassic, isScanningBLE }: Props) => {
 
   let bgColor = colors.onPrimary; // 'rgba(225,225,225,1)'
   if (isScanningBLE) {
-    bgColor = device.in_range ? `rgba(200,250,200,1)` : `rgba(250,200,200,1)`;
+    bgColor = device.in_range ? `rgba(201,250,200,1)` : `rgba(250,200,200,1)`;
   }
 
   async function fakeMonitorCallback(state: String) {
