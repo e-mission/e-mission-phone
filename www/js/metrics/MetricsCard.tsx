@@ -16,8 +16,11 @@ import { cardStyles } from './MetricsTab';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
 import { getBaseModeByKey, getBaseModeByText, modeColors } from '../diary/diaryHelper';
 import { useTranslation } from 'react-i18next';
+import { GroupingField } from '../types/appConfigTypes';
 
 type Props = {
+  metricName: string;
+  groupingFields: GroupingField[];
   cardTitle: string;
   userMetricsDays?: DayOfMetricData[];
   aggMetricsDays?: DayOfMetricData[];
@@ -25,6 +28,8 @@ type Props = {
   unitFormatFn?: (val: number) => string | number;
 };
 const MetricsCard = ({
+  metricName,
+  groupingFields,
   cardTitle,
   userMetricsDays,
   aggMetricsDays,
@@ -48,7 +53,7 @@ const MetricsCard = ({
     metricDataDays.forEach((day) => {
       const labels = getLabelsForDay(day);
       labels.forEach((label) => {
-        const rawVal = valueForFieldOnDay(day, 'mode_confirm', label);
+        const rawVal = valueForFieldOnDay(day, groupingFields[0], label);
         if (rawVal) {
           records.push({
             label: labelKeyToRichMode(label),
@@ -82,10 +87,20 @@ const MetricsCard = ({
     // for each label, sum up cumulative values across all days
     const vals = {};
     uniqueLabels.forEach((label) => {
-      const sum = metricDataDays.reduce(
-        (acc, day) => acc + (valueForFieldOnDay(day, 'mode_confirm', label) || 0),
-        0,
-      );
+      const sum: any = metricDataDays.reduce((acc, day) => {
+        const val = valueForFieldOnDay(day, groupingFields[0], label);
+        // if val is object, add its values to the accumulator's values
+        if (isNaN(val)) {
+          const newAcc = {};
+          for (let key in val) {
+            newAcc[key] = (acc[key] || 0) + val[key];
+          }
+          return newAcc;
+        } else {
+          // if val is number, add it to the accumulator
+          if (typeof val == 'number') return acc + val;
+        }
+      }, 0);
       vals[label] = unitFormatFn ? unitFormatFn(sum) : sum;
     });
     return vals;

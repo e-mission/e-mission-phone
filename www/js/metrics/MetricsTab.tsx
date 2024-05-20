@@ -17,7 +17,13 @@ import ActiveMinutesTableCard from './ActiveMinutesTableCard';
 import { getAggregateData, getMetrics } from '../services/commHelper';
 import { displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
-import { AppConfig, MetricsList, MetricsUiSection } from '../types/appConfigTypes';
+import {
+  AppConfig,
+  GroupingField,
+  MetricName,
+  MetricsList,
+  MetricsUiSection,
+} from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext from '../TimelineContext';
 import { isoDateRangeToTsRange, isoDatesDifference } from '../diary/timelineHelper';
@@ -183,8 +189,10 @@ const MetricsTab = () => {
     const result = metrics_summaries.generate_summaries(
       { ...metricsList },
       timelineValues,
+      appConfig,
       timelineLabelMap,
     ) as MetricsData;
+    console.debug('MetricsTab: computed userMetrics', result);
     logDebug('MetricsTab: computed userMetrics' + JSON.stringify(result));
     return result;
   }, [timelineMap]);
@@ -290,47 +298,31 @@ const MetricsTab = () => {
         )}
         {sectionsToShow.includes('summary') && (
           <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-            {(userMetrics?.distance || aggMetrics?.distance) && (
-              <MetricsCard
-                cardTitle={t('main-metrics.distance')}
-                userMetricsDays={userMetrics?.distance}
-                aggMetricsDays={aggMetrics?.distance}
-                axisUnits={distanceSuffix}
-                unitFormatFn={getFormattedDistance}
-              />
+            {Object.entries(metricsList).map(
+              ([metricName, groupingFields]: [MetricName, GroupingField[]]) => {
+                const units: { [k: string]: [string, (any) => string] } = {
+                  distance: [distanceSuffix, getFormattedDistance],
+                  duration: [t('metrics.hours'), secondsToHours],
+                  count: [t('metrics.trips'), formatForDisplay],
+                  response_count: [
+                    t('metrics.responses'),
+                    (e) => `${e.responded}/${e.responded || 0 + e.not_responded || 0}`,
+                  ],
+                };
+                return (
+                  <MetricsCard
+                    key={metricName}
+                    metricName={metricName}
+                    groupingFields={groupingFields}
+                    cardTitle={t(`main-metrics.${metricName}`)}
+                    userMetricsDays={userMetrics?.[metricName]}
+                    aggMetricsDays={aggMetrics?.[metricName]}
+                    axisUnits={units[metricName][0]}
+                    unitFormatFn={units[metricName][1]}
+                  />
+                );
+              },
             )}
-            {(userMetrics?.count || aggMetrics?.count) && (
-              <MetricsCard
-                cardTitle={t('main-metrics.trips')}
-                userMetricsDays={userMetrics?.count}
-                aggMetricsDays={aggMetrics?.count}
-                axisUnits={t('metrics.trips')}
-                unitFormatFn={formatForDisplay}
-              />
-            )}
-            {(userMetrics?.duration || aggMetrics?.duration) && (
-              <MetricsCard
-                cardTitle={t('main-metrics.duration')}
-                userMetricsDays={userMetrics?.duration}
-                aggMetricsDays={aggMetrics?.duration}
-                axisUnits={t('metrics.hours')}
-                unitFormatFn={secondsToHours}
-              />
-            )}
-            {(userMetrics?.response_count || aggMetrics?.response_count) && (
-              <MetricsCard
-                cardTitle={t('main-metrics.responses')}
-                userMetricsDays={userMetrics?.response_count}
-                aggMetricsDays={aggMetrics?.response_count}
-                axisUnits={t('metrics.responses')}
-                unitFormatFn={formatForDisplay}
-              />
-            )}
-            {/* <MetricsCard cardTitle={t('main-metrics.mean-speed')}
-              userMetricsDays={userMetrics?.mean_speed}
-              aggMetricsDays={aggMetrics?.mean_speed}
-              axisUnits={speedSuffix}
-              unitFormatFn={getFormattedSpeed} /> */}
           </Carousel>
         )}
         {sectionsToShow.includes('surveys') && (

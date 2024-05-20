@@ -168,7 +168,7 @@ export const tsForDayOfMetricData = (day: DayOfMetricData) =>
   DateTime.fromISO(dateForDayOfMetricData(day)).toSeconds();
 
 export const valueForFieldOnDay = (day: DayOfMetricData, field: string, key: string) =>
-  day[`${field}_${key}`] || day[`${field}_${key}`];
+  day[`${field}_${key}`];
 
 export type MetricsSummary = { key: string; values: number };
 export function generateSummaryFromData(modeMap, metric) {

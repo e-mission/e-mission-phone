@@ -102,6 +102,7 @@ export const groupingFields = [
   'purpose_confirm',
   'replaced_mode_confirm',
   'primary_ble_sensed_mode',
+  'survey',
 ] as const;
 export type GroupingField = (typeof groupingFields)[number];
 export type MetricsList = { [k in MetricName]?: GroupingField[] };
