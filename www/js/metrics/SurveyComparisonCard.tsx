@@ -1,15 +1,30 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text } from 'react-native';
 import { Icon, Card } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useAppTheme } from '../appTheme';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { cardStyles, SurveyMetric } from './MetricsTab';
+import { cardStyles } from './MetricsTab';
+import { DayOfMetricData, MetricsData } from './metricsTypes';
+import { getUniqueLabelsForDays } from './metricsHelper';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+function getResponsePctForDays(days: DayOfMetricData[]) {
+  const surveys = getUniqueLabelsForDays(days);
+  let acc = { responded: 0, not_responded: 0 };
+  days.forEach((day) => {
+    surveys.forEach((survey) => {
+      acc.responded += day[`survey_${survey}`]?.responded || 0;
+      acc.not_responded += day[`survey_${survey}`]?.not_responded || 0;
+    });
+  });
+  return Math.round((acc.responded / (acc.responded + acc.not_responded)) * 100);
+}
+
 type Props = {
-  surveyMetric: SurveyMetric;
+  userMetrics: MetricsData;
+  aggMetrics: MetricsData;
 };
 
 export type SurveyComparison = {
@@ -34,24 +49,19 @@ export const LabelPanel = ({ first, second }) => {
   );
 };
 
-const SurveyComparisonCard = ({ surveyMetric }: Props) => {
+const SurveyComparisonCard = ({ userMetrics, aggMetrics }: Props) => {
   const { colors } = useAppTheme();
   const { t } = useTranslation();
 
-  const mySurveyMetric = surveyMetric.me.overview;
-  const othersSurveyMetric = surveyMetric.others.overview;
-  const mySurveyRate = Math.round(
-    (mySurveyMetric.answered / (mySurveyMetric.answered + mySurveyMetric.unanswered)) * 100,
-  );
+  const myResponsePct = useMemo(() => {
+    if (!userMetrics?.response_count) return;
+    return getResponsePctForDays(userMetrics.response_count);
+  }, [userMetrics]);
 
-  const surveyComparison: SurveyComparison = {
-    me: mySurveyRate,
-    others: Math.round(
-      (othersSurveyMetric.answered /
-        (othersSurveyMetric.answered + othersSurveyMetric.unanswered)) *
-        100,
-    ),
-  };
+  const othersResponsePct = useMemo(() => {
+    if (!aggMetrics?.response_count) return;
+    return getResponsePctForDays(aggMetrics.response_count);
+  }, [aggMetrics]);
 
   const renderDoughnutChart = (rate, chartColor, myResponse) => {
     const data = {
@@ -108,8 +118,8 @@ const SurveyComparisonCard = ({ surveyMetric }: Props) => {
         <View>
           <Text style={styles.chartTitle}>{t('main-metrics.survey-response-rate')}</Text>
           <View style={styles.chartWrapper}>
-            {renderDoughnutChart(surveyComparison.me, colors.navy, true)}
-            {renderDoughnutChart(surveyComparison.others, colors.orange, false)}
+            {renderDoughnutChart(myResponsePct, colors.navy, true)}
+            {renderDoughnutChart(othersResponsePct, colors.orange, false)}
           </View>
           <LabelPanel first={t('main-metrics.you')} second={t('main-metrics.others')} />
         </View>

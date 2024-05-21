@@ -327,7 +327,7 @@ const MetricsTab = () => {
         )}
         {sectionsToShow.includes('surveys') && (
           <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-            <SurveyComparisonCard surveyMetric={DUMMY_SURVEY_METRIC} />
+            <SurveyComparisonCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
             <SurveyTripCategoriesCard surveyTripCategoryMetric={DUMMY_SURVEY_METRIC.me?.details} />
           </Carousel>
         )}
