@@ -15,7 +15,7 @@ import { fillLocationNamesOfTrip } from './addressNamesHelper';
 import { logDebug } from '../plugin/logger';
 import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
-import { TimelineEntry } from '../types/diaryTypes';
+import { TimelineEntry, isTrip } from '../types/diaryTypes';
 import TimelineContext, { LabelTabFilter, TimelineLabelMap } from '../TimelineContext';
 import { AppContext } from '../App';
 import { subscribe } from '../customEventHandler';
@@ -58,11 +58,11 @@ const LabelTab = () => {
 
   useEffect(() => {
     if (!timelineMap) return;
-    const tripsRead = Object.values(timelineMap || {});
-    tripsRead
-      .slice()
-      .reverse()
-      .forEach((trip) => fillLocationNamesOfTrip(trip));
+    const timelineEntries = Array.from(timelineMap.values());
+    if (!timelineEntries?.length) return;
+    timelineEntries.reverse().forEach((entry) => {
+      if (isTrip(entry)) fillLocationNamesOfTrip(entry);
+    });
   }, [timelineMap]);
 
   function applyFilters(timelineMap, labelMap: TimelineLabelMap) {
