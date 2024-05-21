@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card } from 'react-native-paper';
-import { cardStyles, SurveyObject } from './MetricsTab';
+import { cardStyles } from './MetricsTab';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 import { useAppTheme } from '../appTheme';
 import { LabelPanel } from './SurveyComparisonCard';
+import { DayOfMetricData, MetricsData } from './metricsTypes';
+import { GroupingField } from '../types/appConfigTypes';
+import { getUniqueLabelsForDays } from './metricsHelper';
+
+function sumResponseCountsForValue(days: DayOfMetricData[], value: `${GroupingField}_${string}`) {
+  const acc = { responded: 0, not_responded: 0 };
+  days.forEach((day) => {
+    acc.responded += day[value]?.responded || 0;
+    acc.not_responded += day[value]?.not_responded || 0;
+  });
+  return acc;
+}
 
 type SurveyTripRecord = {
   label: string;
@@ -13,25 +25,27 @@ type SurveyTripRecord = {
 };
 
 type Props = {
-  surveyTripCategoryMetric: { [key: string]: SurveyObject };
+  userMetrics: MetricsData;
+  aggMetrics: MetricsData;
 };
-const SurveyTripCategoriesCard = ({ surveyTripCategoryMetric }: Props) => {
+const SurveyTripCategoriesCard = ({ userMetrics, aggMetrics }: Props) => {
   const { colors } = useAppTheme();
   const { t } = useTranslation();
-  const records: SurveyTripRecord[] = [];
 
-  for (const category in surveyTripCategoryMetric) {
-    const metricByCategory = surveyTripCategoryMetric[category];
-    for (const key in metricByCategory) {
-      // we don't consider "mismatched" survey result for now
-      if (key === 'mismatched') continue;
-      records.push({
-        label: key === 'answered' ? 'Response' : 'No Response',
-        x: category,
-        y: metricByCategory[key],
-      });
-    }
-  }
+  const records = useMemo(() => {
+    if (!userMetrics?.response_count) return [];
+    const surveys = getUniqueLabelsForDays(userMetrics.response_count);
+    const records: SurveyTripRecord[] = [];
+    surveys.forEach((survey) => {
+      const { responded, not_responded } = sumResponseCountsForValue(
+        userMetrics.response_count,
+        `survey_${survey}`,
+      );
+      records.push({ label: 'Response', x: survey, y: responded || 0 });
+      records.push({ label: 'No Response', x: survey, y: not_responded || 0 });
+    });
+    return records;
+  }, [userMetrics]);
 
   return (
     <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
