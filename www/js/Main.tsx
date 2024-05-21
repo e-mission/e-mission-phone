@@ -1,7 +1,7 @@
 /* Once onboarding is done, this is the main app content.
   Includes the bottom navigation bar and each of the tabs. */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useContext, useMemo, useState } from 'react';
 import { BottomNavigation, useTheme } from 'react-native-paper';
 import { AppContext } from './App';
@@ -54,6 +54,12 @@ const Main = () => {
     const showMetrics = appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL';
     return showMetrics ? defaultRoutes(t) : defaultRoutes(t).filter((r) => r.key != 'metrics');
   }, [appConfig, t]);
+
+  useEffect(() => {
+    const { setShouldUpdateTimeline } = timelineContext;
+    // update TimelineScrollList component only when the active tab is 'label' to fix leaflet map issue
+    setShouldUpdateTimeline(!index);
+  }, [index]);
 
   return (
     <TimelineContext.Provider value={timelineContext}>

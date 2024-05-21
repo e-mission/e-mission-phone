@@ -21,7 +21,6 @@ import {
 } from './diary/timelineHelper';
 import { getPipelineRangeTs } from './services/commHelper';
 import { getNotDeletedCandidates, mapInputsToTimelineEntries } from './survey/inputMatcher';
-import { publish } from './customEventHandler';
 import { EnketoUserInputEntry } from './survey/enketo/enketoHelper';
 import { VehicleIdentity } from './types/appConfigTypes';
 import { primarySectionForTrip } from './diary/diaryHelper';
@@ -50,6 +49,8 @@ type ContextProps = {
   loadMoreDays: (when: 'past' | 'future', nDays: number) => void;
   loadSpecificWeek: (d: string) => void;
   refreshTimeline: () => void;
+  shouldUpdateTimeline: Boolean;
+  setShouldUpdateTimeline: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const useTimelineContext = (): ContextProps => {
@@ -69,6 +70,9 @@ export const useTimelineContext = (): ContextProps => {
   const [timelineLabelMap, setTimelineLabelMap] = useState<TimelineLabelMap | null>(null);
   const [timelineNotesMap, setTimelineNotesMap] = useState<TimelineNotesMap | null>(null);
   const [refreshTime, setRefreshTime] = useState<Date | null>(null);
+  // Leaflet map encounters an error when prerendered, so we need to render the TimelineScrollList component when the active tab is 'label'
+  // 'shouldUpdateTimeline' gets updated based on the current tab index, and we can use it to determine whether to render the timeline or not
+  const [shouldUpdateTimeline, setShouldUpdateTimeline] = useState(true);
 
   // initialization, once the appConfig is loaded
   useEffect(() => {
@@ -135,10 +139,6 @@ export const useTimelineContext = (): ContextProps => {
     );
     setTimelineLabelMap(newTimelineLabelMap);
     setTimelineNotesMap(newTimelineNotesMap);
-    publish('applyLabelTabFilters', {
-      timelineMap,
-      timelineLabelMap: newTimelineLabelMap,
-    });
     setTimelineIsLoading(false);
   }, [timelineMap]);
 
@@ -316,14 +316,6 @@ export const useTimelineContext = (): ContextProps => {
         },
       };
       setTimelineLabelMap(newTimelineLabelMap);
-      setTimeout(
-        () =>
-          publish('applyLabelTabFilters', {
-            timelineMap,
-            timelineLabelMap: newTimelineLabelMap,
-          }),
-        30000,
-      ); // wait 30s before reapplying filters
     } else if (inputType == 'note') {
       const notesForEntry = timelineNotesMap?.[oid] || [];
       const newAddition = { data: userInput, metadata: { write_ts: nowTs } };
@@ -356,6 +348,8 @@ export const useTimelineContext = (): ContextProps => {
     notesFor,
     confirmedModeFor,
     addUserInputToEntry,
+    shouldUpdateTimeline,
+    setShouldUpdateTimeline,
   };
 };
 

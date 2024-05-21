@@ -15,10 +15,9 @@ import { fillLocationNamesOfTrip } from './addressNamesHelper';
 import { logDebug } from '../plugin/logger';
 import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
-import { TimelineEntry } from '../types/diaryTypes';
-import TimelineContext, { LabelTabFilter, TimelineLabelMap } from '../TimelineContext';
+import { TimelineEntry, isTrip } from '../types/diaryTypes';
+import TimelineContext, { LabelTabFilter } from '../TimelineContext';
 import { AppContext } from '../App';
-import { subscribe } from '../customEventHandler';
 
 type LabelContextProps = {
   displayedEntries: TimelineEntry[] | null;
@@ -29,8 +28,9 @@ export const LabelTabContext = createContext<LabelContextProps>({} as LabelConte
 
 const LabelTab = () => {
   const { appConfig } = useContext(AppContext);
-  const { pipelineRange, timelineMap } = useContext(TimelineContext);
+  const { pipelineRange, timelineMap, timelineLabelMap } = useContext(TimelineContext);
 
+  const [filterRefreshTs, setFilterRefreshTs] = useState<number>(0); // used to force a refresh of the filters
   const [filterInputs, setFilterInputs] = useState<LabelTabFilter[]>([]);
   const [displayedEntries, setDisplayedEntries] = useState<TimelineEntry[] | null>(null);
 
@@ -43,46 +43,48 @@ const LabelTab = () => {
         appConfig.survey_info?.['trip-labels'] == 'ENKETO'
           ? enketoConfiguredFilters
           : multilabelConfiguredFilters;
-      const allFalseFilters = tripFilters.map((f, i) => ({
+      const filtersWithState = tripFilters.map((f, i) => ({
         ...f,
         state: i == 0 ? true : false, // only the first filter will have state true on init
       }));
-      setFilterInputs(allFalseFilters);
+      setFilterInputs(filtersWithState);
     }
-
-    subscribe('applyLabelTabFilters', (e) => {
-      logDebug('applyLabelTabFilters event received, calling applyFilters');
-      applyFilters(e.detail.timelineMap, e.detail.timelineLabelMap || {});
-    });
   }, [appConfig]);
 
   useEffect(() => {
     if (!timelineMap) return;
-    const tripsRead = Object.values(timelineMap || {});
-    tripsRead
-      .slice()
-      .reverse()
-      .forEach((trip) => fillLocationNamesOfTrip(trip));
+    const timelineEntries = Array.from(timelineMap.values());
+    if (!timelineEntries?.length) return;
+    timelineEntries.reverse().forEach((entry) => {
+      if (isTrip(entry)) fillLocationNamesOfTrip(entry);
+    });
   }, [timelineMap]);
 
-  function applyFilters(timelineMap, labelMap: TimelineLabelMap) {
+  useEffect(() => {
+    if (!timelineMap || !timelineLabelMap || !filterInputs.length) return;
+    logDebug('Applying filters');
     const allEntries: TimelineEntry[] = Array.from(timelineMap.values());
     const activeFilter = filterInputs?.find((f) => f.state == true);
     let entriesToDisplay = allEntries;
     if (activeFilter) {
-      const cutoffTs = new Date().getTime() / 1000 - 30; // 30s ago, as epoch seconds
+      const nowTs = new Date().getTime() / 1000;
       const entriesAfterFilter = allEntries.filter((e) => {
         // if the entry has a recently recorded user input, it is immune to filtering
-        const labels = labelMap[e._id.$oid];
-        for (let labelValue of Object.values(labels || [])) {
-          logDebug(`LabelTab filtering: labelValue = ${JSON.stringify(labelValue)}`);
-          if (labelValue?.metadata?.write_ts || 0 > cutoffTs) {
-            logDebug('LabelTab filtering: entry has recent user input, keeping');
-            return true;
-          }
+        const labels = timelineLabelMap[e._id.$oid];
+        const mostRecentInputTs = Object.values(labels || []).reduce((acc, label) => {
+          if (label?.metadata?.write_ts && label.metadata.write_ts > acc)
+            return label.metadata.write_ts;
+          return acc;
+        }, 0);
+        const entryImmuneUntil = mostRecentInputTs + 30; // 30s after the most recent user input
+        if (entryImmuneUntil > nowTs) {
+          logDebug(`LabelTab filtering: entry still immune, skipping.
+            Re-applying filters at ${entryImmuneUntil}`);
+          setTimeout(() => setFilterRefreshTs(entryImmuneUntil), (entryImmuneUntil - nowTs) * 1000);
+          return true;
         }
         // otherwise, just apply the filter
-        return activeFilter?.filter(e, labelMap[e._id.$oid]);
+        return activeFilter?.filter(e, timelineLabelMap[e._id.$oid]);
       });
       /* next, filter out any untracked time if the trips that came before and
         after it are no longer displayed */
@@ -100,7 +102,7 @@ const LabelTab = () => {
       logDebug('No active filter, displaying all entries');
     }
     setDisplayedEntries(entriesToDisplay);
-  }
+  }, [timelineMap, filterInputs, timelineLabelMap, filterRefreshTs]);
 
   // once pipelineRange is set, update all unprocessed inputs
   useEffect(() => {
