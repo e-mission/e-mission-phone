@@ -117,7 +117,7 @@ const MetricsCard = ({
   };
 
   return (
-    <Card style={cardStyles.card}>
+    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={cardTitle}
         titleVariant="titleLarge"
@@ -149,41 +149,51 @@ const MetricsCard = ({
         style={cardStyles.title(colors)}
       />
       <Card.Content style={cardStyles.content}>
-        {viewMode == 'details' && (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-            {Object.keys(metricSumValues).map((label, i) => (
-              <View style={{ width: '50%', paddingHorizontal: 8 }} key={i}>
-                <Text variant="titleSmall">{labelKeyToRichMode(label)}</Text>
-                <Text>{metricSumValues[label] + ' ' + axisUnits}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-        {viewMode == 'graph' && (
-          <>
-            <BarChart
-              records={chartData}
-              axisTitle={axisUnits}
-              isHorizontal={true}
-              timeAxis={true}
-              stacked={graphIsStacked}
-              getColorForLabel={getColorForLabel}
-            />
-            <View
-              style={{
-                flexDirection: 'row',
-                height: 10,
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-              }}>
-              <Text variant="labelMedium">Stack bars:</Text>
-              <Checkbox
-                status={graphIsStacked ? 'checked' : 'unchecked'}
-                onPress={() => setGraphIsStacked(!graphIsStacked)}
-              />
+        {viewMode == 'details' &&
+          (Object.keys(metricSumValues).length ? (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+              {Object.keys(metricSumValues).map((label, i) => (
+                <View style={{ width: '50%', paddingHorizontal: 8 }} key={i}>
+                  <Text variant="titleSmall">{labelKeyToRichMode(label)}</Text>
+                  <Text>{metricSumValues[label] + ' ' + axisUnits}</Text>
+                </View>
+              ))}
             </View>
-          </>
-        )}
+          ) : (
+            <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
+              {t('metrics.chart-no-data')}
+            </Text>
+          ))}
+        {viewMode == 'graph' &&
+          (chartData.length ? (
+            <>
+              <BarChart
+                records={chartData}
+                axisTitle={axisUnits}
+                isHorizontal={true}
+                timeAxis={true}
+                stacked={graphIsStacked}
+                getColorForLabel={getColorForLabel}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  height: 10,
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                }}>
+                <Text variant="labelMedium">Stack bars:</Text>
+                <Checkbox
+                  status={graphIsStacked ? 'checked' : 'unchecked'}
+                  onPress={() => setGraphIsStacked(!graphIsStacked)}
+                />
+              </View>
+            </>
+          ) : (
+            <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
+              {t('metrics.chart-no-data')}
+            </Text>
+          ))}
       </Card.Content>
     </Card>
   );

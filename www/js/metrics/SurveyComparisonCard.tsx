@@ -10,6 +10,10 @@ import { DayOfMetricData, MetricsData } from './metricsTypes';
 import { getUniqueLabelsForDays } from './metricsHelper';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+/**
+ * @description Calculates the percentage of 'responded' values across days of 'response_count' data.
+ * @returns Percentage as a whole number (0-100), or null if no data.
+ */
 function getResponsePctForDays(days: DayOfMetricData[]) {
   const surveys = getUniqueLabelsForDays(days);
   let acc = { responded: 0, not_responded: 0 };
@@ -19,7 +23,9 @@ function getResponsePctForDays(days: DayOfMetricData[]) {
       acc.not_responded += day[`survey_${survey}`]?.not_responded || 0;
     });
   });
-  return Math.round((acc.responded / (acc.responded + acc.not_responded)) * 100);
+  const total = acc.responded + acc.not_responded;
+  if (total === 0) return null;
+  return Math.round((acc.responded / total) * 100);
 }
 
 type Props = {
@@ -82,7 +88,7 @@ const SurveyComparisonCard = ({ userMetrics, aggMetrics }: Props) => {
           ) : (
             <Icon source="account-group" size={40} />
           )}
-          <Text>{rate}%</Text>
+          <Text>{rate === null ? t('metrics.no-data') : rate + '%'}</Text>
         </View>
         <Doughnut
           data={data}

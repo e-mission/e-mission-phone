@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Card } from 'react-native-paper';
+import { Text, Card } from 'react-native-paper';
 import { cardStyles } from './MetricsTab';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
@@ -58,18 +58,26 @@ const SurveyTripCategoriesCard = ({ userMetrics, aggMetrics }: Props) => {
         style={cardStyles.title(colors)}
       />
       <Card.Content style={cardStyles.content}>
-        <BarChart
-          records={records}
-          axisTitle=""
-          isHorizontal={false}
-          timeAxis={false}
-          stacked={true}
-          getColorForLabel={(l) => (l === 'Response' ? colors.navy : colors.orange)}
-          getColorForChartEl={(l) => (l === 'Response' ? colors.navy : colors.orange)}
-          showLegend={false}
-          reverse={false}
-        />
-        <LabelPanel first={t('main-metrics.response')} second={t('main-metrics.no-response')} />
+        {records.length ? (
+          <>
+            <BarChart
+              records={records}
+              axisTitle=""
+              isHorizontal={false}
+              timeAxis={false}
+              stacked={true}
+              getColorForLabel={(l) => (l === 'Response' ? colors.navy : colors.orange)}
+              getColorForChartEl={(l) => (l === 'Response' ? colors.navy : colors.orange)}
+              showLegend={false}
+              reverse={false}
+            />
+            <LabelPanel first={t('main-metrics.response')} second={t('main-metrics.no-response')} />
+          </>
+        ) : (
+          <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
+            {t('metrics.chart-no-data')}
+          </Text>
+        )}
       </Card.Content>
     </Card>
   );

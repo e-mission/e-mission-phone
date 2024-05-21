@@ -116,7 +116,8 @@
     "hours": "hours",
     "minutes": "minutes",
     "responses": "responses",
-    "custom": "Custom"
+    "custom": "Custom",
+    "no-data": "No data"
   },
 
   "diary": {

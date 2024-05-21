@@ -56,11 +56,9 @@ const DailyActiveMinutesCard = ({ userMetrics }: Props) => {
             getColorForLabel={(l) => getBaseModeByText(l, labelOptions).color}
           />
         ) : (
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <Text variant="labelMedium" style={{ textAlign: 'center' }}>
-              {t('metrics.chart-no-data')}
-            </Text>
-          </View>
+          <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
+            {t('metrics.chart-no-data')}
+          </Text>
         )}
       </Card.Content>
     </Card>
