@@ -46,103 +46,6 @@ export const DEFAULT_METRICS_LIST: MetricsList = {
   response_count: ['mode_confirm'],
 };
 
-export type SurveyObject = {
-  answered: number;
-  unanswered: number;
-  mismatched: number;
-};
-
-export type SurveyMetric = {
-  me: {
-    overview: SurveyObject;
-    rank: number;
-    details: {
-      [key: string]: SurveyObject;
-    };
-  };
-  others: {
-    overview: SurveyObject;
-    leaderboard: SurveyObject[];
-  };
-};
-
-const DUMMY_SURVEY_METRIC: SurveyMetric = {
-  me: {
-    overview: {
-      answered: 5,
-      unanswered: 5,
-      mismatched: 0,
-    },
-    rank: 5,
-    details: {
-      ev_roaming_trip: {
-        answered: 10,
-        unanswered: 5,
-        mismatched: 0,
-      },
-      ev_return_trip: {
-        answered: 10,
-        unanswered: 10,
-        mismatched: 0,
-      },
-      gas_car_trip: {
-        answered: 5,
-        unanswered: 10,
-        mismatched: 0,
-      },
-    },
-  },
-  others: {
-    overview: {
-      answered: 30,
-      unanswered: 60,
-      mismatched: 0,
-    },
-    leaderboard: [
-      {
-        answered: 10,
-        unanswered: 0,
-        mismatched: 0,
-      },
-      {
-        answered: 9,
-        unanswered: 1,
-        mismatched: 0,
-      },
-      {
-        answered: 8,
-        unanswered: 2,
-        mismatched: 0,
-      },
-      {
-        answered: 7,
-        unanswered: 3,
-        mismatched: 0,
-      },
-      {
-        answered: 6,
-        unanswered: 4,
-        mismatched: 0,
-      },
-      {
-        answered: 4,
-        unanswered: 6,
-        mismatched: 0,
-      },
-      {
-        answered: 2,
-        unanswered: 8,
-        mismatched: 0,
-      },
-      {
-        answered: 1,
-        unanswered: 9,
-        mismatched: 0,
-      },
-    ],
-  },
-};
-
 async function fetchMetricsFromServer(
   type: 'user' | 'aggregate',
   dateRange: [string, string],
@@ -331,14 +234,15 @@ const MetricsTab = () => {
             <SurveyTripCategoriesCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
           </Carousel>
         )}
-        {sectionsToShow.includes('engagement') && (
+        {/* we will implement leaderboard later */}
+        {/* {sectionsToShow.includes('engagement') && (
           <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
             <SurveyLeaderboardCard
               surveyMetric={DUMMY_SURVEY_METRIC}
               studyStartDate={studyStartDate}
             />
           </Carousel>
-        )}
+        )} */}
       </ScrollView>
     </>
   );
