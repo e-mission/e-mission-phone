@@ -18,7 +18,7 @@ import {
   inputType2retKey,
   removeManualPrefix,
 } from './multilabel/confirmHelper';
-import { TimelineLabelMap, TimelineNotesMap, UserInputMap } from '../diary/LabelTabContext';
+import { TimelineLabelMap, TimelineNotesMap, UserInputMap } from '../TimelineContext';
 import { MultilabelKey } from '../types/labelTypes';
 import { EnketoUserInputEntry } from './enketo/enketoHelper';
 import { AppConfig } from '../types/appConfigTypes';

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useContext } from 'react';
 import { View, ScrollView, useWindowDimensions } from 'react-native';
 import { Appbar, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,6 @@ import NavBar from '../components/NavBar';
 import { MetricsData } from './metricsTypes';
 import MetricsCard from './MetricsCard';
 import { formatForDisplay, useImperialConfig } from '../config/useImperialConfig';
-import MetricsDateSelect from './MetricsDateSelect';
 import WeeklyActiveMinutesCard from './WeeklyActiveMinutesCard';
 import { secondsToHours, secondsToMinutes } from './metricsHelper';
 import CarbonFootprintCard from './CarbonFootprintCard';
@@ -16,33 +15,34 @@ import DailyActiveMinutesCard from './DailyActiveMinutesCard';
 import CarbonTextCard from './CarbonTextCard';
 import ActiveMinutesTableCard from './ActiveMinutesTableCard';
 import { getAggregateData, getMetrics } from '../services/commHelper';
-import { displayError, logDebug, logWarn } from '../plugin/logger';
+import { displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
 import { ServerConnConfig } from '../types/appConfigTypes';
+import DateSelect from '../diary/list/DateSelect';
+import TimelineContext from '../TimelineContext';
+import { isoDateRangeToTsRange, isoDatesDifference } from '../diary/timelineHelper';
+import { metrics_summaries } from 'e-mission-common';
 
+// 2 weeks of data is needed in order to compare "past week" vs "previous week"
+const N_DAYS_TO_LOAD = 14; // 2 weeks
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
 async function fetchMetricsFromServer(
   type: 'user' | 'aggregate',
-  dateRange: DateTime[],
+  dateRange: [string, string],
   serverConnConfig: ServerConnConfig,
 ) {
+  const [startTs, endTs] = isoDateRangeToTsRange(dateRange);
+  logDebug('MetricsTab: fetching metrics from server for ts range ' + startTs + ' to ' + endTs);
   const query = {
     freq: 'D',
-    start_time: dateRange[0].toSeconds(),
-    end_time: dateRange[1].toSeconds(),
+    start_time: startTs,
+    end_time: endTs,
     metric_list: METRIC_LIST,
     is_return_aggregate: type == 'aggregate',
   };
   if (type == 'user') return getMetrics('timestamp', query);
   return getAggregateData('result/metrics/timestamp', query, serverConnConfig);
-}
-
-function getLastTwoWeeksDtRange() {
-  const now = DateTime.now().startOf('day');
-  const start = now.minus({ days: 15 });
-  const end = now.minus({ days: 1 });
-  return [start, end];
 }
 
 const MetricsTab = () => {
@@ -51,18 +51,69 @@ const MetricsTab = () => {
   const { t } = useTranslation();
   const { getFormattedSpeed, speedSuffix, getFormattedDistance, distanceSuffix } =
     useImperialConfig();
+  const {
+    dateRange,
+    setDateRange,
+    timelineMap,
+    timelineLabelMap,
+    timelineIsLoading,
+    refreshTimeline,
+    loadMoreDays,
+  } = useContext(TimelineContext);
 
-  const [dateRange, setDateRange] = useState<DateTime[]>(getLastTwoWeeksDtRange);
   const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
-  const [userMetrics, setUserMetrics] = useState<MetricsData | undefined>(undefined);
 
+  // user metrics are computed on the phone from the timeline data
+  const userMetrics = useMemo(() => {
+    console.time('MetricsTab: generate_summaries');
+    if (!timelineMap) return;
+    console.time('MetricsTab: timelineMap.values()');
+    const timelineValues = [...timelineMap.values()];
+    console.timeEnd('MetricsTab: timelineMap.values()');
+    const result = metrics_summaries.generate_summaries(
+      METRIC_LIST,
+      timelineValues,
+      timelineLabelMap,
+    ) as MetricsData;
+    console.timeEnd('MetricsTab: generate_summaries');
+    return result;
+  }, [timelineMap]);
+
+  // at least N_DAYS_TO_LOAD of timeline data should be loaded for the user metrics
   useEffect(() => {
     if (!appConfig?.server) return;
-    loadMetricsForPopulation('user', dateRange);
-    loadMetricsForPopulation('aggregate', dateRange);
-  }, [dateRange, appConfig?.server]);
+    const dateRangeDays = isoDatesDifference(...dateRange);
 
-  async function loadMetricsForPopulation(population: 'user' | 'aggregate', dateRange: DateTime[]) {
+    // this tab uses the last N_DAYS_TO_LOAD of data; if we need more, we should fetch it
+    if (dateRangeDays < N_DAYS_TO_LOAD) {
+      if (timelineIsLoading) {
+        logDebug('MetricsTab: timeline is still loading, not loading more days yet');
+      } else {
+        logDebug('MetricsTab: loading more days');
+        loadMoreDays('past', N_DAYS_TO_LOAD - dateRangeDays);
+      }
+    } else {
+      logDebug(`MetricsTab: date range >= ${N_DAYS_TO_LOAD} days, not loading more days`);
+    }
+  }, [dateRange, timelineIsLoading, appConfig?.server]);
+
+  // aggregate metrics fetched from the server whenever the date range is set
+  useEffect(() => {
+    logDebug('MetricsTab: dateRange updated to ' + JSON.stringify(dateRange));
+    const dateRangeDays = isoDatesDifference(...dateRange);
+    if (dateRangeDays < N_DAYS_TO_LOAD) {
+      logDebug(
+        `MetricsTab: date range < ${N_DAYS_TO_LOAD} days, not loading aggregate metrics yet`,
+      );
+    } else {
+      loadMetricsForPopulation('aggregate', dateRange);
+    }
+  }, [dateRange]);
+
+  async function loadMetricsForPopulation(
+    population: 'user' | 'aggregate',
+    dateRange: [string, string],
+  ) {
     try {
       logDebug(`MetricsTab: fetching metrics for population ${population}'
         in date range ${JSON.stringify(dateRange)}`);
@@ -79,7 +130,7 @@ const MetricsTab = () => {
       });
       logDebug('MetricsTab: parsed metrics: ' + JSON.stringify(metrics));
       if (population == 'user') {
-        setUserMetrics(metrics as MetricsData);
+        // setUserMetrics(metrics as MetricsData);
       } else {
         setAggMetrics(metrics as MetricsData);
       }
@@ -88,19 +139,23 @@ const MetricsTab = () => {
     }
   }
 
-  function refresh() {
-    setDateRange(getLastTwoWeeksDtRange());
-  }
-
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = windowWidth * 0.88;
 
   return (
     <>
-      <NavBar>
+      <NavBar isLoading={Boolean(timelineIsLoading)}>
         <Appbar.Content title={t('metrics.dashboard-tab')} />
-        <MetricsDateSelect dateRange={dateRange} setDateRange={setDateRange} />
-        <Appbar.Action icon="refresh" size={32} onPress={refresh} />
+        <DateSelect
+          mode="range"
+          onChoose={({ startDate, endDate }) => {
+            const start = DateTime.fromJSDate(startDate).toISODate();
+            const end = DateTime.fromJSDate(endDate).toISODate();
+            if (!start || !end) return displayErrorMsg('Invalid date');
+            setDateRange([start, end]);
+          }}
+        />
+        <Appbar.Action icon="refresh" size={32} onPress={refreshTimeline} />
       </NavBar>
       <ScrollView style={{ paddingVertical: 12 }}>
         <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>

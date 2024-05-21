@@ -2,117 +2,68 @@
     that has two screens: LabelListScreen and LabelScreenDetails.
   LabelListScreen is the main screen, which is a scrollable list of timeline entries,
     while LabelScreenDetails is the view that shows when the user clicks on a trip.
-  LabelTabContext is provided to the entire child tree and allows the screens to
-    share the data that has been loaded and interacted with.
 */
 
-import React, { useEffect, useState, useRef } from 'react';
-import useAppConfig from '../useAppConfig';
+import React, { useEffect, useState, useContext, createContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { invalidateMaps } from '../components/LeafletView';
-import { DateTime } from 'luxon';
 import LabelListScreen from './list/LabelListScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 import LabelScreenDetails from './details/LabelDetailsScreen';
 import { NavigationContainer } from '@react-navigation/native';
-import {
-  compositeTrips2TimelineMap,
-  updateAllUnprocessedInputs,
-  updateLocalUnprocessedInputs,
-  unprocessedLabels,
-  unprocessedNotes,
-  updateUnprocessedBleScans,
-  unprocessedBleScans,
-} from './timelineHelper';
-import { fillLocationNamesOfTrip, resetNominatimLimiter } from './addressNamesHelper';
-import { getLabelOptions, labelOptionByValue } from '../survey/multilabel/confirmHelper';
-import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
-import { useTheme } from 'react-native-paper';
-import { getPipelineRangeTs } from '../services/commHelper';
-import { getNotDeletedCandidates, mapInputsToTimelineEntries } from '../survey/inputMatcher';
+import { updateAllUnprocessedInputs } from './timelineHelper';
+import { fillLocationNamesOfTrip } from './addressNamesHelper';
+import { logDebug } from '../plugin/logger';
 import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
-import LabelTabContext, {
-  LabelTabFilter,
-  TimelineLabelMap,
-  TimelineMap,
-  TimelineNotesMap,
-} from './LabelTabContext';
-import { readAllCompositeTrips, readUnprocessedTrips } from './timelineHelper';
-import { LabelOptions, MultilabelKey } from '../types/labelTypes';
-import { CompositeTrip, TimelineEntry, TimestampRange, UserInputEntry } from '../types/diaryTypes';
-import { primarySectionForTrip } from './diaryHelper';
+import { TimelineEntry } from '../types/diaryTypes';
+import TimelineContext, { LabelTabFilter, TimelineLabelMap } from '../TimelineContext';
+import { AppContext } from '../App';
+import { subscribe } from '../customEventHandler';
 
-let showPlaces;
-const ONE_DAY = 24 * 60 * 60; // seconds
-const ONE_WEEK = ONE_DAY * 7; // seconds
+type LabelContextProps = {
+  displayedEntries: TimelineEntry[] | null;
+  filterInputs: LabelTabFilter[];
+  setFilterInputs: (filters: LabelTabFilter[]) => void;
+};
+export const LabelTabContext = createContext<LabelContextProps>({} as LabelContextProps);
 
 const LabelTab = () => {
-  const appConfig = useAppConfig();
-  const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { appConfig } = useContext(AppContext);
+  const { pipelineRange, timelineMap } = useContext(TimelineContext);
 
-  const [labelOptions, setLabelOptions] = useState<LabelOptions<MultilabelKey> | null>(null);
   const [filterInputs, setFilterInputs] = useState<LabelTabFilter[]>([]);
-  const [lastFilteredTs, setLastFilteredTs] = useState<number | null>(null);
-  const [pipelineRange, setPipelineRange] = useState<TimestampRange | null>(null);
-  const [queriedRange, setQueriedRange] = useState<TimestampRange | null>(null);
-  const [timelineMap, setTimelineMap] = useState<TimelineMap | null>(null);
-  const [timelineLabelMap, setTimelineLabelMap] = useState<TimelineLabelMap | null>(null);
-  const [timelineNotesMap, setTimelineNotesMap] = useState<TimelineNotesMap | null>(null);
   const [displayedEntries, setDisplayedEntries] = useState<TimelineEntry[] | null>(null);
-  const [refreshTime, setRefreshTime] = useState<Date | null>(null);
-  const [isLoading, setIsLoading] = useState<string | false>('replace');
 
-  // initialization, once the appConfig is loaded
   useEffect(() => {
-    try {
-      if (!appConfig) return;
-      showPlaces = appConfig.survey_info?.buttons?.['place-notes'];
-      getLabelOptions(appConfig).then((labelOptions) => setLabelOptions(labelOptions));
-
-      // we will show filters if 'additions' are not configured
-      // https://github.com/e-mission/e-mission-docs/issues/894
-      if (appConfig.survey_info?.buttons == undefined) {
-        // initalize filters
-        const tripFilters =
-          appConfig.survey_info?.['trip-labels'] == 'ENKETO'
-            ? enketoConfiguredFilters
-            : multilabelConfiguredFilters;
-        const allFalseFilters = tripFilters.map((f, i) => ({
-          ...f,
-          state: i == 0 ? true : false, // only the first filter will have state true on init
-        }));
-        setFilterInputs(allFalseFilters);
-      }
-      loadTimelineEntries();
-    } catch (e) {
-      displayError(e, t('errors.while-initializing-label'));
+    // we will show filters if 'additions' are not configured
+    // https://github.com/e-mission/e-mission-docs/issues/894
+    if (appConfig.survey_info?.buttons == undefined) {
+      // initalize filters
+      const tripFilters =
+        appConfig.survey_info?.['trip-labels'] == 'ENKETO'
+          ? enketoConfiguredFilters
+          : multilabelConfiguredFilters;
+      const allFalseFilters = tripFilters.map((f, i) => ({
+        ...f,
+        state: i == 0 ? true : false, // only the first filter will have state true on init
+      }));
+      setFilterInputs(allFalseFilters);
     }
-  }, [appConfig, refreshTime]);
 
-  // whenever timelineMap is updated, map unprocessed inputs to timeline entries, and
-  // update the displayedEntries according to the active filter
-  useEffect(() => {
-    try {
-      if (!timelineMap) return setDisplayedEntries(null);
-      const allEntries = Array.from(timelineMap.values());
-      const [newTimelineLabelMap, newTimelineNotesMap] = mapInputsToTimelineEntries(
-        allEntries,
-        appConfig,
-      );
-      setTimelineLabelMap(newTimelineLabelMap);
-      setTimelineNotesMap(newTimelineNotesMap);
-      applyFilters(timelineMap, newTimelineLabelMap);
-    } catch (e) {
-      displayError(e, t('errors.while-updating-timeline'));
-    }
-  }, [timelineMap, filterInputs]);
+    subscribe('applyLabelTabFilters', (e) => {
+      logDebug('applyLabelTabFilters event received, calling applyFilters');
+      applyFilters(e.detail.timelineMap, e.detail.timelineLabelMap || {});
+    });
+  }, [appConfig]);
 
   useEffect(() => {
-    if (!timelineMap || !timelineLabelMap) return;
-    applyFilters(timelineMap, timelineLabelMap);
-  }, [lastFilteredTs]);
+    if (!timelineMap) return;
+    const tripsRead = Object.values(timelineMap || {});
+    tripsRead
+      .slice()
+      .reverse()
+      .forEach((trip) => fillLocationNamesOfTrip(trip));
+  }, [timelineMap]);
 
   function applyFilters(timelineMap, labelMap: TimelineLabelMap) {
     const allEntries: TimelineEntry[] = Array.from(timelineMap.values());
@@ -125,7 +76,7 @@ const LabelTab = () => {
         const labels = labelMap[e._id.$oid];
         for (let labelValue of Object.values(labels || [])) {
           logDebug(`LabelTab filtering: labelValue = ${JSON.stringify(labelValue)}`);
-          if (labelValue?.metadata?.write_ts > cutoffTs) {
+          if (labelValue?.metadata?.write_ts || 0 > cutoffTs) {
             logDebug('LabelTab filtering: entry has recent user input, keeping');
             return true;
           }
@@ -151,243 +102,20 @@ const LabelTab = () => {
     setDisplayedEntries(entriesToDisplay);
   }
 
-  async function loadTimelineEntries() {
-    try {
-      const pipelineRange = await getPipelineRangeTs();
-      await updateAllUnprocessedInputs(pipelineRange, appConfig);
-      logDebug(`LabelTab: After updating unprocessedInputs, 
-        unprocessedLabels = ${JSON.stringify(unprocessedLabels)}; 
-        unprocessedNotes = ${JSON.stringify(unprocessedNotes)}`);
-      if (appConfig.vehicle_identities?.length) {
-        await updateUnprocessedBleScans({
-          start_ts: pipelineRange.end_ts,
-          end_ts: Date.now() / 1000,
-        });
-        logDebug(`LabelTab: After updating unprocessedBleScans,
-          unprocessedBleScans = ${JSON.stringify(unprocessedBleScans)};
-        `);
-      }
-      setPipelineRange(pipelineRange);
-    } catch (e) {
-      displayError(e, t('errors.while-loading-pipeline-range'));
-      setIsLoading(false);
-    }
-  }
-
-  // once pipelineRange is set, load the most recent week of data
+  // once pipelineRange is set, update all unprocessed inputs
   useEffect(() => {
     if (pipelineRange && pipelineRange.end_ts) {
-      loadAnotherWeek('past');
+      updateAllUnprocessedInputs(pipelineRange, appConfig);
     }
   }, [pipelineRange]);
 
-  function refresh() {
-    try {
-      logDebug('Refreshing LabelTab');
-      setIsLoading('replace');
-      resetNominatimLimiter();
-      setQueriedRange(null);
-      setTimelineMap(null);
-      setRefreshTime(new Date());
-    } catch (e) {
-      displayError(e, t('errors.while-refreshing-label'));
-    }
-  }
+  const Tab = createStackNavigator();
 
-  async function loadAnotherWeek(when: 'past' | 'future') {
-    try {
-      logDebug('LabelTab: loadAnotherWeek into the ' + when);
-      if (!pipelineRange?.start_ts || !pipelineRange?.end_ts)
-        return logWarn('No pipelineRange yet - early return');
-
-      const reachedPipelineStart =
-        queriedRange?.start_ts && queriedRange.start_ts <= pipelineRange.start_ts;
-      const reachedPipelineEnd =
-        queriedRange?.end_ts && queriedRange.end_ts >= pipelineRange.end_ts;
-
-      if (!queriedRange) {
-        // first time loading
-        if (!isLoading) setIsLoading('replace');
-        const nowTs = new Date().getTime() / 1000;
-        const [ctList, utList] = await fetchTripsInRange(pipelineRange.end_ts - ONE_WEEK, nowTs);
-        handleFetchedTrips(ctList, utList, 'replace');
-        setQueriedRange({ start_ts: pipelineRange.end_ts - ONE_WEEK, end_ts: nowTs });
-      } else if (when == 'past' && !reachedPipelineStart) {
-        if (!isLoading) setIsLoading('prepend');
-        const fetchStartTs = Math.max(queriedRange.start_ts - ONE_WEEK, pipelineRange.start_ts);
-        const [ctList, utList] = await fetchTripsInRange(
-          queriedRange.start_ts - ONE_WEEK,
-          queriedRange.start_ts - 1,
-        );
-        handleFetchedTrips(ctList, utList, 'prepend');
-        setQueriedRange({ start_ts: fetchStartTs, end_ts: queriedRange.end_ts });
-      } else if (when == 'future' && !reachedPipelineEnd) {
-        if (!isLoading) setIsLoading('append');
-        const fetchEndTs = Math.min(queriedRange.end_ts + ONE_WEEK, pipelineRange.end_ts);
-        const [ctList, utList] = await fetchTripsInRange(queriedRange.end_ts + 1, fetchEndTs);
-        handleFetchedTrips(ctList, utList, 'append');
-        setQueriedRange({ start_ts: queriedRange.start_ts, end_ts: fetchEndTs });
-      }
-    } catch (e) {
-      setIsLoading(false);
-      displayError(e, t('errors.while-loading-another-week', { when: when }));
-    }
-  }
-
-  async function loadSpecificWeek(day: Date) {
-    try {
-      logDebug('LabelTab: loadSpecificWeek for day ' + day);
-      if (!isLoading) setIsLoading('replace');
-      resetNominatimLimiter();
-      const threeDaysBefore = DateTime.fromJSDate(day).minus({ days: 3 }).toSeconds();
-      const threeDaysAfter = DateTime.fromJSDate(day).plus({ days: 3 }).toSeconds();
-      const [ctList, utList] = await fetchTripsInRange(threeDaysBefore, threeDaysAfter);
-      handleFetchedTrips(ctList, utList, 'replace');
-      setQueriedRange({ start_ts: threeDaysBefore, end_ts: threeDaysAfter });
-    } catch (e) {
-      setIsLoading(false);
-      displayError(e, t('errors.while-loading-specific-week', { day: day }));
-    }
-  }
-
-  function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
-    logDebug(`LabelTab: handleFetchedTrips with
-      mode = ${mode}; 
-      ctList = ${JSON.stringify(ctList)}; 
-      utList = ${JSON.stringify(utList)}`);
-
-    const tripsRead = ctList.concat(utList);
-    // Fill place names on a reversed copy of the list so we fill from the bottom up
-    tripsRead
-      .slice()
-      .reverse()
-      .forEach((trip, index) => fillLocationNamesOfTrip(trip));
-    const readTimelineMap = compositeTrips2TimelineMap(tripsRead, showPlaces);
-    logDebug(`LabelTab: after composite trips converted, 
-      readTimelineMap = ${[...readTimelineMap.entries()]}`);
-    if (mode == 'append') {
-      setTimelineMap(new Map([...(timelineMap || []), ...readTimelineMap]));
-    } else if (mode == 'prepend') {
-      setTimelineMap(new Map([...readTimelineMap, ...(timelineMap || [])]));
-    } else if (mode == 'replace') {
-      setTimelineMap(readTimelineMap);
-    } else {
-      return displayErrorMsg('Unknown insertion mode ' + mode);
-    }
-  }
-
-  async function fetchTripsInRange(startTs: number, endTs: number) {
-    if (!pipelineRange?.start_ts || !pipelineRange?.end_ts)
-      return logWarn('No pipelineRange yet - early return');
-    logDebug('LabelTab: fetchTripsInRange from ' + startTs + ' to ' + endTs);
-    const readCompositePromise = readAllCompositeTrips(startTs, endTs);
-    let readUnprocessedPromise;
-    if (endTs >= pipelineRange.end_ts) {
-      const nowTs = new Date().getTime() / 1000;
-      let lastProcessedTrip: CompositeTrip | undefined;
-      if (timelineMap) {
-        lastProcessedTrip = [...timelineMap?.values()]
-          .reverse()
-          .find((trip) => trip.origin_key.includes('trip')) as CompositeTrip;
-      }
-      readUnprocessedPromise = readUnprocessedTrips(
-        pipelineRange.end_ts,
-        nowTs,
-        appConfig,
-        lastProcessedTrip,
-      );
-    } else {
-      readUnprocessedPromise = Promise.resolve([]);
-    }
-    const results = await Promise.all([readCompositePromise, readUnprocessedPromise]);
-    logDebug(`LabelTab: readCompositePromise resolved as: ${JSON.stringify(results[0])}; 
-      readUnprocessedPromise resolved as: ${JSON.stringify(results[1])}`);
-    return results;
-  }
-
-  useEffect(() => {
-    if (!displayedEntries) return;
-    invalidateMaps();
-    setIsLoading(false);
-  }, [displayedEntries]);
-
-  const userInputFor = (tlEntry: TimelineEntry) =>
-    timelineLabelMap?.[tlEntry._id.$oid] || undefined;
-  const notesFor = (tlEntry: TimelineEntry) => timelineNotesMap?.[tlEntry._id.$oid] || undefined;
-
-  /**
-   * @param tlEntry The trip or place object to get the label for
-   * @param labelType The type of label to get (e.g. MODE, PURPOSE, etc.)
-   * @returns the label option object for the given label type, or undefined if there is no label
-   */
-  const labelFor = (tlEntry: TimelineEntry, labelType: MultilabelKey) => {
-    const chosenLabel = userInputFor(tlEntry)?.[labelType]?.data.label;
-    return chosenLabel ? labelOptionByValue(chosenLabel, labelType) : undefined;
-  };
-
-  /**
-   * @param tlEntry The trip or place object to get the confirmed mode for
-   * @returns Confirmed mode, which could be a vehicle identity as determined by Bluetooth scans,
-   *  or the label option from a user-given 'MODE' label, or undefined if neither exists.
-   */
-  const confirmedModeFor = (tlEntry: CompositeTrip) =>
-    primarySectionForTrip(tlEntry)?.ble_sensed_mode || labelFor(tlEntry, 'MODE');
-
-  function addUserInputToEntry(oid: string, userInput: any, inputType: 'label' | 'note') {
-    const tlEntry = timelineMap?.get(oid);
-    if (!pipelineRange || !tlEntry)
-      return displayErrorMsg('Item with oid: ' + oid + ' not found in timeline');
-    const nowTs = new Date().getTime() / 1000; // epoch seconds
-    if (inputType == 'label') {
-      const newLabels = {};
-      for (const [inputType, labelValue] of Object.entries(userInput)) {
-        newLabels[inputType] = { data: labelValue, metadata: nowTs };
-      }
-      logDebug('LabelTab: newLabels = ' + JSON.stringify(newLabels));
-      const newTimelineLabelMap: TimelineLabelMap = {
-        ...timelineLabelMap,
-        [oid]: {
-          ...timelineLabelMap?.[oid],
-          ...newLabels,
-        },
-      };
-      setTimelineLabelMap(newTimelineLabelMap);
-      setTimeout(() => setLastFilteredTs(new Date().getTime() / 1000), 30000); // wait 30s before reapplying filters
-    } else if (inputType == 'note') {
-      const notesForEntry = timelineNotesMap?.[oid] || [];
-      const newAddition = { data: userInput, metadata: { write_ts: nowTs } };
-      notesForEntry.push(newAddition as UserInputEntry);
-      const newTimelineNotesMap: TimelineNotesMap = {
-        ...timelineNotesMap,
-        [oid]: getNotDeletedCandidates(notesForEntry),
-      };
-      setTimelineNotesMap(newTimelineNotesMap);
-    }
-    /* We can update unprocessed inputs in the background, without blocking the completion
-      of this function. That is why this is not 'await'ed */
-    updateLocalUnprocessedInputs(pipelineRange, appConfig);
-  }
-
-  const contextVals = {
-    labelOptions,
-    timelineMap,
-    userInputFor,
-    labelFor,
-    notesFor,
-    confirmedModeFor,
-    addUserInputToEntry,
+  const contextVals: LabelContextProps = {
     displayedEntries,
     filterInputs,
     setFilterInputs,
-    queriedRange,
-    pipelineRange,
-    isLoading,
-    loadAnotherWeek,
-    loadSpecificWeek,
-    refresh,
   };
-
-  const Tab = createStackNavigator();
 
   return (
     <LabelTabContext.Provider value={contextVals}>

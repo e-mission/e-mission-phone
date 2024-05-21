@@ -112,6 +112,7 @@ const Chart = ({
           responsive: true,
           maintainAspectRatio: false,
           resizeDelay: 1,
+          spanGaps: 1000 * 60 * 60 * 24, // 1 day
           scales: {
             ...(isHorizontal
               ? {

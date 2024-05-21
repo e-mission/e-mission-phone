@@ -9,11 +9,11 @@ import {
   getDetectedModes,
   isMultiDay,
 } from './diaryHelper';
-import LabelTabContext from './LabelTabContext';
+import TimelineContext from '../TimelineContext';
 
 const useDerivedProperties = (tlEntry) => {
   const imperialConfig = useImperialConfig();
-  const { confirmedModeFor } = useContext(LabelTabContext);
+  const { confirmedModeFor } = useContext(TimelineContext);
 
   return useMemo(() => {
     const beginFmt = tlEntry.start_fmt_time || tlEntry.enter_fmt_time;

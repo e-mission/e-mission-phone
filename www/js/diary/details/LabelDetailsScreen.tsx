@@ -13,7 +13,7 @@ import {
   Text,
   useTheme,
 } from 'react-native-paper';
-import LabelTabContext from '../LabelTabContext';
+import TimelineContext from '../../TimelineContext';
 import LeafletView from '../../components/LeafletView';
 import { useTranslation } from 'react-i18next';
 import MultilabelButtonGroup from '../../survey/multilabel/MultiLabelButtonGroup';
@@ -31,7 +31,7 @@ import { CompositeTrip } from '../../types/diaryTypes';
 import NavBar from '../../components/NavBar';
 
 const LabelScreenDetails = ({ route, navigation }) => {
-  const { timelineMap, labelOptions, confirmedModeFor } = useContext(LabelTabContext);
+  const { timelineMap, labelOptions, confirmedModeFor } = useContext(TimelineContext);
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
   const appConfig = useAppConfig();

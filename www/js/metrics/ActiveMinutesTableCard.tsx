@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Card, DataTable, useTheme } from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardStyles } from './MetricsTab';
@@ -7,21 +7,27 @@ import {
   formatDateRangeOfDays,
   secondsToMinutes,
   segmentDaysByWeeks,
+  valueForModeOnDay,
 } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import { ACTIVE_MODES } from './WeeklyActiveMinutesCard';
 import { labelKeyToRichMode } from '../survey/multilabel/confirmHelper';
+import TimelineContext from '../TimelineContext';
 
 type Props = { userMetrics?: MetricsData };
 const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
   const { colors } = useTheme();
+  const { dateRange } = useContext(TimelineContext);
   const { t } = useTranslation();
 
   const cumulativeTotals = useMemo(() => {
     if (!userMetrics?.duration) return [];
     const totals = {};
     ACTIVE_MODES.forEach((mode) => {
-      const sum = userMetrics.duration.reduce((acc, day) => acc + (day[`label_${mode}`] || 0), 0);
+      const sum = userMetrics.duration.reduce(
+        (acc, day) => acc + (valueForModeOnDay(day, mode) || 0),
+        0,
+      );
       totals[mode] = secondsToMinutes(sum);
     });
     totals['period'] = formatDateRangeOfDays(userMetrics.duration);
@@ -30,12 +36,12 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
 
   const recentWeeksActiveModesTotals = useMemo(() => {
     if (!userMetrics?.duration) return [];
-    return segmentDaysByWeeks(userMetrics.duration)
+    return segmentDaysByWeeks(userMetrics.duration, dateRange[1])
       .reverse()
       .map((week) => {
         const totals = {};
         ACTIVE_MODES.forEach((mode) => {
-          const sum = week.reduce((acc, day) => acc + (day[`label_${mode}`] || 0), 0);
+          const sum = week.reduce((acc, day) => acc + (valueForModeOnDay(day, mode) || 0), 0);
           totals[mode] = secondsToMinutes(sum);
         });
         totals['period'] = formatDateRangeOfDays(week);
@@ -49,7 +55,7 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
       .map((day) => {
         const totals = {};
         ACTIVE_MODES.forEach((mode) => {
-          const sum = day[`label_${mode}`] || 0;
+          const sum = valueForModeOnDay(day, mode) || 0;
           totals[mode] = secondsToMinutes(sum);
         });
         totals['period'] = formatDate(day);

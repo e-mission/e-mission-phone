@@ -1,9 +1,5 @@
-import React, { useEffect, useState, createContext, useMemo } from 'react';
-import { ActivityIndicator, BottomNavigation, useTheme } from 'react-native-paper';
-import { useTranslation } from 'react-i18next';
-import LabelTab from './diary/LabelTab';
-import MetricsTab from './metrics/MetricsTab';
-import ProfileSettings from './control/ProfileSettings';
+import React, { useEffect, useState, createContext } from 'react';
+import { ActivityIndicator } from 'react-native-paper';
 import useAppConfig from './useAppConfig';
 import OnboardingStack from './onboarding/OnboardingStack';
 import {
@@ -17,58 +13,18 @@ import usePermissionStatus from './usePermissionStatus';
 import { initPushNotify } from './splash/pushNotifySettings';
 import { initStoreDeviceSettings } from './splash/storeDeviceSettings';
 import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
-import { withErrorBoundary } from './plugin/ErrorBoundary';
 import { initCustomDatasetHelper } from './metrics/customMetricsHelper';
 import AlertBar from './components/AlertBar';
-
-const defaultRoutes = (t) => [
-  {
-    key: 'label',
-    title: t('diary.label-tab'),
-    focusedIcon: 'check-bold',
-    unfocusedIcon: 'check-outline',
-    accessibilityLabel: t('diary.label-tab'),
-  },
-  {
-    key: 'metrics',
-    title: t('metrics.dashboard-tab'),
-    focusedIcon: 'chart-box',
-    unfocusedIcon: 'chart-box-outline',
-    accessibilityLabel: t('metrics.dashboard-tab'),
-  },
-  {
-    key: 'control',
-    title: t('control.profile-tab'),
-    focusedIcon: 'account',
-    unfocusedIcon: 'account-outline',
-    accessibilityLabel: t('control.profile-tab'),
-  },
-];
+import Main from './Main';
 
 export const AppContext = createContext<any>({});
 
-const scenes = {
-  label: withErrorBoundary(LabelTab),
-  metrics: withErrorBoundary(MetricsTab),
-  control: withErrorBoundary(ProfileSettings),
-};
-
 const App = () => {
-  const [index, setIndex] = useState(0);
   // will remain null while the onboarding state is still being determined
   const [onboardingState, setOnboardingState] = useState<OnboardingState | null>(null);
   const [permissionsPopupVis, setPermissionsPopupVis] = useState(false);
   const appConfig = useAppConfig();
   const permissionStatus = usePermissionStatus();
-  const { colors } = useTheme();
-  const { t } = useTranslation();
-
-  const routes = useMemo(() => {
-    const showMetrics = appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL';
-    return showMetrics ? defaultRoutes(t) : defaultRoutes(t).filter((r) => r.key != 'metrics');
-  }, [appConfig, t]);
-
-  const renderScene = BottomNavigation.SceneMap(scenes);
 
   const refreshOnboardingState = () => getPendingOnboardingState().then(setOnboardingState);
   useEffect(() => {
@@ -102,20 +58,7 @@ const App = () => {
     appContent = <ActivityIndicator size={'large'} style={{ flex: 1 }} />;
   } else if (onboardingState?.route == OnboardingRoute.DONE) {
     // if onboarding route is DONE, show the main app with navigation between tabs
-    appContent = (
-      <BottomNavigation
-        navigationState={{ index, routes }}
-        onIndexChange={setIndex}
-        renderScene={renderScene}
-        // Place at bottom, color of 'surface' (white) by default, and 68px tall (default was 80)
-        safeAreaInsets={{ bottom: 0 }}
-        style={{ backgroundColor: colors.surface }}
-        barStyle={{ height: 68, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0)' }}
-        // BottomNavigation uses secondaryContainer color for the background, but we want primaryContainer
-        // (light blue), so we override here.
-        theme={{ colors: { secondaryContainer: colors.primaryContainer } }}
-      />
-    );
+    appContent = <Main />;
   } else {
     // if there is an onboarding route that is not DONE, show the onboarding stack
     appContent = <OnboardingStack />;

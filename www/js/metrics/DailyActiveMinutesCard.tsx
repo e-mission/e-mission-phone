@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
 import LineChart from '../components/LineChart';
 import { getBaseModeByText } from '../diary/diaryHelper';
+import { tsForDayOfMetricData, valueForModeOnDay } from './metricsHelper';
 
 const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = (typeof ACTIVE_MODES)[number];
@@ -17,21 +18,19 @@ const DailyActiveMinutesCard = ({ userMetrics }: Props) => {
   const { t } = useTranslation();
 
   const dailyActiveMinutesRecords = useMemo(() => {
-    const records: { label: string; x: string; y: number }[] = [];
+    const records: { label: string; x: number; y: number }[] = [];
     const recentDays = userMetrics?.duration?.slice(-14);
     recentDays?.forEach((day) => {
       ACTIVE_MODES.forEach((mode) => {
-        const activeSeconds = day[`label_${mode}`];
-        if (activeSeconds) {
-          records.push({
-            label: labelKeyToRichMode(mode),
-            x: `${day.ts * 1000}`, // vertical chart, milliseconds on X axis
-            y: activeSeconds && activeSeconds / 60, // minutes on Y axis
-          });
-        }
+        const activeSeconds = valueForModeOnDay(day, mode);
+        records.push({
+          label: labelKeyToRichMode(mode),
+          x: tsForDayOfMetricData(day) * 1000, // vertical chart, milliseconds on X axis
+          y: activeSeconds ? activeSeconds / 60 : null, // minutes on Y axis
+        });
       });
     });
-    return records as { label: ActiveMode; x: string; y: number }[];
+    return records as { label: ActiveMode; x: number; y: number }[];
   }, [userMetrics?.duration]);
 
   return (

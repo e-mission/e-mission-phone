@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
 import color from 'color';
-import LabelTabContext from '../LabelTabContext';
+import TimelineContext from '../../TimelineContext';
 import { logDebug } from '../../plugin/logger';
 import { getBaseModeByKey, getBaseModeByValue } from '../diaryHelper';
 import { Text, Icon, useTheme } from 'react-native-paper';
@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 const ModesIndicator = ({ trip, detectedModes }) => {
   const { t } = useTranslation();
-  const { labelOptions, labelFor, confirmedModeFor } = useContext(LabelTabContext);
+  const { labelOptions, labelFor, confirmedModeFor } = useContext(TimelineContext);
   const { colors } = useTheme();
 
   const indicatorBackgroundColor = color(colors.onPrimary).alpha(0.8).rgb().string();
