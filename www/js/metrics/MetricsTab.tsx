@@ -21,7 +21,7 @@ import {
   AppConfig,
   GroupingField,
   MetricName,
-  MetricsList,
+  MetricList,
   MetricsUiSection,
 } from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
@@ -39,7 +39,7 @@ const DEFAULT_SECTIONS_TO_SHOW: MetricsUiSection[] = [
   'active_travel',
   'summary',
 ] as const;
-export const DEFAULT_METRICS_LIST: MetricsList = {
+export const DEFAULT_METRIC_LIST: MetricList = {
   distance: ['mode_confirm'],
   duration: ['mode_confirm'],
   count: ['mode_confirm'],
@@ -49,7 +49,7 @@ export const DEFAULT_METRICS_LIST: MetricsList = {
 async function fetchMetricsFromServer(
   type: 'user' | 'aggregate',
   dateRange: [string, string],
-  metricsList: MetricsList,
+  metricList: MetricList,
   appConfig: AppConfig,
 ) {
   const [startTs, endTs] = isoDateRangeToTsRange(dateRange);
@@ -58,7 +58,7 @@ async function fetchMetricsFromServer(
     freq: 'D',
     start_time: dateRange[0],
     end_time: dateRange[1],
-    metric_list: metricsList,
+    metric_list: metricList,
     is_return_aggregate: type == 'aggregate',
     app_config: { survey_info: appConfig.survey_info },
   };
@@ -82,7 +82,7 @@ const MetricsTab = () => {
     loadMoreDays,
   } = useContext(TimelineContext);
 
-  const metricsList = appConfig?.metrics?.phone_dashboard_ui?.metrics_list ?? DEFAULT_METRICS_LIST;
+  const metricList = appConfig?.metrics?.phone_dashboard_ui?.metric_list ?? DEFAULT_METRIC_LIST;
 
   const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
   // user metrics are computed on the phone from the timeline data
@@ -90,7 +90,7 @@ const MetricsTab = () => {
     if (!timelineMap) return;
     const timelineValues = [...timelineMap.values()];
     const result = metrics_summaries.generate_summaries(
-      { ...metricsList },
+      { ...metricList },
       timelineValues,
       appConfig,
       timelineLabelMap,
@@ -143,7 +143,7 @@ const MetricsTab = () => {
       const serverResponse: any = await fetchMetricsFromServer(
         population,
         dateRange,
-        metricsList,
+        metricList,
         appConfig,
       );
       logDebug('MetricsTab: received metrics: ' + JSON.stringify(serverResponse));
@@ -201,7 +201,7 @@ const MetricsTab = () => {
         )}
         {sectionsToShow.includes('summary') && (
           <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-            {Object.entries(metricsList).map(
+            {Object.entries(metricList).map(
               ([metricName, groupingFields]: [MetricName, GroupingField[]]) => {
                 const units: { [k: string]: [string, (any) => string] } = {
                   distance: [distanceSuffix, getFormattedDistance],

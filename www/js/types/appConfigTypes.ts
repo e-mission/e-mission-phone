@@ -105,13 +105,13 @@ export const groupingFields = [
   'survey',
 ] as const;
 export type GroupingField = (typeof groupingFields)[number];
-export type MetricsList = { [k in MetricName]?: GroupingField[] };
+export type MetricList = { [k in MetricName]?: GroupingField[] };
 export type MetricsUiSection = 'footprint' | 'active_travel' | 'summary' | 'engagement' | 'surveys';
 export type MetricsConfig = {
   include_test_users: boolean;
   phone_dashboard_ui?: {
     sections: MetricsUiSection[];
-    metrics_list: MetricsList;
+    metric_list: MetricList;
     footprint_options?: {
       unlabeled_uncertainty: boolean;
     };
