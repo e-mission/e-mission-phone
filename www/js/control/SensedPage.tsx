@@ -4,7 +4,7 @@ import { useTheme, Appbar, IconButton, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { DateTime } from 'luxon';
-import { sendEmail } from './emailService';
+import { sendLocalDBFile } from '../services/shareLocalDBFile';
 import NavBar from '../components/NavBar';
 
 const SensedPage = ({ pageVis, setPageVis }) => {
@@ -60,7 +60,7 @@ const SensedPage = ({ pageVis, setPageVis }) => {
         <View
           style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
           <IconButton icon="refresh" onPress={() => updateEntries()} />
-          <IconButton icon="email" onPress={() => sendEmail('userCacheDB')} />
+          <IconButton icon="email" onPress={() => sendLocalDBFile('userCacheDB')} />
         </View>
 
         <FlashList

@@ -23,7 +23,7 @@
     "force-sync": "Force sync",
     "share": "Share",
     "download-json-dump": "Download json dump",
-    "email-log": "Email log",
+    "share-log": "Share log",
     "upload-log": "Upload log",
     "view-privacy": "View Privacy Policy",
     "user-data": "User data",
@@ -260,16 +260,14 @@
     "reading-unprocessed-data": "Reading unprocessed data..."
   },
 
-  "email-service": {
-    "email-account-not-configured": "Email account is not configured, cannot send email",
-    "email-account-mail-app": "You must have the mail app on your phone configured with an email address. Otherwise, this won't work",
-    "going-to-email": "Going to email database from {{parentDir}}",
-    "email-log": {
+  "shareFile-service": {
+    "send-to": "Please send this file to k.shankari@nrel.gov, or another OpenPATH team member.",
+    "send-log": {
       "subject-logs": "emission logs",
       "body-please-fill-in-what-is-wrong": "please fill in what is wrong"
     },
     "no-email-address-configured": "No email address configured.",
-    "email-data": {
+    "send-data": {
       "subject-data-dump-from-to": "Data dump from {{start}} to {{end}}",
       "body-data-consists-of-list-of-entries": "Data consists of a list of entries.\nEntry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \nData can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data \n and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb"
     }
