@@ -136,12 +136,12 @@ const usePermissionStatus = () => {
       androidVersion < 6
         ? 'intro.appstatus.locperms.description.android-lt-6'
         : androidVersion < 10
-        ? 'intro.appstatus.locperms.description.android-6-9'
-        : androidVersion < 11
-        ? 'intro.appstatus.locperms.description.android-10'
-        : androidVersion < 12
-        ? 'intro.appstatus.locperms.description.android-11'
-        : 'intro.appstatus.locperms.description.android-gte-12';
+          ? 'intro.appstatus.locperms.description.android-6-9'
+          : androidVersion < 11
+            ? 'intro.appstatus.locperms.description.android-10'
+            : androidVersion < 12
+              ? 'intro.appstatus.locperms.description.android-11'
+              : 'intro.appstatus.locperms.description.android-gte-12';
     logDebug('description tags are ' + androidSettingsDescTag + ' ' + androidPermDescTag);
     // location settings
     let locSettingsCheck = {
@@ -392,8 +392,8 @@ const usePermissionStatus = () => {
       androidVersion == 12
         ? 'intro.appstatus.unusedapprestrict.description.android-disable-12'
         : androidVersion < 12
-        ? 'intro.appstatus.unusedapprestrict.description.android-disable-lt-12'
-        : 'intro.appstatus.unusedapprestrict.description.android-disable-gte-13';
+          ? 'intro.appstatus.unusedapprestrict.description.android-disable-lt-12'
+          : 'intro.appstatus.unusedapprestrict.description.android-disable-gte-13';
     let unusedAppsUnrestrictedCheck = {
       name: t('intro.appstatus.unusedapprestrict.name'),
       desc: t(androidUnusedDescTag),
