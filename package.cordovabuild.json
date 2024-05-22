@@ -67,6 +67,7 @@
         "ANDROID_HOST": " ",
         "ANDROID_PATHPREFIX": "/"
       },
+      "cordova-plugin-email-composer": {},
       "cordova-plugin-x-socialsharing": {
         "PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION": "This app requires photo library access to share photos on social media.",
         "PHOTO_LIBRARY_USAGE_DESCRIPTION": "This app requires photo library access to share photos on social media."
@@ -127,6 +128,7 @@
     "cordova-plugin-em-settings": "git+https://github.com/e-mission/cordova-connection-settings.git#v1.2.3",
     "cordova-plugin-em-unifiedlogger": "git+https://github.com/e-mission/cordova-unified-logger.git#v1.3.6",
     "cordova-plugin-em-usercache": "git+https://github.com/e-mission/cordova-usercache.git#v1.1.9",
+    "cordova-plugin-email-composer": "git+https://github.com/katzer/cordova-plugin-email-composer.git#0.10.1",
     "cordova-plugin-file": "8.0.0",
     "cordova-plugin-inappbrowser": "5.0.0",
     "cordova-plugin-ionic-keyboard": "2.2.0",
