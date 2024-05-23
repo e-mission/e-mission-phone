@@ -81,6 +81,7 @@ function _fillSurveyInfo(config: Partial<AppConfig>): AppConfig {
 const _backwardsCompatFill = (config: Partial<AppConfig>): AppConfig =>
   _fillSurveyInfo(_fillStudyName(config));
 
+export let _cacheResourcesFetchPromise: Promise<(string | undefined)[]> = Promise.resolve([]);
 /**
  * @description Fetch and cache any surveys resources that are referenced by URL in the config,
  *   as well as the label_options config if it is present.
@@ -89,15 +90,17 @@ const _backwardsCompatFill = (config: Partial<AppConfig>): AppConfig =>
  * @param config The app config
  */
 function cacheResourcesFromConfig(config: AppConfig) {
+  const fetchPromises: Promise<string | undefined>[] = [];
   if (config.survey_info?.surveys) {
     Object.values(config.survey_info.surveys).forEach((survey) => {
       if (!survey?.['formPath']) throw new Error(i18next.t('config.survey-missing-formpath'));
-      fetchUrlCached(survey['formPath'], { cache: 'reload' });
+      fetchPromises.push(fetchUrlCached(survey['formPath'], { cache: 'reload' }));
     });
   }
   if (config.label_options) {
-    fetchUrlCached(config.label_options, { cache: 'reload' });
+    fetchPromises.push(fetchUrlCached(config.label_options, { cache: 'reload' }));
   }
+  _cacheResourcesFetchPromise = Promise.all(fetchPromises);
 }
 
 /**

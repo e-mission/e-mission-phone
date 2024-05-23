@@ -26,7 +26,11 @@ import ControlCollectionHelper, {
   helperToggleLowAccuracy,
   forceTransition,
 } from './ControlCollectionHelper';
-import { loadNewConfig, resetDataAndRefresh } from '../config/dynamicConfig';
+import {
+  _cacheResourcesFetchPromise,
+  loadNewConfig,
+  resetDataAndRefresh,
+} from '../config/dynamicConfig';
 import { AppContext } from '../App';
 import { shareQR } from '../components/QrCode';
 import { storageClear } from '../plugin/storage';
@@ -311,7 +315,10 @@ const ProfileSettings = () => {
     AlertManager.addMessage({ text: t('control.refreshing-app-config') });
     const updated = await loadNewConfig(authSettings.opcode, appConfig?.version);
     if (updated) {
-      window.location.reload();
+      // wait for resources to finish downloading before reloading
+      _cacheResourcesFetchPromise
+        .then(() => window.location.reload())
+        .catch((error) => displayError(error, 'Failed to download a resource'));
     } else {
       AlertManager.addMessage({ text: t('control.already-up-to-date') });
     }
