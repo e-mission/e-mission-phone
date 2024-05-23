@@ -89,17 +89,18 @@ const MetricsCard = ({
     uniqueLabels.forEach((label) => {
       const sum: any = metricDataDays.reduce((acc, day) => {
         const val = valueForFieldOnDay(day, groupingFields[0], label);
-        // if val is object, add its values to the accumulator's values
-        if (isNaN(val)) {
+        // if val is number, add it to the accumulator
+        if (!isNaN(val)) {
+          return acc + val;
+        } else if (val && typeof val == 'object') {
+          // if val is object, add its values to the accumulator's values
           const newAcc = {};
           for (let key in val) {
             newAcc[key] = (acc[key] || 0) + val[key];
           }
           return newAcc;
-        } else {
-          // if val is number, add it to the accumulator
-          if (typeof val == 'number') return acc + val;
         }
+        return acc;
       }, 0);
       vals[label] = unitFormatFn ? unitFormatFn(sum) : sum;
     });
