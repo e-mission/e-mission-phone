@@ -43,7 +43,6 @@ export const DEFAULT_METRIC_LIST: MetricList = {
   distance: ['mode_confirm'],
   duration: ['mode_confirm'],
   count: ['mode_confirm'],
-  response_count: ['mode_confirm'],
 };
 
 async function fetchMetricsFromServer(
@@ -98,7 +97,7 @@ const MetricsTab = () => {
     console.debug('MetricsTab: computed userMetrics', result);
     logDebug('MetricsTab: computed userMetrics' + JSON.stringify(result));
     return result;
-  }, [timelineMap]);
+  }, [appConfig, timelineMap, timelineLabelMap]);
 
   // at least N_DAYS_TO_LOAD of timeline data should be loaded for the user metrics
   useEffect(() => {
