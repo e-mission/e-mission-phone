@@ -21,7 +21,6 @@ import {
 } from './diary/timelineHelper';
 import { getPipelineRangeTs } from './services/commHelper';
 import { getNotDeletedCandidates, mapInputsToTimelineEntries } from './survey/inputMatcher';
-import { publish } from './customEventHandler';
 import { EnketoUserInputEntry } from './survey/enketo/enketoHelper';
 import { VehicleIdentity } from './types/appConfigTypes';
 import { primarySectionForTrip } from './diary/diaryHelper';
@@ -140,10 +139,6 @@ export const useTimelineContext = (): ContextProps => {
     );
     setTimelineLabelMap(newTimelineLabelMap);
     setTimelineNotesMap(newTimelineNotesMap);
-    publish('applyLabelTabFilters', {
-      timelineMap,
-      timelineLabelMap: newTimelineLabelMap,
-    });
     setTimelineIsLoading(false);
   }, [timelineMap]);
 
@@ -321,14 +316,6 @@ export const useTimelineContext = (): ContextProps => {
         },
       };
       setTimelineLabelMap(newTimelineLabelMap);
-      setTimeout(
-        () =>
-          publish('applyLabelTabFilters', {
-            timelineMap,
-            timelineLabelMap: newTimelineLabelMap,
-          }),
-        30000,
-      ); // wait 30s before reapplying filters
     } else if (inputType == 'note') {
       const notesForEntry = timelineNotesMap?.[oid] || [];
       const newAddition = { data: userInput, metadata: { write_ts: nowTs } };

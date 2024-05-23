@@ -6,7 +6,7 @@ export NPM_VERSION=9.3.1
 # ideally, this would be the same version as the CI
 # Looks like brew supports only major and minor, not patch version
 export RUBY_VERSION=3.0
-export COCOAPODS_VERSION=1.11.3
+export COCOAPODS_VERSION=1.12.1
 export GRADLE_VERSION=7.6
 export OSX_EXP_VERSION=12
 
