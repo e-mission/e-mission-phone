@@ -14,7 +14,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
  * @description Calculates the percentage of 'responded' values across days of 'response_count' data.
  * @returns Percentage as a whole number (0-100), or null if no data.
  */
-function getResponsePctForDays(days: DayOfMetricData[]) {
+function getResponsePctForDays(days: DayOfMetricData<'response_count'>[]) {
   const surveys = getUniqueLabelsForDays(days);
   let acc = { responded: 0, not_responded: 0 };
   days.forEach((day) => {

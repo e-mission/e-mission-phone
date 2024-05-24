@@ -9,7 +9,10 @@ import { DayOfMetricData, MetricsData } from './metricsTypes';
 import { GroupingField } from '../types/appConfigTypes';
 import { getUniqueLabelsForDays } from './metricsHelper';
 
-function sumResponseCountsForValue(days: DayOfMetricData[], value: `${GroupingField}_${string}`) {
+function sumResponseCountsForValue(
+  days: DayOfMetricData<'response_count'>[],
+  value: `${GroupingField}_${string}`,
+) {
   const acc = { responded: 0, not_responded: 0 };
   days.forEach((day) => {
     acc.responded += day[value]?.responded || 0;
