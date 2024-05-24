@@ -1,21 +1,19 @@
 import React, { useEffect, useState, useMemo, useContext } from 'react';
-import { View, ScrollView, useWindowDimensions } from 'react-native';
+import { ScrollView, useWindowDimensions } from 'react-native';
 import { Appbar, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import NavBar from '../components/NavBar';
 import { MetricsData } from './metricsTypes';
 import MetricsCard from './MetricsCard';
-import { formatForDisplay, useImperialConfig } from '../config/useImperialConfig';
 import WeeklyActiveMinutesCard from './WeeklyActiveMinutesCard';
-import { secondsToHours, secondsToMinutes } from './metricsHelper';
 import CarbonFootprintCard from './CarbonFootprintCard';
 import Carousel from '../components/Carousel';
 import DailyActiveMinutesCard from './DailyActiveMinutesCard';
 import CarbonTextCard from './CarbonTextCard';
 import ActiveMinutesTableCard from './ActiveMinutesTableCard';
-import { getAggregateData, getMetrics } from '../services/commHelper';
-import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
+import { getAggregateData } from '../services/commHelper';
+import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
 import {
   AppConfig,
@@ -26,7 +24,7 @@ import {
 } from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext, { TimelineLabelMap, TimelineMap } from '../TimelineContext';
-import { isoDateRangeToTsRange, isoDatesDifference } from '../diary/timelineHelper';
+import { isoDatesDifference } from '../diary/timelineHelper';
 import { metrics_summaries } from 'e-mission-common';
 import SurveyLeaderboardCard from './SurveyLeaderboardCard';
 import SurveyTripCategoriesCard from './SurveyTripCategoriesCard';
@@ -95,7 +93,6 @@ async function fetchAggMetrics(
 
 const MetricsTab = () => {
   const appConfig = useAppConfig();
-  const { colors } = useTheme();
   const { t } = useTranslation();
   const {
     dateRange,
