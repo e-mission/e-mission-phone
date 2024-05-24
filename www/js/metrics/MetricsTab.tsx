@@ -15,7 +15,7 @@ import DailyActiveMinutesCard from './DailyActiveMinutesCard';
 import CarbonTextCard from './CarbonTextCard';
 import ActiveMinutesTableCard from './ActiveMinutesTableCard';
 import { getAggregateData, getMetrics } from '../services/commHelper';
-import { displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
+import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
 import {
   AppConfig,
@@ -25,7 +25,7 @@ import {
   MetricsUiSection,
 } from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
-import TimelineContext from '../TimelineContext';
+import TimelineContext, { TimelineLabelMap, TimelineMap } from '../TimelineContext';
 import { isoDateRangeToTsRange, isoDatesDifference } from '../diary/timelineHelper';
 import { metrics_summaries } from 'e-mission-common';
 import SurveyLeaderboardCard from './SurveyLeaderboardCard';
@@ -45,24 +45,49 @@ export const DEFAULT_METRIC_LIST: MetricList = {
   count: ['mode_confirm'],
 };
 
-async function fetchMetricsFromServer(
-  type: 'user' | 'aggregate',
-  dateRange: [string, string],
+async function computeUserMetrics(
   metricList: MetricList,
+  timelineMap: TimelineMap,
+  timelineLabelMap: TimelineLabelMap | null,
   appConfig: AppConfig,
 ) {
-  const [startTs, endTs] = isoDateRangeToTsRange(dateRange);
-  logDebug('MetricsTab: fetching metrics from server for ts range ' + startTs + ' to ' + endTs);
+  try {
+    const timelineValues = [...timelineMap.values()];
+    const result = metrics_summaries.generate_summaries(
+      { ...metricList },
+      timelineValues,
+      appConfig,
+      timelineLabelMap,
+    );
+    logDebug('MetricsTab: computed userMetrics');
+    console.debug('MetricsTab: computed userMetrics', result);
+    return result as MetricsData;
+  } catch (e) {
+    displayError(e, 'Error computing user metrics');
+  }
+}
+
+async function fetchAggMetrics(
+  metricList: MetricList,
+  dateRange: [string, string],
+  appConfig: AppConfig,
+) {
+  logDebug('MetricsTab: fetching agg metrics from server for dateRange ' + dateRange);
   const query = {
     freq: 'D',
     start_time: dateRange[0],
     end_time: dateRange[1],
     metric_list: metricList,
-    is_return_aggregate: type == 'aggregate',
+    is_return_aggregate: true,
     app_config: { survey_info: appConfig.survey_info },
   };
-  if (type == 'user') return getMetrics('timestamp', query);
-  return getAggregateData('result/metrics/yyyy_mm_dd', query, appConfig.server);
+  return getAggregateData('result/metrics/yyyy_mm_dd', query, appConfig.server)
+    .then((response) => {
+      logDebug('MetricsTab: received aggMetrics');
+      console.debug('MetricsTab: received aggMetrics', response);
+      return response as MetricsData;
+    })
+    .catch((e) => displayError(e, 'Error fetching aggregate metrics'));
 }
 
 const MetricsTab = () => {
@@ -81,85 +106,31 @@ const MetricsTab = () => {
 
   const metricList = appConfig?.metrics?.phone_dashboard_ui?.metric_list ?? DEFAULT_METRIC_LIST;
 
+  const [userMetrics, setUserMetrics] = useState<MetricsData | undefined>(undefined);
   const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
-  // user metrics are computed on the phone from the timeline data
-  const userMetrics = useMemo(() => {
-    if (!timelineMap) return;
-    const timelineValues = [...timelineMap.values()];
-    const result = metrics_summaries.generate_summaries(
-      { ...metricList },
-      timelineValues,
-      appConfig,
-      timelineLabelMap,
-    ) as MetricsData;
-    console.debug('MetricsTab: computed userMetrics', result);
-    logDebug('MetricsTab: computed userMetrics' + JSON.stringify(result));
-    return result;
-  }, [appConfig, timelineMap, timelineLabelMap]);
+  const [aggMetricsIsLoading, setAggMetricsIsLoading] = useState(false);
 
-  // at least N_DAYS_TO_LOAD of timeline data should be loaded for the user metrics
   useEffect(() => {
     if (!appConfig) return;
     const dateRangeDays = isoDatesDifference(...dateRange);
-
-    // this tab uses the last N_DAYS_TO_LOAD of data; if we need more, we should fetch it
-    if (dateRangeDays < N_DAYS_TO_LOAD) {
-      if (timelineIsLoading) {
-        logDebug('MetricsTab: timeline is still loading, not loading more days yet');
-      } else {
-        logDebug('MetricsTab: loading more days');
-        loadMoreDays('past', N_DAYS_TO_LOAD - dateRangeDays);
-      }
+    if (timelineIsLoading) {
+      logDebug('MetricsTab: timeline is still loading, skipping');
+    } else if (dateRangeDays < N_DAYS_TO_LOAD) {
+      logDebug('MetricsTab: loading more days');
+      loadMoreDays('past', N_DAYS_TO_LOAD - dateRangeDays);
     } else {
-      logDebug(`MetricsTab: date range >= ${N_DAYS_TO_LOAD} days, not loading more days`);
-    }
-  }, [dateRange, timelineIsLoading, appConfig]);
-
-  // aggregate metrics fetched from the server whenever the date range is set
-  useEffect(() => {
-    if (!appConfig) return;
-    logDebug('MetricsTab: dateRange updated to ' + JSON.stringify(dateRange));
-    const dateRangeDays = isoDatesDifference(...dateRange);
-    if (dateRangeDays < N_DAYS_TO_LOAD) {
-      logDebug(
-        `MetricsTab: date range < ${N_DAYS_TO_LOAD} days, not loading aggregate metrics yet`,
+      if (!timelineMap) return;
+      logDebug(`MetricsTab: date range >= ${N_DAYS_TO_LOAD} days, computing metrics`);
+      computeUserMetrics(metricList, timelineMap, timelineLabelMap, appConfig).then((result) =>
+        setUserMetrics(result),
       );
-    } else {
-      loadMetricsForPopulation('aggregate', dateRange, appConfig);
+      setAggMetricsIsLoading(true);
+      fetchAggMetrics(metricList, dateRange, appConfig).then((response) => {
+        setAggMetricsIsLoading(false);
+        setAggMetrics(response);
+      });
     }
-  }, [dateRange, appConfig]);
-
-  async function loadMetricsForPopulation(
-    population: 'user' | 'aggregate',
-    dateRange: [string, string],
-    appConfig: AppConfig,
-  ) {
-    try {
-      logDebug(`MetricsTab: fetching metrics for population ${population}'
-        in date range ${JSON.stringify(dateRange)}`);
-      const serverResponse: any = await fetchMetricsFromServer(
-        population,
-        dateRange,
-        metricList,
-        appConfig,
-      );
-      logDebug('MetricsTab: received metrics: ' + JSON.stringify(serverResponse));
-      // const metrics = {};
-      // const dataKey = population == 'user' ? 'user_metrics' : 'aggregate_metrics';
-      // METRIC_LIST.forEach((metricName, i) => {
-      //   metrics[metricName] = serverResponse[dataKey][i];
-      // });
-      // logDebug('MetricsTab: parsed metrics: ' + JSON.stringify(metrics));
-      // if (population == 'user') {
-      //   // setUserMetrics(metrics as MetricsData);
-      // } else {
-      console.debug('MetricsTab: aggMetrics', serverResponse);
-      setAggMetrics(serverResponse as MetricsData);
-      // }
-    } catch (e) {
-      logWarn(e + t('errors.while-loading-metrics')); // replace with displayErr
-    }
-  }
+  }, [appConfig, dateRange, timelineIsLoading, timelineMap, timelineLabelMap]);
 
   const sectionsToShow =
     appConfig?.metrics?.phone_dashboard_ui?.sections || DEFAULT_SECTIONS_TO_SHOW;
@@ -169,7 +140,7 @@ const MetricsTab = () => {
 
   return (
     <>
-      <NavBar isLoading={Boolean(timelineIsLoading)}>
+      <NavBar isLoading={Boolean(timelineIsLoading || aggMetricsIsLoading)}>
         <Appbar.Content title={t('metrics.dashboard-tab')} />
         <DateSelect
           mode="range"
