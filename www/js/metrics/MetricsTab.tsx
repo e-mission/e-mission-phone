@@ -69,8 +69,6 @@ const MetricsTab = () => {
   const appConfig = useAppConfig();
   const { colors } = useTheme();
   const { t } = useTranslation();
-  const { getFormattedSpeed, speedSuffix, getFormattedDistance, distanceSuffix } =
-    useImperialConfig();
   const {
     dateRange,
     setDateRange,
@@ -202,15 +200,6 @@ const MetricsTab = () => {
           <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
             {Object.entries(metricList).map(
               ([metricName, groupingFields]: [MetricName, GroupingField[]]) => {
-                const units: { [k: string]: [string, (any) => string] } = {
-                  distance: [distanceSuffix, getFormattedDistance],
-                  duration: [t('metrics.hours'), secondsToHours],
-                  count: [t('metrics.trips'), formatForDisplay],
-                  response_count: [
-                    t('metrics.responses'),
-                    (e) => `${e.responded}/${e.responded || 0 + e.not_responded || 0}`,
-                  ],
-                };
                 return (
                   <MetricsCard
                     key={metricName}
@@ -219,8 +208,6 @@ const MetricsTab = () => {
                     cardTitle={t(`main-metrics.${metricName}`)}
                     userMetricsDays={userMetrics?.[metricName]}
                     aggMetricsDays={aggMetrics?.[metricName]}
-                    axisUnits={units[metricName][0]}
-                    unitFormatFn={units[metricName][1]}
                   />
                 );
               },

@@ -5,6 +5,8 @@ import i18next from 'i18next';
 export type ImperialConfig = {
   distanceSuffix: string;
   speedSuffix: string;
+  convertDistance: (d: number) => number;
+  convertSpeed: (s: number) => number;
   getFormattedDistance: (d: number) => string;
   getFormattedSpeed: (s: number) => string;
 };
@@ -50,6 +52,8 @@ export function useImperialConfig(): ImperialConfig {
   return {
     distanceSuffix: useImperial ? 'mi' : 'km',
     speedSuffix: useImperial ? 'mph' : 'kmph',
+    convertDistance: (d) => convertDistance(d, useImperial),
+    convertSpeed: (s) => convertSpeed(s, useImperial),
     getFormattedDistance: useImperial
       ? (d) => formatForDisplay(convertDistance(d, true))
       : (d) => formatForDisplay(convertDistance(d, false)),

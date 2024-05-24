@@ -1,9 +1,10 @@
 import { DateTime } from 'luxon';
-import { formatForDisplay } from '../config/useImperialConfig';
 import { DayOfMetricData } from './metricsTypes';
 import { logDebug } from '../plugin/logger';
 import { isoDateWithOffset, isoDatesDifference } from '../diary/timelineHelper';
-import { groupingFields } from '../types/appConfigTypes';
+import { MetricName, groupingFields } from '../types/appConfigTypes';
+import { ImperialConfig, formatForDisplay } from '../config/useImperialConfig';
+import i18next from 'i18next';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];
@@ -39,9 +40,8 @@ export const getLabelsForDay = (metricDataDay: DayOfMetricData) =>
     return acc;
   }, [] as string[]);
 
-export const secondsToMinutes = (seconds: number) => formatForDisplay(seconds / 60);
-
-export const secondsToHours = (seconds: number) => formatForDisplay(seconds / 3600);
+export const secondsToMinutes = (seconds: number) => seconds / 60;
+export const secondsToHours = (seconds: number) => seconds / 3600;
 
 // segments metricsDays into weeks, with the most recent week first
 export function segmentDaysByWeeks(days: DayOfMetricData[], lastDate: string) {
@@ -233,4 +233,36 @@ function isAllCustom(isSensedKeys, isCustomKeys) {
   // Logger.displayError("Mixed entries that combine sensed and custom labels",
   //     "Please report to your program admin");
   return undefined;
+}
+
+// [unit suffix, unit conversion function, unit display function]
+// e.g. ['hours', (seconds) => seconds/3600, (seconds) => seconds/3600 + ' hours']
+type UnitUtils = [string, (v) => number, (v) => string];
+export function getUnitUtilsForMetric(
+  metricName: MetricName,
+  imperialConfig: ImperialConfig,
+): UnitUtils {
+  const fns: { [k in MetricName]: UnitUtils } = {
+    distance: [
+      imperialConfig.distanceSuffix,
+      (x) => imperialConfig.convertDistance(x),
+      (x) => imperialConfig.getFormattedDistance(x) + ' ' + imperialConfig.distanceSuffix,
+    ],
+    duration: [
+      i18next.t('metrics.hours'),
+      (v) => secondsToHours(v),
+      (v) => formatForDisplay(secondsToHours(v)) + ' ' + i18next.t('metrics.hours'),
+    ],
+    count: [i18next.t('metrics.trips'), (v) => v, (v) => v + ' ' + i18next.t('metrics.trips')],
+    response_count: [
+      i18next.t('metrics.responses'),
+      (v) => v.responded || 0,
+      (v) => {
+        const responded = v.responded || 0;
+        const total = responded + (v.not_responded || 0);
+        return `${responded}/${total} ${i18next.t('metrics.responses')}`;
+      },
+    ],
+  };
+  return fns[metricName];
 }

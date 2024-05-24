@@ -10,22 +10,22 @@ import {
   tsForDayOfMetricData,
   getUniqueLabelsForDays,
   valueForFieldOnDay,
+  getUnitUtilsForMetric,
 } from './metricsHelper';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { cardStyles } from './MetricsTab';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
 import { getBaseModeByKey, getBaseModeByText, modeColors } from '../diary/diaryHelper';
 import { useTranslation } from 'react-i18next';
-import { GroupingField } from '../types/appConfigTypes';
+import { GroupingField, MetricName } from '../types/appConfigTypes';
+import { useImperialConfig } from '../config/useImperialConfig';
 
 type Props = {
-  metricName: string;
+  metricName: MetricName;
   groupingFields: GroupingField[];
   cardTitle: string;
   userMetricsDays?: DayOfMetricData[];
   aggMetricsDays?: DayOfMetricData[];
-  axisUnits: string;
-  unitFormatFn?: (val: number) => string | number;
 };
 const MetricsCard = ({
   metricName,
@@ -33,17 +33,21 @@ const MetricsCard = ({
   cardTitle,
   userMetricsDays,
   aggMetricsDays,
-  axisUnits,
-  unitFormatFn,
 }: Props) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const imperialConfig = useImperialConfig();
   const [viewMode, setViewMode] = useState<'details' | 'graph'>('details');
   const [populationMode, setPopulationMode] = useState<'user' | 'aggregate'>('user');
   const [graphIsStacked, setGraphIsStacked] = useState(true);
   const metricDataDays = useMemo(
     () => (populationMode == 'user' ? userMetricsDays : aggMetricsDays),
     [populationMode, userMetricsDays, aggMetricsDays],
+  );
+
+  const [axisUnits, unitConvertFn, unitDisplayFn] = useMemo(
+    () => getUnitUtilsForMetric(metricName, imperialConfig),
+    [metricName],
   );
 
   // for each label on each day, create a record for the chart
@@ -57,7 +61,7 @@ const MetricsCard = ({
         if (rawVal) {
           records.push({
             label: labelKeyToRichMode(label),
-            x: unitFormatFn ? unitFormatFn(rawVal) : rawVal,
+            x: unitConvertFn(rawVal),
             y: tsForDayOfMetricData(day) * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
           });
         }
@@ -102,7 +106,7 @@ const MetricsCard = ({
         }
         return acc;
       }, 0);
-      vals[label] = unitFormatFn ? unitFormatFn(sum) : sum;
+      vals[label] = unitDisplayFn(sum);
     });
     return vals;
   }, [metricDataDays, viewMode]);
@@ -156,7 +160,7 @@ const MetricsCard = ({
               {Object.keys(metricSumValues).map((label, i) => (
                 <View style={{ width: '50%', paddingHorizontal: 8 }} key={i}>
                   <Text variant="titleSmall">{labelKeyToRichMode(label)}</Text>
-                  <Text>{metricSumValues[label] + ' ' + axisUnits}</Text>
+                  <Text>{metricSumValues[label]}</Text>
                 </View>
               ))}
             </View>
