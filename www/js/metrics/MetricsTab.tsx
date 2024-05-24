@@ -71,12 +71,12 @@ const MetricsTab = () => {
   const { t } = useTranslation();
   const {
     dateRange,
-    setDateRange,
     timelineMap,
     timelineLabelMap,
     timelineIsLoading,
     refreshTimeline,
     loadMoreDays,
+    loadDateRange,
   } = useContext(TimelineContext);
 
   const metricList = appConfig?.metrics?.phone_dashboard_ui?.metric_list ?? DEFAULT_METRIC_LIST;
@@ -177,7 +177,7 @@ const MetricsTab = () => {
             const start = DateTime.fromJSDate(startDate).toISODate();
             const end = DateTime.fromJSDate(endDate).toISODate();
             if (!start || !end) return displayErrorMsg('Invalid date');
-            setDateRange([start, end]);
+            loadDateRange([start, end]);
           }}
         />
         <Appbar.Action icon="refresh" size={32} onPress={refreshTimeline} />
