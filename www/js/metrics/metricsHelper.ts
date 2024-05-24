@@ -48,9 +48,8 @@ export function segmentDaysByWeeks(days: DayOfMetricData[], lastDate: string) {
   const weeks: DayOfMetricData[][] = [[]];
   let cutoff = isoDateWithOffset(lastDate, -7 * weeks.length);
   for (let i = days.length - 1; i >= 0; i--) {
-    const date = dateForDayOfMetricData(days[i]);
     // if date is older than cutoff, start a new week
-    if (isoDatesDifference(date, cutoff) > 0) {
+    if (isoDatesDifference(days[i].date, cutoff) > 0) {
       weeks.push([]);
       cutoff = isoDateWithOffset(lastDate, -7 * weeks.length);
     }
@@ -60,18 +59,14 @@ export function segmentDaysByWeeks(days: DayOfMetricData[], lastDate: string) {
 }
 
 export function formatDate(day: DayOfMetricData) {
-  const dt = DateTime.fromISO(dateForDayOfMetricData(day), { zone: 'utc' });
+  const dt = DateTime.fromISO(day.date, { zone: 'utc' });
   return dt.toLocaleString({ ...DateTime.DATE_SHORT, year: undefined });
 }
 
 export function formatDateRangeOfDays(days: DayOfMetricData[]) {
   if (!days?.length) return '';
-  const firstDayDt = DateTime.fromISO(dateForDayOfMetricData(days[0]), {
-    zone: 'utc',
-  });
-  const lastDayDt = DateTime.fromISO(dateForDayOfMetricData(days[days.length - 1]), {
-    zone: 'utc',
-  });
+  const firstDayDt = DateTime.fromISO(days[0].date, { zone: 'utc' });
+  const lastDayDt = DateTime.fromISO(days[days.length - 1].date, { zone: 'utc' });
   const firstDay = firstDayDt.toLocaleString({ ...DateTime.DATE_SHORT, year: undefined });
   const lastDay = lastDayDt.toLocaleString({ ...DateTime.DATE_SHORT, year: undefined });
   return `${firstDay} - ${lastDay}`;
@@ -161,11 +156,12 @@ export function parseDataFromMetrics(metrics, population) {
   return Object.entries(mode_bins).map(([key, values]) => ({ key, values }));
 }
 
-export const dateForDayOfMetricData = (day: DayOfMetricData) =>
-  'date' in day ? day.date : day.fmt_time.substring(0, 10);
-
-export const tsForDayOfMetricData = (day: DayOfMetricData) =>
-  DateTime.fromISO(dateForDayOfMetricData(day)).toSeconds();
+const _datesTsCache = {};
+export const tsForDayOfMetricData = (day: DayOfMetricData) => {
+  if (_datesTsCache[day.date] == undefined)
+    _datesTsCache[day.date] = DateTime.fromISO(day.date).toSeconds();
+  return _datesTsCache[day.date];
+};
 
 export const valueForFieldOnDay = (day: DayOfMetricData, field: string, key: string) =>
   day[`${field}_${key}`];
