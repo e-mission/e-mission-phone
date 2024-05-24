@@ -91,18 +91,18 @@ const MetricsCard = ({
     // for each label, sum up cumulative values across all days
     const vals = {};
     uniqueLabels.forEach((label) => {
-      const sum: any = metricDataDays.reduce((acc, day) => {
+      const sum: any = metricDataDays.reduce<number | Object>((acc, day) => {
         const val = valueForFieldOnDay(day, groupingFields[0], label);
         // if val is number, add it to the accumulator
         if (!isNaN(val)) {
           return acc + val;
         } else if (val && typeof val == 'object') {
           // if val is object, add its values to the accumulator's values
-          const newAcc = {};
+          acc = acc || {};
           for (let key in val) {
-            newAcc[key] = (acc[key] || 0) + val[key];
+            acc[key] = (acc[key] || 0) + val[key];
           }
-          return newAcc;
+          return acc;
         }
         return acc;
       }, 0);
