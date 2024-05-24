@@ -87,7 +87,10 @@ async function fetchAggMetrics(
       console.debug('MetricsTab: received aggMetrics', response);
       return response as MetricsData;
     })
-    .catch((e) => displayError(e, 'Error fetching aggregate metrics'));
+    .catch((e) => {
+      displayError(e, 'Error fetching aggregate metrics');
+      return undefined;
+    });
 }
 
 const MetricsTab = () => {
@@ -110,27 +113,36 @@ const MetricsTab = () => {
   const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
   const [aggMetricsIsLoading, setAggMetricsIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (!appConfig) return;
+  const readyToLoad = useMemo(() => {
+    if (!appConfig) return false;
     const dateRangeDays = isoDatesDifference(...dateRange);
-    if (timelineIsLoading) {
-      logDebug('MetricsTab: timeline is still loading, skipping');
-    } else if (dateRangeDays < N_DAYS_TO_LOAD) {
-      logDebug('MetricsTab: loading more days');
-      loadMoreDays('past', N_DAYS_TO_LOAD - dateRangeDays);
-    } else {
-      if (!timelineMap) return;
-      logDebug(`MetricsTab: date range >= ${N_DAYS_TO_LOAD} days, computing metrics`);
-      computeUserMetrics(metricList, timelineMap, timelineLabelMap, appConfig).then((result) =>
-        setUserMetrics(result),
-      );
-      setAggMetricsIsLoading(true);
-      fetchAggMetrics(metricList, dateRange, appConfig).then((response) => {
-        setAggMetricsIsLoading(false);
-        setAggMetrics(response);
-      });
+    if (dateRangeDays < N_DAYS_TO_LOAD) {
+      logDebug('MetricsTab: not enough days loaded, trying to load more');
+      const loadingMore = loadMoreDays('past', N_DAYS_TO_LOAD - dateRangeDays);
+      if (loadingMore !== false) return false;
+      logDebug('MetricsTab: no more days can be loaded, continuing with what we have');
     }
-  }, [appConfig, dateRange, timelineIsLoading, timelineMap, timelineLabelMap]);
+    return true;
+  }, [appConfig, dateRange]);
+
+  useEffect(() => {
+    if (!readyToLoad || !appConfig || timelineIsLoading || !timelineMap || !timelineLabelMap)
+      return;
+    logDebug('MetricsTab: ready to compute userMetrics');
+    computeUserMetrics(metricList, timelineMap, timelineLabelMap, appConfig).then((result) =>
+      setUserMetrics(result),
+    );
+  }, [readyToLoad, appConfig, timelineIsLoading, timelineMap, timelineLabelMap]);
+
+  useEffect(() => {
+    if (!readyToLoad || !appConfig) return;
+    logDebug('MetricsTab: ready to fetch aggMetrics');
+    setAggMetricsIsLoading(true);
+    fetchAggMetrics(metricList, dateRange, appConfig).then((response) => {
+      setAggMetricsIsLoading(false);
+      setAggMetrics(response);
+    });
+  }, [readyToLoad, appConfig, dateRange]);
 
   const sectionsToShow =
     appConfig?.metrics?.phone_dashboard_ui?.sections || DEFAULT_SECTIONS_TO_SHOW;

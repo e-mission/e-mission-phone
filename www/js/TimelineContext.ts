@@ -45,8 +45,8 @@ type ContextProps = {
   queriedDateRange: [string, string] | null; // YYYY-MM-DD format
   dateRange: [string, string]; // YYYY-MM-DD format
   timelineIsLoading: string | false;
-  loadMoreDays: (when: 'past' | 'future', nDays: number) => void;
-  loadDateRange: (d: [string, string]) => void;
+  loadMoreDays: (when: 'past' | 'future', nDays: number) => boolean | void;
+  loadDateRange: (d: [string, string]) => boolean | void;
   refreshTimeline: () => void;
   shouldUpdateTimeline: Boolean;
   setShouldUpdateTimeline: React.Dispatch<React.SetStateAction<boolean>>;
@@ -168,7 +168,7 @@ export const useTimelineContext = (): ContextProps => {
     const existingRange = queriedDateRange || initialQueryRange;
     logDebug(`Timeline: loadMoreDays, ${nDays} days into the ${when}; 
       queriedDateRange = ${queriedDateRange}; existingRange = ${existingRange}`);
-    loadDateRange(
+    return loadDateRange(
       when == 'past'
         ? [isoDateWithOffset(existingRange[0], -nDays), existingRange[1]]
         : [existingRange[0], isoDateWithOffset(existingRange[1], nDays)],
@@ -177,7 +177,10 @@ export const useTimelineContext = (): ContextProps => {
 
   function loadDateRange(range: [string, string]) {
     logDebug('Timeline: loadDateRange with newDateRange = ' + range);
-    if (!pipelineRange) return logWarn('No pipelineRange yet - early return from loadDateRange');
+    if (!pipelineRange) {
+      logWarn('No pipelineRange yet - early return from loadDateRange');
+      return;
+    }
     const pipelineStartDate = DateTime.fromSeconds(pipelineRange.start_ts).toISODate();
     const todayDate = DateTime.now().toISODate();
     // clamp range to ensure it is within [pipelineStartDate, todayDate]
@@ -185,9 +188,15 @@ export const useTimelineContext = (): ContextProps => {
       new Date(range[0]) < new Date(pipelineStartDate) ? pipelineStartDate : range[0],
       new Date(range[1]) > new Date(todayDate) ? todayDate : range[1],
     ];
-    logDebug('Timeline: loadDateRange setting new date range = ' + clampedDateRange);
-    setTimelineIsLoading('queued');
-    setDateRange(clampedDateRange);
+    if (clampedDateRange[0] != dateRange[0] || clampedDateRange[1] != dateRange[1]) {
+      logDebug('Timeline: loadDateRange setting new date range = ' + clampedDateRange);
+      setTimelineIsLoading('queued');
+      setDateRange(clampedDateRange);
+      return true;
+    } else {
+      logDebug('Timeline: loadDateRange no change in date range');
+      return false;
+    }
   }
 
   function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
