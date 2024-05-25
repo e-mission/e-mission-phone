@@ -121,7 +121,11 @@ const SurveyComparisonCard = ({ userMetrics, aggMetrics }: Props) => {
         style={cardStyles.title(colors)}
       />
       <Card.Content style={cardStyles.content}>
-        {myResponsePct ? (
+        {typeof myResponsePct !== 'number' || typeof othersResponsePct !== 'number' ? (
+          <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
+            {t('metrics.chart-no-data')}
+          </Text>
+        ) : (
           <View>
             <Text style={styles.chartTitle}>{t('main-metrics.survey-response-rate')}</Text>
             <View style={styles.chartWrapper}>
@@ -130,10 +134,6 @@ const SurveyComparisonCard = ({ userMetrics, aggMetrics }: Props) => {
             </View>
             <LabelPanel first={t('main-metrics.you')} second={t('main-metrics.others')} />
           </View>
-        ) : (
-          <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
-            {t('metrics.chart-no-data')}
-          </Text>
         )}
       </Card.Content>
     </Card>
