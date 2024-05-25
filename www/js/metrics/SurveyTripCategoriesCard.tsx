@@ -73,6 +73,7 @@ const SurveyTripCategoriesCard = ({ userMetrics, aggMetrics }: Props) => {
               getColorForChartEl={(l) => (l === 'Response' ? colors.navy : colors.orange)}
               showLegend={false}
               reverse={false}
+              maxBarThickness={60}
             />
             <LabelPanel first={t('main-metrics.response')} second={t('main-metrics.no-response')} />
           </>

@@ -34,6 +34,7 @@ export type Props = {
   showLegend?: boolean;
   reverse?: boolean;
   enableTooltip?: boolean;
+  maxBarThickness?: number;
 };
 const Chart = ({
   records,
@@ -49,6 +50,7 @@ const Chart = ({
   showLegend = true,
   reverse = true,
   enableTooltip = true,
+  maxBarThickness = 100,
 }: Props) => {
   const { colors } = useTheme();
   const [numVisibleDatasets, setNumVisibleDatasets] = useState(1);
@@ -74,6 +76,7 @@ const Chart = ({
           getColorForChartEl?.(chartRef.current, e, barCtx, 'border'),
         borderWidth: borderWidth || 2,
         borderRadius: 3,
+        maxBarThickness: maxBarThickness,
       })),
     };
   }, [chartDatasets, getColorForLabel]);
