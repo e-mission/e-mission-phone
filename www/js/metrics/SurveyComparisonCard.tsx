@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { View, Text } from 'react-native';
-import { Icon, Card } from 'react-native-paper';
+import { View } from 'react-native';
+import { Icon, Card, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useAppTheme } from '../appTheme';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
@@ -121,14 +121,20 @@ const SurveyComparisonCard = ({ userMetrics, aggMetrics }: Props) => {
         style={cardStyles.title(colors)}
       />
       <Card.Content style={cardStyles.content}>
-        <View>
-          <Text style={styles.chartTitle}>{t('main-metrics.survey-response-rate')}</Text>
-          <View style={styles.chartWrapper}>
-            {renderDoughnutChart(myResponsePct, colors.navy, true)}
-            {renderDoughnutChart(othersResponsePct, colors.orange, false)}
+        {myResponsePct ? (
+          <View>
+            <Text style={styles.chartTitle}>{t('main-metrics.survey-response-rate')}</Text>
+            <View style={styles.chartWrapper}>
+              {renderDoughnutChart(myResponsePct, colors.navy, true)}
+              {renderDoughnutChart(othersResponsePct, colors.orange, false)}
+            </View>
+            <LabelPanel first={t('main-metrics.you')} second={t('main-metrics.others')} />
           </View>
-          <LabelPanel first={t('main-metrics.you')} second={t('main-metrics.others')} />
-        </View>
+        ) : (
+          <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
+            {t('metrics.chart-no-data')}
+          </Text>
+        )}
       </Card.Content>
     </Card>
   );
