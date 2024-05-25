@@ -29,8 +29,8 @@ function getResponsePctForDays(days: DayOfMetricData<'response_count'>[]) {
 }
 
 type Props = {
-  userMetrics: MetricsData;
-  aggMetrics: MetricsData;
+  userMetrics: MetricsData | undefined;
+  aggMetrics: MetricsData | undefined;
 };
 
 export type SurveyComparison = {

@@ -28,8 +28,8 @@ type SurveyTripRecord = {
 };
 
 type Props = {
-  userMetrics: MetricsData;
-  aggMetrics: MetricsData;
+  userMetrics: MetricsData | undefined;
+  aggMetrics: MetricsData | undefined;
 };
 const SurveyTripCategoriesCard = ({ userMetrics, aggMetrics }: Props) => {
   const { colors } = useAppTheme();
