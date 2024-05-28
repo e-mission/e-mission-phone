@@ -75,7 +75,7 @@ export function formatDateRangeOfDays(days: DayOfMetricData[]) {
 /* formatting data form carbon footprint calculations */
 
 //modes considered on foot for carbon calculation, expandable as needed
-const ON_FOOT_MODES = ['WALKING', 'RUNNING', 'ON_FOOT'] as const;
+export const ON_FOOT_MODES = ['WALKING', 'RUNNING', 'ON_FOOT'] as const;
 
 /*
  * metric2val is a function that takes a metric entry and a field and returns
@@ -83,13 +83,13 @@ const ON_FOOT_MODES = ['WALKING', 'RUNNING', 'ON_FOOT'] as const;
  * for regular data (user-specific), this will return the field value
  * for avg data (aggregate), this will return the field value/nUsers
  */
-const metricToValue = (population: 'user' | 'aggregate', metric, field) =>
+export const metricToValue = (population: 'user' | 'aggregate', metric, field) =>
   population == 'user' ? metric[field] : metric[field] / metric.nUsers;
 
 //testing agains global list of what is "on foot"
 //returns true | false
-function isOnFoot(mode: string) {
-  for (let ped_mode in ON_FOOT_MODES) {
+export function isOnFoot(mode: string) {
+  for (let ped_mode of ON_FOOT_MODES) {
     if (mode === ped_mode) {
       return true;
     }
@@ -215,7 +215,7 @@ export function isCustomLabels(modeMap) {
   return isAllCustom(metricSummaryChecksSensed, metricSummaryChecksCustom);
 }
 
-function isAllCustom(isSensedKeys, isCustomKeys) {
+export function isAllCustom(isSensedKeys, isCustomKeys) {
   const allSensed = isSensedKeys.reduce((a, b) => a && b, true);
   const anySensed = isSensedKeys.reduce((a, b) => a || b, false);
   const allCustom = isCustomKeys.reduce((a, b) => a && b, true);
