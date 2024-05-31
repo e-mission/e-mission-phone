@@ -14,6 +14,7 @@ export type AppConfig = {
   tracking?: {
     bluetooth_only: boolean;
   };
+  metrics: MetricsConfig;
   reminderSchemes?: ReminderSchemesConfig;
   [k: string]: any; // TODO fill in all the other fields
 };
@@ -90,5 +91,36 @@ export type ReminderSchemesConfig = {
       intervalInDays: number;
     }[];
     defaultTime?: string; // format is HH:MM in 24 hour time
+  };
+};
+
+// the available metrics that can be displayed in the phone dashboard
+export type MetricName = 'distance' | 'count' | 'duration' | 'response_count';
+// the available trip / userinput properties that can be used to group the metrics
+export const groupingFields = [
+  'mode_confirm',
+  'purpose_confirm',
+  'replaced_mode_confirm',
+  'primary_ble_sensed_mode',
+  'survey',
+] as const;
+export type GroupingField = (typeof groupingFields)[number];
+export type MetricList = { [k in MetricName]?: GroupingField[] };
+export type MetricsUiSection = 'footprint' | 'active_travel' | 'summary' | 'engagement' | 'surveys';
+export type MetricsConfig = {
+  include_test_users: boolean;
+  phone_dashboard_ui?: {
+    sections: MetricsUiSection[];
+    metric_list: MetricList;
+    footprint_options?: {
+      unlabeled_uncertainty: boolean;
+    };
+    summary_options?: {};
+    engagement_options?: {
+      leaderboard_metric: [string, string];
+    };
+    active_travel_options?: {
+      modes_list: string[];
+    };
   };
 };

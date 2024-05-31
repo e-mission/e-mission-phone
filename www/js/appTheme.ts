@@ -32,7 +32,11 @@ const AppTheme = {
     },
     success: '#00a665', // lch(60% 55 155)
     warn: '#f8cf53', //lch(85% 65 85)
-    danger: '#f23934', // lch(55% 85 35)
+    danger: '#f23934', // lch(55% 85 35),
+    silver: '#d9d9d9',
+    skyblue: '#7fcaea',
+    navy: '#0077aa',
+    orange: '#f6a063',
   },
   roundness: 5,
 };

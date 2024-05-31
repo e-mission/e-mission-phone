@@ -15,7 +15,7 @@ import { NavBarButton } from '../../components/NavBar';
 import { LabelTabFilter } from '../../TimelineContext';
 
 type Props = {
-  filters: LabelTabFilter[];
+  filters: LabelTabFilter[] | null;
   setFilters: (filters: LabelTabFilter[]) => void;
   numListDisplayed?: number;
   numListTotal?: number;
@@ -32,6 +32,7 @@ const FilterSelect = ({ filters, setFilters, numListDisplayed, numListTotal }: P
   }, [filters, numListDisplayed, numListTotal]);
 
   function chooseFilter(filterKey) {
+    if (!filters) return;
     if (filterKey == 'show-all') {
       setFilters(filters.map((f) => ({ ...f, state: false })));
     } else {
@@ -62,9 +63,7 @@ const FilterSelect = ({ filters, setFilters, numListDisplayed, numListTotal }: P
           {/* <Dialog.Title>{t('diary.filter-travel')}</Dialog.Title> */}
           <Dialog.Content>
             <RadioButton.Group onValueChange={(k) => chooseFilter(k)} value={selectedFilter}>
-              {filters.map((f) => (
-                <RadioButton.Item key={f.key} label={f.text} value={f.key} />
-              ))}
+              {filters?.map((f) => <RadioButton.Item key={f.key} label={f.text} value={f.key} />)}
               <RadioButton.Item
                 label={t('diary.show-all') + ' (' + numListTotal + ')'}
                 value="show-all"

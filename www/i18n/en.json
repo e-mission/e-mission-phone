@@ -115,7 +115,9 @@
     "trips": "trips",
     "hours": "hours",
     "minutes": "minutes",
-    "custom": "Custom"
+    "responses": "responses",
+    "custom": "Custom",
+    "no-data": "No data"
   },
 
   "diary": {
@@ -192,8 +194,9 @@
     "chart": "Chart",
     "change-data": "Change dates:",
     "distance": "Distance",
-    "trips": "Trips",
+    "count": "Trip Count",
     "duration": "Duration",
+    "response_count": "Response Count",
     "fav-mode": "My Favorite Mode",
     "speed": "My Speed",
     "footprint": "My Footprint",
@@ -222,7 +225,22 @@
     "weekly-goal-footnote": "³Weekly goal based on CDC recommendation of 150 minutes of moderate activity per week.",
     "labeled": "Labeled",
     "unlabeled": "Unlabeled²",
-    "footprint-label": "Footprint (kg CO₂)"
+    "footprint-label": "Footprint (kg CO₂)",
+    "surveys": "Surveys",
+    "leaderboard": "Leaderboard",
+    "survey-response-rate": "Survey Response Rate (%)",
+    "survey-leaderboard-desc": "This data has been accumulated since ",
+    "comparison": "Comparison",
+    "you": "You",
+    "others": "Others in group",
+    "trip-categories": "Trip Categories",
+    "ev-roading-trip": "EV Roaming trip",
+    "ev-return-trip": "EV Return trip",
+    "gas-car-trip": "Gas Car trip",
+    "response": "Response",
+    "no-response": "No Response",
+    "you-are-in": "You're in",
+    "place": " place!"
   },
 
   "details": {

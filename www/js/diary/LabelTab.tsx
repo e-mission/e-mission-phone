@@ -21,7 +21,7 @@ import { AppContext } from '../App';
 
 type LabelContextProps = {
   displayedEntries: TimelineEntry[] | null;
-  filterInputs: LabelTabFilter[];
+  filterInputs: LabelTabFilter[] | null;
   setFilterInputs: (filters: LabelTabFilter[]) => void;
 };
 export const LabelTabContext = createContext<LabelContextProps>({} as LabelContextProps);
@@ -31,13 +31,15 @@ const LabelTab = () => {
   const { pipelineRange, timelineMap, timelineLabelMap } = useContext(TimelineContext);
 
   const [filterRefreshTs, setFilterRefreshTs] = useState<number>(0); // used to force a refresh of the filters
-  const [filterInputs, setFilterInputs] = useState<LabelTabFilter[]>([]);
+  const [filterInputs, setFilterInputs] = useState<LabelTabFilter[] | null>(null);
   const [displayedEntries, setDisplayedEntries] = useState<TimelineEntry[] | null>(null);
 
   useEffect(() => {
-    // we will show filters if 'additions' are not configured
+    // if places are shown, we will skip filters and it will just be "show all"
     // https://github.com/e-mission/e-mission-docs/issues/894
-    if (appConfig.survey_info?.buttons == undefined) {
+    if (appConfig.survey_info?.buttons?.['place-notes']) {
+      setFilterInputs([]);
+    } else {
       // initalize filters
       const tripFilters =
         appConfig.survey_info?.['trip-labels'] == 'ENKETO'
@@ -61,7 +63,7 @@ const LabelTab = () => {
   }, [timelineMap]);
 
   useEffect(() => {
-    if (!timelineMap || !timelineLabelMap || !filterInputs.length) return;
+    if (!timelineMap || !timelineLabelMap || !filterInputs) return;
     logDebug('Applying filters');
     const allEntries: TimelineEntry[] = Array.from(timelineMap.values());
     const activeFilter = filterInputs?.find((f) => f.state == true);
