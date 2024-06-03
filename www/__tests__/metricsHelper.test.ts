@@ -23,13 +23,22 @@ window['i18next'] = initializedI18next;
 
 describe('metricsHelper', () => {
   describe('getUniqueLabelsForDays', () => {
-    const days1 = [
-      { mode_confirm_a: 1, mode_confirm_b: 2 },
-      { mode_confirm_b: 1, mode_confirm_c: 3 },
-      { mode_confirm_c: 1, mode_confirm_d: 3 },
-    ] as any as DayOfMetricData[];
     it("should return unique labels for days with 'mode_confirm_*'", () => {
+      const days1 = [
+        { mode_confirm_a: 1, mode_confirm_b: 2 },
+        { mode_confirm_b: 1, mode_confirm_c: 3 },
+        { mode_confirm_c: 1, mode_confirm_d: 3 },
+      ] as any as DayOfMetricData[];
       expect(getUniqueLabelsForDays(days1)).toEqual(['a', 'b', 'c', 'd']);
+    });
+
+    it('should return unique labels for days with duplicated labels', () => {
+      const days2 = [
+        { mode_confirm_a: 1, mode_confirm_b: 2 },
+        { mode_confirm_a: 1, mode_confirm_b: 2 },
+        { mode_confirm_a: 1, mode_confirm_b: 2 },
+      ] as any as DayOfMetricData[];
+      expect(getUniqueLabelsForDays(days2)).toEqual(['a', 'b']);
     });
   });
 
