@@ -72,6 +72,7 @@ const DateSelect = ({ mode, onChoose, ...rest }: Props) => {
   return (
     <>
       <NavBarButton
+        testID="button"
         icon="calendar"
         accessibilityLabel={
           'Date range: ' +
