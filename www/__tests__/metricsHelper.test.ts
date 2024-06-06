@@ -238,17 +238,17 @@ describe('metricsHelper', () => {
       expect(result).toBe(true);
     });
 
-    it('returns true for all sensed labels', () => {
+    it('returns false for all sensed labels', () => {
       const modeMap = [
         {
-          key: 'label_mode1',
+          key: 'SENSED_MODE_1',
           values: [
             ['value1', 10],
             ['value2', 20],
           ],
         },
         {
-          key: 'label_mode2',
+          key: 'SENSED_MODE_2',
           values: [
             ['value3', 30],
             ['value4', 40],
@@ -256,7 +256,7 @@ describe('metricsHelper', () => {
         },
       ];
       const result = isCustomLabels(modeMap);
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
 
     it('returns false for mixed custom and sensed labels', () => {
