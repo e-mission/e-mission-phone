@@ -44,9 +44,10 @@ describe('DateSelect', () => {
     expect(screen.getByText('5/20/2024')).toBeTruthy();
 
     fireEvent.press(screen.getByTestId('button'));
-    // Todo : check if DatePickerModal opens correctly
-    // await waitFor(() => {
-    //   expect(screen.getByText('Save')).toBeTruthy();
-    // });
+    await waitFor(() => {
+      // 'save' and 'close' buttons should pop up correctly after DateSelect Modal Opens
+      expect(screen.getByTestId('react-native-paper-dates-close')).toBeTruthy();
+      expect(screen.getByTestId('react-native-paper-dates-save-text')).toBeTruthy();
+    });
   });
 });
