@@ -20,6 +20,8 @@ import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { NavBarButton } from '../../components/NavBar';
 import { isoDateRangeToTsRange } from '../timelineHelper';
+// we need to import 'setImmediate' to test 'react-native-gesture-handler' from DatePickerModal
+import 'setimmediate';
 
 type Props = Partial<DatePickerModalSingleProps | DatePickerModalRangeProps> & {
   mode: 'single' | 'range';
