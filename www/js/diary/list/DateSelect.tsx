@@ -31,7 +31,7 @@ const DateSelect = ({ mode, onChoose, ...rest }: Props) => {
   const { colors } = useTheme();
   const [open, setOpen] = React.useState(false);
   const minMaxDates = useMemo(() => {
-    if (!pipelineRange) return { startDate: new Date(), endDate: new Date() };
+    if (!pipelineRange?.start_ts) return { startDate: new Date(), endDate: new Date() };
     return {
       startDate: new Date(pipelineRange?.start_ts * 1000), // start of pipeline
       endDate: new Date(), // today
