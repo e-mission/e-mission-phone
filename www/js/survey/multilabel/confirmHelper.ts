@@ -111,6 +111,10 @@ export const getBaseLabelInputs = () => Object.keys(baseLabelInputDetails) as Mu
 
 /** @description replace all underscores with spaces, and capitalizes the first letter of each word */
 export function labelKeyToReadable(otherValue: string) {
+  if (otherValue == otherValue.toUpperCase()) {
+    // if all caps, make lowercase
+    otherValue = otherValue.toLowerCase();
+  }
   const words = otherValue.replace(/_/g, ' ').trim().split(' ');
   if (words.length == 0) return '';
   return words.map((word) => word[0].toUpperCase() + word.slice(1)).join(' ');

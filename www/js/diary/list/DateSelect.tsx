@@ -39,7 +39,7 @@ const DateSelect = ({ mode, onChoose, ...rest }: Props) => {
   }, [pipelineRange]);
 
   const queriedRangeAsJsDates = useMemo(
-    () => queriedDateRange?.map((d) => new Date(d)),
+    () => queriedDateRange?.map((d) => DateTime.fromISO(d).toJSDate()),
     [queriedDateRange],
   );
 

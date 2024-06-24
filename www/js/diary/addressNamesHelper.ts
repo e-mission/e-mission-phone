@@ -75,6 +75,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
 
 import Bottleneck from 'bottleneck';
 import { displayError, logDebug } from '../plugin/logger';
+import { CompositeTrip } from '../types/diaryTypes';
 
 let nominatimLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 export const resetNominatimLimiter = () => {
@@ -137,7 +138,7 @@ async function fetchNominatimLocName(loc_geojson) {
 }
 
 // Schedules nominatim fetches for the start and end locations of a trip
-export function fillLocationNamesOfTrip(trip) {
+export function fillLocationNamesOfTrip(trip: CompositeTrip) {
   nominatimLimiter.schedule(() => fetchNominatimLocName(trip.end_loc));
   nominatimLimiter.schedule(() => fetchNominatimLocName(trip.start_loc));
 }

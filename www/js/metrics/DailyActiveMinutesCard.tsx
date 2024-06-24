@@ -7,22 +7,25 @@ import { useTranslation } from 'react-i18next';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
 import LineChart from '../components/LineChart';
 import { getBaseModeByText } from '../diary/diaryHelper';
-import { tsForDayOfMetricData, valueForModeOnDay } from './metricsHelper';
-
-const ACTIVE_MODES = ['walk', 'bike'] as const;
-type ActiveMode = (typeof ACTIVE_MODES)[number];
+import { tsForDayOfMetricData, valueForFieldOnDay } from './metricsHelper';
+import useAppConfig from '../useAppConfig';
+import { ACTIVE_MODES } from './WeeklyActiveMinutesCard';
 
 type Props = { userMetrics?: MetricsData };
 const DailyActiveMinutesCard = ({ userMetrics }: Props) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const appConfig = useAppConfig();
+  // modes to consider as "active" for the purpose of calculating "active minutes", default : ['walk', 'bike']
+  const activeModes =
+    appConfig?.metrics?.phone_dashboard_ui?.active_travel_options?.modes_list ?? ACTIVE_MODES;
 
   const dailyActiveMinutesRecords = useMemo(() => {
     const records: { label: string; x: number; y: number }[] = [];
     const recentDays = userMetrics?.duration?.slice(-14);
     recentDays?.forEach((day) => {
-      ACTIVE_MODES.forEach((mode) => {
-        const activeSeconds = valueForModeOnDay(day, mode);
+      activeModes.forEach((mode) => {
+        const activeSeconds = valueForFieldOnDay(day, 'mode_confirm', mode);
         records.push({
           label: labelKeyToRichMode(mode),
           x: tsForDayOfMetricData(day) * 1000, // vertical chart, milliseconds on X axis
@@ -53,11 +56,9 @@ const DailyActiveMinutesCard = ({ userMetrics }: Props) => {
             getColorForLabel={(l) => getBaseModeByText(l, labelOptions).color}
           />
         ) : (
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <Text variant="labelMedium" style={{ textAlign: 'center' }}>
-              {t('metrics.chart-no-data')}
-            </Text>
-          </View>
+          <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
+            {t('metrics.chart-no-data')}
+          </Text>
         )}
       </Card.Content>
     </Card>

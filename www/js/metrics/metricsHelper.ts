@@ -1,44 +1,55 @@
 import { DateTime } from 'luxon';
-import { formatForDisplay } from '../config/useImperialConfig';
 import { DayOfMetricData } from './metricsTypes';
 import { logDebug } from '../plugin/logger';
 import { isoDateWithOffset, isoDatesDifference } from '../diary/timelineHelper';
+import { MetricName, groupingFields } from '../types/appConfigTypes';
+import { ImperialConfig, formatForDisplay } from '../config/useImperialConfig';
+import i18next from 'i18next';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];
   metricDataDays.forEach((e) => {
     Object.keys(e).forEach((k) => {
-      if (k.startsWith('label_') || k.startsWith('mode_')) {
-        let i = k.indexOf('_');
-        const label = k.substring(i + 1); // remove prefix leaving just the mode label
-        if (!uniqueLabels.includes(label)) uniqueLabels.push(label);
+      const trimmed = trimGroupingPrefix(k);
+      if (trimmed && !uniqueLabels.includes(trimmed)) {
+        uniqueLabels.push(trimmed);
       }
     });
   });
   return uniqueLabels;
 }
 
+/**
+ * @description Trims the "grouping field" prefix from a metrics key. Grouping fields are defined in appConfigTypes.ts
+ * @example removeGroupingPrefix('mode_purpose_access_recreation') => 'access_recreation'
+ * @example removeGroupingPrefix('primary_ble_sensed_mode_CAR') => 'CAR'
+ * @returns The key without the prefix (or undefined if the key didn't start with a grouping field)
+ */
+export const trimGroupingPrefix = (label: string) => {
+  for (let field of groupingFields) {
+    if (label.startsWith(field)) {
+      return label.substring(field.length + 1);
+    }
+  }
+};
+
 export const getLabelsForDay = (metricDataDay: DayOfMetricData) =>
   Object.keys(metricDataDay).reduce((acc, k) => {
-    if (k.startsWith('label_') || k.startsWith('mode_')) {
-      let i = k.indexOf('_');
-      acc.push(k.substring(i + 1)); // remove prefix leaving just the mode label
-    }
+    const trimmed = trimGroupingPrefix(k);
+    if (trimmed) acc.push(trimmed);
     return acc;
   }, [] as string[]);
 
-export const secondsToMinutes = (seconds: number) => formatForDisplay(seconds / 60);
-
-export const secondsToHours = (seconds: number) => formatForDisplay(seconds / 3600);
+export const secondsToMinutes = (seconds: number) => seconds / 60;
+export const secondsToHours = (seconds: number) => seconds / 3600;
 
 // segments metricsDays into weeks, with the most recent week first
 export function segmentDaysByWeeks(days: DayOfMetricData[], lastDate: string) {
   const weeks: DayOfMetricData[][] = [[]];
   let cutoff = isoDateWithOffset(lastDate, -7 * weeks.length);
   for (let i = days.length - 1; i >= 0; i--) {
-    const date = dateForDayOfMetricData(days[i]);
     // if date is older than cutoff, start a new week
-    if (isoDatesDifference(date, cutoff) > 0) {
+    if (isoDatesDifference(days[i].date, cutoff) > 0) {
       weeks.push([]);
       cutoff = isoDateWithOffset(lastDate, -7 * weeks.length);
     }
@@ -48,18 +59,14 @@ export function segmentDaysByWeeks(days: DayOfMetricData[], lastDate: string) {
 }
 
 export function formatDate(day: DayOfMetricData) {
-  const dt = DateTime.fromISO(dateForDayOfMetricData(day), { zone: 'utc' });
+  const dt = DateTime.fromISO(day.date, { zone: 'utc' });
   return dt.toLocaleString({ ...DateTime.DATE_SHORT, year: undefined });
 }
 
 export function formatDateRangeOfDays(days: DayOfMetricData[]) {
   if (!days?.length) return '';
-  const firstDayDt = DateTime.fromISO(dateForDayOfMetricData(days[0]), {
-    zone: 'utc',
-  });
-  const lastDayDt = DateTime.fromISO(dateForDayOfMetricData(days[days.length - 1]), {
-    zone: 'utc',
-  });
+  const firstDayDt = DateTime.fromISO(days[0].date, { zone: 'utc' });
+  const lastDayDt = DateTime.fromISO(days[days.length - 1].date, { zone: 'utc' });
   const firstDay = firstDayDt.toLocaleString({ ...DateTime.DATE_SHORT, year: undefined });
   const lastDay = lastDayDt.toLocaleString({ ...DateTime.DATE_SHORT, year: undefined });
   return `${firstDay} - ${lastDay}`;
@@ -68,7 +75,7 @@ export function formatDateRangeOfDays(days: DayOfMetricData[]) {
 /* formatting data form carbon footprint calculations */
 
 //modes considered on foot for carbon calculation, expandable as needed
-const ON_FOOT_MODES = ['WALKING', 'RUNNING', 'ON_FOOT'] as const;
+export const ON_FOOT_MODES = ['WALKING', 'RUNNING', 'ON_FOOT'] as const;
 
 /*
  * metric2val is a function that takes a metric entry and a field and returns
@@ -76,13 +83,13 @@ const ON_FOOT_MODES = ['WALKING', 'RUNNING', 'ON_FOOT'] as const;
  * for regular data (user-specific), this will return the field value
  * for avg data (aggregate), this will return the field value/nUsers
  */
-const metricToValue = (population: 'user' | 'aggregate', metric, field) =>
+export const metricToValue = (population: 'user' | 'aggregate', metric, field) =>
   population == 'user' ? metric[field] : metric[field] / metric.nUsers;
 
 //testing agains global list of what is "on foot"
 //returns true | false
-function isOnFoot(mode: string) {
-  for (let ped_mode in ON_FOOT_MODES) {
+export function isOnFoot(mode: string) {
+  for (let ped_mode of ON_FOOT_MODES) {
     if (mode === ped_mode) {
       return true;
     }
@@ -127,15 +134,13 @@ export function parseDataFromMetrics(metrics, population) {
           ]);
         }
       }
-      //this section handles user lables, assuming 'label_' prefix
-      if (field.startsWith('label_') || field.startsWith('mode_')) {
-        let i = field.indexOf('_');
-        let actualMode = field.substring(i + 1); // remove prefix
-        logDebug('Mapped field ' + field + ' to mode ' + actualMode);
-        if (!(actualMode in mode_bins)) {
-          mode_bins[actualMode] = [];
+      const trimmedField = trimGroupingPrefix(field);
+      if (trimmedField) {
+        logDebug('Mapped field ' + field + ' to mode ' + trimmedField);
+        if (!(trimmedField in mode_bins)) {
+          mode_bins[trimmedField] = [];
         }
-        mode_bins[actualMode].push([
+        mode_bins[trimmedField].push([
           metric.ts,
           Math.round(metricToValue(population, metric, field)),
           DateTime.fromISO(metric.fmt_time).toISO() as string,
@@ -151,14 +156,15 @@ export function parseDataFromMetrics(metrics, population) {
   return Object.entries(mode_bins).map(([key, values]) => ({ key, values }));
 }
 
-export const dateForDayOfMetricData = (day: DayOfMetricData) =>
-  'date' in day ? day.date : day.fmt_time.substring(0, 10);
+const _datesTsCache = {};
+export const tsForDayOfMetricData = (day: DayOfMetricData) => {
+  if (_datesTsCache[day.date] == undefined)
+    _datesTsCache[day.date] = DateTime.fromISO(day.date).toSeconds();
+  return _datesTsCache[day.date];
+};
 
-export const tsForDayOfMetricData = (day: DayOfMetricData) =>
-  DateTime.fromISO(dateForDayOfMetricData(day)).toSeconds();
-
-export const valueForModeOnDay = (day: DayOfMetricData, key: string) =>
-  day[`mode_${key}`] || day[`label_${key}`];
+export const valueForFieldOnDay = (day: DayOfMetricData, field: string, key: string) =>
+  day[`${field}_${key}`];
 
 export type MetricsSummary = { key: string; values: number };
 export function generateSummaryFromData(modeMap, metric) {
@@ -209,7 +215,7 @@ export function isCustomLabels(modeMap) {
   return isAllCustom(metricSummaryChecksSensed, metricSummaryChecksCustom);
 }
 
-function isAllCustom(isSensedKeys, isCustomKeys) {
+export function isAllCustom(isSensedKeys, isCustomKeys) {
   const allSensed = isSensedKeys.reduce((a, b) => a && b, true);
   const anySensed = isSensedKeys.reduce((a, b) => a || b, false);
   const allCustom = isCustomKeys.reduce((a, b) => a && b, true);
@@ -223,4 +229,36 @@ function isAllCustom(isSensedKeys, isCustomKeys) {
   // Logger.displayError("Mixed entries that combine sensed and custom labels",
   //     "Please report to your program admin");
   return undefined;
+}
+
+// [unit suffix, unit conversion function, unit display function]
+// e.g. ['hours', (seconds) => seconds/3600, (seconds) => seconds/3600 + ' hours']
+type UnitUtils = [string, (v) => number, (v) => string];
+export function getUnitUtilsForMetric(
+  metricName: MetricName,
+  imperialConfig: ImperialConfig,
+): UnitUtils {
+  const fns: { [k in MetricName]: UnitUtils } = {
+    distance: [
+      imperialConfig.distanceSuffix,
+      (x) => imperialConfig.convertDistance(x),
+      (x) => imperialConfig.getFormattedDistance(x) + ' ' + imperialConfig.distanceSuffix,
+    ],
+    duration: [
+      i18next.t('metrics.hours'),
+      (v) => secondsToHours(v),
+      (v) => formatForDisplay(secondsToHours(v)) + ' ' + i18next.t('metrics.hours'),
+    ],
+    count: [i18next.t('metrics.trips'), (v) => v, (v) => v + ' ' + i18next.t('metrics.trips')],
+    response_count: [
+      i18next.t('metrics.responses'),
+      (v) => v.responded || 0,
+      (v) => {
+        const responded = v.responded || 0;
+        const total = responded + (v.not_responded || 0);
+        return `${responded}/${total} ${i18next.t('metrics.responses')}`;
+      },
+    ],
+  };
+  return fns[metricName];
 }

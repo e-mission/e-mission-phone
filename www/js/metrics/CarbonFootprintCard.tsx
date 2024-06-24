@@ -16,7 +16,6 @@ import {
   segmentDaysByWeeks,
   isCustomLabels,
   MetricsSummary,
-  dateForDayOfMetricData,
 } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
@@ -26,13 +25,17 @@ import { useAppTheme } from '../appTheme';
 import { logDebug, logWarn } from '../plugin/logger';
 import TimelineContext from '../TimelineContext';
 import { isoDatesDifference } from '../diary/timelineHelper';
+import useAppConfig from '../useAppConfig';
 
 type Props = { userMetrics?: MetricsData; aggMetrics?: MetricsData };
 const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
   const { colors } = useAppTheme();
   const { dateRange } = useContext(TimelineContext);
+  const appConfig = useAppConfig();
   const { t } = useTranslation();
-
+  // Whether to show the uncertainty on the carbon footprint charts, default: true
+  const showUnlabeledMetrics =
+    appConfig?.metrics?.phone_dashboard_ui?.footprint_options?.unlabeled_uncertainty ?? true;
   const [emissionsChange, setEmissionsChange] = useState<CarbonChange>(undefined);
 
   const userCarbonRecords = useMemo(() => {
@@ -46,10 +49,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
       //formatted data from last week, if exists (14 days ago -> 8 days ago)
       let userLastWeekModeMap = {};
       let userLastWeekSummaryMap = {};
-      if (
-        lastWeekDistance &&
-        isoDatesDifference(dateRange[0], dateForDayOfMetricData(lastWeekDistance[0])) >= 0
-      ) {
+      if (lastWeekDistance && isoDatesDifference(dateRange[0], lastWeekDistance[0].date) >= 0) {
         userLastWeekModeMap = parseDataFromMetrics(lastWeekDistance, 'user');
         userLastWeekSummaryMap = generateSummaryFromData(userLastWeekModeMap, 'distance');
       }
@@ -72,11 +72,13 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
           low: getFootprintForMetrics(userLastWeekSummaryMap, 0),
           high: getFootprintForMetrics(userLastWeekSummaryMap, getHighestFootprint()),
         };
-        graphRecords.push({
-          label: t('main-metrics.unlabeled'),
-          x: userPrevWeek.high - userPrevWeek.low,
-          y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`,
-        });
+        if (showUnlabeledMetrics) {
+          graphRecords.push({
+            label: t('main-metrics.unlabeled'),
+            x: userPrevWeek.high - userPrevWeek.low,
+            y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`,
+          });
+        }
         graphRecords.push({
           label: t('main-metrics.labeled'),
           x: userPrevWeek.low,
@@ -89,11 +91,13 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         low: getFootprintForMetrics(userThisWeekSummaryMap, 0),
         high: getFootprintForMetrics(userThisWeekSummaryMap, getHighestFootprint()),
       };
-      graphRecords.push({
-        label: t('main-metrics.unlabeled'),
-        x: userPastWeek.high - userPastWeek.low,
-        y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`,
-      });
+      if (showUnlabeledMetrics) {
+        graphRecords.push({
+          label: t('main-metrics.unlabeled'),
+          x: userPastWeek.high - userPastWeek.low,
+          y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`,
+        });
+      }
       graphRecords.push({
         label: t('main-metrics.labeled'),
         x: userPastWeek.low,
@@ -111,7 +115,6 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         x: worstCarbon,
         y: `${t('main-metrics.worst-case')}`,
       });
-
       return graphRecords;
     }
   }, [userMetrics?.distance]);
@@ -145,11 +148,13 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         high: getFootprintForMetrics(aggCarbonData, getHighestFootprint()),
       };
       logDebug(`groupCarbonRecords: aggCarbon = ${JSON.stringify(aggCarbon)}`);
-      groupRecords.push({
-        label: t('main-metrics.unlabeled'),
-        x: aggCarbon.high - aggCarbon.low,
-        y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`,
-      });
+      if (showUnlabeledMetrics) {
+        groupRecords.push({
+          label: t('main-metrics.unlabeled'),
+          x: aggCarbon.high - aggCarbon.low,
+          y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`,
+        });
+      }
       groupRecords.push({
         label: t('main-metrics.labeled'),
         x: aggCarbon.low,
@@ -227,11 +232,9 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             </Text>
           </View>
         ) : (
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <Text variant="labelMedium" style={{ textAlign: 'center' }}>
-              {t('metrics.chart-no-data')}
-            </Text>
-          </View>
+          <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
+            {t('metrics.chart-no-data')}
+          </Text>
         )}
       </Card.Content>
     </Card>

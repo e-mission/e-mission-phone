@@ -16,11 +16,16 @@ const Carousel = ({ children, cardWidth, cardMargin }: Props) => {
       snapToAlignment={'center'}
       style={s.carouselScroll(cardMargin)}
       contentContainerStyle={{ alignItems: 'flex-start' }}>
-      {React.Children.map(children, (child, i) => (
-        <View style={s.carouselCard(cardWidth, cardMargin, i == 0, i == numCards - 1)}>
-          {child}
-        </View>
-      ))}
+      {React.Children.map(
+        children,
+        (child, i) =>
+          // If child is `null`, we need to skip it; otherwise, it takes up space
+          child && (
+            <View style={s.carouselCard(cardWidth, cardMargin, i == 0, i == numCards - 1)}>
+              {child}
+            </View>
+          ),
+      )}
     </ScrollView>
   );
 };

@@ -21,7 +21,6 @@ import {
 } from './diary/timelineHelper';
 import { getPipelineRangeTs } from './services/commHelper';
 import { getNotDeletedCandidates, mapInputsToTimelineEntries } from './survey/inputMatcher';
-import { publish } from './customEventHandler';
 import { EnketoUserInputEntry } from './survey/enketo/enketoHelper';
 import { VehicleIdentity } from './types/appConfigTypes';
 import { primarySectionForTrip } from './diary/diaryHelper';
@@ -45,11 +44,12 @@ type ContextProps = {
   pipelineRange: TimestampRange | null;
   queriedDateRange: [string, string] | null; // YYYY-MM-DD format
   dateRange: [string, string]; // YYYY-MM-DD format
-  setDateRange: (d: [string, string]) => void;
   timelineIsLoading: string | false;
-  loadMoreDays: (when: 'past' | 'future', nDays: number) => void;
-  loadSpecificWeek: (d: string) => void;
+  loadMoreDays: (when: 'past' | 'future', nDays: number) => boolean | void;
+  loadDateRange: (d: [string, string]) => boolean | void;
   refreshTimeline: () => void;
+  shouldUpdateTimeline: Boolean;
+  setShouldUpdateTimeline: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const useTimelineContext = (): ContextProps => {
@@ -69,6 +69,9 @@ export const useTimelineContext = (): ContextProps => {
   const [timelineLabelMap, setTimelineLabelMap] = useState<TimelineLabelMap | null>(null);
   const [timelineNotesMap, setTimelineNotesMap] = useState<TimelineNotesMap | null>(null);
   const [refreshTime, setRefreshTime] = useState<Date | null>(null);
+  // Leaflet map encounters an error when prerendered, so we need to render the TimelineScrollList component when the active tab is 'label'
+  // 'shouldUpdateTimeline' gets updated based on the current tab index, and we can use it to determine whether to render the timeline or not
+  const [shouldUpdateTimeline, setShouldUpdateTimeline] = useState(true);
 
   // initialization, once the appConfig is loaded
   useEffect(() => {
@@ -135,10 +138,6 @@ export const useTimelineContext = (): ContextProps => {
     );
     setTimelineLabelMap(newTimelineLabelMap);
     setTimelineNotesMap(newTimelineNotesMap);
-    publish('applyLabelTabFilters', {
-      timelineMap,
-      timelineLabelMap: newTimelineLabelMap,
-    });
     setTimelineIsLoading(false);
   }, [timelineMap]);
 
@@ -168,42 +167,36 @@ export const useTimelineContext = (): ContextProps => {
   function loadMoreDays(when: 'past' | 'future', nDays: number) {
     const existingRange = queriedDateRange || initialQueryRange;
     logDebug(`Timeline: loadMoreDays, ${nDays} days into the ${when}; 
-      queriedDateRange = ${queriedDateRange}; 
-      existingRange = ${existingRange}`);
-    let newDateRange: [string, string];
-    if (when == 'past') {
-      newDateRange = [isoDateWithOffset(existingRange[0], -nDays), existingRange[1]];
-    } else {
-      newDateRange = [existingRange[0], isoDateWithOffset(existingRange[1], nDays)];
-    }
-    logDebug('Timeline: loadMoreDays setting new date range = ' + newDateRange);
-    setDateRange(newDateRange);
+      queriedDateRange = ${queriedDateRange}; existingRange = ${existingRange}`);
+    return loadDateRange(
+      when == 'past'
+        ? [isoDateWithOffset(existingRange[0], -nDays), existingRange[1]]
+        : [existingRange[0], isoDateWithOffset(existingRange[1], nDays)],
+    );
   }
 
-  function loadSpecificWeek(date: string) {
-    logDebug('Timeline: loadSpecificWeek for date ' + date);
-    if (!pipelineRange) return logWarn('No pipelineRange yet - early return from loadSpecificWeek');
-    let newStartDate = isoDateWithOffset(date, -3); // three days before
-    let newEndDate = isoDateWithOffset(date, 3); // three days after
-
-    const pipelineStart = DateTime.fromSeconds(pipelineRange.start_ts).toISODate();
-    const todayDate = DateTime.now().toISODate();
-
-    const wentBeforePipeline = newStartDate.replace(/-/g, '') < pipelineStart.replace(/-/g, '');
-    const wentAfterToday = newEndDate.replace(/-/g, '') > todayDate.replace(/-/g, '');
-
-    if (wentBeforePipeline && wentAfterToday) {
-      newStartDate = pipelineStart;
-      newEndDate = todayDate;
-    } else if (wentBeforePipeline) {
-      newStartDate = pipelineStart;
-      newEndDate = isoDateWithOffset(pipelineStart, 6);
-    } else if (wentAfterToday) {
-      newStartDate = isoDateWithOffset(todayDate, -6);
-      newEndDate = todayDate;
+  function loadDateRange(range: [string, string]) {
+    logDebug('Timeline: loadDateRange with newDateRange = ' + range);
+    if (!pipelineRange) {
+      logWarn('No pipelineRange yet - early return from loadDateRange');
+      return;
     }
-    logDebug('Timeline: loadSpecificWeek setting new date range = ' + [newStartDate, newEndDate]);
-    setDateRange([newStartDate, newEndDate]);
+    const pipelineStartDate = DateTime.fromSeconds(pipelineRange.start_ts).toISODate();
+    const todayDate = DateTime.now().toISODate();
+    // clamp range to ensure it is within [pipelineStartDate, todayDate]
+    const clampedDateRange: [string, string] = [
+      new Date(range[0]) < new Date(pipelineStartDate) ? pipelineStartDate : range[0],
+      new Date(range[1]) > new Date(todayDate) ? todayDate : range[1],
+    ];
+    if (clampedDateRange[0] != dateRange[0] || clampedDateRange[1] != dateRange[1]) {
+      logDebug('Timeline: loadDateRange setting new date range = ' + clampedDateRange);
+      setTimelineIsLoading('queued');
+      setDateRange(clampedDateRange);
+      return true;
+    } else {
+      logDebug('Timeline: loadDateRange no change in date range');
+      return false;
+    }
   }
 
   function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
@@ -316,14 +309,6 @@ export const useTimelineContext = (): ContextProps => {
         },
       };
       setTimelineLabelMap(newTimelineLabelMap);
-      setTimeout(
-        () =>
-          publish('applyLabelTabFilters', {
-            timelineMap,
-            timelineLabelMap: newTimelineLabelMap,
-          }),
-        30000,
-      ); // wait 30s before reapplying filters
     } else if (inputType == 'note') {
       const notesForEntry = timelineNotesMap?.[oid] || [];
       const newAddition = { data: userInput, metadata: { write_ts: nowTs } };
@@ -343,19 +328,20 @@ export const useTimelineContext = (): ContextProps => {
     pipelineRange,
     queriedDateRange,
     dateRange,
-    setDateRange,
     timelineMap,
     timelineIsLoading,
     timelineLabelMap,
     labelOptions,
     loadMoreDays,
-    loadSpecificWeek,
+    loadDateRange,
     refreshTimeline,
     userInputFor,
     labelFor,
     notesFor,
     confirmedModeFor,
     addUserInputToEntry,
+    shouldUpdateTimeline,
+    setShouldUpdateTimeline,
   };
 };
 

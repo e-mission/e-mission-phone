@@ -12,7 +12,7 @@ import { displayErrorMsg } from '../../plugin/logger';
 
 const LabelListScreen = () => {
   const { filterInputs, setFilterInputs, displayedEntries } = useContext(LabelTabContext);
-  const { timelineMap, loadSpecificWeek, timelineIsLoading, refreshTimeline } =
+  const { timelineMap, loadDateRange, timelineIsLoading, refreshTimeline, shouldUpdateTimeline } =
     useContext(TimelineContext);
   const { colors } = useTheme();
 
@@ -26,11 +26,12 @@ const LabelListScreen = () => {
           numListTotal={timelineMap?.size}
         />
         <DateSelect
-          mode="single"
-          onChoose={({ date }) => {
-            const d = DateTime.fromJSDate(date).toISODate();
-            if (!d) return displayErrorMsg('Invalid date');
-            loadSpecificWeek(d);
+          mode="range"
+          onChoose={({ startDate, endDate }) => {
+            const start = DateTime.fromJSDate(startDate).toISODate();
+            const end = DateTime.fromJSDate(endDate).toISODate();
+            if (!start || !end) return displayErrorMsg('Invalid date');
+            loadDateRange([start, end]);
           }}
         />
         <Appbar.Action
@@ -42,7 +43,7 @@ const LabelListScreen = () => {
         />
       </NavBar>
       <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <TimelineScrollList listEntries={displayedEntries} />
+        {shouldUpdateTimeline && <TimelineScrollList listEntries={displayedEntries} />}
       </View>
     </>
   );
