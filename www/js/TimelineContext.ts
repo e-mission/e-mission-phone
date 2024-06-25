@@ -25,9 +25,7 @@ import { EnketoUserInputEntry } from './survey/enketo/enketoHelper';
 import { VehicleIdentity } from './types/appConfigTypes';
 import { primarySectionForTrip } from './diary/diaryHelper';
 
-// initial query range is the past 7 days, including today
-const today = DateTime.now().toISODate().substring(0, 10);
-const initialQueryRange: [string, string] = [isoDateWithOffset(today, -6), today];
+const TODAY_DATE = DateTime.now().toISODate();
 
 type ContextProps = {
   labelOptions: LabelOptions | null;
@@ -43,7 +41,7 @@ type ContextProps = {
   addUserInputToEntry: (oid: string, userInput: any, inputType: 'label' | 'note') => void;
   pipelineRange: TimestampRange | null;
   queriedDateRange: [string, string] | null; // YYYY-MM-DD format
-  dateRange: [string, string]; // YYYY-MM-DD format
+  dateRange: [string, string] | null; // YYYY-MM-DD format
   timelineIsLoading: string | false;
   loadMoreDays: (when: 'past' | 'future', nDays: number) => boolean | void;
   loadDateRange: (d: [string, string]) => boolean | void;
@@ -62,7 +60,7 @@ export const useTimelineContext = (): ContextProps => {
   // date range (inclusive) that has been loaded into the UI [YYYY-MM-DD, YYYY-MM-DD]
   const [queriedDateRange, setQueriedDateRange] = useState<[string, string] | null>(null);
   // date range (inclusive) chosen by datepicker [YYYY-MM-DD, YYYY-MM-DD]
-  const [dateRange, setDateRange] = useState<[string, string]>(initialQueryRange);
+  const [dateRange, setDateRange] = useState<[string, string] | null>(null);
   // map of timeline entries (trips, places, untracked time), ids to objects
   const [timelineMap, setTimelineMap] = useState<TimelineMap | null>(null);
   const [timelineIsLoading, setTimelineIsLoading] = useState<string | false>('replace');
@@ -84,26 +82,24 @@ export const useTimelineContext = (): ContextProps => {
     }
   }, [appConfig, refreshTime]);
 
-  // when a new date range is chosen, load more date, then update the queriedDateRange
+  // when a new date range is chosen, load more data, then update the queriedDateRange
   useEffect(() => {
     const onDateRangeChange = async () => {
       if (!dateRange) return logDebug('No dateRange chosen, skipping onDateRangeChange');
-      if (!pipelineRange) return logDebug('No pipelineRange yet, skipping onDateRangeChange');
-
       logDebug('Timeline: onDateRangeChange with dateRange = ' + dateRange?.join(' to '));
 
       // determine if this will be a new range or an expansion of the existing range
       let mode: 'replace' | 'prepend' | 'append';
       let dateRangeToQuery = dateRange;
-      if (queriedDateRange?.[0] == dateRange[0] && queriedDateRange?.[1] == dateRange[1]) {
+      if (queriedDateRange?.[0] == dateRange?.[0] && queriedDateRange?.[1] == dateRange?.[1]) {
         // same range, so we are refreshing the data
         mode = 'replace';
-      } else if (queriedDateRange?.[0] == dateRange[0]) {
+      } else if (dateRange && queriedDateRange?.[0] == dateRange[0]) {
         // same start date, so we are loading more data into the future
         mode = 'append';
         const nextDate = isoDateWithOffset(queriedDateRange[1], 1);
         dateRangeToQuery = [nextDate, dateRange[1]];
-      } else if (queriedDateRange?.[1] == dateRange[1]) {
+      } else if (dateRange && queriedDateRange?.[1] == dateRange[1]) {
         // same end date, so we are loading more data into the past
         mode = 'prepend';
         const prevDate = isoDateWithOffset(queriedDateRange[0], -1);
@@ -124,10 +120,7 @@ export const useTimelineContext = (): ContextProps => {
       setTimelineIsLoading(false);
       displayError(e, 'While loading date range ' + dateRange?.join(' to '));
     }
-  }, [dateRange, pipelineRange]);
-
-  // const onDateRangeChange = useCallback(async (dateRange: [string, string], pipelineRange) => {
-  // }, []);
+  }, [dateRange]);
 
   useEffect(() => {
     if (!timelineMap) return;
@@ -158,6 +151,16 @@ export const useTimelineContext = (): ContextProps => {
         `);
       }
       setPipelineRange(pipelineRange);
+      if (pipelineRange.end_ts) {
+        // set initial date range to [pipelineEndDate - 7 days, TODAY_DATE]
+        setDateRange([
+          DateTime.fromSeconds(pipelineRange.end_ts).minus({ days: 7 }).toISODate(),
+          TODAY_DATE,
+        ]);
+      } else {
+        logWarn('Timeline: no pipeline end date. dateRange will stay null');
+        setTimelineIsLoading(false);
+      }
     } catch (e) {
       displayError(e, t('errors.while-loading-pipeline-range'));
       setTimelineIsLoading(false);
@@ -165,13 +168,16 @@ export const useTimelineContext = (): ContextProps => {
   }
 
   function loadMoreDays(when: 'past' | 'future', nDays: number) {
-    const existingRange = queriedDateRange || initialQueryRange;
+    if (!queriedDateRange) {
+      logWarn('No queriedDateRange yet - early return from loadMoreDays');
+      return;
+    }
     logDebug(`Timeline: loadMoreDays, ${nDays} days into the ${when}; 
-      queriedDateRange = ${queriedDateRange}; existingRange = ${existingRange}`);
+      queriedDateRange = ${queriedDateRange}`);
     return loadDateRange(
       when == 'past'
-        ? [isoDateWithOffset(existingRange[0], -nDays), existingRange[1]]
-        : [existingRange[0], isoDateWithOffset(existingRange[1], nDays)],
+        ? [isoDateWithOffset(queriedDateRange[0], -nDays), queriedDateRange[1]]
+        : [queriedDateRange[0], isoDateWithOffset(queriedDateRange[1], nDays)],
     );
   }
 
@@ -182,13 +188,12 @@ export const useTimelineContext = (): ContextProps => {
       return;
     }
     const pipelineStartDate = DateTime.fromSeconds(pipelineRange.start_ts).toISODate();
-    const todayDate = DateTime.now().toISODate();
-    // clamp range to ensure it is within [pipelineStartDate, todayDate]
+    // clamp range to ensure it is within [pipelineStartDate, TODAY_DATE]
     const clampedDateRange: [string, string] = [
       new Date(range[0]) < new Date(pipelineStartDate) ? pipelineStartDate : range[0],
-      new Date(range[1]) > new Date(todayDate) ? todayDate : range[1],
+      new Date(range[1]) > new Date(TODAY_DATE) ? TODAY_DATE : range[1],
     ];
-    if (clampedDateRange[0] != dateRange[0] || clampedDateRange[1] != dateRange[1]) {
+    if (clampedDateRange[0] != dateRange?.[0] || clampedDateRange[1] != dateRange?.[1]) {
       logDebug('Timeline: loadDateRange setting new date range = ' + clampedDateRange);
       setTimelineIsLoading('queued');
       setDateRange(clampedDateRange);
@@ -259,7 +264,7 @@ export const useTimelineContext = (): ContextProps => {
     try {
       logDebug('timelineContext: refreshTimeline');
       setTimelineIsLoading('replace');
-      setDateRange(initialQueryRange);
+      setDateRange(null);
       setQueriedDateRange(null);
       setTimelineMap(null);
       setRefreshTime(new Date());

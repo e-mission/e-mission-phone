@@ -111,7 +111,7 @@ const MetricsTab = () => {
   const [aggMetricsIsLoading, setAggMetricsIsLoading] = useState(false);
 
   const readyToLoad = useMemo(() => {
-    if (!appConfig) return false;
+    if (!appConfig || !dateRange) return false;
     const dateRangeDays = isoDatesDifference(...dateRange);
     if (dateRangeDays < N_DAYS_TO_LOAD) {
       logDebug('MetricsTab: not enough days loaded, trying to load more');
@@ -132,7 +132,7 @@ const MetricsTab = () => {
   }, [readyToLoad, appConfig, timelineIsLoading, timelineMap, timelineLabelMap]);
 
   useEffect(() => {
-    if (!readyToLoad || !appConfig) return;
+    if (!readyToLoad || !appConfig || !dateRange) return;
     logDebug('MetricsTab: ready to fetch aggMetrics');
     setAggMetricsIsLoading(true);
     fetchAggMetrics(metricList, dateRange, appConfig).then((response) => {
