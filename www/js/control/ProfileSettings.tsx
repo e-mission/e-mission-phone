@@ -13,7 +13,7 @@ import useAppConfig from '../useAppConfig';
 import { AlertManager } from '../components/AlertBar';
 import DataDatePicker from './DataDatePicker';
 import PrivacyPolicyModal from './PrivacyPolicyModal';
-import { sendEmail } from './emailService';
+import { sendLocalDBFile } from '../services/shareLocalDBFile';
 import { uploadFile } from './uploadService';
 import ActionMenu from '../components/ActionMenu';
 import SensedPage from './SensedPage';
@@ -448,9 +448,9 @@ const ProfileSettings = () => {
           action={() => setDateDumpVis(true)}></SettingRow>
         {logUploadSection}
         <SettingRow
-          textKey="control.email-log"
+          textKey="control.share-log"
           iconName="email"
-          action={() => sendEmail('loggerDB')}></SettingRow>
+          action={() => sendLocalDBFile('loggerDB')}></SettingRow>
         <SettingRow
           textKey="control.refresh-app-config"
           desc={t('control.current-version', { version: appConfig?.version })}

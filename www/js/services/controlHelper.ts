@@ -54,9 +54,9 @@ export function getMyDataHelpers(fileName: string, startTimeString: string, endT
                 const shareObj = {
                   files: [attachFile],
                   message: i18next.t(
-                    'email-service.email-data.body-data-consists-of-list-of-entries',
+                    'shareFile-service.send-data.body-data-consists-of-list-of-entries',
                   ),
-                  subject: i18next.t('email-service.email-data.subject-data-dump-from-to', {
+                  subject: i18next.t('shareFile-service.send-data.subject-data-dump-from-to', {
                     start: startTimeString,
                     end: endTimeString,
                   }),
