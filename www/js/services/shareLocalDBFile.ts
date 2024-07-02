@@ -6,8 +6,8 @@ function localDBHelpers(fileName: string, fileExtension: string = '.txt') {
     return new Promise<void>((resolve, reject) => {
       let pathToFile, parentDirectory;
       if (window['cordova'].platformId == 'android') {
-        parentDirectory = window['cordova'].file.dataDirectory;
-        pathToFile = fileName;
+        parentDirectory = window['cordova'].file.dataDirectory.replace('files', 'databases')
+        pathToFile = parentDirectory.replace('file://', '') + fileName;
       } else if (window['cordova'].platformId == 'ios') {
         parentDirectory = window['cordova'].file.dataDirectory + '../';
         pathToFile = 'LocalDatabase/' + fileName;
