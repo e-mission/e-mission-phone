@@ -6,9 +6,12 @@ function localDBHelpers(fileName: string, fileExtension: string = '.txt') {
     return new Promise<void>((resolve, reject) => {
       let pathToFile, parentDirectory;
       if (window['cordova'].platformId == 'android') {
+        // parentDirectory: file:///data/user/0/edu.berkeley.eecs.emission/files/
         parentDirectory = window['cordova'].file.dataDirectory.replace('files', 'databases');
+        // pathToFile: /data/user/0/edu.berkeley.eecs.emission/files/
         pathToFile = parentDirectory.replace('file://', '') + fileName;
       } else if (window['cordova'].platformId == 'ios') {
+        // parentDirectory: file:///var/mobile/Containers/Data/Application/<32-hex-digit-id>/Library/NoCloud/../
         parentDirectory = window['cordova'].file.dataDirectory + '../';
         pathToFile = 'LocalDatabase/' + fileName;
       } else {
@@ -17,6 +20,8 @@ function localDBHelpers(fileName: string, fileExtension: string = '.txt') {
       }
 
       window['resolveLocalFileSystemURL'](parentDirectory, (fs) => {
+        // On iOS, pass in relative path to getFile https://github.com/e-mission/e-mission-phone/pull/1160#issuecomment-2192112472
+        // On Android, pass in absolute path to getFile https://github.com/e-mission/e-mission-phone/pull/1160#issuecomment-2204297874
         fs.filesystem.root.getFile(pathToFile, { create: false, exclusive: false }, (fileEntry) => {
           // logDebug(`fileEntry ${fileEntry.nativeURL} is file? ${fileEntry.isFile.toString()}`);
           logDebug(`fileEntry is: ${JSON.stringify(fileEntry, null, 2)}`);
@@ -31,7 +36,7 @@ function localDBHelpers(fileName: string, fileExtension: string = '.txt') {
                 resolve();
               },
               (rej) => {
-                logDebug(`Rej: ${JSON.stringify(rej, null, 2)}`);
+                displayErrorMsg(`Rej: ${JSON.stringify(rej, null, 2)}`);
                 reject();
               },
             );
@@ -61,7 +66,7 @@ function localDBHelpers(fileName: string, fileExtension: string = '.txt') {
                 resolve();
               },
               (msg) => {
-                logDebug(`Sharing failed with message ${msg}`);
+                displayErrorMsg(`Sharing failed with message ${msg}`);
               },
             );
           },
@@ -84,7 +89,7 @@ function localDBHelpers(fileName: string, fileExtension: string = '.txt') {
               resolve();
             },
             (err) => {
-              logWarn(`Error deleting ${fileName} : ${err}`);
+              displayError(err, `Error deleting ${fileName}`);
               reject(err);
             },
           );
