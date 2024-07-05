@@ -79,7 +79,7 @@ function localDBHelpers(fileName: string, fileExtension: string = '.txt') {
     });
   }
 
-  function localClearData() {
+  function localClearTmpFile() {
     return new Promise<void>((resolve, reject) => {
       window['resolveLocalFileSystemURL'](window['cordova'].file.cacheDirectory, (fs) => {
         fs.filesystem.root.getFile(fileName + fileExtension, null, (fileEntry) => {
@@ -101,7 +101,7 @@ function localDBHelpers(fileName: string, fileExtension: string = '.txt') {
   return {
     copyFile: localCopyFile,
     shareData: localShareFile,
-    clearData: localClearData,
+    clearTmpFile: localClearTmpFile,
   };
 }
 export async function sendLocalDBFile(database: string) {
@@ -111,7 +111,7 @@ export async function sendLocalDBFile(database: string) {
   dataMethods
     .copyFile()
     .then(dataMethods.shareData)
-    .then(dataMethods.clearData)
+    .then(dataMethods.clearTmpFile)
     .then(() => {
       logDebug(`File Shared!`);
     })
