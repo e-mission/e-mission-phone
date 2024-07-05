@@ -279,7 +279,7 @@
   },
 
   "shareFile-service": {
-    "send-to": "Please send this file to k.shankari@nrel.gov, or another OpenPATH team member.",
+    "send-to": "Please send this file to openpath@nrel.gov, or another OpenPATH team member.",
     "send-log": {
       "subject-logs": "emission logs",
       "body-please-fill-in-what-is-wrong": "please fill in what is wrong"
