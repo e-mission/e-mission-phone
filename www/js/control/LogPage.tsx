@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { DateTime } from 'luxon';
 import { AlertManager } from '../components/AlertBar';
-import { sendEmail } from './emailService';
+import { sendLocalDBFile } from '../services/shareLocalDBFile';
 import { displayError, logDebug } from '../plugin/logger';
 import NavBar from '../components/NavBar';
 
@@ -93,7 +93,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
   }
 
   function emailLog() {
-    sendEmail('loggerDB');
+    sendLocalDBFile('loggerDB');
   }
 
   const separator = () => <View style={{ height: 8 }} />;
