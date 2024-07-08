@@ -65,8 +65,8 @@ function localDBHelpers(fileName: string, fileExtension: string = '.txt') {
                 logDebug(`Shared to app:  ${result.app}`);
                 resolve();
               },
-              (msg) => {
-                displayErrorMsg(`Sharing failed with message ${msg}`);
+              (error) => {
+                displayError(error, `Sharing failed with error`);
               },
             );
           },
