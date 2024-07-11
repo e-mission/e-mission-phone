@@ -42,7 +42,8 @@ export function useGeojsonForTrip(trip: CompositeTrip, baseMode?: string) {
     return cachedGeojsons.get(gjKey);
   }
 
-  const trajectoryColor = (baseMode && base_mode_colors.get_base_mode_by_key(baseMode)?.color) || undefined;
+  const trajectoryColor =
+    (baseMode && base_mode_colors.get_base_mode_by_key(baseMode)?.color) || undefined;
 
   logDebug("Reading trip's " + trip.locations.length + ' location points at ' + new Date());
   const features = [
@@ -266,7 +267,10 @@ function locations2GeojsonTrajectory(
       style: {
         /* If a color was passed as arg, use it for the whole trajectory. Otherwise, use the
           color for the sensed mode of this section, and fall back to dark grey */
-        color: trajectoryColor || base_mode_colors.get_base_mode_by_key(section?.sensed_mode_str)?.color || '#333',
+        color:
+          trajectoryColor ||
+          base_mode_colors.get_base_mode_by_key(section?.sensed_mode_str)?.color ||
+          '#333',
       },
       properties: {
         feature_type: 'section_trajectory',
