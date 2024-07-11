@@ -2,8 +2,9 @@ import React, { useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Icon, Text, useTheme } from 'react-native-paper';
 import useDerivedProperties from '../useDerivedProperties';
-import { getBaseModeByKey, getBaseModeByValue } from '../diaryHelper';
+import { getBaseModeByValue } from '../diaryHelper';
 import TimelineContext from '../../TimelineContext';
+import { base_mode_colors } from 'e-mission-common';
 
 const TripSectionsDescriptives = ({ trip, showConfirmedMode = false }) => {
   const { labelOptions, labelFor, confirmedModeFor } = useContext(TimelineContext);
@@ -24,9 +25,9 @@ const TripSectionsDescriptives = ({ trip, showConfirmedMode = false }) => {
   if ((showConfirmedMode && confirmedModeForTrip) || !trip.sections?.length) {
     let baseMode;
     if (showConfirmedMode && labelOptions && confirmedModeForTrip) {
-      baseMode = getBaseModeByKey(confirmedModeForTrip.baseMode);
+      baseMode = base_mode_colors.get_base_mode_by_key(confirmedModeForTrip.baseMode);
     } else {
-      baseMode = getBaseModeByKey('UNPROCESSED');
+      baseMode = base_mode_colors.get_base_mode_by_key('UNPROCESSED');
     }
     sections = [
       {

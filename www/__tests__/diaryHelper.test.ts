@@ -4,9 +4,10 @@ import {
   getFormattedDateAbbr,
   getFormattedTimeRange,
   getDetectedModes,
-  getBaseModeByKey,
   modeColors,
 } from '../js/diary/diaryHelper';
+
+import { base_mode_colors } from 'e-mission-common';
 
 import initializedI18next from '../js/i18nextInit';
 window['i18next'] = initializedI18next;
@@ -38,17 +39,17 @@ it('returns a human readable time range', () => {
 });
 
 it('returns a Base Mode for a given key', () => {
-  expect(getBaseModeByKey('WALKING')).toEqual({
+  expect(base_mode_colors.get_base_mode_by_key('WALKING')).toEqual({
     name: 'WALKING',
     icon: 'walk',
     color: modeColors.blue,
   });
-  expect(getBaseModeByKey('MotionTypes.WALKING')).toEqual({
+  expect(base_mode_colors.get_base_mode_by_key('MotionTypes.WALKING')).toEqual({
     name: 'WALKING',
     icon: 'walk',
     color: modeColors.blue,
   });
-  expect(getBaseModeByKey('I made this type up')).toEqual({
+  expect(base_mode_colors.get_base_mode_by_key('I made this type up')).toEqual({
     name: 'UNKNOWN',
     icon: 'help',
     color: modeColors.grey,

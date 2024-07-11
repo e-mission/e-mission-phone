@@ -3,9 +3,10 @@ import { View, StyleSheet } from 'react-native';
 import color from 'color';
 import TimelineContext from '../../TimelineContext';
 import { logDebug } from '../../plugin/logger';
-import { getBaseModeByKey, getBaseModeByValue } from '../diaryHelper';
+import { getBaseModeByValue } from '../diaryHelper';
 import { Text, Icon, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import { base_mode_colors } from 'e-mission-common';
 
 const ModesIndicator = ({ trip, detectedModes }) => {
   const { t } = useTranslation();
@@ -18,7 +19,7 @@ const ModesIndicator = ({ trip, detectedModes }) => {
   let modeViews;
   const confirmedModeForTrip = confirmedModeFor(trip);
   if (labelOptions && confirmedModeForTrip?.value) {
-    const baseMode = getBaseModeByKey(confirmedModeForTrip.baseMode);
+    const baseMode = base_mode_colors.get_base_mode_by_key(confirmedModeForTrip.baseMode);
     indicatorBorderColor = baseMode.color;
     logDebug(`TripCard: got baseMode = ${JSON.stringify(baseMode)}`);
     modeViews = (
