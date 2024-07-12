@@ -16,7 +16,7 @@ import {
 } from 'react-native-paper';
 import DiaryButton from '../../components/DiaryButton';
 import { useTranslation } from 'react-i18next';
-import LabelTabContext, { UserInputMap } from '../../diary/LabelTabContext';
+import TimelineContext, { UserInputMap } from '../../TimelineContext';
 import { displayErrorMsg, logDebug } from '../../plugin/logger';
 import {
   getLabelInputDetails,
@@ -37,7 +37,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const appConfig = useAppConfig();
-  const { labelOptions, labelFor, userInputFor, addUserInputToEntry } = useContext(LabelTabContext);
+  const { labelOptions, labelFor, userInputFor, addUserInputToEntry } = useContext(TimelineContext);
   const { customLabelMap, setCustomLabelMap } = useContext(AppContext);
   const { height: windowHeight } = useWindowDimensions();
   // modal visible for which input type? (MODE or PURPOSE or REPLACED_MODE, null if not visible)

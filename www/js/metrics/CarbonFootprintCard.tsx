@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext } from 'react';
 import { View } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
@@ -23,23 +23,33 @@ import ChangeIndicator, { CarbonChange } from './ChangeIndicator';
 import color from 'color';
 import { useAppTheme } from '../appTheme';
 import { logDebug, logWarn } from '../plugin/logger';
+import TimelineContext from '../TimelineContext';
+import { isoDatesDifference } from '../diary/timelineHelper';
+import useAppConfig from '../useAppConfig';
 
 type Props = { userMetrics?: MetricsData; aggMetrics?: MetricsData };
 const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
   const { colors } = useAppTheme();
+  const { dateRange } = useContext(TimelineContext);
+  const appConfig = useAppConfig();
   const { t } = useTranslation();
-
+  // Whether to show the uncertainty on the carbon footprint charts, default: true
+  const showUnlabeledMetrics =
+    appConfig?.metrics?.phone_dashboard_ui?.footprint_options?.unlabeled_uncertainty ?? true;
   const [emissionsChange, setEmissionsChange] = useState<CarbonChange>(undefined);
 
   const userCarbonRecords = useMemo(() => {
     if (userMetrics?.distance?.length) {
       //separate data into weeks
-      const [thisWeekDistance, lastWeekDistance] = segmentDaysByWeeks(userMetrics?.distance, 2);
+      const [thisWeekDistance, lastWeekDistance] = segmentDaysByWeeks(
+        userMetrics?.distance,
+        dateRange[1],
+      );
 
       //formatted data from last week, if exists (14 days ago -> 8 days ago)
       let userLastWeekModeMap = {};
       let userLastWeekSummaryMap = {};
-      if (lastWeekDistance && lastWeekDistance?.length == 7) {
+      if (lastWeekDistance && isoDatesDifference(dateRange[0], lastWeekDistance[0].date) >= 0) {
         userLastWeekModeMap = parseDataFromMetrics(lastWeekDistance, 'user');
         userLastWeekSummaryMap = generateSummaryFromData(userLastWeekModeMap, 'distance');
       }
@@ -62,11 +72,13 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
           low: getFootprintForMetrics(userLastWeekSummaryMap, 0),
           high: getFootprintForMetrics(userLastWeekSummaryMap, getHighestFootprint()),
         };
-        graphRecords.push({
-          label: t('main-metrics.unlabeled'),
-          x: userPrevWeek.high - userPrevWeek.low,
-          y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`,
-        });
+        if (showUnlabeledMetrics) {
+          graphRecords.push({
+            label: t('main-metrics.unlabeled'),
+            x: userPrevWeek.high - userPrevWeek.low,
+            y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`,
+          });
+        }
         graphRecords.push({
           label: t('main-metrics.labeled'),
           x: userPrevWeek.low,
@@ -79,11 +91,13 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         low: getFootprintForMetrics(userThisWeekSummaryMap, 0),
         high: getFootprintForMetrics(userThisWeekSummaryMap, getHighestFootprint()),
       };
-      graphRecords.push({
-        label: t('main-metrics.unlabeled'),
-        x: userPastWeek.high - userPastWeek.low,
-        y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`,
-      });
+      if (showUnlabeledMetrics) {
+        graphRecords.push({
+          label: t('main-metrics.unlabeled'),
+          x: userPastWeek.high - userPastWeek.low,
+          y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`,
+        });
+      }
       graphRecords.push({
         label: t('main-metrics.labeled'),
         x: userPastWeek.low,
@@ -101,7 +115,6 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         x: worstCarbon,
         y: `${t('main-metrics.worst-case')}`,
       });
-
       return graphRecords;
     }
   }, [userMetrics?.distance]);
@@ -109,7 +122,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
   const groupCarbonRecords = useMemo(() => {
     if (aggMetrics?.distance?.length) {
       //separate data into weeks
-      const thisWeekDistance = segmentDaysByWeeks(aggMetrics?.distance, 1)[0];
+      const thisWeekDistance = segmentDaysByWeeks(aggMetrics?.distance, dateRange[1])[0];
       logDebug(`groupCarbonRecords: aggMetrics = ${JSON.stringify(aggMetrics)}; 
        thisWeekDistance = ${JSON.stringify(thisWeekDistance)}`);
 
@@ -135,11 +148,13 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         high: getFootprintForMetrics(aggCarbonData, getHighestFootprint()),
       };
       logDebug(`groupCarbonRecords: aggCarbon = ${JSON.stringify(aggCarbon)}`);
-      groupRecords.push({
-        label: t('main-metrics.unlabeled'),
-        x: aggCarbon.high - aggCarbon.low,
-        y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`,
-      });
+      if (showUnlabeledMetrics) {
+        groupRecords.push({
+          label: t('main-metrics.unlabeled'),
+          x: aggCarbon.high - aggCarbon.low,
+          y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`,
+        });
+      }
       groupRecords.push({
         label: t('main-metrics.labeled'),
         x: aggCarbon.low,
@@ -164,7 +179,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
 
   const cardSubtitleText = useMemo(() => {
     if (!aggMetrics?.distance?.length) return;
-    const recentEntries = segmentDaysByWeeks(aggMetrics?.distance, 2)
+    const recentEntries = segmentDaysByWeeks(aggMetrics?.distance, dateRange[1])
+      .slice(0, 2)
       .reverse()
       .flat();
     const recentEntriesRange = formatDateRangeOfDays(recentEntries);
@@ -216,11 +232,9 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             </Text>
           </View>
         ) : (
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <Text variant="labelMedium" style={{ textAlign: 'center' }}>
-              {t('metrics.chart-no-data')}
-            </Text>
-          </View>
+          <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
+            {t('metrics.chart-no-data')}
+          </Text>
         )}
       </Card.Content>
     </Card>

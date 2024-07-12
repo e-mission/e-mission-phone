@@ -2,13 +2,19 @@
 // examples of configs: https://github.com/e-mission/nrel-openpath-deploy-configs/tree/main/configs
 
 export type AppConfig = {
+  version: number;
   server: ServerConnConfig;
   intro: IntroConfig;
   survey_info: {
     'trip-labels': 'MULTILABEL' | 'ENKETO';
     surveys: EnketoSurveyConfig;
-    buttons?: any;
+    buttons?: SurveyButtonsConfig;
   };
+  vehicle_identities?: VehicleIdentity[];
+  tracking?: {
+    bluetooth_only: boolean;
+  };
+  metrics: MetricsConfig;
   reminderSchemes?: ReminderSchemesConfig;
   [k: string]: any; // TODO fill in all the other fields
 };
@@ -44,6 +50,37 @@ export type EnketoSurveyConfig = {
   };
 };
 
+export type SurveyButtonConfig = {
+  surveyName: string;
+  'not-filled-in-label': {
+    [lang: string]: string;
+  };
+  showsIf?: string; // a JS expression that evaluates to a boolean
+};
+export type SurveyButtonsConfig = {
+  [k in 'trip-label' | 'trip-notes' | 'place-label' | 'place-notes']:
+    | SurveyButtonConfig
+    | SurveyButtonConfig[];
+};
+
+export type VehicleIdentity = {
+  value: string;
+  bluetooth_major_minor: string[]; // e.g. ['aaaa:bbbb', 'cccc:dddd']
+  text: string;
+  baseMode: string;
+  met_equivalent: string;
+  kgCo2PerKm: number;
+  vehicle_info: {
+    type: string;
+    license: string;
+    make: string;
+    model: string;
+    year: number;
+    color: string;
+    engine: 'ICE' | 'HEV' | 'PHEV' | 'BEV' | 'HYDROGENV' | 'BIOV';
+  };
+};
+
 export type ReminderSchemesConfig = {
   [schemeKey: string]: {
     title: { [lang: string]: string };
@@ -54,5 +91,36 @@ export type ReminderSchemesConfig = {
       intervalInDays: number;
     }[];
     defaultTime?: string; // format is HH:MM in 24 hour time
+  };
+};
+
+// the available metrics that can be displayed in the phone dashboard
+export type MetricName = 'distance' | 'count' | 'duration' | 'response_count';
+// the available trip / userinput properties that can be used to group the metrics
+export const groupingFields = [
+  'mode_confirm',
+  'purpose_confirm',
+  'replaced_mode_confirm',
+  'primary_ble_sensed_mode',
+  'survey',
+] as const;
+export type GroupingField = (typeof groupingFields)[number];
+export type MetricList = { [k in MetricName]?: GroupingField[] };
+export type MetricsUiSection = 'footprint' | 'active_travel' | 'summary' | 'engagement' | 'surveys';
+export type MetricsConfig = {
+  include_test_users: boolean;
+  phone_dashboard_ui?: {
+    sections: MetricsUiSection[];
+    metric_list: MetricList;
+    footprint_options?: {
+      unlabeled_uncertainty: boolean;
+    };
+    summary_options?: {};
+    engagement_options?: {
+      leaderboard_metric: [string, string];
+    };
+    active_travel_options?: {
+      modes_list: string[];
+    };
   };
 };

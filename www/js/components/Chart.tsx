@@ -31,6 +31,10 @@ export type Props = {
   isHorizontal?: boolean;
   timeAxis?: boolean;
   stacked?: boolean;
+  showLegend?: boolean;
+  reverse?: boolean;
+  enableTooltip?: boolean;
+  maxBarThickness?: number;
 };
 const Chart = ({
   records,
@@ -43,6 +47,10 @@ const Chart = ({
   isHorizontal,
   timeAxis,
   stacked,
+  showLegend = true,
+  reverse = true,
+  enableTooltip = true,
+  maxBarThickness = 100,
 }: Props) => {
   const { colors } = useTheme();
   const [numVisibleDatasets, setNumVisibleDatasets] = useState(1);
@@ -68,6 +76,7 @@ const Chart = ({
           getColorForChartEl?.(chartRef.current, e, barCtx, 'border'),
         borderWidth: borderWidth || 2,
         borderRadius: 3,
+        maxBarThickness: maxBarThickness,
       })),
     };
   }, [chartDatasets, getColorForLabel]);
@@ -112,6 +121,7 @@ const Chart = ({
           responsive: true,
           maintainAspectRatio: false,
           resizeDelay: 1,
+          spanGaps: 1000 * 60 * 60 * 24, // 1 day
           scales: {
             ...(isHorizontal
               ? {
@@ -148,7 +158,7 @@ const Chart = ({
                           },
                           font: { size: 11 }, // default is 12, we want a tad smaller
                         },
-                    reverse: true,
+                    reverse: reverse,
                     stacked,
                   },
                   x: {
@@ -195,6 +205,12 @@ const Chart = ({
                 }),
           },
           plugins: {
+            legend: {
+              display: showLegend,
+            },
+            tooltip: {
+              enabled: enableTooltip,
+            },
             ...(lineAnnotations?.length && {
               annotation: {
                 clip: false,

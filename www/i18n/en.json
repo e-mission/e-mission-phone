@@ -26,7 +26,7 @@
     "force-sync": "Force sync",
     "share": "Share",
     "download-json-dump": "Download json dump",
-    "email-log": "Email log",
+    "share-log": "Share log",
     "upload-log": "Upload log",
     "view-privacy": "View Privacy Policy",
     "user-data": "User data",
@@ -52,6 +52,10 @@
     "upcoming-notifications": "Upcoming Notifications",
     "dummy-notification": "Dummy Notification in 5 Seconds",
     "log-out": "Log Out",
+    "refresh-app-config": "Refresh App Configuration",
+    "current-version": "Current version: {{version}}",
+    "refreshing-app-config": "Refreshing app configuration, please wait...",
+    "already-up-to-date": "Already up to date!",
     "manage-custom-labels": "Manage Custom Labels"
   },
 
@@ -115,7 +119,9 @@
     "trips": "trips",
     "hours": "hours",
     "minutes": "minutes",
-    "custom": "Custom"
+    "responses": "responses",
+    "custom": "Custom",
+    "no-data": "No data"
   },
 
   "diary": {
@@ -136,7 +142,6 @@
     "choose-mode": "Mode",
     "choose-replaced-mode": "Replaces",
     "choose-purpose": "Purpose",
-    "choose-survey": "Add Trip Details",
     "select-mode-scroll": "Mode (scroll for more)",
     "select-replaced-mode-scroll": "Replaces (scroll for more)",
     "select-purpose-scroll": "Purpose (scroll for more)",
@@ -193,8 +198,9 @@
     "chart": "Chart",
     "change-data": "Change dates:",
     "distance": "Distance",
-    "trips": "Trips",
+    "count": "Trip Count",
     "duration": "Duration",
+    "response_count": "Response Count",
     "fav-mode": "My Favorite Mode",
     "speed": "My Speed",
     "footprint": "My Footprint",
@@ -223,7 +229,22 @@
     "weekly-goal-footnote": "³Weekly goal based on CDC recommendation of 150 minutes of moderate activity per week.",
     "labeled": "Labeled",
     "unlabeled": "Unlabeled²",
-    "footprint-label": "Footprint (kg CO₂)"
+    "footprint-label": "Footprint (kg CO₂)",
+    "surveys": "Surveys",
+    "leaderboard": "Leaderboard",
+    "survey-response-rate": "Survey Response Rate (%)",
+    "survey-leaderboard-desc": "This data has been accumulated since ",
+    "comparison": "Comparison",
+    "you": "You",
+    "others": "Others in group",
+    "trip-categories": "Trip Categories",
+    "ev-roading-trip": "EV Roaming trip",
+    "ev-return-trip": "EV Return trip",
+    "gas-car-trip": "Gas Car trip",
+    "response": "Response",
+    "no-response": "No Response",
+    "you-are-in": "You're in",
+    "place": " place!"
   },
 
   "details": {
@@ -261,16 +282,14 @@
     "reading-unprocessed-data": "Reading unprocessed data..."
   },
 
-  "email-service": {
-    "email-account-not-configured": "Email account is not configured, cannot send email",
-    "email-account-mail-app": "You must have the mail app on your phone configured with an email address. Otherwise, this won't work",
-    "going-to-email": "Going to email database from {{parentDir}}",
-    "email-log": {
+  "shareFile-service": {
+    "send-to": "Please send this file to openpath@nrel.gov, or another OpenPATH team member.",
+    "send-log": {
       "subject-logs": "emission logs",
       "body-please-fill-in-what-is-wrong": "please fill in what is wrong"
     },
     "no-email-address-configured": "No email address configured.",
-    "email-data": {
+    "send-data": {
       "subject-data-dump-from-to": "Data dump from {{start}} to {{end}}",
       "body-data-consists-of-list-of-entries": "Data consists of a list of entries.\nEntry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \nData can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data \n and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb"
     }

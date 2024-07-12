@@ -5,17 +5,18 @@ import { TimestampRange } from '../types/diaryTypes';
 
 /**
  * @param url URL endpoint for the request
+ * @param fetchOpts (optional) options for the fetch request. If 'cache' is set to 'reload', the cache will be ignored
  * @returns Promise of the fetched response (as text) or cached text from local storage
  */
-export async function fetchUrlCached(url) {
+export async function fetchUrlCached(url: string, fetchOpts?: RequestInit) {
   const stored = localStorage.getItem(url);
-  if (stored) {
+  if (stored && fetchOpts?.cache != 'reload') {
     logDebug(`fetchUrlCached: found cached data for url ${url}, returning`);
     return Promise.resolve(stored);
   }
   try {
-    logDebug(`fetchUrlCached: found no cached data for url ${url}, fetching`);
-    const response = await fetch(url);
+    logDebug(`fetchUrlCached: cache had ${stored} for url ${url}, not using; fetching`);
+    const response = await fetch(url, fetchOpts);
     const text = await response.text();
     localStorage.setItem(url, text);
     logDebug(`fetchUrlCached: fetched data for url ${url}, returning`);
@@ -135,8 +136,13 @@ export function getMetrics(timeType: 'timestamp' | 'local_date', metricsQuery) {
   });
 }
 
-export function getAggregateData(path: string, query, serverConnConfig: ServerConnConfig) {
+export function getAggregateData(path: string, query, serverConnConfig?: ServerConnConfig) {
   return new Promise((rs, rj) => {
+    // when app config does not have "server", localhost is used and no user authentication is required
+    serverConnConfig ||= {
+      connectUrl: 'http://localhost:8080' as any,
+      aggregate_call_auth: 'no_auth',
+    };
     const fullUrl = `${serverConnConfig.connectUrl}/${path}`;
     query['aggregate'] = true;
 

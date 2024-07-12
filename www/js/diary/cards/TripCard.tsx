@@ -18,7 +18,7 @@ import { getTheme } from '../../appTheme';
 import { DiaryCard, cardStyles } from './DiaryCard';
 import { useNavigation } from '@react-navigation/native';
 import { useAddressNames } from '../addressNamesHelper';
-import LabelTabContext from '../LabelTabContext';
+import TimelineContext from '../../TimelineContext';
 import useDerivedProperties from '../useDerivedProperties';
 import StartEndLocations from '../components/StartEndLocations';
 import ModesIndicator from './ModesIndicator';
@@ -42,9 +42,9 @@ const TripCard = ({ trip, isFirstInList }: Props) => {
   } = useDerivedProperties(trip);
   let [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
   const navigation = useNavigation<any>();
-  const { labelOptions, labelFor, notesFor } = useContext(LabelTabContext);
+  const { labelOptions, confirmedModeFor, notesFor } = useContext(TimelineContext);
   const tripGeojson =
-    trip && labelOptions && useGeojsonForTrip(trip, labelOptions, labelFor(trip, 'MODE')?.value);
+    trip && labelOptions && useGeojsonForTrip(trip, confirmedModeFor(trip)?.baseMode);
 
   const isDraft = trip.key.includes('UNPROCESSED');
   const flavoredTheme = getTheme(isDraft ? 'draft' : undefined);

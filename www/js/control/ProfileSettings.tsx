@@ -13,7 +13,7 @@ import useAppConfig from '../useAppConfig';
 import { AlertManager } from '../components/AlertBar';
 import DataDatePicker from './DataDatePicker';
 import PrivacyPolicyModal from './PrivacyPolicyModal';
-import { sendEmail } from './emailService';
+import { sendLocalDBFile } from '../services/shareLocalDBFile';
 import { uploadFile } from './uploadService';
 import ActionMenu from '../components/ActionMenu';
 import SensedPage from './SensedPage';
@@ -26,7 +26,11 @@ import ControlCollectionHelper, {
   helperToggleLowAccuracy,
   forceTransition,
 } from './ControlCollectionHelper';
-import { resetDataAndRefresh } from '../config/dynamicConfig';
+import {
+  _cacheResourcesFetchPromise,
+  loadNewConfig,
+  resetDataAndRefresh,
+} from '../config/dynamicConfig';
 import { AppContext } from '../App';
 import { shareQR } from '../components/QrCode';
 import { storageClear } from '../plugin/storage';
@@ -308,6 +312,19 @@ const ProfileSettings = () => {
     }, 1500);
   }
 
+  async function refreshConfig() {
+    AlertManager.addMessage({ text: t('control.refreshing-app-config') });
+    const updated = await loadNewConfig(authSettings.opcode, appConfig?.version);
+    if (updated) {
+      // wait for resources to finish downloading before reloading
+      _cacheResourcesFetchPromise
+        .then(() => window.location.reload())
+        .catch((error) => displayError(error, 'Failed to download a resource'));
+    } else {
+      AlertManager.addMessage({ text: t('control.already-up-to-date') });
+    }
+  }
+
   //Platform.OS returns "web" now, but could be used once it's fully a Native app
   //for now, use window.cordova.platformId
 
@@ -433,9 +450,14 @@ const ProfileSettings = () => {
           action={() => setDateDumpVis(true)}></SettingRow>
         {logUploadSection}
         <SettingRow
-          textKey="control.email-log"
+          textKey="control.share-log"
           iconName="email"
-          action={() => sendEmail('loggerDB')}></SettingRow>
+          action={() => sendLocalDBFile('loggerDB')}></SettingRow>
+        <SettingRow
+          textKey="control.refresh-app-config"
+          desc={t('control.current-version', { version: appConfig?.version })}
+          iconName="cog-refresh"
+          action={refreshConfig}></SettingRow>
         <ExpansionSection sectionTitle="control.dev-zone">
           <BluetoothScanSettingRow />
           <SettingRow

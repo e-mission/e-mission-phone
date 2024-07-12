@@ -81,6 +81,7 @@ function _fillSurveyInfo(config: Partial<AppConfig>): AppConfig {
 const _backwardsCompatFill = (config: Partial<AppConfig>): AppConfig =>
   _fillSurveyInfo(_fillStudyName(config));
 
+export let _cacheResourcesFetchPromise: Promise<(string | undefined)[]> = Promise.resolve([]);
 /**
  * @description Fetch and cache any surveys resources that are referenced by URL in the config,
  *   as well as the label_options config if it is present.
@@ -89,15 +90,17 @@ const _backwardsCompatFill = (config: Partial<AppConfig>): AppConfig =>
  * @param config The app config
  */
 function cacheResourcesFromConfig(config: AppConfig) {
+  const fetchPromises: Promise<string | undefined>[] = [];
   if (config.survey_info?.surveys) {
     Object.values(config.survey_info.surveys).forEach((survey) => {
       if (!survey?.['formPath']) throw new Error(i18next.t('config.survey-missing-formpath'));
-      fetchUrlCached(survey['formPath']);
+      fetchPromises.push(fetchUrlCached(survey['formPath'], { cache: 'reload' }));
     });
   }
   if (config.label_options) {
-    fetchUrlCached(config.label_options);
+    fetchPromises.push(fetchUrlCached(config.label_options, { cache: 'reload' }));
   }
+  _cacheResourcesFetchPromise = Promise.all(fetchPromises);
 }
 
 /**
@@ -134,16 +137,21 @@ async function readConfigFromServer(studyLabel: string) {
  */
 async function fetchConfig(studyLabel: string, alreadyTriedLocal?: boolean) {
   logDebug('Received request to join ' + studyLabel);
-  const downloadURL = `https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/${studyLabel}.nrel-op.json`;
+  let downloadURL = `https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/${studyLabel}.nrel-op.json`;
   if (!__DEV__ || alreadyTriedLocal) {
     logDebug('Fetching config from github');
-    const r = await fetch(downloadURL);
+    const r = await fetch(downloadURL, { cache: 'reload' });
     if (!r.ok) throw new Error('Unable to fetch config from github');
     return r.json(); // TODO: validate, make sure it has required fields
   } else {
     logDebug('Running in dev environment, checking for locally hosted config');
     try {
-      const r = await fetch('http://localhost:9090/configs/' + studyLabel + '.nrel-op.json');
+      if (window['cordova'].platformId == 'android') {
+        downloadURL = `http://10.0.2.2:9090/configs/${studyLabel}.nrel-op.json`;
+      } else {
+        downloadURL = `http://localhost:9090/configs/${studyLabel}.nrel-op.json`;
+      }
+      const r = await fetch(downloadURL, { cache: 'reload' });
       if (!r.ok) throw new Error('Local config not found');
       return r.json();
     } catch (err) {
@@ -227,7 +235,7 @@ function extractSubgroup(token: string, config: AppConfig): string | undefined {
  * @param existingVersion If the new config's version is the same, we won't update
  * @returns boolean representing whether the config was updated or not
  */
-function loadNewConfig(newToken: string, existingVersion?: number): Promise<boolean> {
+export function loadNewConfig(newToken: string, existingVersion?: number): Promise<boolean> {
   const newStudyLabel = extractStudyName(newToken);
   return readConfigFromServer(newStudyLabel)
     .then((downloadedConfig) => {

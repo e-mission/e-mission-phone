@@ -4,7 +4,7 @@ import enJson from '../../../i18n/en.json';
 import { logDebug } from '../../plugin/logger';
 import { LabelOption, LabelOptions, MultilabelKey, InputDetails } from '../../types/labelTypes';
 import { CompositeTrip, InferredLabels, TimelineEntry } from '../../types/diaryTypes';
-import { TimelineLabelMap, UserInputMap } from '../../diary/LabelTabContext';
+import { UserInputMap } from '../../TimelineContext';
 
 let appConfig;
 export let labelOptions: LabelOptions<MultilabelKey>;
@@ -91,12 +91,12 @@ export function getLabelInputDetails(appConfigParam?) {
 export function labelInputDetailsForTrip(userInputForTrip, appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;
   if (appConfig.intro.mode_studied) {
-    if (userInputForTrip?.['MODE']?.value == appConfig.intro.mode_studied) {
-      logDebug(`Found trip labeled with mode of study, ${appConfig.intro.mode_studied}. 
+    if (userInputForTrip?.['MODE']?.data?.label == appConfig.intro.mode_studied) {
+      logDebug(`Found trip labeled with ${userInputForTrip?.['MODE']?.data?.label}, mode of study = ${appConfig.intro.mode_studied}.
         Needs REPLACED_MODE`);
       return getLabelInputDetails();
     } else {
-      logDebug(`Found trip not labeled with mode of study, ${appConfig.intro.mode_studied}. 
+      logDebug(`Found trip labeled with ${userInputForTrip?.['MODE']?.data?.label}, not labeled with mode of study = ${appConfig.intro.mode_studied}.
         Doesn't need REPLACED_MODE`);
       return baseLabelInputDetails;
     }
@@ -111,6 +111,10 @@ export const getBaseLabelInputs = () => Object.keys(baseLabelInputDetails) as Mu
 
 /** @description replace all underscores with spaces, and capitalizes the first letter of each word */
 export function labelKeyToReadable(otherValue: string) {
+  if (otherValue == otherValue.toUpperCase()) {
+    // if all caps, make lowercase
+    otherValue = otherValue.toLowerCase();
+  }
   const words = otherValue.replace(/_/g, ' ').trim().split(' ');
   if (words.length == 0) return '';
   return words.map((word) => word[0].toUpperCase() + word.slice(1)).join(' ');

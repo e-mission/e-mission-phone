@@ -4,35 +4,50 @@ import { Card, Checkbox, Text, useTheme } from 'react-native-paper';
 import colorLib from 'color';
 import BarChart from '../components/BarChart';
 import { DayOfMetricData } from './metricsTypes';
-import { formatDateRangeOfDays, getLabelsForDay, getUniqueLabelsForDays } from './metricsHelper';
+import {
+  formatDateRangeOfDays,
+  getLabelsForDay,
+  tsForDayOfMetricData,
+  getUniqueLabelsForDays,
+  valueForFieldOnDay,
+  getUnitUtilsForMetric,
+} from './metricsHelper';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { cardStyles } from './MetricsTab';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
-import { getBaseModeByKey, getBaseModeByText } from '../diary/diaryHelper';
+import { getBaseModeByKey, getBaseModeByText, modeColors } from '../diary/diaryHelper';
 import { useTranslation } from 'react-i18next';
+import { GroupingField, MetricName } from '../types/appConfigTypes';
+import { useImperialConfig } from '../config/useImperialConfig';
 
 type Props = {
+  metricName: MetricName;
+  groupingFields: GroupingField[];
   cardTitle: string;
   userMetricsDays?: DayOfMetricData[];
   aggMetricsDays?: DayOfMetricData[];
-  axisUnits: string;
-  unitFormatFn?: (val: number) => string | number;
 };
 const MetricsCard = ({
+  metricName,
+  groupingFields,
   cardTitle,
   userMetricsDays,
   aggMetricsDays,
-  axisUnits,
-  unitFormatFn,
 }: Props) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const imperialConfig = useImperialConfig();
   const [viewMode, setViewMode] = useState<'details' | 'graph'>('details');
   const [populationMode, setPopulationMode] = useState<'user' | 'aggregate'>('user');
   const [graphIsStacked, setGraphIsStacked] = useState(true);
   const metricDataDays = useMemo(
     () => (populationMode == 'user' ? userMetricsDays : aggMetricsDays),
     [populationMode, userMetricsDays, aggMetricsDays],
+  );
+
+  const [axisUnits, unitConvertFn, unitDisplayFn] = useMemo(
+    () => getUnitUtilsForMetric(metricName, imperialConfig),
+    [metricName],
   );
 
   // for each label on each day, create a record for the chart
@@ -42,12 +57,12 @@ const MetricsCard = ({
     metricDataDays.forEach((day) => {
       const labels = getLabelsForDay(day);
       labels.forEach((label) => {
-        const rawVal = day[`label_${label}`];
+        const rawVal = valueForFieldOnDay(day, groupingFields[0], label);
         if (rawVal) {
           records.push({
             label: labelKeyToRichMode(label),
-            x: unitFormatFn ? unitFormatFn(rawVal) : rawVal,
-            y: day.ts * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
+            x: unitConvertFn(rawVal),
+            y: tsForDayOfMetricData(day) * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
           });
         }
       });
@@ -76,8 +91,22 @@ const MetricsCard = ({
     // for each label, sum up cumulative values across all days
     const vals = {};
     uniqueLabels.forEach((label) => {
-      const sum = metricDataDays.reduce((acc, day) => acc + (day[`label_${label}`] || 0), 0);
-      vals[label] = unitFormatFn ? unitFormatFn(sum) : sum;
+      const sum: any = metricDataDays.reduce<number | Object>((acc, day) => {
+        const val = valueForFieldOnDay(day, groupingFields[0], label);
+        // if val is number, add it to the accumulator
+        if (!isNaN(val)) {
+          return acc + val;
+        } else if (val && typeof val == 'object') {
+          // if val is object, add its values to the accumulator's values
+          acc = acc || {};
+          for (let key in val) {
+            acc[key] = (acc[key] || 0) + val[key];
+          }
+          return acc;
+        }
+        return acc;
+      }, 0);
+      vals[label] = unitDisplayFn(sum);
     });
     return vals;
   }, [metricDataDays, viewMode]);
@@ -93,7 +122,7 @@ const MetricsCard = ({
   };
 
   return (
-    <Card style={cardStyles.card}>
+    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={cardTitle}
         titleVariant="titleLarge"
@@ -125,41 +154,51 @@ const MetricsCard = ({
         style={cardStyles.title(colors)}
       />
       <Card.Content style={cardStyles.content}>
-        {viewMode == 'details' && (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-            {Object.keys(metricSumValues).map((label, i) => (
-              <View style={{ width: '50%', paddingHorizontal: 8 }} key={i}>
-                <Text variant="titleSmall">{labelKeyToRichMode(label)}</Text>
-                <Text>{metricSumValues[label] + ' ' + axisUnits}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-        {viewMode == 'graph' && (
-          <>
-            <BarChart
-              records={chartData}
-              axisTitle={axisUnits}
-              isHorizontal={true}
-              timeAxis={true}
-              stacked={graphIsStacked}
-              getColorForLabel={getColorForLabel}
-            />
-            <View
-              style={{
-                flexDirection: 'row',
-                height: 10,
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-              }}>
-              <Text variant="labelMedium">Stack bars:</Text>
-              <Checkbox
-                status={graphIsStacked ? 'checked' : 'unchecked'}
-                onPress={() => setGraphIsStacked(!graphIsStacked)}
-              />
+        {viewMode == 'details' &&
+          (Object.keys(metricSumValues).length ? (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+              {Object.keys(metricSumValues).map((label, i) => (
+                <View style={{ width: '50%', paddingHorizontal: 8 }} key={i}>
+                  <Text variant="titleSmall">{labelKeyToRichMode(label)}</Text>
+                  <Text>{metricSumValues[label]}</Text>
+                </View>
+              ))}
             </View>
-          </>
-        )}
+          ) : (
+            <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
+              {t('metrics.chart-no-data')}
+            </Text>
+          ))}
+        {viewMode == 'graph' &&
+          (chartData.length ? (
+            <>
+              <BarChart
+                records={chartData}
+                axisTitle={axisUnits}
+                isHorizontal={true}
+                timeAxis={true}
+                stacked={graphIsStacked}
+                getColorForLabel={getColorForLabel}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  height: 10,
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                }}>
+                <Text variant="labelMedium">Stack bars:</Text>
+                <Checkbox
+                  status={graphIsStacked ? 'checked' : 'unchecked'}
+                  onPress={() => setGraphIsStacked(!graphIsStacked)}
+                />
+              </View>
+            </>
+          ) : (
+            <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
+              {t('metrics.chart-no-data')}
+            </Text>
+          ))}
       </Card.Content>
     </Card>
   );

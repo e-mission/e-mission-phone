@@ -18,26 +18,21 @@ const ChangeIndicator = ({ change }: Props) => {
     if (!change) return;
     let low = isFinite(change.low) ? Math.round(Math.abs(change.low)) : '∞';
     let high = isFinite(change.high) ? Math.round(Math.abs(change.high)) : '∞';
-
+    if (low == '∞' && high == '∞') return; // both are ∞, no information is really conveyed; don't show
     if (Math.round(change.low) == Math.round(change.high)) {
-      let text = changeSign(change.low) + low + '%';
-      return text;
-    } else if (!(isFinite(change.low) || isFinite(change.high))) {
-      return ''; //if both are not finite, no information is really conveyed, so don't show
-    } else {
-      let text = `${changeSign(change.low) + low}% / ${changeSign(change.high) + high}%`;
-      return text;
+      // high and low being the same means there is no uncertainty; show just one percentage
+      return changeSign(change.low) + low + '%';
     }
+    // when there is uncertainty, show both percentages separated by a slash
+    return `${changeSign(change.low) + low}% / ${changeSign(change.high) + high}%`;
   }, [change]);
 
-  return changeText != '' ? (
+  return changeText ? (
     <View style={styles.view(change && change.low > 0 ? colors.danger : colors.success)}>
       <Text style={styles.importantText(colors)}>{changeText + '\n'}</Text>
       <Text style={styles.text(colors)}>{`${t('metrics.this-week')}`}</Text>
     </View>
-  ) : (
-    <></>
-  );
+  ) : null;
 };
 
 const styles: any = {

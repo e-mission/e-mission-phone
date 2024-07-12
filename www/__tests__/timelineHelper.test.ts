@@ -28,7 +28,7 @@ afterAll(() => {
 
 describe('useGeojsonForTrip', () => {
   it('work with an empty input', () => {
-    const testVal = useGeojsonForTrip({} as any, {} as any);
+    const testVal = useGeojsonForTrip({} as any);
     expect(testVal).toBeFalsy;
   });
 
@@ -43,10 +43,7 @@ describe('useGeojsonForTrip', () => {
   };
 
   it('works without labelMode flag', () => {
-    const testValue = useGeojsonForTrip(
-      mockTLH.mockCompDataTwo.phone_data[1].data,
-      mockTLH.mockLabelOptions,
-    ) as GeoJSONData;
+    const testValue = useGeojsonForTrip(mockTLH.mockCompDataTwo.phone_data[1].data) as GeoJSONData;
     expect(testValue).toBeTruthy;
     checkGeojson(testValue);
     expect(testValue.data.features.length).toBe(3);
@@ -168,10 +165,10 @@ describe('unprocessedLabels, unprocessedNotes', () => {
 
     // update unprocessed inputs and check that the trip survey response shows up in unprocessedLabels
     await updateAllUnprocessedInputs({ start_ts: 4, end_ts: 6 }, mockTLH.mockConfigEnketo);
-    expect(unprocessedLabels['SURVEY'][0].data).toEqual(tripSurveyResponse);
+    expect(unprocessedLabels['TripConfirmSurvey'][0].data).toEqual(tripSurveyResponse);
     // the second response is ignored for now because we haven't enabled place_user_input yet
     // so the length is only 1
-    expect(unprocessedLabels['SURVEY'].length).toEqual(1);
+    expect(unprocessedLabels['TripConfirmSurvey'].length).toEqual(1);
   });
 
   it('has some trip- and place- level additions after they were just recorded', async () => {
@@ -294,13 +291,14 @@ jest.mock('../js/services/unifiedDataLoader', () => ({
 }));
 
 it('works when there are no unprocessed trips...', async () => {
-  expect(readUnprocessedTrips(-1, -1, {} as any)).resolves.toEqual([]);
+  expect(readUnprocessedTrips(-1, -1, {} as any, {} as any)).resolves.toEqual([]);
 });
 
 it('works when there are one or more unprocessed trips...', async () => {
   const testValueOne = await readUnprocessedTrips(
     mockTLH.fakeStartTsOne,
     mockTLH.fakeEndTsOne,
+    {} as any,
     {} as any,
   );
   expect(testValueOne.length).toEqual(1);

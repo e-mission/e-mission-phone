@@ -4,27 +4,21 @@ import { Appbar, useTheme } from 'react-native-paper';
 import DateSelect from './DateSelect';
 import FilterSelect from './FilterSelect';
 import TimelineScrollList from './TimelineScrollList';
-import LabelTabContext from '../LabelTabContext';
 import NavBar from '../../components/NavBar';
+import TimelineContext from '../../TimelineContext';
+import { LabelTabContext } from '../LabelTab';
+import { DateTime } from 'luxon';
+import { displayErrorMsg } from '../../plugin/logger';
 
 const LabelListScreen = () => {
-  const {
-    filterInputs,
-    setFilterInputs,
-    timelineMap,
-    displayedEntries,
-    queriedRange,
-    loadSpecificWeek,
-    refresh,
-    pipelineRange,
-    loadAnotherWeek,
-    isLoading,
-  } = useContext(LabelTabContext);
+  const { filterInputs, setFilterInputs, displayedEntries } = useContext(LabelTabContext);
+  const { timelineMap, loadDateRange, timelineIsLoading, refreshTimeline, shouldUpdateTimeline } =
+    useContext(TimelineContext);
   const { colors } = useTheme();
 
   return (
     <>
-      <NavBar>
+      <NavBar isLoading={Boolean(timelineIsLoading)}>
         <FilterSelect
           filters={filterInputs}
           setFilters={setFilterInputs}
@@ -32,25 +26,24 @@ const LabelListScreen = () => {
           numListTotal={timelineMap?.size}
         />
         <DateSelect
-          tsRange={{ oldestTs: queriedRange?.start_ts, latestTs: queriedRange?.end_ts }}
-          loadSpecificWeekFn={loadSpecificWeek}
+          mode="range"
+          onChoose={({ startDate, endDate }) => {
+            const start = DateTime.fromJSDate(startDate).toISODate();
+            const end = DateTime.fromJSDate(endDate).toISODate();
+            if (!start || !end) return displayErrorMsg('Invalid date');
+            loadDateRange([start, end]);
+          }}
         />
         <Appbar.Action
           icon="refresh"
           size={32}
-          onPress={() => refresh()}
+          onPress={() => refreshTimeline()}
           accessibilityLabel="Refresh"
           style={{ marginLeft: 'auto' }}
         />
       </NavBar>
       <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <TimelineScrollList
-          listEntries={displayedEntries}
-          queriedRange={queriedRange}
-          pipelineRange={pipelineRange}
-          loadMoreFn={loadAnotherWeek}
-          isLoading={isLoading}
-        />
+        {shouldUpdateTimeline && <TimelineScrollList listEntries={displayedEntries} />}
       </View>
     </>
   );

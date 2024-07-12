@@ -1,16 +1,28 @@
 import { logDebug, displayErrorMsg } from '../plugin/logger';
 import { DateTime } from 'luxon';
-import { CompositeTrip, ConfirmedPlace, TimelineEntry, UserInputEntry } from '../types/diaryTypes';
-import { keysForLabelInputs, unprocessedLabels, unprocessedNotes } from '../diary/timelineHelper';
+import {
+  BluetoothBleData,
+  CompositeTrip,
+  ConfirmedPlace,
+  TimelineEntry,
+  UserInputEntry,
+} from '../types/diaryTypes';
+import {
+  keysForLabelInputs,
+  unprocessedBleScans,
+  unprocessedLabels,
+  unprocessedNotes,
+} from '../diary/timelineHelper';
 import {
   getLabelInputDetails,
   inputType2retKey,
   removeManualPrefix,
 } from './multilabel/confirmHelper';
-import { TimelineLabelMap, TimelineNotesMap } from '../diary/LabelTabContext';
+import { TimelineLabelMap, TimelineNotesMap, UserInputMap } from '../TimelineContext';
 import { MultilabelKey } from '../types/labelTypes';
 import { EnketoUserInputEntry } from './enketo/enketoHelper';
 import { AppConfig } from '../types/appConfigTypes';
+import { BEMData } from '../types/serverData';
 
 const EPOCH_MAXIMUM = 2 ** 31 - 1;
 
@@ -204,9 +216,8 @@ export function getAdditionsForTimelineEntry(
     return [];
   }
 
-  // get additions that have not been deleted and filter out additions that do not start within the bounds of the timeline entry
-  const notDeleted = getNotDeletedCandidates(additionsList);
-  const matchingAdditions = notDeleted.filter((ui) =>
+  // filter out additions that do not start within the bounds of the timeline entry
+  const matchingAdditions = additionsList.filter((ui) =>
     validUserInputForTimelineEntry(entry, nextEntry, ui, logsEnabled),
   );
 
@@ -268,16 +279,16 @@ export function mapInputsToTimelineEntries(
   allEntries.forEach((tlEntry, i) => {
     const nextEntry = i + 1 < allEntries.length ? allEntries[i + 1] : null;
     if (appConfig?.survey_info?.['trip-labels'] == 'ENKETO') {
-      // ENKETO configuration: just look for the 'SURVEY' key in the unprocessedInputs
+      // ENKETO configuration: consider reponses from all surveys in unprocessedLabels
       const userInputForTrip = getUserInputForTimelineEntry(
         tlEntry,
         nextEntry,
-        unprocessedLabels['SURVEY'],
+        Object.values(unprocessedLabels).flat(1),
       ) as EnketoUserInputEntry;
       if (userInputForTrip) {
-        timelineLabelMap[tlEntry._id.$oid] = { SURVEY: userInputForTrip };
+        timelineLabelMap[tlEntry._id.$oid] = { [userInputForTrip.data.name]: userInputForTrip };
       } else {
-        let processedSurveyResponse;
+        let processedSurveyResponse: EnketoUserInputEntry | undefined;
         for (const dataKey of keysForLabelInputs(appConfig)) {
           const key = removeManualPrefix(dataKey);
           if (tlEntry.user_input?.[key]) {
@@ -285,12 +296,16 @@ export function mapInputsToTimelineEntries(
             break;
           }
         }
-        timelineLabelMap[tlEntry._id.$oid] = { SURVEY: processedSurveyResponse };
+        if (processedSurveyResponse) {
+          timelineLabelMap[tlEntry._id.$oid] = {
+            [processedSurveyResponse.data.name]: processedSurveyResponse,
+          };
+        }
       }
     } else {
       // MULTILABEL configuration: use the label inputs from the labelOptions to determine which
       // keys to look for in the unprocessedInputs
-      const labelsForTrip: { [k: string]: UserInputEntry | undefined } = {};
+      const labelsForTrip: UserInputMap = {};
       Object.keys(getLabelInputDetails(appConfig)).forEach((label: MultilabelKey) => {
         // Check unprocessed labels first since they are more recent
         const userInputForTrip = getUserInputForTimelineEntry(
@@ -339,4 +354,86 @@ export function mapInputsToTimelineEntries(
   });
 
   return [timelineLabelMap, timelineNotesMap];
+}
+
+function validBleScanForTimelineEntry(tlEntry: TimelineEntry, bleScan: BEMData<BluetoothBleData>) {
+  let entryStart = (tlEntry as CompositeTrip).start_ts || (tlEntry as ConfirmedPlace).enter_ts;
+  let entryEnd = (tlEntry as CompositeTrip).end_ts || (tlEntry as ConfirmedPlace).exit_ts;
+
+  if (!entryStart && entryEnd) {
+    /* if a place has no enter time, this is the first start_place of the first composite trip object
+      so we will set the start time to the start of the day of the end time for the purpose of comparison */
+    entryStart = DateTime.fromSeconds(entryEnd).startOf('day').toUnixInteger();
+  }
+
+  if (!entryEnd) {
+    /* if a place has no exit time, the user hasn't left there yet
+        so we will set the end time as high as possible for the purpose of comparison */
+    entryEnd = EPOCH_MAXIMUM;
+  }
+
+  return bleScan.data.ts >= entryStart && bleScan.data.ts <= entryEnd;
+}
+
+/**
+ * @description Get BLE scans that are of type RANGE_UPDATE and are within the time range of the timeline entry
+ */
+function getBleRangingScansForTimelineEntry(
+  tlEntry: TimelineEntry,
+  bleScans: BEMData<BluetoothBleData>[],
+) {
+  return bleScans.filter(
+    (scan) =>
+      /* RANGE_UPDATE is the string value, but the server uses an enum, so once processed it becomes 2 */
+      (scan.data.eventType == 'RANGE_UPDATE' || scan.data.eventType == 2) &&
+      validBleScanForTimelineEntry(tlEntry, scan),
+  );
+}
+
+/**
+ * @description Convert a decimal number to a hexadecimal string, with optional padding
+ * @example decimalToHex(245) => 'f5'
+ * @example decimalToHex(245, 4) => '00f5'
+ */
+function decimalToHex(d: string | number, padding?: number) {
+  let hex = Number(d).toString(16);
+  while (hex.length < (padding || 0)) {
+    hex = '0' + hex;
+  }
+  return hex;
+}
+
+export function mapBleScansToTimelineEntries(allEntries: TimelineEntry[], appConfig: AppConfig) {
+  const timelineBleMap = {};
+  for (const tlEntry of allEntries) {
+    const rangingScans = getBleRangingScansForTimelineEntry(tlEntry, unprocessedBleScans);
+    if (!rangingScans.length) {
+      continue;
+    }
+
+    // count the number of occurrences of each major:minor pair
+    const majorMinorCounts = {};
+    rangingScans.forEach((scan) => {
+      const major = decimalToHex(scan.data.major, 4);
+      const minor = decimalToHex(scan.data.minor, 4);
+      const majorMinor = major + ':' + minor;
+      majorMinorCounts[majorMinor] = majorMinorCounts[majorMinor]
+        ? majorMinorCounts[majorMinor] + 1
+        : 1;
+    });
+    // determine the major:minor pair with the highest count
+    const match = Object.keys(majorMinorCounts).reduce((a, b) =>
+      majorMinorCounts[a] > majorMinorCounts[b] ? a : b,
+    );
+    // find the vehicle identity that uses this major:minor pair
+    const vehicleIdentity = appConfig.vehicle_identities?.find((vi) =>
+      vi.bluetooth_major_minor.includes(match),
+    );
+    if (vehicleIdentity) {
+      timelineBleMap[tlEntry._id.$oid] = vehicleIdentity;
+    } else {
+      displayErrorMsg(`No vehicle identity found for major:minor pair ${match}`);
+    }
+  }
+  return timelineBleMap;
 }

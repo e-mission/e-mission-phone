@@ -13,7 +13,7 @@ import {
   Text,
   useTheme,
 } from 'react-native-paper';
-import LabelTabContext from '../LabelTabContext';
+import TimelineContext from '../../TimelineContext';
 import LeafletView from '../../components/LeafletView';
 import { useTranslation } from 'react-i18next';
 import MultilabelButtonGroup from '../../survey/multilabel/MultiLabelButtonGroup';
@@ -31,7 +31,7 @@ import { CompositeTrip } from '../../types/diaryTypes';
 import NavBar from '../../components/NavBar';
 
 const LabelScreenDetails = ({ route, navigation }) => {
-  const { timelineMap, labelOptions, labelFor } = useContext(LabelTabContext);
+  const { timelineMap, labelOptions, confirmedModeFor } = useContext(TimelineContext);
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
   const appConfig = useAppConfig();
@@ -41,17 +41,16 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const { displayDate, displayStartTime, displayEndTime } = useDerivedProperties(trip);
   const [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
 
-  const [modesShown, setModesShown] = useState<'labeled' | 'detected'>(() =>
+  const [modesShown, setModesShown] = useState<'confirmed' | 'detected'>(() =>
     // if trip has a labeled mode, initial state shows that; otherwise, show detected modes
-    trip && labelFor(trip, 'MODE')?.value ? 'labeled' : 'detected',
+    trip && confirmedModeFor(trip)?.value ? 'confirmed' : 'detected',
   );
   const tripGeojson =
     trip &&
     labelOptions &&
     useGeojsonForTrip(
       trip,
-      labelOptions,
-      modesShown == 'labeled' ? labelFor(trip, 'MODE')?.value : undefined,
+      modesShown == 'confirmed' ? confirmedModeFor(trip)?.baseMode : undefined,
     );
   const mapOpts = { minZoom: 3, maxZoom: 17 };
 
@@ -86,23 +85,24 @@ const LabelScreenDetails = ({ route, navigation }) => {
                 <UserInputButton timelineEntry={trip} />
               )}
             </View>
-
-            {/* Full-size Leaflet map, with zoom controls */}
-            <LeafletView
-              geojson={tripGeojson}
-              style={{ width: '100%', height: windowHeight / 2, marginBottom: 10 }}
-              opts={mapOpts}
-            />
+            {tripGeojson && (
+              // Full-size Leaflet map, with zoom controls
+              <LeafletView
+                geojson={tripGeojson}
+                style={{ width: '100%', height: windowHeight / 2, marginBottom: 10 }}
+                opts={mapOpts}
+              />
+            )}
 
             {/* If trip is labeled, show a toggle to switch between "Labeled Mode" and "Detected Modes"
               otherwise, just show "Detected" */}
-            {trip && labelFor(trip, 'MODE')?.value ? (
+            {trip && confirmedModeFor(trip)?.value ? (
               <ToggleSwitch
-                onValueChange={(v: 'labeled' | 'detected') => setModesShown(v)}
+                onValueChange={(v: 'confirmed' | 'detected') => setModesShown(v)}
                 value={modesShown}
                 density="medium"
                 buttons={[
-                  { label: t('diary.labeled-mode'), value: 'labeled' },
+                  { label: t('diary.labeled-mode'), value: 'confirmed' },
                   { label: t('diary.detected-modes'), value: 'detected' },
                 ]}
               />
@@ -118,7 +118,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
             )}
 
             {/* section-by-section breakdown of duration, distance, and mode */}
-            <TripSectionsDescriptives trip={trip} showLabeledMode={modesShown == 'labeled'} />
+            <TripSectionsDescriptives trip={trip} showConfirmedMode={modesShown == 'confirmed'} />
             {/* Overall trip duration, distance, and modes.
               Only show this when multiple sections are shown, and we are showing detected modes.
               If we just showed the labeled mode or a single section, this would be redundant. */}
