@@ -13,16 +13,22 @@ import usePermissionStatus from './usePermissionStatus';
 import { initPushNotify } from './splash/pushNotifySettings';
 import { initStoreDeviceSettings } from './splash/storeDeviceSettings';
 import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
+import { getUserCustomLabels } from './services/commHelper';
 import { initCustomDatasetHelper } from './metrics/customMetricsHelper';
 import AlertBar from './components/AlertBar';
 import Main from './Main';
 
 export const AppContext = createContext<any>({});
+const CUSTOM_LABEL_KEYS_IN_DATABASE = ['mode', 'purpose'];
+type CustomLabelMap = {
+  [k: string]: string[];
+};
 
 const App = () => {
   // will remain null while the onboarding state is still being determined
   const [onboardingState, setOnboardingState] = useState<OnboardingState | null>(null);
   const [permissionsPopupVis, setPermissionsPopupVis] = useState(false);
+  const [customLabelMap, setCustomLabelMap] = useState<CustomLabelMap>({});
   const appConfig = useAppConfig();
   const permissionStatus = usePermissionStatus();
 
@@ -39,6 +45,7 @@ const App = () => {
     initPushNotify();
     initStoreDeviceSettings();
     initRemoteNotifyHandler();
+    getUserCustomLabels(CUSTOM_LABEL_KEYS_IN_DATABASE).then((res) => setCustomLabelMap(res));
     initCustomDatasetHelper(appConfig);
   }, [appConfig]);
 
@@ -50,6 +57,8 @@ const App = () => {
     permissionStatus,
     permissionsPopupVis,
     setPermissionsPopupVis,
+    customLabelMap,
+    setCustomLabelMap,
   };
 
   let appContent;

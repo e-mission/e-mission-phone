@@ -8,7 +8,10 @@
   "trip-confirm": {
     "services-please-fill-in": "Please fill in the {{text}} not listed.",
     "services-cancel": "Cancel",
-    "services-save": "Save"
+    "services-save": "Save",
+    "custom-mode": "Custom Mode",
+    "custom-purpose": "Custom Purpose",
+    "custom-labels": "Custom Labels"
   },
 
   "control": {
@@ -52,7 +55,8 @@
     "refresh-app-config": "Refresh App Configuration",
     "current-version": "Current version: {{version}}",
     "refreshing-app-config": "Refreshing app configuration, please wait...",
-    "already-up-to-date": "Already up to date!"
+    "already-up-to-date": "Already up to date!",
+    "manage-custom-labels": "Manage Custom Labels"
   },
 
   "general-settings": {

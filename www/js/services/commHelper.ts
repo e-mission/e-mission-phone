@@ -233,3 +233,77 @@ export function putOne(key, data) {
     throw error;
   });
 }
+
+export function getUserCustomLabels(keys) {
+  return new Promise<any>((rs, rj) => {
+    window['cordova'].plugins.BEMServerComm.postUserPersonalData(
+      '/customlabel/get',
+      'keys',
+      keys,
+      rs,
+      rj,
+    );
+  }).catch((error) => {
+    error = 'While getting labels, ' + error;
+    throw error;
+  });
+}
+
+export function insertUserCustomLabel(key, newLabel) {
+  const insertedLabel = {
+    key: key,
+    label: newLabel,
+  };
+  return new Promise((rs, rj) => {
+    window['cordova'].plugins.BEMServerComm.postUserPersonalData(
+      '/customlabel/insert',
+      'inserted_label',
+      insertedLabel,
+      rs,
+      rj,
+    );
+  }).catch((error) => {
+    error = `While inserting one ${key}, ${error}`;
+    throw error;
+  });
+}
+
+export function updateUserCustomLabel(key, oldLabel, newLabel, isNewLabelMustAdded) {
+  const updatedLabel = {
+    key: key,
+    old_label: oldLabel,
+    new_label: newLabel,
+    is_new_label_must_added: isNewLabelMustAdded,
+  };
+  return new Promise<any>((rs, rj) => {
+    window['cordova'].plugins.BEMServerComm.postUserPersonalData(
+      '/customlabel/update',
+      'updated_label',
+      updatedLabel,
+      rs,
+      rj,
+    );
+  }).catch((error) => {
+    error = `While updating one ${key}, ${error}`;
+    throw error;
+  });
+}
+
+export function deleteUserCustomLabel(key, newLabel) {
+  const deletedLabel = {
+    key: key,
+    label: newLabel,
+  };
+  return new Promise((rs, rj) => {
+    window['cordova'].plugins.BEMServerComm.postUserPersonalData(
+      '/customlabel/delete',
+      'deleted_label',
+      deletedLabel,
+      rs,
+      rj,
+    );
+  }).catch((error) => {
+    error = `While deleting one ${key}, ${error}`;
+    throw error;
+  });
+}

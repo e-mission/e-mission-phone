@@ -37,6 +37,7 @@ import { storageClear } from '../plugin/storage';
 import { getAppVersion } from '../plugin/clientStats';
 import { getConsentDocument } from '../splash/startprefs';
 import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
+import CustomLabelSettingRow from './CustomLabelSettingRow';
 import { fetchOPCode, getSettings } from '../services/controlHelper';
 import {
   updateScheduledNotifs,
@@ -425,6 +426,7 @@ const ProfileSettings = () => {
           desc={authSettings.opcode}
           descStyle={settingStyles.monoDesc}></SettingRow>
         <DemographicsSettingRow></DemographicsSettingRow>
+        {appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL' && <CustomLabelSettingRow />}
         <SettingRow
           textKey="control.view-privacy"
           iconName="eye"

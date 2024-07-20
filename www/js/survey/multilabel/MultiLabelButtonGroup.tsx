@@ -12,6 +12,7 @@ import {
   RadioButton,
   Button,
   TextInput,
+  Divider,
 } from 'react-native-paper';
 import DiaryButton from '../../components/DiaryButton';
 import { useTranslation } from 'react-i18next';
@@ -29,22 +30,23 @@ import {
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
 import { MultilabelKey } from '../../types/labelTypes';
+import { updateUserCustomLabel } from '../../services/commHelper';
+import { AppContext } from '../../App';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const { labelOptions, labelFor, userInputFor, addUserInputToEntry } = useContext(TimelineContext);
+  const { customLabelMap, setCustomLabelMap } = useContext(AppContext);
   const { height: windowHeight } = useWindowDimensions();
-
   // modal visible for which input type? (MODE or PURPOSE or REPLACED_MODE, null if not visible)
   const [modalVisibleFor, setModalVisibleFor] = useState<MultilabelKey | null>(null);
   const [otherLabel, setOtherLabel] = useState<string | null>(null);
-  const chosenLabel = useMemo<string | null>(() => {
+  const initialLabel = useMemo<string | null>(() => {
     if (modalVisibleFor == null) return null;
-    if (otherLabel != null) return 'other';
     return labelFor(trip, modalVisibleFor)?.value || null;
-  }, [modalVisibleFor, otherLabel]);
+  }, [modalVisibleFor]);
 
   // to mark 'inferred' labels as 'confirmed'; turn yellow labels blue
   function verifyTrip() {
@@ -81,16 +83,36 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     if (!Object.keys(inputs).length) return displayErrorMsg('No inputs to store');
     const inputsToStore: UserInputMap = {};
     const storePromises: any[] = [];
-    for (let [inputType, chosenLabel] of Object.entries(inputs)) {
+
+    for (let [inputType, newLabel] of Object.entries(inputs)) {
       if (isOther) {
         /* Let's make the value for user entered inputs look consistent with our other values
         (i.e. lowercase, and with underscores instead of spaces) */
-        chosenLabel = readableLabelToKey(chosenLabel);
+        newLabel = readableLabelToKey(newLabel);
+      }
+      // If a user saves a new customized label or makes changes to/from customized labels, the labels need to be updated.
+      const key = inputType.toLowerCase();
+      if (
+        isOther ||
+        (initialLabel && customLabelMap[key].indexOf(initialLabel) > -1) ||
+        (newLabel && customLabelMap[key].indexOf(newLabel) > -1)
+      ) {
+        updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther ?? false)
+          .then((res) => {
+            setCustomLabelMap({
+              ...customLabelMap,
+              [key]: res['label'],
+            });
+            logDebug('Successfuly stored custom label ' + JSON.stringify(res));
+          })
+          .catch((e) => {
+            displayErrorMsg(e, 'Create Label Error');
+          });
       }
       const inputDataToStore = {
         start_ts: trip.start_ts,
         end_ts: trip.end_ts,
-        label: chosenLabel,
+        label: newLabel,
       };
       inputsToStore[inputType] = inputDataToStore;
 
@@ -107,6 +129,8 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   }
 
   const tripInputDetails = labelInputDetailsForTrip(userInputFor(trip), appConfig);
+  const customLabelKeyInDatabase = modalVisibleFor === 'PURPOSE' ? 'purpose' : 'mode';
+
   return (
     <>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -164,16 +188,47 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
               <ScrollView style={{ paddingBottom: 24 }}>
                 <RadioButton.Group
                   onValueChange={(val) => onChooseLabel(val)}
-                  value={chosenLabel || ''}>
+                  // if 'other' button is selected and input component shows up, make 'other' radio button filled
+                  value={otherLabel !== null ? 'other' : initialLabel || ''}>
                   {modalVisibleFor &&
-                    labelOptions?.[modalVisibleFor]?.map((o, i) => (
-                      <RadioButton.Item
-                        key={i}
-                        label={o.text || labelKeyToReadable(o.value)}
-                        value={o.value}
-                        style={{ paddingVertical: 2 }}
-                      />
-                    ))}
+                    labelOptions?.[modalVisibleFor]?.map((o, i) => {
+                      const radioItemForOption = (
+                        <RadioButton.Item
+                          key={i}
+                          label={o.text || labelKeyToReadable(o.value)}
+                          value={o.value}
+                          style={{ paddingVertical: 2 }}
+                        />
+                      );
+                      /* if this is the 'other' option and there are some custom labels,
+                      show the custom labels section before 'other' */
+                      if (o.value == 'other' && customLabelMap[customLabelKeyInDatabase]?.length) {
+                        return (
+                          <>
+                            <Divider style={{ marginVertical: 10 }} />
+                            <Text
+                              style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
+                              {(modalVisibleFor === 'MODE' ||
+                                modalVisibleFor === 'REPLACED_MODE') &&
+                                t('trip-confirm.custom-mode')}
+                              {modalVisibleFor === 'PURPOSE' && t('trip-confirm.custom-purpose')}
+                            </Text>
+                            {customLabelMap[customLabelKeyInDatabase].map((key, i) => (
+                              <RadioButton.Item
+                                key={i}
+                                label={labelKeyToReadable(key)}
+                                value={key}
+                                style={{ paddingVertical: 2 }}
+                              />
+                            ))}
+                            <Divider style={{ marginVertical: 10 }} />
+                            {radioItemForOption}
+                          </>
+                        );
+                      }
+                      // otherwise, just show the radio item as normal
+                      return radioItemForOption;
+                    })}
                 </RadioButton.Group>
               </ScrollView>
             </Dialog.Content>
@@ -185,6 +240,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                   })}
                   value={otherLabel || ''}
                   onChangeText={(t) => setOtherLabel(t)}
+                  maxLength={25}
                 />
                 <Dialog.Actions>
                   <Button onPress={() => store({ [modalVisibleFor]: otherLabel }, true)}>

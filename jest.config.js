@@ -23,4 +23,6 @@ module.exports = {
     "!www/js/**/index.{ts,tsx,js,jsx}",
     "!www/js/types/**/*.{ts,tsx,js,jsx}",
   ],
+  // several functions in commHelper do not have unit tests; see note in commHelper.test.ts
+  coveragePathIgnorePatterns: ['www/js/services/commHelper.ts'],
 };
