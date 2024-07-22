@@ -9,9 +9,9 @@ import { LocalDt } from '../types/serverData';
 import humanizeDuration from 'humanize-duration';
 import { AppConfig } from '../types/appConfigTypes';
 import { ImperialConfig } from '../config/useImperialConfig';
-import { base_mode_colors } from 'e-mission-common';
+import { base_modes } from 'e-mission-common';
 
-export const modeColors = base_mode_colors.mode_colors;
+export const modeColors = base_modes.mode_colors;
 
 // parallels the server-side MotionTypes enum: https://github.com/e-mission/e-mission-server/blob/94e7478e627fa8c171323662f951c611c0993031/emission/core/wrapper/motionactivity.py#L12
 export type MotionTypeKey =
@@ -27,16 +27,16 @@ export type MotionTypeKey =
   | 'STOPPED_WHILE_IN_VEHICLE'
   | 'AIR_OR_HSR';
 
-const BaseModes = base_mode_colors.BASE_MODES;
+const BaseModes = base_modes.BASE_MODES;
 
 export function getBaseModeByValue(value: string, labelOptions: LabelOptions) {
   const modeOption = labelOptions?.MODE?.find((opt) => opt.value == value);
-  return base_mode_colors.get_base_mode_by_key(modeOption?.baseMode || 'OTHER');
+  return base_modes.get_base_mode_by_key(modeOption?.baseMode || 'OTHER');
 }
 
 export function getBaseModeByText(text: string, labelOptions: LabelOptions) {
   const modeOption = labelOptions?.MODE?.find((opt) => opt.text == text);
-  return base_mode_colors.get_base_mode_by_key(modeOption?.baseMode || 'OTHER');
+  return base_modes.get_base_mode_by_key(modeOption?.baseMode || 'OTHER');
 }
 
 /**
@@ -122,8 +122,8 @@ export function getDetectedModes(trip: CompositeTrip) {
     .sort(([modeA, distA]: [string, number], [modeB, distB]: [string, number]) => distB - distA) // sort by distance (highest first)
     .map(([mode, dist]: [MotionTypeKey, number]) => ({
       mode,
-      icon: base_mode_colors.get_base_mode_by_key(mode)?.icon,
-      color: base_mode_colors.get_base_mode_by_key(mode)?.color || 'black',
+      icon: base_modes.get_base_mode_by_key(mode)?.icon,
+      color: base_modes.get_base_mode_by_key(mode)?.color || 'black',
       pct: Math.round((dist / trip.distance) * 100) || '<1', // if rounds to 0%, show <1%
     }));
 }
@@ -134,8 +134,8 @@ export function getFormattedSectionProperties(trip: CompositeTrip, imperialConfi
     duration: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
     distance: imperialConfig.getFormattedDistance(s.distance),
     distanceSuffix: imperialConfig.distanceSuffix,
-    icon: base_mode_colors.get_base_mode_by_key(s.sensed_mode_str)?.icon,
-    color: base_mode_colors.get_base_mode_by_key(s.sensed_mode_str)?.color || '#333',
+    icon: base_modes.get_base_mode_by_key(s.sensed_mode_str)?.icon,
+    color: base_modes.get_base_mode_by_key(s.sensed_mode_str)?.color || '#333',
   }));
 }
 

@@ -19,7 +19,7 @@ import { getBaseModeByText, modeColors } from '../diary/diaryHelper';
 import { useTranslation } from 'react-i18next';
 import { GroupingField, MetricName } from '../types/appConfigTypes';
 import { useImperialConfig } from '../config/useImperialConfig';
-import { base_mode_colors } from 'e-mission-common';
+import { base_modes } from 'e-mission-common';
 
 type Props = {
   metricName: MetricName;
@@ -116,7 +116,7 @@ const MetricsCard = ({
   // All other modes are colored according to their base mode
   const getColorForLabel = (label: string) => {
     if (label == 'Unlabeled') {
-      const unknownModeColor = base_mode_colors.get_base_mode_by_key('UNKNOWN').color;
+      const unknownModeColor = base_modes.get_base_mode_by_key('UNKNOWN').color;
       return colorLib(unknownModeColor).alpha(0.15).rgb().string();
     }
     return getBaseModeByText(label, labelOptions).color;

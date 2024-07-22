@@ -28,7 +28,7 @@ import {
 } from '../survey/enketo/enketoHelper';
 import { AppConfig } from '../types/appConfigTypes';
 import { Point, Feature } from 'geojson';
-import { ble_matching, base_mode_colors } from 'e-mission-common';
+import { ble_matching, base_modes } from 'e-mission-common';
 
 const cachedGeojsons: Map<string, GeoJSONData> = new Map();
 
@@ -43,7 +43,7 @@ export function useGeojsonForTrip(trip: CompositeTrip, baseMode?: string) {
   }
 
   const trajectoryColor =
-    (baseMode && base_mode_colors.get_base_mode_by_key(baseMode)?.color) || undefined;
+    (baseMode && base_modes.get_base_mode_by_key(baseMode)?.color) || undefined;
 
   logDebug("Reading trip's " + trip.locations.length + ' location points at ' + new Date());
   const features = [
@@ -269,7 +269,7 @@ function locations2GeojsonTrajectory(
           color for the sensed mode of this section, and fall back to dark grey */
         color:
           trajectoryColor ||
-          base_mode_colors.get_base_mode_by_key(section?.sensed_mode_str)?.color ||
+          base_modes.get_base_mode_by_key(section?.sensed_mode_str)?.color ||
           '#333',
       },
       properties: {
