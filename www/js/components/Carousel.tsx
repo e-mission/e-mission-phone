@@ -10,6 +10,7 @@ const Carousel = ({ children, cardWidth, cardMargin }: Props) => {
   const numCards = React.Children.count(children);
   return (
     <ScrollView
+      testID="carousel"
       horizontal={true}
       decelerationRate={0}
       snapToInterval={cardWidth + cardMargin}
