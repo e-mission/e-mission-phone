@@ -11,7 +11,7 @@ import { AppConfig } from '../types/appConfigTypes';
 import { ImperialConfig } from '../config/useImperialConfig';
 import { base_modes } from 'e-mission-common';
 
-export const modeColors = base_modes.mode_colors;
+export type BaseModeKey = string; // TODO figure out how to get keyof typeof base_modes.BASE_MODES
 
 // parallels the server-side MotionTypes enum: https://github.com/e-mission/e-mission-server/blob/94e7478e627fa8c171323662f951c611c0993031/emission/core/wrapper/motionactivity.py#L12
 export type MotionTypeKey =
@@ -26,8 +26,6 @@ export type MotionTypeKey =
   | 'NONE'
   | 'STOPPED_WHILE_IN_VEHICLE'
   | 'AIR_OR_HSR';
-
-const BaseModes = base_modes.BASE_MODES;
 
 export function getBaseModeByValue(value: string, labelOptions: LabelOptions) {
   const modeOption = labelOptions?.MODE?.find((opt) => opt.value == value);

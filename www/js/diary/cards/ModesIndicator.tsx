@@ -3,7 +3,6 @@ import { View, StyleSheet } from 'react-native';
 import color from 'color';
 import TimelineContext from '../../TimelineContext';
 import { logDebug } from '../../plugin/logger';
-import { getBaseModeByValue } from '../diaryHelper';
 import { Text, Icon, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { base_modes } from 'e-mission-common';

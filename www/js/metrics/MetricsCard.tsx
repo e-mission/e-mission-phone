@@ -15,7 +15,7 @@ import {
 import ToggleSwitch from '../components/ToggleSwitch';
 import { cardStyles } from './MetricsTab';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
-import { getBaseModeByText, modeColors } from '../diary/diaryHelper';
+import { getBaseModeByText } from '../diary/diaryHelper';
 import { useTranslation } from 'react-i18next';
 import { GroupingField, MetricName } from '../types/appConfigTypes';
 import { useImperialConfig } from '../config/useImperialConfig';

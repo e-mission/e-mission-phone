@@ -1,5 +1,4 @@
 import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
-import { getBaseModeByValue } from './diaryHelper';
 import { getUnifiedDataForInterval } from '../services/unifiedDataLoader';
 import { getRawEntries } from '../services/commHelper';
 import { ServerResponse, BEMData } from '../types/serverData';

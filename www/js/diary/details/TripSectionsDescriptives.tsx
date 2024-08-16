@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Icon, Text, useTheme } from 'react-native-paper';
 import useDerivedProperties from '../useDerivedProperties';
-import { getBaseModeByValue } from '../diaryHelper';
 import TimelineContext from '../../TimelineContext';
 import { base_modes } from 'e-mission-common';
 
