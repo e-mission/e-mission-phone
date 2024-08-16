@@ -442,10 +442,7 @@ function tripTransitions2UnprocessedTrip(
     startTs: tripStartTransition.data.ts,
     endTs: tripEndTransition.data.ts,
   };
-  logDebug(`About to pull location data for range: 
-    ${DateTime.fromSeconds(tripStartTransition.data.ts).toLocaleString(DateTime.DATETIME_MED)} 
-     to 
-    ${DateTime.fromSeconds(tripEndTransition.data.ts).toLocaleString(DateTime.DATETIME_MED)}`);
+  logDebug(`About to pull location data for range: ${tq.startTs} to ${tq.endTs}`);
   const getSensorData = window['cordova'].plugins.BEMUserCache.getSensorDataForInterval;
   return getUnifiedDataForInterval('background/filtered_location', tq, getSensorData).then(
     (locationList: Array<BEMData<FilteredLocation>>) => {
@@ -605,9 +602,6 @@ export function readUnprocessedTrips(
         logDebug(`Found ${transitionList.length} transitions. yay!`);
         const tripsList = transitions2TripTransitions(transitionList);
         logDebug(`Mapped into ${tripsList.length} trips. yay!`);
-        tripsList.forEach((trip) => {
-          logDebug(JSON.stringify(trip, null, 2));
-        });
         const tripFillPromises = tripsList.map((t) =>
           tripTransitions2UnprocessedTrip(t, appConfig),
         );

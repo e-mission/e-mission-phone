@@ -111,8 +111,7 @@ async function fetchNominatimLocName(loc_geojson) {
   const coordsStr = loc_geojson.coordinates.toString();
   const cachedResponse = localStorage.getItem(coordsStr);
   if (cachedResponse) {
-    logDebug(`fetchNominatimLocName: found cached response for ${coordsStr} = 
-      ${cachedResponse}, skipping fetch`);
+    logDebug(`fetchNominatimLocName: found cached response for ${coordsStr}`);
     return;
   }
   logDebug('Getting location name for ' + JSON.stringify(coordsStr));
