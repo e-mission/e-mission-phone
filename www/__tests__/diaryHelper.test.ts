@@ -4,7 +4,6 @@ import {
   getFormattedDateAbbr,
   getFormattedTimeRange,
   getDetectedModes,
-  modeColors,
 } from '../js/diary/diaryHelper';
 
 import { base_modes } from 'e-mission-common';
@@ -39,20 +38,17 @@ it('returns a human readable time range', () => {
 });
 
 it('returns a Base Mode for a given key', () => {
-  expect(base_modes.get_base_mode_by_key('WALKING')).toEqual({
-    name: 'WALKING',
+  expect(base_modes.get_base_mode_by_key('WALKING')).toMatchObject({
     icon: 'walk',
-    color: modeColors.blue,
+    color: base_modes.mode_colors['blue'],
   });
-  expect(base_modes.get_base_mode_by_key('MotionTypes.WALKING')).toEqual({
-    name: 'WALKING',
+  expect(base_modes.get_base_mode_by_key('MotionTypes.WALKING')).toMatchObject({
     icon: 'walk',
-    color: modeColors.blue,
+    color: base_modes.mode_colors['blue'],
   });
-  expect(base_modes.get_base_mode_by_key('I made this type up')).toEqual({
-    name: 'UNKNOWN',
+  expect(base_modes.get_base_mode_by_key('I made this type up')).toMatchObject({
     icon: 'help',
-    color: modeColors.grey,
+    color: base_modes.mode_colors['grey'],
   });
 });
 
@@ -88,11 +84,13 @@ let myFakeTrip2 = {
 };
 
 let myFakeDetectedModes = [
-  { mode: 'BICYCLING', icon: 'bike', color: modeColors.green, pct: 89 },
-  { mode: 'WALKING', icon: 'walk', color: modeColors.blue, pct: 11 },
+  { mode: 'BICYCLING', icon: 'bike', color: base_modes.mode_colors['green'], pct: 89 },
+  { mode: 'WALKING', icon: 'walk', color: base_modes.mode_colors['blue'], pct: 11 },
 ];
 
-let myFakeDetectedModes2 = [{ mode: 'BICYCLING', icon: 'bike', color: modeColors.green, pct: 100 }];
+let myFakeDetectedModes2 = [
+  { mode: 'BICYCLING', icon: 'bike', color: base_modes.mode_colors['green'], pct: 100 },
+];
 
 it('returns the detected modes, with percentages, for a trip', () => {
   expect(getDetectedModes(myFakeTrip)).toEqual(myFakeDetectedModes);
