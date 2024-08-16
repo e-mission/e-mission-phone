@@ -33,7 +33,7 @@ it('gets met for mode and speed', () => {
 
 it('gets custom met for mode and speed', async () => {
   const appConfig = await getConfig();
-  await initCustomDatasetHelper(appConfig);
+  await initCustomDatasetHelper(appConfig!);
   expect(getMet('walk', 1.47523, 0)).toBe(4.3); //1.47523 mps = 3.299 mph -> 4.3 METs
   expect(getMet('bike', 4.5, 0)).toBe(6.8); //4.5 mps = 10.07 mph =  6.8 METs
   expect(getMet('unicycle', 100, 0)).toBe(0); //unkown mode, 0 METs

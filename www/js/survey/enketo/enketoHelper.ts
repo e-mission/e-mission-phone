@@ -57,12 +57,10 @@ export type EnketoUserInputEntry = UserInputEntry<EnketoUserInputData>;
 
 const LABEL_FUNCTIONS = {
   UseLabelTemplate: async (xmlDoc: XMLDocument, name: string) => {
-    let appConfig = await getConfig();
-    const configSurveys = appConfig.survey_info.surveys;
-
-    const config = configSurveys[name]; // config for this survey
+    const appConfig = await getConfig();
+    const config = appConfig?.survey_info?.surveys?.[name]; // config for this survey
     const lang = i18next.resolvedLanguage || 'en';
-    const labelTemplate = config.labelTemplate?.[lang];
+    const labelTemplate = config?.labelTemplate?.[lang];
 
     if (!labelTemplate) return 'Answered'; // no template given in config
     if (!config.labelVars) return labelTemplate; // if no vars given, nothing to interpolate,

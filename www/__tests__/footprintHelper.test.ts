@@ -50,7 +50,7 @@ const custom_metrics = [
 */
 it('gets footprint for metrics (custom, fallback 0)', async () => {
   const appConfig = await getConfig();
-  await initCustomDatasetHelper(appConfig);
+  await initCustomDatasetHelper(appConfig!);
   expect(getFootprintForMetrics(custom_metrics, 0)).toBe(2.4266);
 });
 
@@ -61,14 +61,14 @@ it('gets footprint for metrics (custom, fallback 0)', async () => {
 */
 it('gets footprint for metrics (custom, fallback 0.1)', async () => {
   const appConfig = await getConfig();
-  await initCustomDatasetHelper(appConfig);
+  await initCustomDatasetHelper(appConfig!);
   expect(getFootprintForMetrics(custom_metrics, 0.1)).toBe(3.2266);
 });
 
 //expects TAXI from the fake labels
 it('gets the highest footprint from the dataset, custom', async () => {
   const appConfig = await getConfig();
-  await initCustomDatasetHelper(appConfig);
+  await initCustomDatasetHelper(appConfig!);
   expect(getHighestFootprint()).toBe(0.30741);
 });
 
@@ -77,7 +77,7 @@ it('gets the highest footprint from the dataset, custom', async () => {
 */
 it('gets the highest footprint for distance, custom', async () => {
   const appConfig = await getConfig();
-  await initCustomDatasetHelper(appConfig);
+  await initCustomDatasetHelper(appConfig!);
   expect(getHighestFootprintForDistance(12345)).toBe(0.30741 * (12345 / 1000));
 });
 
