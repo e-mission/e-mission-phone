@@ -77,6 +77,23 @@ import Bottleneck from 'bottleneck';
 import { displayError, logDebug } from '../plugin/logger';
 import { CompositeTrip } from '../types/diaryTypes';
 
+export type NominatimResponse = {
+  address: {
+    road?: string;
+    pedestrian?: string;
+    suburb?: string;
+    neighbourhood?: string;
+    hamlet?: string;
+    city?: string;
+    town?: string;
+    county?: string;
+    state?: string;
+    postcode?: string;
+    country?: string;
+    country_code?: string;
+  };
+};
+
 let nominatimLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 export const resetNominatimLimiter = () => {
   const newLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
@@ -128,7 +145,7 @@ async function fetchNominatimLocName(loc_geojson) {
       status = ${response.status}; 
       data = ${JSON.stringify(data)}`);
     localStorage.setItem(coordsStr, JSON.stringify(data));
-    publish(coordsStr, data);
+    publish(coordsStr, JSON.stringify(data));
   } catch (error) {
     if (!nominatimError) {
       nominatimError = error;
@@ -139,8 +156,16 @@ async function fetchNominatimLocName(loc_geojson) {
 
 // Schedules nominatim fetches for the start and end locations of a trip
 export function fillLocationNamesOfTrip(trip: CompositeTrip) {
-  nominatimLimiter.schedule(() => fetchNominatimLocName(trip.end_loc));
-  nominatimLimiter.schedule(() => fetchNominatimLocName(trip.start_loc));
+  [trip.start_confirmed_place, trip.end_confirmed_place].forEach((place) => {
+    if (place?.geocoded_address || place?.reverse_geocode) {
+      const coordsStr = place.location.coordinates.toString();
+      const data = place.reverse_geocode || { address: place.geocoded_address };
+      localStorage.setItem(coordsStr, JSON.stringify(data));
+      publish(coordsStr, JSON.stringify(data));
+    } else {
+      nominatimLimiter.schedule(() => fetchNominatimLocName(place.location));
+    }
+  });
 }
 
 // a React hook that takes a trip or place and returns an array of its address names
