@@ -27,11 +27,6 @@ export type MotionTypeKey =
   | 'STOPPED_WHILE_IN_VEHICLE'
   | 'AIR_OR_HSR';
 
-export function getBaseModeByValue(value: string, labelOptions: LabelOptions) {
-  const modeOption = labelOptions?.MODE?.find((opt) => opt.value == value);
-  return base_modes.get_base_mode_by_key(modeOption?.baseMode || 'OTHER');
-}
-
 export function getBaseModeByText(text: string, labelOptions: LabelOptions) {
   const modeOption = labelOptions?.MODE?.find((opt) => opt.text == text);
   return base_modes.get_base_mode_by_key(modeOption?.baseMode || 'OTHER');
