@@ -1,5 +1,4 @@
 import color from 'color';
-import { getBaseModeByKey } from '../diary/diaryHelper';
 import { readableLabelToKey } from '../survey/multilabel/confirmHelper';
 import { logDebug } from '../plugin/logger';
 
