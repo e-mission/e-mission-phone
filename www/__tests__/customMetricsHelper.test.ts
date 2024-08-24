@@ -37,7 +37,7 @@ it('has no footprint or mets before initialized', () => {
 
 it('gets the custom mets', async () => {
   const appConfig = await getConfig();
-  await initCustomDatasetHelper(appConfig);
+  await initCustomDatasetHelper(appConfig!);
   //expecting the keys from fakeLabels.json NOT metrics/metDataset.ts
   expect(getCustomMETs()).toMatchObject({
     walk: expect.any(Object),
@@ -51,7 +51,7 @@ it('gets the custom mets', async () => {
 
 it('gets the custom footprint', async () => {
   const appConfig = await getConfig();
-  await initCustomDatasetHelper(appConfig);
+  await initCustomDatasetHelper(appConfig!);
   //numbers from fakeLabels.json
   expect(getCustomFootprint()).toMatchObject({
     walk: 0,

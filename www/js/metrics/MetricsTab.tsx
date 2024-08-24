@@ -81,7 +81,6 @@ async function fetchAggMetrics(
   };
   return getAggregateData('result/metrics/yyyy_mm_dd', query, appConfig.server)
     .then((response) => {
-      logDebug('MetricsTab: received aggMetrics');
       console.debug('MetricsTab: received aggMetrics', response);
       return response as MetricsData;
     })

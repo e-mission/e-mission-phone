@@ -7,13 +7,13 @@ import { AppConfig } from '../types/appConfigTypes';
 export const CONFIG_PHONE_UI = 'config/app_ui_config';
 export const CONFIG_PHONE_UI_KVSTORE = 'CONFIG_PHONE_UI';
 
-export let storedConfig: AppConfig | null = null;
+export let _promisedConfig: Promise<AppConfig | null> | undefined;
 export let configChanged = false;
 export const setConfigChanged = (b) => (configChanged = b);
 
 // used to test multiple configs, not used outside of test
-export const _test_resetStoredConfig = () => {
-  storedConfig = null;
+export const _test_resetPromisedConfig = () => {
+  _promisedConfig = undefined;
 };
 
 /**
@@ -261,7 +261,7 @@ export function loadNewConfig(newToken: string, existingVersion?: number): Promi
         .then(([result, kvStoreResult]) => {
           logDebug(`UI_CONFIG: Stored dynamic config in KVStore successfully, 
             result = ${JSON.stringify(kvStoreResult)}`);
-          storedConfig = toSaveConfig;
+          _promisedConfig = Promise.resolve(toSaveConfig);
           configChanged = true;
           return true;
         })
@@ -298,25 +298,25 @@ export const resetDataAndRefresh = () =>
  * @returns The app config, either from a cached copy, retrieved from local storage, or retrieved
  *   from user cache with getDocument()
  */
-export function getConfig(): Promise<AppConfig> {
-  if (storedConfig) return Promise.resolve(storedConfig);
-  return storageGet(CONFIG_PHONE_UI_KVSTORE).then((config) => {
+export function getConfig(): Promise<AppConfig | null> {
+  if (_promisedConfig) return _promisedConfig;
+  let promise = storageGet(CONFIG_PHONE_UI_KVSTORE).then((config) => {
     if (config && Object.keys(config).length) {
-      logDebug('Got config from KVStore: ' + JSON.stringify(config));
-      storedConfig = _backwardsCompatFill(config);
-      return storedConfig;
+      logDebug('Got config from KVStore: ');
+      return _backwardsCompatFill(config);
     }
     logDebug('No config found in KVStore, fetching from native storage');
     return window['cordova'].plugins.BEMUserCache.getDocument(CONFIG_PHONE_UI, false).then(
       (config) => {
         if (config && Object.keys(config).length) {
           logDebug('Got config from native storage: ' + JSON.stringify(config));
-          storedConfig = _backwardsCompatFill(config);
-          return storedConfig;
+          return _backwardsCompatFill(config);
         }
         logWarn('No config found in native storage either. Returning null');
         return null;
       },
     );
   });
+  _promisedConfig = promise;
+  return promise;
 }

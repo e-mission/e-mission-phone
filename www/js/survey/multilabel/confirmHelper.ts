@@ -96,12 +96,9 @@ export function labelInputDetailsForTrip(userInputForTrip, appConfigParam?) {
         Needs REPLACED_MODE`);
       return getLabelInputDetails();
     } else {
-      logDebug(`Found trip labeled with ${userInputForTrip?.['MODE']?.data?.label}, not labeled with mode of study = ${appConfig.intro.mode_studied}.
-        Doesn't need REPLACED_MODE`);
       return baseLabelInputDetails;
     }
   } else {
-    logDebug('No mode of study, so there is no REPLACED_MODE label option');
     return getLabelInputDetails();
   }
 }

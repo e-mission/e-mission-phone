@@ -95,9 +95,8 @@ function populateCustomFootprints() {
  */
 export async function initCustomDatasetHelper(newConfig: AppConfig) {
   try {
-    logDebug('initializing custom datasets with config' + newConfig);
+    logDebug('initializing custom datasets');
     const labelOptions = await getLabelOptions(newConfig);
-    logDebug('In custom metrics, label options = ' + JSON.stringify(labelOptions));
     _labelOptions = labelOptions;
     populateCustomMETs();
     populateCustomFootprints();

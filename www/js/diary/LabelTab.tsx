@@ -99,7 +99,8 @@ const LabelTab = () => {
         // if either the trip before or after is displayed, then keep the untracked time
         return prevTripDisplayed || nextTripDisplayed;
       });
-      logDebug('After filtering, entriesToDisplay = ' + JSON.stringify(entriesToDisplay));
+      logDebug(`After filtering, displaying ${entriesToDisplay.length} 
+                out of ${allEntries.length} entries`);
     } else {
       logDebug('No active filter, displaying all entries');
     }

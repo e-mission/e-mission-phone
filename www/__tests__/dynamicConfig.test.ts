@@ -75,8 +75,8 @@ describe('dynamicConfig', () => {
       const validToken = `nrelop_${validStudyNrelCommute}_user1`;
       await initByUser({ token: validToken });
       const config = await getConfig();
-      expect(config.server.connectUrl).toBe('https://nrel-commute-openpath.nrel.gov/api/');
-      expect(config.joined).toEqual({
+      expect(config!.server.connectUrl).toBe('https://nrel-commute-openpath.nrel.gov/api/');
+      expect(config!.joined).toEqual({
         opcode: validToken,
         study_name: validStudyNrelCommute,
         subgroup: undefined,
@@ -87,8 +87,8 @@ describe('dynamicConfig', () => {
       const validToken = `nrelop_${validStudyDenverCasr}_test_user1`;
       await initByUser({ token: validToken });
       const config = await getConfig();
-      expect(config.server.connectUrl).toBe('https://denver-casr-openpath.nrel.gov/api/');
-      expect(config.joined).toEqual({
+      expect(config!.server.connectUrl).toBe('https://denver-casr-openpath.nrel.gov/api/');
+      expect(config!.joined).toEqual({
         opcode: validToken,
         study_name: validStudyDenverCasr,
         subgroup: 'test',

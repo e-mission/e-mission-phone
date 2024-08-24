@@ -168,7 +168,7 @@ export function getUserInputForTimelineEntry(
   userInputList: UserInputEntry[],
 ): undefined | UserInputEntry {
   const logsEnabled = userInputList?.length < 20;
-  if (userInputList === undefined) {
+  if (!userInputList?.length) {
     logDebug('In getUserInputForTimelineEntry, no user input, returning undefined');
     return undefined;
   }

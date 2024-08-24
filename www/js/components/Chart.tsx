@@ -146,9 +146,6 @@ const Chart = ({
                       ? {}
                       : {
                           callback: (value, i) => {
-                            logDebug(`Horizontal axis callback: i = ${i};
-                              chartDatasets = ${JSON.stringify(chartDatasets)};
-                              chartDatasets[0].data = ${JSON.stringify(chartDatasets[0].data)}`);
                             //account for different data possiblities
                             const label =
                               chartDatasets[0].data[i]?.y || chartDatasets[i].data[0]?.y;
@@ -185,9 +182,6 @@ const Chart = ({
                       ? {}
                       : {
                           callback: (value, i) => {
-                            logDebug(`Vertical axis callback: i = ${i}; 
-                              chartDatasets = ${JSON.stringify(chartDatasets)}; 
-                              chartDatasets[0].data = ${JSON.stringify(chartDatasets[0].data)}`);
                             //account for different data possiblities - one mode per week, one mode both weeks, mixed weeks
                             const label =
                               chartDatasets[0].data[i]?.x || chartDatasets[i].data[0]?.x;
