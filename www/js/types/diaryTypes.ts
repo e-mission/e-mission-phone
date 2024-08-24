@@ -2,6 +2,7 @@
  and user input objects.
  As much as possible, these types parallel the types used in the server code. */
 
+import { NominatimResponse } from '../diary/addressNamesHelper';
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
 import useDerivedProperties from '../diary/useDerivedProperties';
 import { VehicleIdentity } from './appConfigTypes';
@@ -32,8 +33,13 @@ export type ConfirmedPlace = {
   exit_fmt_time: string; // ISO string e.g. 2023-10-31T12:00:00.000-04:00
   exit_local_dt: LocalDt;
   exit_ts: number; // Unix timestamp
+
+  // one of these depending on what we decide to keep on the server
+  geocoded_address?: NominatimResponse['address'];
+  reverse_geocode?: NominatimResponse;
+
   key: string;
-  location: Geometry;
+  location: Point;
   origin_key: string;
   raw_places: ObjectId[];
   source: string;
@@ -96,7 +102,7 @@ export type CompositeTrip = {
   confirmed_trip: ObjectId;
   distance: number;
   duration: number;
-  end_confirmed_place: BEMData<ConfirmedPlace>;
+  end_confirmed_place: ConfirmedPlace;
   end_fmt_time: string;
   end_loc: Point;
   end_local_dt: LocalDt;
@@ -113,7 +119,7 @@ export type CompositeTrip = {
   raw_trip: ObjectId;
   sections: SectionData[];
   source: string;
-  start_confirmed_place: BEMData<ConfirmedPlace>;
+  start_confirmed_place: ConfirmedPlace;
   start_fmt_time: string;
   start_loc: Point;
   start_local_dt: LocalDt;
