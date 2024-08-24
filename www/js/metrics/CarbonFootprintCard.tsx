@@ -131,15 +131,14 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
 
       // Issue 422:
       // https://github.com/e-mission/e-mission-docs/issues/422
-      let aggCarbonData: MetricsSummary[] = [];
-      for (let i in aggThisWeekSummary) {
-        aggCarbonData.push(aggThisWeekSummary[i]);
-        if (isNaN(aggCarbonData[i].values)) {
+      let aggCarbonData: MetricsSummary[] = aggThisWeekSummary.map((summaryEntry) => {
+        if (isNaN(summaryEntry.values)) {
           logWarn(`WARNING in calculating groupCarbonRecords: value is NaN for mode 
-            ${aggCarbonData[i].key}, changing to 0`);
-          aggCarbonData[i].values = 0;
+            ${summaryEntry.key}, changing to 0`);
+          summaryEntry.values = 0;
         }
-      }
+        return summaryEntry;
+      });
 
       let groupRecords: { label: string; x: number | string; y: number | string }[] = [];
 
