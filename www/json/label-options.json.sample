@@ -44,6 +44,8 @@
     {"value":"scootershare"},
     {"value":"drove_alone"},
     {"value":"shared_ride"},
+    {"value":"hybrid_drove_alone"},
+    {"value":"hybrid_shared_ride"},
     {"value":"e_car_drove_alone"},
     {"value":"e_car_shared_ride"},
     {"value":"taxi"},
