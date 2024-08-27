@@ -12,11 +12,3 @@ echo "Setting up the variables to run nvm"
 
 echo "Installing the correct node version"
 nvm install $NODE_VERSION
-
-echo "Check the version of npm"
-CURR_NPM_VERSION=`npm --version`
-if [ $CURR_NPM_VERSION != $NPM_VERSION ];
-then
-    echo "Invalid npm version, expected $NPM_VERSION, got $CURR_NPM_VERSION"
-    npm install npm@$NPM_VERSION
-fi

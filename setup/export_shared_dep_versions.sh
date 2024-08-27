@@ -1,13 +1,11 @@
-export NVM_VERSION=0.39.3
-export NODE_VERSION=19.5.0
-export NPM_VERSION=9.3.1
+export NVM_VERSION=0.40.0
+export NODE_VERSION=20.9.0
 # make sure that this is a stable version from
 # so that https://github.com/postmodern/ruby-versions
 # ideally, this would be the same version as the CI
 # Looks like brew supports only major and minor, not patch version
 export RUBY_VERSION=3.0
-export COCOAPODS_VERSION=1.12.1
-export GRADLE_VERSION=7.6
+export COCOAPODS_VERSION=1.15.2
 export OSX_EXP_VERSION=12
 
 export NVM_DIR="$HOME/.nvm"
