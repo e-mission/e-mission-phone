@@ -8,7 +8,7 @@ import {
   EnketoUserInputEntry,
 } from '../js/survey/enketo/enketoHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
-import { getConfig, resetPromisedConfig } from '../../www/js/config/dynamicConfig';
+import { getConfig, resetPromisedConfig } from '../../src/js/config/dynamicConfig';
 import fakeConfig from '../__mocks__/fakeConfig.json';
 
 import initializedI18next from '../js/i18nextInit';

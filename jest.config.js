@@ -16,14 +16,14 @@ module.exports = {
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   moduleDirectories: ["node_modules", "src"],
-  globals: {"__DEV__": false},
-  setupFiles: ["<rootDir>/www/__mocks__/setupJestEnv.js"],
+  globals: { "__DEV__": false },
+  setupFiles: ["<rootDir>/src/__mocks__/setupJestEnv.js"],
   collectCoverage: true,
   collectCoverageFrom: [
-    "www/js/**/*.{ts,tsx,js,jsx}",
-    "!www/js/**/index.{ts,tsx,js,jsx}",
-    "!www/js/types/**/*.{ts,tsx,js,jsx}",
+    "src/js/**/*.{ts,tsx,js,jsx}",
+    "!src/js/**/index.{ts,tsx,js,jsx}",
+    "!src/js/types/**/*.{ts,tsx,js,jsx}",
   ],
   // several functions in commHelper do not have unit tests; see note in commHelper.test.ts
-  coveragePathIgnorePatterns: ['www/js/services/commHelper.ts'],
+  coveragePathIgnorePatterns: ['src/js/services/commHelper.ts'],
 };

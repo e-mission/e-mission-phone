@@ -4,7 +4,6 @@ import { StyleSheet, Modal, ScrollView, SafeAreaView, Pressable } from 'react-na
 import { Button, Icon, ModalProps } from 'react-native-paper';
 import useAppConfig from '../../useAppConfig';
 import { useTranslation } from 'react-i18next';
-import { MDI_FONT_FAMILY } from '../../../index.js';
 import { SurveyOptions, fetchSurvey, getInstanceStr, saveResponse } from './enketoHelper';
 import { displayError, displayErrorMsg, logDebug } from '../../plugin/logger';
 
@@ -88,7 +87,9 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
           {!opts?.undismissable && (
             <button style={s.dismissBtn} onClick={() => rest.onDismiss?.()}>
               {/* arrow-left glyph from https://pictogrammers.com/library/mdi/icon/arrow-left/ */}
-              <span style={{ fontFamily: MDI_FONT_FAMILY, fontSize: 24, marginRight: 5 }}>󰁍</span>
+              <span style={{ fontFamily: 'material-community', fontSize: 24, marginRight: 5 }}>
+                󰁍
+              </span>
               <span>{t('survey.dismiss')}</span>
             </button>
           )}

@@ -2,6 +2,7 @@ import React, { useEffect, useState, createContext } from 'react';
 import { AppStateStatus } from 'react-native';
 import { ActivityIndicator, PaperProvider } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { registerRootComponent } from 'expo';
 import i18next from 'i18next';
 import packageJson from '../../package.json';
 import useAppConfig from './useAppConfig';
@@ -16,6 +17,10 @@ import AppStatusModal from './AppStatusModal';
 import usePermissionStatus from './usePermissionStatus';
 import AlertArea from './components/AlertArea';
 import Main from './Main';
+
+import initializedI18next from '../js/i18nextInit';
+window['i18next'] = initializedI18next;
+
 import { joinWithTokenOrUrl } from './config/dynamicConfig';
 import { addStatReading } from './plugin/clientStats';
 import { displayErrorMsg, logDebug } from './plugin/logger';
@@ -136,7 +141,6 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
     // if there is an onboarding route that is not DONE, show the onboarding stack
     appContent = <OnboardingStack />;
   }
-
   return (
     <PaperProvider theme={theme}>
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.elevation.level2 }}>

@@ -5,7 +5,7 @@ node_modules/
 platforms/
 plugins/
 dist/
-www/lib/
+www/
 package-hooks/
 .DS_Store
 app-settings.json
@@ -14,8 +14,7 @@ app-settings.json
 *.apk
 *.app.zip
 *.ipa
-www/dist/
-config.xml
 coverage/
 google-services.json
 GoogleService-Info.plist
+.expo/

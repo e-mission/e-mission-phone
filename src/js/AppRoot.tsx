@@ -17,6 +17,8 @@ import App from './App';
 import useAppState from './useAppState';
 import { logDebug } from './plugin/logger';
 import { resetPromisedConfig } from './config/dynamicConfig';
+import { registerRootComponent } from 'expo';
+import { pluginsReadyPromise } from './nativePlugins';
 
 const BACKGROUND_TIMEOUT_MS = 5 * 60 * 1000;
 
@@ -50,5 +52,10 @@ const AppRoot = () => {
     return null;
   }
 };
+
+pluginsReadyPromise.then(() => {
+  logDebug('Plugins are ready, registering root component');
+  registerRootComponent(AppRoot);
+});
 
 export default AppRoot;

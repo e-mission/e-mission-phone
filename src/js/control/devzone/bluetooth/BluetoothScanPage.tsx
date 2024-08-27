@@ -16,7 +16,7 @@ import { forceTransition } from '../../ProfileSettings';
 
 /**
  * The implementation of this scanner page follows the design of
- * `www/js/survey/enketo/EnketoModal.tsx`!
+ * `js/survey/enketo/EnketoModal.tsx`!
  *
  * Future work may include refractoring these files to be implementations of a
  * single base "pop-up page" component
