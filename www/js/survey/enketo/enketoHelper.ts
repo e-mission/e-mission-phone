@@ -8,6 +8,8 @@ import { getConfig } from '../../config/dynamicConfig';
 import { DateTime } from 'luxon';
 import { fetchUrlCached } from '../../services/commHelper';
 import { getUnifiedDataForInterval } from '../../services/unifiedDataLoader';
+import demoSurveyV2 from '../../../json/demo-survey-v2.json';
+import demoSurveyShortV1 from '../../../json/demo-survey-short-v1.json';
 import { AppConfig, EnketoSurveyConfig, SurveyButtonConfig } from '../../types/appConfigTypes';
 import {
   CompositeTrip,
@@ -339,8 +341,13 @@ export function resolveSurveyButtonConfig(
   return buttonConfig instanceof Array ? buttonConfig : [buttonConfig];
 }
 
-export async function fetchSurvey(url: string) {
-  const responseText = await fetchUrlCached(url);
+export async function fetchSurvey(formPath: string) {
+  if (formPath == 'json/demo-survey-v2.json') {
+    return demoSurveyV2;
+  } else if (formPath == 'json/demo-survey-short-v1.json') {
+    return demoSurveyShortV1;
+  }
+  const responseText = await fetchUrlCached(formPath);
   if (!responseText) return;
   try {
     return JSON.parse(responseText);
