@@ -1,17 +1,8 @@
-build-tools;31.0.0                                    
-build-tools;32.0.0                                    
-build-tools;33.0.2                                    
 build-tools;34.0.0
 emulator                                              
 extras;google;google_play_services                    
 platform-tools                                        
-platforms;android-30                                  
-platforms;android-31                                  
-platforms;android-32                                  
-platforms;android-33                                  
 platforms;android-34
-system-images;android-22;google_apis;x86_64           
-system-images;android-23;google_apis;x86_64           
 system-images;android-24;google_apis_playstore;x86    
 system-images;android-25;google_apis_playstore;x86    
 system-images;android-26;google_apis_playstore;x86    
@@ -20,9 +11,6 @@ system-images;android-28;google_apis_playstore;x86_64
 system-images;android-29;google_apis_playstore;x86_64 
 system-images;android-30;google_apis_playstore;x86_64 
 system-images;android-31;google_apis_playstore;x86_64 
-system-images;android-32;google_apis;x86_64 
 system-images;android-32;google_apis_playstore;x86_64 
-system-images;android-33;google_apis;x86_64 
 system-images;android-33;google_apis_playstore;x86_64 
-system-images;android-34;google_apis;x86_64
 system-images;android-34;google_apis_playstore;x86_64
