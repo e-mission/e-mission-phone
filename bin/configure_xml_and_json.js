@@ -3,13 +3,15 @@
 const fs = require('fs');
 
 var copyInlinedFiles = function(inlineString) {
-    var selConfigXml = "config."+inlineString+".xml";
-    var selPkgJson = "package."+inlineString+".json";
-    fs.copyFileSync(selConfigXml, "config.xml");
-    fs.copyFileSync(selPkgJson, "package.json");
-
-    console.log("Copied "+selConfigXml+" -> config.xml and "+
-                selPkgJson + " -> package.json");
+    [['config', 'xml'], ['package', 'json']].forEach(([prefix, ext]) => {
+        const selFile = prefix+"."+inlineString+"."+ext;
+        if (fs.existsSync(selFile)) {
+            fs.copyFileSync(selFile, prefix+"."+ext);
+            console.log("Copied "+selFile+" -> "+prefix+"."+ext);
+        } else {
+            console.log("File "+selFile+" does not exist, skipping");
+        }
+    });
 }
 
 if (process.argv.length != 3) {
