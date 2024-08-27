@@ -16,7 +16,7 @@
 import { updateUser } from '../services/commHelper';
 import { logDebug, displayError, logWarn } from '../plugin/logger';
 import { publish, subscribe, EVENTS } from '../customEventHandler';
-import { isConsented, readConsentState } from './startprefs';
+import { readConsentState } from './startprefs';
 import { readIntroDone } from '../onboarding/onboardingHelper';
 import { AlertManager } from '../components/AlertBar';
 
@@ -224,17 +224,14 @@ function onIntroEvent(event, data) {
  * startup code -
  * @function registers push if consented, subscribes event listeners for local handline
  */
-export function initPushNotify() {
-  readConsentState()
-    .then(isConsented)
-    .then((consentState) => {
-      if (consentState == true) {
-        logDebug('already consented, signing up for remote push');
-        registerPush();
-      } else {
-        logDebug('no consent yet, waiting to sign up for remote push');
-      }
-    });
+export async function initPushNotify() {
+  const consentState = await readConsentState();
+  if (consentState == true) {
+    logDebug('already consented, signing up for remote push');
+    registerPush();
+  } else {
+    logDebug('no consent yet, waiting to sign up for remote push');
+  }
 
   subscribe(EVENTS.CLOUD_NOTIFICATION_EVENT, (event) => onCloudEvent(event, event.detail));
   subscribe(EVENTS.CONSENTED_EVENT, (event) => onConsentEvent(event, event.detail));
