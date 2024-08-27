@@ -12,7 +12,7 @@ module.exports = {
       // to load CSS and SCSS (enketo-core only supplies SCSS)
       {
         test: /\.(scss|css)$/,
-        include: [path.resolve(__dirname, 'www/css'),
+        include: [path.resolve(__dirname, 'www'),
                   path.resolve(__dirname, 'node_modules/enketo-core'),
                   path.resolve(__dirname, 'node_modules/leaflet')],
         use: ['style-loader', 'css-loader', 'sass-loader'],
@@ -81,6 +81,9 @@ module.exports = {
           enketo-transformer/web (https://github.com/enketo/enketo-transformer#web).
         So, we can tell webpack it's ok to ignore libxslt by aliasing it to false. */
       'libxslt': false,
+      'expo': false,
+      'expo-device': false,
+      'react-native-html-parser': false,
     },
     extensions: ['.web.js', '.jsx', '.tsx', '.ts', '.js'],
   },
