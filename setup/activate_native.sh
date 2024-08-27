@@ -10,9 +10,6 @@ then
     echo "ANDROID_HOME and ANDROID_SDK_ROOT not set, android SDK not found"
 fi
 
-echo "Activating sdkman, and by default, gradle"
-source ~/.sdkman/bin/sdkman-init.sh
-
 echo "Ensuring that we use the most recent version of the command line tools"
 export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/emulator:$PATH
 
