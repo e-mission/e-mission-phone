@@ -8,6 +8,9 @@ import { MDI_FONT_FAMILY } from '../../../index.js';
 import { SurveyOptions, fetchSurvey, getInstanceStr, saveResponse } from './enketoHelper';
 import { displayError, displayErrorMsg, logDebug } from '../../plugin/logger';
 
+// styles for Enketo, plus some of our own overrides
+import './enketoStyles.css';
+
 type Props = Omit<ModalProps, 'children'> & {
   surveyName: string;
   onResponseSaved: (response: any) => void;
