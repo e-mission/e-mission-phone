@@ -20,5 +20,15 @@ deviceReady.then(() => {
   const rootEl = document.getElementById('appRoot');
   const reactRoot = createRoot(rootEl);
 
-  reactRoot.render(<App />);
+  reactRoot.render(<>
+      <style type="text/css">
+        {`
+          @font-face {
+            font-family: 'MaterialCommunityIcons';
+            src: url(${require('react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf')}) format('truetype');
+          }
+        `}
+      </style>
+    <App />
+  </>);
 });
