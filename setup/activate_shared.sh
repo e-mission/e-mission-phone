@@ -7,6 +7,3 @@ echo "Activating nvm"
 
 echo "Using version $NODE_VERSION"
 nvm use $NODE_VERSION
-
-CURR_NPM_VERSION=`npm --version`
-echo "npm version = $CURR_NPM_VERSION"

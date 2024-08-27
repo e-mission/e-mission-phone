@@ -1,6 +1,5 @@
 export NVM_VERSION=0.40.0
 export NODE_VERSION=20.9.0
-export NPM_VERSION=10.8.2
 # make sure that this is a stable version from
 # so that https://github.com/postmodern/ruby-versions
 # ideally, this would be the same version as the CI
