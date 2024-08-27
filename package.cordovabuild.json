@@ -98,7 +98,7 @@
       },
       "cordova-plugin-bluetooth-classic-serial-port": {},
       "cordova-custom-config": {},
-      "cordova-plugin-ibeacon": {}
+      "com.unarin.cordova.beacon": {}
     }
   },
   "dependencies": {
@@ -135,7 +135,7 @@
     "cordova-plugin-x-socialsharing": "6.0.4",
     "cordova-plugin-bluetooth-classic-serial-port": "git+https://github.com/louisg1337/cordova-plugin-bluetooth-classic-serial-port.git",
     "cordova-custom-config": "^5.1.1",
-    "cordova-plugin-ibeacon": "git+https://github.com/louisg1337/cordova-plugin-ibeacon.git",
+    "com.unarin.cordova.beacon": "github:louisg1337/cordova-plugin-ibeacon",
     "core-js": "^2.5.7",
     "e-mission-common": "github:JGreenlee/e-mission-common#semver:0.5.4",
     "enketo-core": "^6.1.7",
