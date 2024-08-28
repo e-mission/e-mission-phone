@@ -20,7 +20,8 @@ deviceReady.then(() => {
   const rootEl = document.getElementById('appRoot');
   const reactRoot = createRoot(rootEl);
 
-  reactRoot.render(<>
+  reactRoot.render(
+    <>
       <style type="text/css">
         {`
           @font-face {
@@ -29,6 +30,7 @@ deviceReady.then(() => {
           }
         `}
       </style>
-    <App />
-  </>);
+      <App />
+    </>,
+  );
 });

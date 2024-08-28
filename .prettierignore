@@ -2,8 +2,9 @@
 www/dist
 www/json
 
-# Ignore all HTML files:
+# Ignore all HTML and CSS files
 **/*.html
+**/*.css
 
 # This is the pattern to check only www directory
 # Ignore all
