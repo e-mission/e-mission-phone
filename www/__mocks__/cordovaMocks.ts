@@ -1,17 +1,24 @@
+import { Platform } from 'react-native';
 import packageJson from '../../package.json';
 
 export let alerts: string[] = [];
 
 export const mockLogger = () => {
-  window['Logger'] = { log: console.log };
+  window['Logger'] = {
+    log: console.log,
+    getMaxIndex: () => 0, // mock
+    getMessagesFromIndex: () => [], // mock
+  };
   window['alert'] = (message) => {
     console.log(message);
     alerts.push(message);
   };
-  console.error = (msg) => {
+  console.error ||= (msg) => {
     console.log(msg);
   };
 };
+import { getConfig } from '../js/config/dynamicConfig';
+import { displayErrorMsg } from '../js/plugin/logger';
 
 export const mockCordova = () => {
   window['cordova'] ||= {};
@@ -30,19 +37,19 @@ export const mockReminders = () => {
       setTimeout(() => {
         console.debug('getScheduled resolved');
         callback(notifications);
-      }, 100);
+      });
     },
     cancelAll: (callback) => {
       setTimeout(() => {
         notifications = [];
         callback();
-      }, 100);
+      });
     },
     schedule: (nots, callback) => {
       setTimeout(() => {
         notifications.push(...nots);
         callback();
-      }, 100);
+      });
     },
   };
 };
@@ -61,10 +68,10 @@ export const mockDevice = () => {
 
 export const mockGetAppVersion = () => {
   const mockGetAppVersion = {
-    getAppName: () => new Promise((rs, rj) => setTimeout(() => rs('Mock App'), 10)),
-    getPackageName: () => new Promise((rs, rj) => setTimeout(() => rs('com.example.mockapp'), 10)),
-    getVersionCode: () => new Promise((rs, rj) => setTimeout(() => rs('123'), 10)),
-    getVersionNumber: () => new Promise((rs, rj) => setTimeout(() => rs('1.2.3'), 10)),
+    getAppName: () => new Promise((rs, rj) => setTimeout(() => rs('Mock App'))),
+    getPackageName: () => new Promise((rs, rj) => setTimeout(() => rs('com.example.mockapp'))),
+    getVersionCode: () => new Promise((rs, rj) => setTimeout(() => rs('123'))),
+    getVersionNumber: () => new Promise((rs, rj) => setTimeout(() => rs('1.2.3'))),
   };
   window['cordova'] ||= {};
   window['cordova'].getAppVersion = mockGetAppVersion;
@@ -78,59 +85,71 @@ export const mockFile = () => {
   };
 };
 
-//for consent document
-const _storage = {};
+const BEM_USERCACHE_LOCAL = 'BEMUserCache:local:';
+const BEM_USERCACHE_DOC = 'BEMUserCache:doc:';
+const BEM_SERVERCOMM = 'BEMServerComm:';
 
 type MessageData = any;
 type Message = { key: string; data: MessageData; metadata: { write_ts: number; [k: string]: any } };
 export const mockBEMUserCache = (config?) => {
-  const _cache = {};
   const messages: Message[] = [];
   const mockBEMUserCache = {
     getLocalStorage: (key: string, isSecure: boolean) => {
       return new Promise((rs, rj) =>
         setTimeout(() => {
-          rs(_cache[key]);
-        }, 100),
+          const raw = sessionStorage.getItem(`${BEM_USERCACHE_LOCAL}${key}`);
+          rs(raw === null ? undefined : JSON.parse(raw));
+        }),
       );
     },
     putLocalStorage: (key: string, value: any) => {
       return new Promise<void>((rs, rj) =>
         setTimeout(() => {
-          _cache[key] = value;
+          sessionStorage.setItem(`${BEM_USERCACHE_LOCAL}${key}`, JSON.stringify(value));
           rs();
-        }, 100),
+        }),
       );
     },
     removeLocalStorage: (key: string) => {
       return new Promise<void>((rs, rj) =>
         setTimeout(() => {
-          delete _cache[key];
+          sessionStorage.removeItem(`${BEM_USERCACHE_LOCAL}${key}`);
           rs();
-        }, 100),
+        }),
       );
     },
     clearAll: () => {
       return new Promise<void>((rs, rj) =>
         setTimeout(() => {
-          for (let p in _cache) delete _cache[p];
-          for (let doc in _storage) delete _storage[doc];
+          for (let key in sessionStorage) {
+            if (key.startsWith(BEM_USERCACHE_LOCAL) || key.startsWith(BEM_USERCACHE_DOC)) {
+              sessionStorage.removeItem(key);
+            }
+          }
           rs();
-        }, 100),
+        }),
       );
     },
     listAllLocalStorageKeys: () => {
       return new Promise<string[]>((rs, rj) =>
         setTimeout(() => {
-          rs(Object.keys(_cache));
-        }, 100),
+          rs(
+            Object.keys(sessionStorage)
+              .filter((key) => key.startsWith(BEM_USERCACHE_LOCAL))
+              .map((key) => key.substring(BEM_USERCACHE_LOCAL.length)),
+          );
+        }),
       );
     },
     listAllUniqueKeys: () => {
       return new Promise<string[]>((rs, rj) =>
         setTimeout(() => {
-          rs(Object.keys(_cache));
-        }, 100),
+          rs(
+            Object.keys(sessionStorage)
+              .filter((key) => key.startsWith(BEM_USERCACHE_LOCAL))
+              .map((key) => key.substring(BEM_USERCACHE_LOCAL.length)),
+          );
+        }),
       );
     },
     putMessage: (key: string, value: any) => {
@@ -143,14 +162,14 @@ export const mockBEMUserCache = (config?) => {
             metadata: { write_ts: Math.floor(Date.now() / 1000) },
           });
           rs();
-        }, 100),
+        }),
       );
     },
     getAllMessages: (key: string, withMetadata?: boolean) => {
       return new Promise<Message[] | MessageData[]>((rs, rj) =>
         setTimeout(() => {
           rs(messages.filter((m) => m.key == key).map((m) => (withMetadata ? m : m.data)));
-        }, 100),
+        }),
       );
     },
     getMessagesForInterval: (key: string, tq, withMetadata?: boolean) => {
@@ -162,7 +181,7 @@ export const mockBEMUserCache = (config?) => {
               .filter((m) => m.metadata[tq.key] >= tq.startTs && m.metadata.write_ts <= tq.endTs)
               .map((m) => (withMetadata ? m : m.data)),
           );
-        }, 100),
+        }),
       );
     }, // Used for getUnifiedDataForInterval
     putRWDocument: (key: string, value: any) => {
@@ -171,7 +190,7 @@ export const mockBEMUserCache = (config?) => {
           setTimeout(() => {
             config = value;
             rs();
-          }, 100),
+          }),
         );
       }
     },
@@ -182,13 +201,14 @@ export const mockBEMUserCache = (config?) => {
           setTimeout(() => {
             if (config) rs(config);
             else rs({}); // return empty object if config is not set
-          }, 100),
+          }),
         );
       } else {
         return new Promise<any[]>((rs, rj) =>
           setTimeout(() => {
-            rs(_storage[key]);
-          }, 100),
+            const raw = sessionStorage.getItem(`${BEM_USERCACHE_DOC}${key}`);
+            rs(raw === null ? undefined : JSON.parse(raw));
+          }),
         );
       }
     },
@@ -211,7 +231,7 @@ export const mockBEMUserCache = (config?) => {
         return new Promise<any>((rs, rj) =>
           setTimeout(() => {
             rs({ metadata: { write_ts: '1699897723' }, data: 'completed', time: '01/01/2001' });
-          }, 100),
+          }),
         );
       } else {
         return Promise.resolve([]);
@@ -226,22 +246,25 @@ export const mockBEMUserCache = (config?) => {
 export const mockBEMDataCollection = () => {
   const mockBEMDataCollection = {
     markConsented: (consentDoc) => {
-      setTimeout(() => {
-        _storage['config/consent'] = consentDoc;
-      }, 100);
+      return new Promise<void>((rs, rj) =>
+        setTimeout(() => {
+          sessionStorage.setItem(`${BEM_USERCACHE_DOC}config/consent`, JSON.stringify(consentDoc));
+          rs();
+        }),
+      );
     },
     getConfig: () => {
       return new Promise<any>((rs, rj) => {
         setTimeout(() => {
           rs({ ios_use_remote_push_for_sync: true });
-        }, 100);
+        });
       });
     },
     handleSilentPush: () => {
       return new Promise<void>((rs, rj) =>
         setTimeout(() => {
           rs();
-        }, 100),
+        }),
       );
     },
   };
@@ -250,25 +273,94 @@ export const mockBEMDataCollection = () => {
   window['cordova'].plugins.BEMDataCollection = mockBEMDataCollection;
 };
 
+const mockBEMConnectionSettings = () => {
+  let _connectionSettings = {};
+  const mockBEMConnectionSettings = {
+    getSettings: (key: string) => Promise.resolve(_connectionSettings),
+    getDefaultSettings: () =>
+      Promise.resolve({
+        [Platform.OS.toLowerCase()]: {
+          auth: {
+            method: 'dummy-dev',
+          },
+        },
+        connectUrl: 'http://localhost:8080',
+      }),
+    setSettings: (settings: any) => Promise.resolve((_connectionSettings = settings)),
+  };
+  window['cordova'] ||= {};
+  window['cordova'].plugins ||= {};
+  window['cordova'].plugins.BEMConnectionSettings = mockBEMConnectionSettings;
+};
+
 export const mockBEMServerCom = () => {
+  mockBEMConnectionSettings();
+
+  const pushGetJSON = async (relativeUrl: string, msgFiller, successCallback, errorCallback) => {
+    const filledJsonObject = {};
+    msgFiller(filledJsonObject);
+
+    const auth = await window['cordova'].plugins.BEMUserCache.getLocalStorage('prompted-auth');
+    const opcode = auth?.token;
+    if (!opcode) {
+      displayErrorMsg('No user opcode found');
+      return;
+    }
+    filledJsonObject['user'] = opcode;
+    const { connectUrl } = await window['cordova'].plugins.BEMConnectionSettings.getSettings();
+    const fullUrl = connectUrl + relativeUrl;
+
+    console.debug('mockBEMServerCom', fullUrl, filledJsonObject);
+    console.debug('filledJsonObject', filledJsonObject);
+
+    const options = {
+      method: 'post',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(filledJsonObject),
+    } as RequestInit;
+    const response = await fetch(fullUrl, options);
+    if (response.status === 200) {
+      const json = await response.json();
+      successCallback(json);
+    } else {
+      const e = new Error(`Failed to get JSON object, status ${response.status}`);
+      errorCallback(e);
+    }
+  };
   const mockBEMServerCom = {
+    pushGetJSON,
     postUserPersonalData: (actionString, typeString, updateDoc, rs, rj) => {
       setTimeout(() => {
         console.log('set in mock', updateDoc);
-        _storage['user_data'] = updateDoc;
+        sessionStorage.setItem(`${BEM_SERVERCOMM}user_data`, JSON.stringify(updateDoc));
         rs();
-      }, 100);
+      });
     },
-
     getUserPersonalData: (actionString, rs, rj) => {
       setTimeout(() => {
-        rs(_storage['user_data']);
-      }, 100);
+        const raw = sessionStorage.getItem(`${BEM_SERVERCOMM}user_data`);
+        rs(raw === null ? undefined : JSON.parse(raw));
+      });
     },
   };
   window['cordova'] ||= {};
   window['cordova'].plugins ||= {};
   window['cordova'].plugins.BEMServerComm = mockBEMServerCom;
+};
+
+export const mockOPCodeAuth = () => {
+  const mockOPCodeAuth = {
+    getOPCode: () =>
+      window['cordova'].plugins.BEMUserCache.getLocalStorage('prompted-auth').then(
+        (auth) => auth?.token,
+      ),
+  };
+  window['cordova'] ||= {};
+  window['cordova'].plugins ||= {};
+  window['cordova'].plugins.OPCodeAuth = mockOPCodeAuth;
 };
 
 let _url_stash = '';
