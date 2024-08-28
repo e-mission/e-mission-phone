@@ -30,7 +30,7 @@ import {
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
 import { MultilabelKey } from '../../types/labelTypes';
-import { updateUserCustomLabel } from '../../services/commHelper';
+// import { updateUserCustomLabel } from '../../services/commHelper';
 import { AppContext } from '../../App';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
@@ -97,17 +97,17 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
         (initialLabel && customLabelMap[key].indexOf(initialLabel) > -1) ||
         (newLabel && customLabelMap[key].indexOf(newLabel) > -1)
       ) {
-        updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther ?? false)
-          .then((res) => {
-            setCustomLabelMap({
-              ...customLabelMap,
-              [key]: res['label'],
-            });
-            logDebug('Successfuly stored custom label ' + JSON.stringify(res));
-          })
-          .catch((e) => {
-            displayErrorMsg(e, 'Create Label Error');
-          });
+        // updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther ?? false)
+        //   .then((res) => {
+        //     setCustomLabelMap({
+        //       ...customLabelMap,
+        //       [key]: res['label'],
+        //     });
+        //     logDebug('Successfuly stored custom label ' + JSON.stringify(res));
+        //   })
+        //   .catch((e) => {
+        //     displayErrorMsg(e, 'Create Label Error');
+        //   });
       }
       const inputDataToStore = {
         start_ts: trip.start_ts,
