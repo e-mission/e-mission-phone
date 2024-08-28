@@ -1,9 +1,13 @@
 export const mockLogger = () => {
-  window['Logger'] = { log: console.log };
-  window.alert = (msg) => {
+  window['Logger'] = {
+    log: console.log,
+    getMaxIndex: () => 0, // mock
+    getMessagesFromIndex: () => [], // mock
+  };
+  window.alert ||= (msg) => {
     console.log(msg);
   };
-  console.error = (msg) => {
+  console.error ||= (msg) => {
     console.log(msg);
   };
 };
