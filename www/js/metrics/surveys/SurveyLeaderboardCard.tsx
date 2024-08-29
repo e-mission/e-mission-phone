@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { View, Text } from 'react-native';
 import { Card } from 'react-native-paper';
-import { cardStyles, SurveyMetric, SurveyObject } from './MetricsTab';
+import { cardStyles } from '../MetricsTab';
 import { useTranslation } from 'react-i18next';
-import BarChart from '../components/BarChart';
-import { useAppTheme } from '../appTheme';
+import BarChart from '../../components/BarChart';
+import { useAppTheme } from '../../appTheme';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import Annotation from 'chartjs-plugin-annotation';
 
@@ -12,7 +12,7 @@ ChartJS.register(...registerables, Annotation);
 
 type Props = {
   studyStartDate: string;
-  surveyMetric: SurveyMetric;
+  surveyMetric;
 };
 
 type LeaderboardRecord = {
@@ -41,7 +41,7 @@ const SurveyLeaderboardCard = ({ studyStartDate, surveyMetric }: Props) => {
   }
 
   const leaderboardRecords: LeaderboardRecord[] = useMemo(() => {
-    const combinedLeaderboard: SurveyObject[] = [...surveyMetric.others.leaderboard];
+    const combinedLeaderboard = [...surveyMetric.others.leaderboard];
     combinedLeaderboard.splice(myRank, 0, mySurveyMetric);
 
     // This is to prevent the leaderboard from being too long for UX purposes.

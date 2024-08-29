@@ -1,8 +1,8 @@
 import React, { useContext, useMemo } from 'react';
 import { View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
-import { MetricsData } from './metricsTypes';
-import { cardStyles } from './MetricsTab';
+import { MetricsData } from '../metricsTypes';
+import { cardStyles } from '../MetricsTab';
 import { useTranslation } from 'react-i18next';
 import {
   getFootprintForMetrics,
@@ -16,11 +16,11 @@ import {
   calculatePercentChange,
   segmentDaysByWeeks,
   MetricsSummary,
-} from './metricsHelper';
-import { logDebug, logWarn } from '../plugin/logger';
-import TimelineContext from '../TimelineContext';
-import { isoDatesDifference } from '../diary/timelineHelper';
-import useAppConfig from '../useAppConfig';
+} from '../metricsHelper';
+import { logDebug, logWarn } from '../../plugin/logger';
+import TimelineContext from '../../TimelineContext';
+import { isoDatesDifference } from '../../diary/timelineHelper';
+import useAppConfig from '../../useAppConfig';
 
 type Props = { userMetrics?: MetricsData; aggMetrics?: MetricsData };
 const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {

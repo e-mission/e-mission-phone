@@ -1,14 +1,14 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
-import { MetricsData } from './metricsTypes';
-import { cardStyles } from './MetricsTab';
+import { MetricsData } from '../metricsTypes';
+import { cardStyles } from '../MetricsTab';
 import { useTranslation } from 'react-i18next';
-import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
-import LineChart from '../components/LineChart';
-import { getBaseModeByText } from '../diary/diaryHelper';
-import { tsForDayOfMetricData, valueForFieldOnDay } from './metricsHelper';
-import useAppConfig from '../useAppConfig';
+import { labelKeyToRichMode, labelOptions } from '../../survey/multilabel/confirmHelper';
+import LineChart from '../../components/LineChart';
+import { getBaseModeByText } from '../../diary/diaryHelper';
+import { tsForDayOfMetricData, valueForFieldOnDay } from '../metricsHelper';
+import useAppConfig from '../../useAppConfig';
 import { ACTIVE_MODES } from './WeeklyActiveMinutesCard';
 
 type Props = { userMetrics?: MetricsData };

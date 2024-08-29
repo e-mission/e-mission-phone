@@ -1,4 +1,4 @@
-import { getMet } from '../js/metrics/metHelper';
+import { getMet } from '../js/metrics/activetravel/metHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 import fakeLabels from '../__mocks__/fakeLabels.json';

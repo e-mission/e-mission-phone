@@ -1,15 +1,15 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
-import { MetricsData } from './metricsTypes';
-import { cardMargin, cardStyles } from './MetricsTab';
-import { formatDateRangeOfDays, segmentDaysByWeeks, valueForFieldOnDay } from './metricsHelper';
+import { MetricsData } from '../metricsTypes';
+import { cardMargin, cardStyles } from '../MetricsTab';
+import { formatDateRangeOfDays, segmentDaysByWeeks, valueForFieldOnDay } from '../metricsHelper';
 import { useTranslation } from 'react-i18next';
-import BarChart from '../components/BarChart';
-import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
-import { getBaseModeByText } from '../diary/diaryHelper';
-import TimelineContext from '../TimelineContext';
-import useAppConfig from '../useAppConfig';
+import BarChart from '../../components/BarChart';
+import { labelKeyToRichMode, labelOptions } from '../../survey/multilabel/confirmHelper';
+import { getBaseModeByText } from '../../diary/diaryHelper';
+import TimelineContext from '../../TimelineContext';
+import useAppConfig from '../../useAppConfig';
 
 export const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = (typeof ACTIVE_MODES)[number];

@@ -1,13 +1,13 @@
 import React, { useMemo } from 'react';
 import { Text, Card } from 'react-native-paper';
-import { cardStyles } from './MetricsTab';
+import { cardStyles } from '../MetricsTab';
 import { useTranslation } from 'react-i18next';
-import BarChart from '../components/BarChart';
-import { useAppTheme } from '../appTheme';
+import BarChart from '../../components/BarChart';
+import { useAppTheme } from '../../appTheme';
 import { LabelPanel } from './SurveyComparisonCard';
-import { DayOfMetricData, MetricsData } from './metricsTypes';
-import { GroupingField } from '../types/appConfigTypes';
-import { getUniqueLabelsForDays } from './metricsHelper';
+import { DayOfMetricData, MetricsData } from '../metricsTypes';
+import { GroupingField } from '../../types/appConfigTypes';
+import { getUniqueLabelsForDays } from '../metricsHelper';
 
 function sumResponseCountsForValue(
   days: DayOfMetricData<'response_count'>[],

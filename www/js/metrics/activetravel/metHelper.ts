@@ -1,5 +1,5 @@
-import { logDebug, logWarn } from '../plugin/logger';
-import { getCustomMETs } from './customMetricsHelper';
+import { logDebug, logWarn } from '../../plugin/logger';
+import { getCustomMETs } from '../customMetricsHelper';
 import { standardMETs } from './metDataset';
 
 /**

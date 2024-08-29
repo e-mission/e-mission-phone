@@ -2,8 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Card, Checkbox, Text, useTheme } from 'react-native-paper';
 import colorLib from 'color';
-import BarChart from '../components/BarChart';
-import { DayOfMetricData } from './metricsTypes';
+import BarChart from '../../components/BarChart';
+import { DayOfMetricData } from '../metricsTypes';
 import {
   formatDateRangeOfDays,
   getLabelsForDay,
@@ -11,14 +11,14 @@ import {
   getUniqueLabelsForDays,
   valueForFieldOnDay,
   getUnitUtilsForMetric,
-} from './metricsHelper';
-import ToggleSwitch from '../components/ToggleSwitch';
-import { cardStyles } from './MetricsTab';
-import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
-import { getBaseModeByText } from '../diary/diaryHelper';
+} from '../metricsHelper';
+import ToggleSwitch from '../../components/ToggleSwitch';
+import { cardStyles } from '../MetricsTab';
+import { labelKeyToRichMode, labelOptions } from '../../survey/multilabel/confirmHelper';
+import { getBaseModeByText } from '../../diary/diaryHelper';
 import { useTranslation } from 'react-i18next';
-import { GroupingField, MetricName } from '../types/appConfigTypes';
-import { useImperialConfig } from '../config/useImperialConfig';
+import { GroupingField, MetricName } from '../../types/appConfigTypes';
+import { useImperialConfig } from '../../config/useImperialConfig';
 import { base_modes } from 'e-mission-common';
 
 type Props = {

@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import colorLib from 'color';
-import { useAppTheme } from '../appTheme';
+import { useAppTheme } from '../../appTheme';
 
 export type CarbonChange = { low: number; high: number } | undefined;
 type Props = { change: CarbonChange };

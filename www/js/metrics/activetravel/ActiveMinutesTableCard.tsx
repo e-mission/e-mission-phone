@@ -1,19 +1,19 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { Card, DataTable, useTheme } from 'react-native-paper';
-import { MetricsData } from './metricsTypes';
-import { cardStyles } from './MetricsTab';
+import { MetricsData } from '../metricsTypes';
+import { cardStyles } from '../MetricsTab';
 import {
   formatDate,
   formatDateRangeOfDays,
   secondsToMinutes,
   segmentDaysByWeeks,
   valueForFieldOnDay,
-} from './metricsHelper';
+} from '../metricsHelper';
 import { useTranslation } from 'react-i18next';
 import { ACTIVE_MODES } from './WeeklyActiveMinutesCard';
-import { labelKeyToRichMode } from '../survey/multilabel/confirmHelper';
-import TimelineContext from '../TimelineContext';
-import useAppConfig from '../useAppConfig';
+import { labelKeyToRichMode } from '../../survey/multilabel/confirmHelper';
+import TimelineContext from '../../TimelineContext';
+import useAppConfig from '../../useAppConfig';
 
 type Props = { userMetrics?: MetricsData };
 const ActiveMinutesTableCard = ({ userMetrics }: Props) => {

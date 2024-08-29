@@ -1,5 +1,5 @@
-import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
-import { getCustomFootprint } from './customMetricsHelper';
+import { displayError, displayErrorMsg, logDebug, logWarn } from '../../plugin/logger';
+import { getCustomFootprint } from '../customMetricsHelper';
 
 //variables for the highest footprint in the set and if using custom
 let highestFootprint: number | undefined = 0;

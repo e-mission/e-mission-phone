@@ -1,13 +1,14 @@
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, useWindowDimensions } from 'react-native';
 
-type Props = {
-  children: React.ReactNode;
-  cardWidth: number;
-  cardMargin: number;
-};
-const Carousel = ({ children, cardWidth, cardMargin }: Props) => {
+const cardMargin = 10;
+
+type Props = { children: React.ReactNode };
+const Carousel = ({ children }: Props) => {
   const numCards = React.Children.count(children);
+  const { width: windowWidth } = useWindowDimensions();
+  const cardWidth = windowWidth * 0.88;
+
   return (
     <ScrollView
       horizontal={true}

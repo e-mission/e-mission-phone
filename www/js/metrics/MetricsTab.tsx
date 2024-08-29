@@ -1,39 +1,29 @@
 import React, { useEffect, useState, useMemo, useContext } from 'react';
-import { ScrollView, useWindowDimensions } from 'react-native';
-import { Appbar, useTheme } from 'react-native-paper';
+import { ScrollView } from 'react-native';
+import { Appbar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import NavBar from '../components/NavBar';
 import { MetricsData } from './metricsTypes';
-import MetricsCard from './MetricsCard';
-import WeeklyActiveMinutesCard from './WeeklyActiveMinutesCard';
-import CarbonFootprintCard from './CarbonFootprintCard';
-import Carousel from '../components/Carousel';
-import DailyActiveMinutesCard from './DailyActiveMinutesCard';
-import CarbonTextCard from './CarbonTextCard';
-import ActiveMinutesTableCard from './ActiveMinutesTableCard';
 import { getAggregateData } from '../services/commHelper';
 import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
-import {
-  AppConfig,
-  GroupingField,
-  MetricName,
-  MetricList,
-  MetricsUiSection,
-} from '../types/appConfigTypes';
+import { AppConfig, MetricList, MetricsUiSection } from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext, { TimelineLabelMap, TimelineMap } from '../TimelineContext';
 import { isoDatesDifference } from '../diary/timelineHelper';
 import { metrics_summaries } from 'e-mission-common';
-import SurveyLeaderboardCard from './SurveyLeaderboardCard';
-import SurveyTripCategoriesCard from './SurveyTripCategoriesCard';
-import SurveyComparisonCard from './SurveyComparisonCard';
+import CarbonSection from './carbon/CarbonSection';
+import EnergySection from './energy/EnergySection';
+import SummarySection from './summary/SummarySection';
+import ActiveTravelSection from './activetravel/ActiveTravelSection';
+import SurveysSection from './surveys/SurveysSection';
 
 // 2 weeks of data is needed in order to compare "past week" vs "previous week"
 const N_DAYS_TO_LOAD = 14; // 2 weeks
 const DEFAULT_SECTIONS_TO_SHOW: MetricsUiSection[] = [
-  'footprint',
+  'carbon',
+  'energy',
   'active_travel',
   'summary',
 ] as const;
@@ -142,8 +132,6 @@ const MetricsTab = () => {
 
   const sectionsToShow =
     appConfig?.metrics?.phone_dashboard_ui?.sections || DEFAULT_SECTIONS_TO_SHOW;
-  const { width: windowWidth } = useWindowDimensions();
-  const cardWidth = windowWidth * 0.88;
   const studyStartDate = `${appConfig?.intro.start_month} / ${appConfig?.intro.start_year}`;
 
   return (
@@ -162,58 +150,22 @@ const MetricsTab = () => {
         <Appbar.Action icon="refresh" size={32} onPress={refreshTimeline} />
       </NavBar>
       <ScrollView style={{ paddingVertical: 12 }}>
-        {sectionsToShow.includes('footprint') && (
-          <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-            <CarbonFootprintCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
-            <CarbonTextCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
-          </Carousel>
-        )}
-        {sectionsToShow.includes('active_travel') && (
-          <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-            <WeeklyActiveMinutesCard userMetrics={userMetrics} />
-            <DailyActiveMinutesCard userMetrics={userMetrics} />
-            <ActiveMinutesTableCard userMetrics={userMetrics} />
-          </Carousel>
-        )}
-        {sectionsToShow.includes('summary') && (
-          <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-            {Object.entries(metricList).map(
-              ([metricName, groupingFields]: [MetricName, GroupingField[]]) => {
-                return (
-                  <MetricsCard
-                    key={metricName}
-                    metricName={metricName}
-                    groupingFields={groupingFields}
-                    cardTitle={t(`main-metrics.${metricName}`)}
-                    userMetricsDays={userMetrics?.[metricName]}
-                    aggMetricsDays={aggMetrics?.[metricName]}
-                  />
-                );
-              },
-            )}
-          </Carousel>
-        )}
-        {sectionsToShow.includes('surveys') && (
-          <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-            <SurveyComparisonCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
-            <SurveyTripCategoriesCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
-          </Carousel>
-        )}
-        {/* we will implement leaderboard later */}
-        {/* {sectionsToShow.includes('engagement') && (
-          <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
-            <SurveyLeaderboardCard
-              surveyMetric={DUMMY_SURVEY_METRIC}
-              studyStartDate={studyStartDate}
-            />
-          </Carousel>
-        )} */}
+        {[
+          ['carbon', CarbonSection],
+          ['energy', EnergySection],
+          ['active_travel', ActiveTravelSection],
+          ['summary', SummarySection],
+          // ['engagement', EngagementSection],
+          ['surveys', SurveysSection],
+        ].map(([section, component]: any) => {
+          if (sectionsToShow.includes(section)) {
+            return React.createElement(component, { userMetrics, aggMetrics, metricList });
+          }
+        })}
       </ScrollView>
     </>
   );
 };
-
-export const cardMargin = 10;
 
 export const cardStyles: any = {
   card: {

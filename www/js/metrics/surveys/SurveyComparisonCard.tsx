@@ -2,12 +2,12 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Icon, Card, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useAppTheme } from '../appTheme';
+import { useAppTheme } from '../../appTheme';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { cardStyles } from './MetricsTab';
-import { DayOfMetricData, MetricsData } from './metricsTypes';
-import { getUniqueLabelsForDays } from './metricsHelper';
+import { cardStyles } from '../MetricsTab';
+import { DayOfMetricData, MetricsData } from '../metricsTypes';
+import { getUniqueLabelsForDays } from '../metricsHelper';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 /**

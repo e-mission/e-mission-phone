@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useContext } from 'react';
 import { View } from 'react-native';
 import { Card, Text } from 'react-native-paper';
-import { MetricsData } from './metricsTypes';
-import { cardStyles } from './MetricsTab';
+import { MetricsData } from '../metricsTypes';
+import { cardStyles } from '../MetricsTab';
 import {
   getFootprintForMetrics,
   getHighestFootprint,
@@ -16,16 +16,16 @@ import {
   segmentDaysByWeeks,
   isCustomLabels,
   MetricsSummary,
-} from './metricsHelper';
+} from '../metricsHelper';
 import { useTranslation } from 'react-i18next';
-import BarChart from '../components/BarChart';
+import BarChart from '../../components/BarChart';
 import ChangeIndicator, { CarbonChange } from './ChangeIndicator';
 import color from 'color';
-import { useAppTheme } from '../appTheme';
-import { logDebug, logWarn } from '../plugin/logger';
-import TimelineContext from '../TimelineContext';
-import { isoDatesDifference } from '../diary/timelineHelper';
-import useAppConfig from '../useAppConfig';
+import { useAppTheme } from '../../appTheme';
+import { logDebug, logWarn } from '../../plugin/logger';
+import TimelineContext from '../../TimelineContext';
+import { isoDatesDifference } from '../../diary/timelineHelper';
+import useAppConfig from '../../useAppConfig';
 
 type Props = { userMetrics?: MetricsData; aggMetrics?: MetricsData };
 const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
