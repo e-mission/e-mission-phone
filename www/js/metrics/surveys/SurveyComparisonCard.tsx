@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppTheme } from '../../appTheme';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { cardStyles } from '../MetricsTab';
+import { metricsStyles } from '../MetricsScreen';
 import { DayOfMetricData, MetricsData } from '../metricsTypes';
 import { getUniqueLabelsForDays } from '../metricsHelper';
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -111,16 +111,16 @@ const SurveyComparisonCard = ({ userMetrics, aggMetrics }: Props) => {
   };
 
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={t('main-metrics.surveys')}
         titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
+        titleStyle={metricsStyles.titleText(colors)}
         subtitle={t('main-metrics.comparison')}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
-        style={cardStyles.title(colors)}
+        subtitleStyle={[metricsStyles.titleText(colors), metricsStyles.subtitleText]}
+        style={metricsStyles.title(colors)}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         {typeof myResponsePct !== 'number' || typeof othersResponsePct !== 'number' ? (
           <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
             {t('metrics.chart-no-data')}

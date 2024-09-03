@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text } from 'react-native';
 import { Card } from 'react-native-paper';
-import { cardStyles } from '../MetricsTab';
+import { metricsStyles } from '../MetricsScreen';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../../components/BarChart';
 import { useAppTheme } from '../../appTheme';
@@ -68,16 +68,16 @@ const SurveyLeaderboardCard = ({ studyStartDate, surveyMetric }: Props) => {
   }, [surveyMetric]);
 
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={t('main-metrics.surveys')}
         titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
+        titleStyle={metricsStyles.titleText(colors)}
         subtitle={t('main-metrics.leaderboard')}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
-        style={cardStyles.title(colors)}
+        subtitleStyle={[metricsStyles.titleText(colors), metricsStyles.subtitleText]}
+        style={metricsStyles.title(colors)}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         <View>
           <Text style={styles.chartDesc}>
             * {t('main-metrics.survey-leaderboard-desc')}

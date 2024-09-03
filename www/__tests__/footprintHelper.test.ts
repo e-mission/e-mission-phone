@@ -7,7 +7,7 @@ import {
   getFootprintForMetrics,
   getHighestFootprint,
   getHighestFootprintForDistance,
-} from '../js/metrics/carbon/footprintHelper';
+} from '../js/metrics/footprint/footprintHelper';
 import { getConfig } from '../js/config/dynamicConfig';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';

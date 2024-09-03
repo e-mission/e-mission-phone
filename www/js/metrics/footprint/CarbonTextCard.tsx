@@ -2,7 +2,7 @@ import React, { useContext, useMemo } from 'react';
 import { View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
 import { MetricsData } from '../metricsTypes';
-import { cardStyles } from '../MetricsTab';
+import { metricsStyles } from '../MetricsScreen';
 import { useTranslation } from 'react-i18next';
 import {
   getFootprintForMetrics,
@@ -158,16 +158,16 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
   }, [aggMetrics?.distance]);
 
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={t('main-metrics.footprint')}
         titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
+        titleStyle={metricsStyles.titleText(colors)}
         subtitle={cardSubtitleText}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
-        style={cardStyles.title(colors)}
+        subtitleStyle={[metricsStyles.titleText(colors), metricsStyles.subtitleText]}
+        style={metricsStyles.title(colors)}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         {textEntries?.length > 0 &&
           Object.keys(textEntries).map((i) => (
             <View

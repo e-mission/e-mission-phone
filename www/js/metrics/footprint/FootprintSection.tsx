@@ -1,15 +1,16 @@
 import React from 'react';
 import CarbonFootprintCard from './CarbonFootprintCard';
 import CarbonTextCard from './CarbonTextCard';
-import Carousel from '../../components/Carousel';
+import EnergyFootprintCard from './EnergyFootprintCard';
 
-const CarbonSection = ({ userMetrics, aggMetrics }) => {
+const FootprintSection = ({ userMetrics, aggMetrics }) => {
   return (
-    <Carousel>
+    <>
       <CarbonFootprintCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
       <CarbonTextCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
-    </Carousel>
+      <EnergyFootprintCard {...{ userMetrics, aggMetrics }} />
+    </>
   );
 };
 
-export default CarbonSection;
+export default FootprintSection;

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo, useContext } from 'react';
-import { ScrollView } from 'react-native';
 import { Appbar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
@@ -8,26 +7,19 @@ import { MetricsData } from './metricsTypes';
 import { getAggregateData } from '../services/commHelper';
 import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
-import { AppConfig, MetricList, MetricsUiSection } from '../types/appConfigTypes';
+import { AppConfig, MetricList } from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext, { TimelineLabelMap, TimelineMap } from '../TimelineContext';
 import { isoDatesDifference } from '../diary/timelineHelper';
 import { metrics_summaries } from 'e-mission-common';
-import CarbonSection from './carbon/CarbonSection';
-import EnergySection from './energy/EnergySection';
-import SummarySection from './summary/SummarySection';
-import ActiveTravelSection from './activetravel/ActiveTravelSection';
-import SurveysSection from './surveys/SurveysSection';
+import MetricsScreen from './MetricsScreen';
+import { LabelOptions } from '../types/labelTypes';
+import { useAppTheme } from '../appTheme';
 
 // 2 weeks of data is needed in order to compare "past week" vs "previous week"
 const N_DAYS_TO_LOAD = 14; // 2 weeks
-const DEFAULT_SECTIONS_TO_SHOW: MetricsUiSection[] = [
-  'carbon',
-  'energy',
-  'active_travel',
-  'summary',
-] as const;
 export const DEFAULT_METRIC_LIST: MetricList = {
+  footprint: ['mode_confirm'],
   distance: ['mode_confirm'],
   duration: ['mode_confirm'],
   count: ['mode_confirm'],
@@ -36,16 +28,18 @@ export const DEFAULT_METRIC_LIST: MetricList = {
 async function computeUserMetrics(
   metricList: MetricList,
   timelineMap: TimelineMap,
-  timelineLabelMap: TimelineLabelMap | null,
   appConfig: AppConfig,
+  timelineLabelMap: TimelineLabelMap | null,
+  labelOptions: LabelOptions,
 ) {
   try {
     const timelineValues = [...timelineMap.values()];
-    const result = metrics_summaries.generate_summaries(
+    const result = await metrics_summaries.generate_summaries(
       { ...metricList },
       timelineValues,
       appConfig,
       timelineLabelMap,
+      labelOptions,
     );
     logDebug('MetricsTab: computed userMetrics');
     console.debug('MetricsTab: computed userMetrics', result);
@@ -81,19 +75,21 @@ async function fetchAggMetrics(
 }
 
 const MetricsTab = () => {
+  const { colors } = useAppTheme();
   const appConfig = useAppConfig();
   const { t } = useTranslation();
   const {
     dateRange,
     timelineMap,
     timelineLabelMap,
+    labelOptions,
     timelineIsLoading,
     refreshTimeline,
     loadMoreDays,
     loadDateRange,
   } = useContext(TimelineContext);
 
-  const metricList = appConfig?.metrics?.phone_dashboard_ui?.metric_list ?? DEFAULT_METRIC_LIST;
+  const metricList = appConfig?.metrics?.phone_dashboard_ui?.metric_list || DEFAULT_METRIC_LIST;
 
   const [userMetrics, setUserMetrics] = useState<MetricsData | undefined>(undefined);
   const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
@@ -112,11 +108,18 @@ const MetricsTab = () => {
   }, [appConfig, dateRange]);
 
   useEffect(() => {
-    if (!readyToLoad || !appConfig || timelineIsLoading || !timelineMap || !timelineLabelMap)
+    if (
+      !readyToLoad ||
+      !appConfig ||
+      timelineIsLoading ||
+      !timelineMap ||
+      !timelineLabelMap ||
+      !labelOptions
+    )
       return;
     logDebug('MetricsTab: ready to compute userMetrics');
-    computeUserMetrics(metricList, timelineMap, timelineLabelMap, appConfig).then((result) =>
-      setUserMetrics(result),
+    computeUserMetrics(metricList, timelineMap, appConfig, timelineLabelMap, labelOptions).then(
+      (result) => setUserMetrics(result),
     );
   }, [readyToLoad, appConfig, timelineIsLoading, timelineMap, timelineLabelMap]);
 
@@ -130,13 +133,12 @@ const MetricsTab = () => {
     });
   }, [readyToLoad, appConfig, dateRange]);
 
-  const sectionsToShow =
-    appConfig?.metrics?.phone_dashboard_ui?.sections || DEFAULT_SECTIONS_TO_SHOW;
-  const studyStartDate = `${appConfig?.intro.start_month} / ${appConfig?.intro.start_year}`;
-
   return (
     <>
-      <NavBar isLoading={Boolean(timelineIsLoading || aggMetricsIsLoading)}>
+      <NavBar
+        isLoading={Boolean(timelineIsLoading || aggMetricsIsLoading)}
+        elevated={false}
+        style={{ backgroundColor: colors.elevation.level2 }}>
         <Appbar.Content title={t('metrics.dashboard-tab')} />
         <DateSelect
           mode="range"
@@ -149,50 +151,9 @@ const MetricsTab = () => {
         />
         <Appbar.Action icon="refresh" size={32} onPress={refreshTimeline} />
       </NavBar>
-      <ScrollView style={{ paddingVertical: 12 }}>
-        {[
-          ['carbon', CarbonSection],
-          ['energy', EnergySection],
-          ['active_travel', ActiveTravelSection],
-          ['summary', SummarySection],
-          // ['engagement', EngagementSection],
-          ['surveys', SurveysSection],
-        ].map(([section, component]: any) => {
-          if (sectionsToShow.includes(section)) {
-            return React.createElement(component, { userMetrics, aggMetrics, metricList });
-          }
-        })}
-      </ScrollView>
+      <MetricsScreen {...{ userMetrics, aggMetrics, metricList }} />
     </>
   );
-};
-
-export const cardStyles: any = {
-  card: {
-    overflow: 'hidden',
-    minHeight: 300,
-  },
-  title: (colors) => ({
-    backgroundColor: colors.primary,
-    paddingHorizontal: 8,
-    minHeight: 52,
-  }),
-  titleText: (colors) => ({
-    color: colors.onPrimary,
-    fontWeight: '500',
-    textAlign: 'center',
-  }),
-  subtitleText: {
-    fontSize: 13,
-    lineHeight: 13,
-    fontWeight: '400',
-    fontStyle: 'italic',
-  },
-  content: {
-    padding: 8,
-    paddingBottom: 12,
-    flex: 1,
-  },
 };
 
 export default MetricsTab;

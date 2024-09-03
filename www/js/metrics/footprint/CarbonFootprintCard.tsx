@@ -2,7 +2,7 @@ import React, { useState, useMemo, useContext } from 'react';
 import { View } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 import { MetricsData } from '../metricsTypes';
-import { cardStyles } from '../MetricsTab';
+import { metricsStyles } from '../MetricsScreen';
 import {
   getFootprintForMetrics,
   getHighestFootprint,
@@ -202,17 +202,17 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
   let meter = { dash_key: t('main-metrics.unlabeled'), high: 54, middle: 14 };
 
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={t('main-metrics.footprint')}
         titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
+        titleStyle={metricsStyles.titleText(colors)}
         subtitle={cardSubtitleText}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
+        subtitleStyle={[metricsStyles.titleText(colors), metricsStyles.subtitleText]}
         right={(props) => <ChangeIndicator change={emissionsChange}></ChangeIndicator>}
-        style={cardStyles.title(colors)}
+        style={metricsStyles.title(colors)}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         {chartData?.length > 0 ? (
           <View>
             <BarChart

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Text, Card } from 'react-native-paper';
-import { cardStyles } from '../MetricsTab';
+import { metricsStyles } from '../MetricsScreen';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../../components/BarChart';
 import { useAppTheme } from '../../appTheme';
@@ -51,16 +51,16 @@ const SurveyTripCategoriesCard = ({ userMetrics, aggMetrics }: Props) => {
   }, [userMetrics]);
 
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={t('main-metrics.surveys')}
         titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
+        titleStyle={metricsStyles.titleText(colors)}
         subtitle={t('main-metrics.trip-categories')}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
-        style={cardStyles.title(colors)}
+        subtitleStyle={[metricsStyles.titleText(colors), metricsStyles.subtitleText]}
+        style={metricsStyles.title(colors)}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         {records.length ? (
           <>
             <BarChart

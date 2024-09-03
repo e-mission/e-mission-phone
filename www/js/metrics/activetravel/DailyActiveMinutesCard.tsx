@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
 import { MetricsData } from '../metricsTypes';
-import { cardStyles } from '../MetricsTab';
+import { metricsStyles } from '../MetricsScreen';
 import { useTranslation } from 'react-i18next';
 import { labelKeyToRichMode, labelOptions } from '../../survey/multilabel/confirmHelper';
 import LineChart from '../../components/LineChart';
@@ -37,16 +37,16 @@ const DailyActiveMinutesCard = ({ userMetrics }: Props) => {
   }, [userMetrics?.duration]);
 
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={t('main-metrics.active-minutes')}
         titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
+        titleStyle={metricsStyles.titleText(colors)}
         subtitle={t('main-metrics.daily-active-minutes')}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
-        style={cardStyles.title(colors)}
+        subtitleStyle={[metricsStyles.titleText(colors), metricsStyles.subtitleText]}
+        style={metricsStyles.title(colors)}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         {dailyActiveMinutesRecords.length ? (
           <LineChart
             records={dailyActiveMinutesRecords}

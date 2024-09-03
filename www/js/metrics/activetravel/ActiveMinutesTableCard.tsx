@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { Card, DataTable, useTheme } from 'react-native-paper';
 import { MetricsData } from '../metricsTypes';
-import { cardStyles } from '../MetricsTab';
+import { metricsStyles } from '../MetricsScreen';
 import {
   formatDate,
   formatDateRangeOfDays,
@@ -80,16 +80,16 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
   const to = Math.min((page + 1) * itemsPerPage, allTotals.length);
 
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={t('main-metrics.active-minutes')}
         titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
+        titleStyle={metricsStyles.titleText(colors)}
         subtitle={t('main-metrics.active-minutes-table')}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
-        style={cardStyles.title(colors)}
+        subtitleStyle={[metricsStyles.titleText(colors), metricsStyles.subtitleText]}
+        style={metricsStyles.title(colors)}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         <DataTable>
           <DataTable.Header>
             <DataTable.Title> </DataTable.Title>

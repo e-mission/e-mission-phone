@@ -2,7 +2,7 @@ import React, { useContext, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
 import { MetricsData } from '../metricsTypes';
-import { cardMargin, cardStyles } from '../MetricsTab';
+import { cardMargin, metricsStyles } from '../MetricsScreen';
 import { formatDateRangeOfDays, segmentDaysByWeeks, valueForFieldOnDay } from '../metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../../components/BarChart';
@@ -47,16 +47,16 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
   }, [userMetrics?.duration]);
 
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={t('main-metrics.active-minutes')}
         titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
+        titleStyle={metricsStyles.titleText(colors)}
         subtitle={t('main-metrics.weekly-active-minutes')}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
-        style={cardStyles.title(colors)}
+        subtitleStyle={[metricsStyles.titleText(colors), metricsStyles.subtitleText]}
+        style={metricsStyles.title(colors)}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         {weeklyActiveMinutesRecords.length ? (
           <View style={{ flex: 1 }}>
             <BarChart

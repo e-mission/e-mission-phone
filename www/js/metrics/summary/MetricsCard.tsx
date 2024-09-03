@@ -13,7 +13,7 @@ import {
   getUnitUtilsForMetric,
 } from '../metricsHelper';
 import ToggleSwitch from '../../components/ToggleSwitch';
-import { cardStyles } from '../MetricsTab';
+import { metricsStyles } from '../MetricsScreen';
 import { labelKeyToRichMode, labelOptions } from '../../survey/multilabel/confirmHelper';
 import { getBaseModeByText } from '../../diary/diaryHelper';
 import { useTranslation } from 'react-i18next';
@@ -123,13 +123,13 @@ const MetricsCard = ({
   };
 
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={cardTitle}
         titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
+        titleStyle={metricsStyles.titleText(colors)}
         subtitle={cardSubtitleText}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
+        subtitleStyle={[metricsStyles.titleText(colors), metricsStyles.subtitleText]}
         right={() => (
           <View style={{ gap: 3 }}>
             <ToggleSwitch
@@ -152,9 +152,9 @@ const MetricsCard = ({
             />
           </View>
         )}
-        style={cardStyles.title(colors)}
+        style={metricsStyles.title(colors)}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         {viewMode == 'details' &&
           (Object.keys(metricSumValues).length ? (
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
