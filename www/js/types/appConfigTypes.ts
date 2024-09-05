@@ -95,7 +95,7 @@ export type ReminderSchemesConfig = {
 };
 
 // the available metrics that can be displayed in the phone dashboard
-export type MetricName = 'distance' | 'count' | 'duration' | 'response_count';
+export type MetricName = 'distance' | 'count' | 'duration' | 'response_count' | 'footprint';
 // the available trip / userinput properties that can be used to group the metrics
 export const groupingFields = [
   'mode_confirm',
@@ -106,13 +106,7 @@ export const groupingFields = [
 ] as const;
 export type GroupingField = (typeof groupingFields)[number];
 export type MetricList = { [k in MetricName]?: GroupingField[] };
-export type MetricsUiSection =
-  | 'carbon'
-  | 'energy'
-  | 'active_travel'
-  | 'summary'
-  | 'engagement'
-  | 'surveys';
+export type MetricsUiSection = 'footprint' | 'movement' | 'surveys' | 'travel';
 export type MetricsConfig = {
   include_test_users: boolean;
   phone_dashboard_ui?: {

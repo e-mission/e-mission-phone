@@ -4,7 +4,7 @@ import { SegmentedButtons } from 'react-native-paper';
 import { TabsProvider, Tabs, TabScreen } from 'react-native-paper-tabs';
 import FootprintSection from './footprint/FootprintSection';
 import ActiveTravelSection from './activetravel/ActiveTravelSection';
-import SummarySection from './summary/SummarySection';
+import TravelSection from './travel/TravelSection';
 import useAppConfig from '../useAppConfig';
 import { MetricsUiSection } from '../types/appConfigTypes';
 import SurveysSection from './surveys/SurveysSection';
@@ -15,7 +15,7 @@ const DEFAULT_SECTIONS_TO_SHOW: MetricsUiSection[] = ['footprint', 'movement', '
 const SECTIONS: Record<string, [any, string, string]> = {
   footprint: [FootprintSection, 'shoe-print', 'Footprint'],
   movement: [ActiveTravelSection, 'walk', 'Movement'],
-  travel: [SummarySection, 'chart-timeline', 'Travel'],
+  travel: [TravelSection, 'chart-timeline', 'Travel'],
   surveys: [SurveysSection, 'clipboard-list', 'Surveys'],
 };
 

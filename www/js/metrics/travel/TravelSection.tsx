@@ -3,12 +3,14 @@ import { GroupingField, MetricName } from '../../types/appConfigTypes';
 import MetricsCard from './MetricsCard';
 import { t } from 'i18next';
 
-const SummarySection = ({ userMetrics, aggMetrics, metricList }) => {
+const TRAVEL_METRICS = ['distance', 'duration', 'count'];
+
+const TravelSection = ({ userMetrics, aggMetrics, metricList }) => {
   return (
     <>
       {Object.entries(metricList).map(
-        ([metricName, groupingFields]: [MetricName, GroupingField[]]) => {
-          return (
+        ([metricName, groupingFields]: [MetricName, GroupingField[]]) =>
+          TRAVEL_METRICS.includes(metricName) ? (
             <MetricsCard
               key={metricName}
               metricName={metricName}
@@ -17,11 +19,10 @@ const SummarySection = ({ userMetrics, aggMetrics, metricList }) => {
               userMetricsDays={userMetrics?.[metricName]}
               aggMetricsDays={aggMetrics?.[metricName]}
             />
-          );
-        },
+          ) : null,
       )}
     </>
   );
 };
 
-export default SummarySection;
+export default TravelSection;
