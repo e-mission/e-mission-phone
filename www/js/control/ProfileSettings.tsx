@@ -411,7 +411,7 @@ const ProfileSettings = () => {
 
   return (
     <>
-      <NavBar>
+      <NavBar elevated={true}>
         <Appbar.Content title={t('control.profile-tab')} />
         <NavBarButton icon="logout" iconSize={24} onPress={() => setLogoutVis(true)}>
           <Text>{t('control.log-out')}</Text>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
-import { SegmentedButtons } from 'react-native-paper';
+import { ScrollView, StyleSheet, ViewStyle } from 'react-native';
+import { shadow } from 'react-native-paper';
 import { TabsProvider, Tabs, TabScreen } from 'react-native-paper-tabs';
 import FootprintSection from './footprint/FootprintSection';
 import ActiveTravelSection from './activetravel/ActiveTravelSection';
@@ -29,13 +29,10 @@ const MetricsScreen = ({ userMetrics, aggMetrics, metricList }) => {
   const studyStartDate = `${appConfig?.intro.start_month} / ${appConfig?.intro.start_year}`;
 
   return (
-    <TabsProvider
-      defaultIndex={0}
-      // onChangeIndex={handleChangeIndex} optional
-    >
+    <TabsProvider defaultIndex={0}>
       <Tabs
         mode={sectionsToShow.length > 2 ? 'scrollable' : 'fixed'}
-        style={{ backgroundColor: colors.elevation.level2 }}>
+        style={{ backgroundColor: colors.elevation.level2, ...(shadow(2) as ViewStyle) }}>
         {Object.entries(SECTIONS).map(([section, [Component, icon, label]]) =>
           sectionsToShow.includes(section) ? (
             <TabScreen label={label} icon={icon} key={section}>

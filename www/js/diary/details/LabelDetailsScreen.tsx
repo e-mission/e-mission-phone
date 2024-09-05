@@ -57,7 +57,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const modal = (
     <Modal visible={true}>
       <SafeAreaView style={{ flex: 1 }}>
-        <NavBar>
+        <NavBar elevated={true}>
           <Appbar.BackAction
             onPress={() => {
               navigation.goBack();

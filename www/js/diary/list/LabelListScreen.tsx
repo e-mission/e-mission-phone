@@ -18,7 +18,7 @@ const LabelListScreen = () => {
 
   return (
     <>
-      <NavBar isLoading={Boolean(timelineIsLoading)}>
+      <NavBar elevated={true} isLoading={Boolean(timelineIsLoading)}>
         <FilterSelect
           filters={filterInputs}
           setFilters={setFilterInputs}
