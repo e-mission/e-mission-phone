@@ -21,7 +21,7 @@ if [ $CHIP_ARC == $INTEL ]; then
 else 
     if [ $CHIP_ARC == $APPLE_SILICONE ]; then
         echo "Found "$APPLE_SILICONE" chip"
-        WORKING_DIR="/opt/homebrew/"
+        WORKING_DIR=$HOMEBREW_PREFIX
     fi
 fi
 
