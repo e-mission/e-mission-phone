@@ -93,9 +93,9 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
       // If a user saves a new customized label or makes changes to/from customized labels, the labels need to be updated.
       const key = inputType.toLowerCase();
       if (
-        isOther ||
-        (initialLabel && customLabelMap[key].indexOf(initialLabel) > -1) ||
-        (newLabel && customLabelMap[key].indexOf(newLabel) > -1)
+        isOther
+        // (initialLabel && customLabelMap[key].indexOf(initialLabel) > -1) ||
+        // (newLabel && customLabelMap[key].indexOf(newLabel) > -1)
       ) {
         // updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther ?? false)
         //   .then((res) => {
