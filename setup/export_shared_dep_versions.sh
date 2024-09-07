@@ -6,6 +6,7 @@ export NODE_VERSION=20.9.0
 # Looks like brew supports only major and minor, not patch version
 export RUBY_VERSION=3.0
 export COCOAPODS_VERSION=1.15.2
+export GRADLE_VERSION=8.10
 export OSX_EXP_VERSION=12
 
 export NVM_DIR="$HOME/.nvm"
