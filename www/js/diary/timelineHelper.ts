@@ -621,13 +621,16 @@ export function readUnprocessedTrips(
 
             logDebug(`mapping trips to tripObjs of size ${rawTripObjs.length}`);
             /* Filtering: we will keep trips that are 1) defined and 2) have a distance >= 100m,
-          or duration >= 5 minutes
-          https://github.com/e-mission/e-mission-docs/issues/966#issuecomment-1709112578 */
-            const tripObjs = rawTripObjs.filter(
-              (trip) => trip && (trip.distance >= 100 || trip.duration >= 300),
-            );
-            logDebug(`after filtering undefined and distance < 100m, 
-          tripObjs size = ${tripObjs.length}`);
+            or duration >= 5 minutes
+            https://github.com/e-mission/e-mission-docs/issues/966#issuecomment-1709112578 */
+            const tripObjs = rawTripObjs.filter((trip) => {
+              if (!trip || trip.distance < 100 || trip.duration < 300) {
+                logDebug(`Trip ${JSON.stringify(trip)} is falsy, < 100m, or < 5 min. Dropping`);
+                return false;
+              }
+              return true;
+            });
+            logDebug(`after filtering, tripObjs size = ${tripObjs.length}`);
             // Link 0th trip to first, first to second, ...
             for (let i = 0; i < tripObjs.length - 1; i++) {
               linkTrips(tripObjs[i], tripObjs[i + 1]);
