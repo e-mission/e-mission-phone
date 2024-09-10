@@ -20,7 +20,7 @@ if [ $SETUP_IOS ] || ( [ !$SETUP_ANDROID ] && [ !$SETUP_IOS ] ); then
     if [ $CHIP_ARC == $INTEL ]; then
         echo "Found "$INTEL" chip"
         WORKING_DIR="/usr/local/"
-    else 
+    else
         if [ $CHIP_ARC == $APPLE_SILICONE ]; then
             echo "Found "$APPLE_SILICONE" chip"
             WORKING_DIR=$HOMEBREW_PREFIX
@@ -33,7 +33,7 @@ if [ $SETUP_IOS ] || ( [ !$SETUP_ANDROID ] && [ !$SETUP_IOS ] ); then
     if [ $CURR_RUBY_VERSION == $RUBY_VERSION ]; then
         echo "Found ruby version "$CURR_RUBY_VERSION" expected "$RUBY_VERSION" no need to upgrade"
     else
-        if [ -x "${WORKING_DIR}/bin/brew" ]; then 
+        if [ -x "${WORKING_DIR}/bin/brew" ]; then
             echo "Found brew installation with version" ` brew --version`
             echo "Installing ruby version to brew" $RUBY_VERSION
             brew install ruby@$RUBY_VERSION
