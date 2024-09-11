@@ -63,6 +63,13 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
   useEffect(() => {
     if (!rest.visible || !appConfig) return;
     initSurvey();
+
+    // on dev builds, allow skipping survey with ESC
+    if (__DEV__) {
+      const handleKeyDown = (e) => e.key === 'Escape' && onResponseSaved(null);
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
   }, [appConfig, rest.visible]);
 
   /* adapted from the template given by enketo-core:
