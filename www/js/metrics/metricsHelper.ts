@@ -3,8 +3,9 @@ import { DayOfMetricData } from './metricsTypes';
 import { logDebug } from '../plugin/logger';
 import { isoDateWithOffset, isoDatesDifference } from '../diary/timelineHelper';
 import { MetricName, groupingFields } from '../types/appConfigTypes';
-import { ImperialConfig, formatForDisplay } from '../config/useImperialConfig';
+import { ImperialConfig } from '../config/useImperialConfig';
 import i18next from 'i18next';
+import { formatForDisplay } from '../util';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];

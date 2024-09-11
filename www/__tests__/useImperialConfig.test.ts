@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  convertDistance,
-  convertSpeed,
-  formatForDisplay,
-  useImperialConfig,
-} from '../js/config/useImperialConfig';
+import { convertDistance, convertSpeed, useImperialConfig } from '../js/config/useImperialConfig';
 
 // This mock is required, or else the test will dive into the import chain of useAppConfig.ts and fail when it gets to the root
 jest.mock('../js/useAppConfig', () => {
@@ -17,30 +12,6 @@ jest.mock('../js/useAppConfig', () => {
 });
 jest.spyOn(React, 'useState').mockImplementation((initialValue) => [initialValue, jest.fn()]);
 jest.spyOn(React, 'useEffect').mockImplementation((effect: () => void) => effect());
-
-describe('formatForDisplay', () => {
-  it('should round to the nearest integer when value is >= 100', () => {
-    expect(formatForDisplay(105)).toBe('105');
-    expect(formatForDisplay(119.01)).toBe('119');
-    expect(formatForDisplay(119.91)).toBe('120');
-  });
-
-  it('should round to 3 significant digits when 1 <= value < 100', () => {
-    expect(formatForDisplay(7.02)).toBe('7.02');
-    expect(formatForDisplay(9.6262)).toBe('9.63');
-    expect(formatForDisplay(11.333)).toBe('11.3');
-    expect(formatForDisplay(99.99)).toBe('100');
-  });
-
-  it('should round to 2 decimal places when value < 1', () => {
-    expect(formatForDisplay(0.07178)).toBe('0.07');
-    expect(formatForDisplay(0.08978)).toBe('0.09');
-    expect(formatForDisplay(0.75)).toBe('0.75');
-    expect(formatForDisplay(0.001)).toBe('0');
-    expect(formatForDisplay(0.006)).toBe('0.01');
-    expect(formatForDisplay(0.00001)).toBe('0');
-  });
-});
 
 describe('convertDistance', () => {
   it('should convert meters to kilometers by default', () => {
