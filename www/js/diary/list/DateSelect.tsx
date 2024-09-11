@@ -15,11 +15,17 @@ import {
   DatePickerModalRangeProps,
   DatePickerModalSingleProps,
 } from 'react-native-paper-dates';
-import { Text, Divider, useTheme } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { NavBarButton } from '../../components/NavBar';
 import { isoDateRangeToTsRange } from '../timelineHelper';
+
+// formats as e.g. 'Aug 1'
+const MONTH_DAY_SHORT: Intl.DateTimeFormatOptions = {
+  month: 'short',
+  day: 'numeric',
+};
 
 type Props = Partial<DatePickerModalSingleProps | DatePickerModalRangeProps> & {
   mode: 'single' | 'range';
@@ -47,12 +53,10 @@ const DateSelect = ({ mode, onChoose, ...rest }: Props) => {
     if (!pipelineRange || !queriedDateRange?.[0]) return null;
     const [queriedStartTs, queriedEndTs] = isoDateRangeToTsRange(queriedDateRange);
     const displayStartTs = Math.max(queriedStartTs, pipelineRange.start_ts);
-    const displayStartDate = DateTime.fromSeconds(displayStartTs).toLocaleString(
-      DateTime.DATE_SHORT,
-    );
+    const displayStartDate = DateTime.fromSeconds(displayStartTs).toLocaleString(MONTH_DAY_SHORT);
     let displayEndDate;
     if (queriedEndTs < pipelineRange.end_ts) {
-      displayEndDate = DateTime.fromSeconds(queriedEndTs).toLocaleString(DateTime.DATE_SHORT);
+      displayEndDate = DateTime.fromSeconds(queriedEndTs).toLocaleString(MONTH_DAY_SHORT);
     }
     return [displayStartDate, displayEndDate];
   }, [pipelineRange, queriedDateRange]);
@@ -79,16 +83,10 @@ const DateSelect = ({ mode, onChoose, ...rest }: Props) => {
           displayDateRangeEnd
         }
         onPress={() => setOpen(true)}>
-        {displayDateRange?.[0] && (
-          <>
-            <Text>{displayDateRange?.[0]}</Text>
-            <Divider
-              horizontalInset={true}
-              style={[s.divider, { backgroundColor: colors.onBackground }]}
-            />
-          </>
-        )}
-        <Text>{displayDateRangeEnd}</Text>
+        <Text>
+          {displayDateRange?.[0] ? displayDateRange?.[0] + ' – ' : ''}
+          {displayDateRangeEnd}
+        </Text>
       </NavBarButton>
       <DatePickerModal
         locale={i18next.resolvedLanguage || 'en'}

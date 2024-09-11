@@ -36,7 +36,7 @@ export default NavBar;
 type NavBarButtonProps = ButtonProps & { icon?: string; iconSize?: number };
 export const NavBarButton = ({ children, icon, iconSize, ...rest }: NavBarButtonProps) => {
   const { colors } = useTheme();
-  const buttonColor = color(colors.onBackground).alpha(0.07).rgb().string();
+  const buttonColor = color(colors.onBackground).alpha(0.05).rgb().string();
   const borderColor = color(colors.onBackground).alpha(0.1).rgb().string();
 
   return (
@@ -67,9 +67,9 @@ const s = StyleSheet.create({
     gap: 5,
   },
   btnContent: {
-    height: 44,
+    height: 40,
     flexDirection: 'row',
-    paddingHorizontal: 2,
+    paddingHorizontal: 8,
   },
   btnLabel: {
     fontSize: 12.5,
@@ -78,6 +78,7 @@ const s = StyleSheet.create({
     marginHorizontal: 'auto',
     marginVertical: 'auto',
     display: 'flex',
+    gap: 5,
   },
   icon: {
     margin: 'auto',
@@ -86,7 +87,6 @@ const s = StyleSheet.create({
   },
   textWrapper: {
     lineHeight: '100%',
-    marginHorizontal: 5,
     justifyContent: 'space-evenly',
     alignItems: 'center',
   },
