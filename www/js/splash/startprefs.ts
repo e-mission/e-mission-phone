@@ -1,6 +1,7 @@
 import { storageGet, storageSet } from '../plugin/storage';
 import { logInfo, logDebug, displayErrorMsg } from '../plugin/logger';
 import { EVENTS, publish } from '../customEventHandler';
+import startupConfig from '../../json/startupConfig.default.json';
 
 // data collection consented protocol: string, represents the date on
 // which the consented protocol was approved by the IRB
@@ -43,10 +44,11 @@ export function markConsented() {
 }
 
 /**
- * @function checking for consent locally
- * @returns {boolean} if the consent is marked in the local var
+ * @description checks for consent locally
+ * @returns boolean of consent status, considering whether consent is
+ *    marked and whether the approval date matches the requirement
  */
-export function isConsented() {
+function isConsented(): boolean {
   logDebug('curr consented is' + JSON.stringify(_curr_consented));
   if (
     _curr_consented == null ||
@@ -62,27 +64,23 @@ export function isConsented() {
 }
 
 /**
- * @function reads the consent state from the file and populates it
- * @returns nothing, just reads into local variables
+ * @description reads the consent state from the file and populates it
+ * @returns the current consent state
  */
-export function readConsentState() {
-  return fetch('json/startupConfig.json')
-    .then((response) => response.json())
-    .then((startupConfigResult) => {
-      _req_consent = startupConfigResult.emSensorDataCollectionProtocol;
-      logDebug('required consent version = ' + JSON.stringify(_req_consent));
-      return storageGet(DATA_COLLECTION_CONSENTED_PROTOCOL);
-    })
-    .then((kv_store_consent) => {
-      _curr_consented = kv_store_consent;
-      console.assert(
-        _req_consent != undefined && _req_consent != null,
-        'in readConsentState $rootScope.req_consent',
-        JSON.stringify(_req_consent),
-      );
-      // we can just launch this, we don't need to wait for it
-      checkNativeConsent();
-    });
+export async function readConsentState() {
+  console.log(startupConfig);
+  _req_consent = startupConfig.emSensorDataCollectionProtocol;
+  logDebug('required consent version = ' + JSON.stringify(_req_consent));
+  const kvStoreConsent = await storageGet(DATA_COLLECTION_CONSENTED_PROTOCOL);
+  _curr_consented = kvStoreConsent;
+  console.assert(
+    _req_consent != undefined && _req_consent != null,
+    'in readConsentState $rootScope.req_consent',
+    JSON.stringify(_req_consent),
+  );
+  // we can just launch this, we don't need to wait for it
+  checkNativeConsent();
+  return isConsented();
 }
 
 /**

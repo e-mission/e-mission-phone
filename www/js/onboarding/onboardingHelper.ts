@@ -3,7 +3,7 @@ import { getConfig, resetDataAndRefresh } from '../config/dynamicConfig';
 import { storageGet, storageSet } from '../plugin/storage';
 import { logDebug } from '../plugin/logger';
 import { EVENTS, publish } from '../customEventHandler';
-import { readConsentState, isConsented } from '../splash/startprefs';
+import { readConsentState } from '../splash/startprefs';
 
 export const INTRO_DONE_KEY = 'intro_done';
 
@@ -39,7 +39,7 @@ export let registerUserDone = false;
 export const setRegisterUserDone = (b) => (registerUserDone = b);
 
 export function getPendingOnboardingState(): Promise<OnboardingState> {
-  return Promise.all([getConfig(), readConsented(), readIntroDone()]).then(
+  return Promise.all([getConfig(), readConsentState(), readIntroDone()]).then(
     ([config, isConsented, isIntroDone]) => {
       let route: OnboardingRoute;
 
@@ -71,10 +71,6 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
       return { route, opcode: config?.joined?.opcode };
     },
   );
-}
-
-async function readConsented() {
-  return readConsentState().then(isConsented) as Promise<boolean>;
 }
 
 export async function readIntroDone() {

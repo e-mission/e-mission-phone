@@ -1,11 +1,8 @@
-/* This file is in Sassy CSS (SCSS) because Enketo uses SCSS and we want to extend on their styles.
-  Webpack will just compile this to plain CSS anyway */
-
-@import 'leaflet/dist/leaflet.css';
-
-html {
-  font-family: 'OpenSans', Arial, sans-serif;
-}
+/*
+  If you make changes to these styles, run:
+  npx sass www/js/survey/enketo/enketoStyles.scss www/js/survey/enketo/enketoStyles.css
+  to regenerate the CSS file (used by EnketoModal).
+*/
 
 /* Scoped styles for Enketo */
 /* if we don't contain them here, they will leak into the rest of the app */
@@ -13,8 +10,12 @@ html {
   // Enketo's default theme uses orange; we can override with our own blue
   $primary: #0080b9; // matches 'primary' in appTheme.ts
   $brand-primary-color: darken($primary, 5%); // make it a bit darker for legibility in Enketo UI
-  @import 'enketo-core/src/sass/formhub/formhub.scss';
+  @import '../../../../node_modules/enketo-core/src/sass/formhub/formhub.scss';
   flex: 1;
+  font-family: 'OpenSans', Arial, sans-serif;
+  .form-header {
+    max-height: 50px;
+  }
   .question.non-select {
     display: inline-block;
   }
@@ -26,8 +27,4 @@ html {
     margin-right: 5px;
     display: flex;
   }
-}
-
-.enketo-plugin .form-header {
-  max-height: 50px;
 }

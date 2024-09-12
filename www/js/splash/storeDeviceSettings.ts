@@ -1,5 +1,5 @@
 import { updateUser } from '../services/commHelper';
-import { isConsented, readConsentState } from './startprefs';
+import { readConsentState } from './startprefs';
 import i18next from 'i18next';
 import { displayError, logDebug } from '../plugin/logger';
 import { readIntroDone } from '../onboarding/onboardingHelper';
@@ -61,19 +61,16 @@ async function onIntroEvent(event) {
  * @function initializes store device: subscribes to events
  * stores settings if already consented
  */
-export function initStoreDeviceSettings() {
-  readConsentState()
-    .then(isConsented)
-    .then(async (consentState) => {
-      logDebug(`found consent: ${consentState}`);
-      if (consentState == true) {
-        await storeDeviceSettings();
-      } else {
-        logDebug('no consent yet, waiting to store device settings in profile');
-      }
-      subscribe(EVENTS.CONSENTED_EVENT, onConsentEvent);
-      subscribe(EVENTS.INTRO_DONE_EVENT, onIntroEvent);
-    });
+export async function initStoreDeviceSettings() {
+  const consentState = await readConsentState();
+  logDebug(`found consent: ${consentState}`);
+  if (consentState == true) {
+    await storeDeviceSettings();
+  } else {
+    logDebug('no consent yet, waiting to store device settings in profile');
+  }
+  subscribe(EVENTS.CONSENTED_EVENT, onConsentEvent);
+  subscribe(EVENTS.INTRO_DONE_EVENT, onIntroEvent);
   logDebug('storedevicesettings startup done');
 }
 

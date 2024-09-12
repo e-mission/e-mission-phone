@@ -1,4 +1,7 @@
+import { Platform } from 'react-native';
 import packageJsonBuild from '../../package.cordovabuild.json';
+import { getConfig } from '../js/config/dynamicConfig';
+import { displayErrorMsg } from '../js/plugin/logger';
 
 export const mockCordova = () => {
   window['cordova'] ||= {};
@@ -42,26 +45,24 @@ export const mockFile = () => {
   };
 };
 
-//for consent document
-const _storage = {};
-
 type MessageData = any;
 type Message = { key: string; data: MessageData; metadata: { write_ts: number; [k: string]: any } };
-export const mockBEMUserCache = (config?) => {
-  const _cache = {};
+export const mockBEMUserCache = () => {
   const messages: Message[] = [];
   const mockBEMUserCache = {
     getLocalStorage: (key: string, isSecure: boolean) => {
       return new Promise((rs, rj) =>
         setTimeout(() => {
-          rs(_cache[key]);
+          const stored = localStorage.getItem('usercache_' + key);
+          if (stored) rs(JSON.parse(stored));
+          else rs(null);
         }, 100),
       );
     },
     putLocalStorage: (key: string, value: any) => {
       return new Promise<void>((rs, rj) =>
         setTimeout(() => {
-          _cache[key] = value;
+          localStorage.setItem('usercache_' + key, JSON.stringify(value));
           rs();
         }, 100),
       );
@@ -69,7 +70,7 @@ export const mockBEMUserCache = (config?) => {
     removeLocalStorage: (key: string) => {
       return new Promise<void>((rs, rj) =>
         setTimeout(() => {
-          delete _cache[key];
+          localStorage.removeItem('usercache_' + key);
           rs();
         }, 100),
       );
@@ -77,8 +78,7 @@ export const mockBEMUserCache = (config?) => {
     clearAll: () => {
       return new Promise<void>((rs, rj) =>
         setTimeout(() => {
-          for (let p in _cache) delete _cache[p];
-          for (let doc in _storage) delete _storage[doc];
+          localStorage.clear();
           rs();
         }, 100),
       );
@@ -86,14 +86,14 @@ export const mockBEMUserCache = (config?) => {
     listAllLocalStorageKeys: () => {
       return new Promise<string[]>((rs, rj) =>
         setTimeout(() => {
-          rs(Object.keys(_cache));
+          rs(Object.keys(localStorage));
         }, 100),
       );
     },
     listAllUniqueKeys: () => {
       return new Promise<string[]>((rs, rj) =>
         setTimeout(() => {
-          rs(Object.keys(_cache));
+          rs(Object.keys(localStorage));
         }, 100),
       );
     },
@@ -133,28 +133,20 @@ export const mockBEMUserCache = (config?) => {
       if (key == 'config/app_ui_config') {
         return new Promise<void>((rs, rj) =>
           setTimeout(() => {
-            config = value;
+            localStorage.setItem('config/app_ui_config', JSON.stringify(value));
             rs();
           }, 100),
         );
       }
     },
     getDocument: (key: string, withMetadata?: boolean) => {
-      //returns the config provided as a paramenter to this mock!
-      if (key == 'config/app_ui_config') {
-        return new Promise<any>((rs, rj) =>
-          setTimeout(() => {
-            if (config) rs(config);
-            else rs({}); // return empty object if config is not set
-          }, 100),
-        );
-      } else {
-        return new Promise<any[]>((rs, rj) =>
-          setTimeout(() => {
-            rs(_storage[key]);
-          }, 100),
-        );
-      }
+      return new Promise<any>((rs, rj) =>
+        setTimeout(() => {
+          const stored = localStorage.getItem('config/app_ui_config');
+          if (stored) rs(JSON.parse(stored));
+          else rs({});
+        }, 100),
+      );
     },
     isEmptyDoc: (doc) => {
       if (doc == undefined) {
@@ -190,9 +182,12 @@ export const mockBEMUserCache = (config?) => {
 export const mockBEMDataCollection = () => {
   const mockBEMDataCollection = {
     markConsented: (consentDoc) => {
-      setTimeout(() => {
-        _storage['config/consent'] = consentDoc;
-      }, 100);
+      return new Promise<void>((rs, rj) =>
+        setTimeout(() => {
+          localStorage.setItem('config/consent', JSON.stringify(consentDoc));
+          rs();
+        }, 100),
+      );
     },
     getConfig: () => {
       return new Promise<any>((rs, rj) => {
@@ -213,20 +208,83 @@ export const mockBEMDataCollection = () => {
   window['cordova'].plugins.BEMDataCollection = mockBEMDataCollection;
 };
 
+const mockBEMConnectionSettings = () => {
+  let _connectionSettings = {};
+  const mockBEMConnectionSettings = {
+    getSettings: (key: string) => Promise.resolve(_connectionSettings),
+    getDefaultSettings: () =>
+      Promise.resolve({
+        [Platform.OS.toLowerCase()]: {
+          auth: {
+            method: 'dummy-dev',
+          },
+        },
+        connectUrl: 'http://localhost:8080',
+      }),
+    setSettings: (settings: any) => Promise.resolve((_connectionSettings = settings)),
+  };
+  window['cordova'] ||= {};
+  window['cordova'].plugins ||= {};
+  window['cordova'].plugins.BEMConnectionSettings = mockBEMConnectionSettings;
+};
+
 export const mockBEMServerCom = () => {
+  mockBEMConnectionSettings();
+
+  const pushGetJSON = async (relativeUrl: string, msgFiller, successCallback, errorCallback) => {
+    const filledJsonObject = {};
+    msgFiller(filledJsonObject);
+
+    const savedConfig = await getConfig();
+    const opcode = savedConfig?.['joined'].opcode;
+    if (!opcode) {
+      displayErrorMsg('No user opcode found');
+      return;
+    }
+    filledJsonObject['user'] = opcode;
+    const { connectUrl } = await window['cordova'].plugins.BEMConnectionSettings.getSettings();
+    const fullUrl = connectUrl + relativeUrl;
+
+    console.debug('mockBEMServerCom', fullUrl, filledJsonObject);
+    console.debug('filledJsonObject', filledJsonObject);
+
+    const options = {
+      method: 'post',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(filledJsonObject),
+    } as RequestInit;
+    const response = await fetch(fullUrl, options);
+    if (response.status === 200) {
+      const json = await response.json();
+      successCallback(json);
+    } else {
+      const e = new Error(`Failed to get JSON object, status ${response.status}`);
+      errorCallback(e);
+    }
+  };
   const mockBEMServerCom = {
-    postUserPersonalData: (actionString, typeString, updateDoc, rs, rj) => {
-      setTimeout(() => {
-        console.log('set in mock', updateDoc);
-        _storage['user_data'] = updateDoc;
-        rs();
-      }, 100);
+    pushGetJSON,
+    postUserPersonalData: (
+      relativeUrl,
+      objectLabel,
+      objectJSON,
+      successCallback,
+      errorCallback,
+    ) => {
+      const msgFiller = (message) => {
+        message[objectLabel] = objectJSON;
+      };
+      pushGetJSON(relativeUrl, msgFiller, successCallback, errorCallback);
     },
 
-    getUserPersonalData: (actionString, rs, rj) => {
-      setTimeout(() => {
-        rs(_storage['user_data']);
-      }, 100);
+    getUserPersonalData: function (relativeUrl, successCallback, errorCallback) {
+      const msgFiller = (message) => {
+        // nop. we don't really send any data for what are effectively get calls
+      };
+      pushGetJSON(relativeUrl, msgFiller, successCallback, errorCallback);
     },
   };
   window['cordova'] ||= {};

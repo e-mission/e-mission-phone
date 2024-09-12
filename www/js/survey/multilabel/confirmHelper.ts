@@ -5,6 +5,7 @@ import { logDebug } from '../../plugin/logger';
 import { LabelOption, LabelOptions, MultilabelKey, InputDetails } from '../../types/labelTypes';
 import { CompositeTrip, InferredLabels, TimelineEntry } from '../../types/diaryTypes';
 import { UserInputMap } from '../../TimelineContext';
+import defaultLabelOptions from '../../../json/label-options.default.json';
 
 let appConfig;
 export let labelOptions: LabelOptions<MultilabelKey>;
@@ -21,13 +22,9 @@ export async function getLabelOptions(appConfigParam?) {
       labelOptions = JSON.parse(labelOptionsJson) as LabelOptions;
     }
   } else {
-    const defaultLabelOptionsURL = 'json/label-options.json.sample';
     logDebug(`No label_options found in config, using default label options 
-      at ${defaultLabelOptionsURL}`);
-    const defaultLabelOptionsJson = await fetchUrlCached(defaultLabelOptionsURL);
-    if (defaultLabelOptionsJson) {
-      labelOptions = JSON.parse(defaultLabelOptionsJson) as LabelOptions;
-    }
+      from /json/label-options.default.sample`);
+    labelOptions = defaultLabelOptions as LabelOptions;
   }
   /* fill in the translations to the 'text' fields of the labelOptions,
     according to the current language */

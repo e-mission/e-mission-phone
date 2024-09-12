@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "entryPoint": "./www/js/App.tsx",
+    "ios": {
+      "bundleIdentifier": "edu.berkeley.eecs.emission"
+    },
+    "android": {
+      "package": "edu.berkeley.eecs.emission"
+    },
+    "splash": {
+      "image": "./resources/splash.png",
+      "backgroundColor": "#EEEEEE"
+    },
+    "icon": "./resources/icon.png"
+  }
+}

@@ -1,5 +1,7 @@
 import React, { useEffect, useState, createContext } from 'react';
-import { ActivityIndicator } from 'react-native-paper';
+import { registerRootComponent } from 'expo';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { PaperProvider, ActivityIndicator } from 'react-native-paper';
 import useAppConfig from './useAppConfig';
 import OnboardingStack from './onboarding/OnboardingStack';
 import {
@@ -17,12 +19,21 @@ import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
 import { initCustomDatasetHelper } from './metrics/customMetricsHelper';
 import AlertBar from './components/AlertBar';
 import Main from './Main';
+import { getTheme } from './appTheme';
+
+import initializedI18next from '../js/i18nextInit';
+window['i18next'] = initializedI18next;
+
+import { setupExpoCompat, IS_EXPO } from './expoCompat';
+setupExpoCompat();
 
 export const AppContext = createContext<any>({});
 const CUSTOM_LABEL_KEYS_IN_DATABASE = ['mode', 'purpose'];
 type CustomLabelMap = {
   [k: string]: string[];
 };
+
+const theme = getTheme();
 
 const App = () => {
   // will remain null while the onboarding state is still being determined
@@ -72,21 +83,22 @@ const App = () => {
     // if there is an onboarding route that is not DONE, show the onboarding stack
     appContent = <OnboardingStack />;
   }
-
   return (
-    <>
-      <AppContext.Provider value={appContextValue}>
-        {appContent}
+    <PaperProvider theme={theme}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <AppContext.Provider value={appContextValue}>
+          {appContent}
 
-        {/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
-          This also includes if onboarding is DONE altogether (because "DONE" is > "PROTOCOL") */}
-        {onboardingState && onboardingState.route > OnboardingRoute.PROTOCOL && (
-          <AppStatusModal permitVis={permissionsPopupVis} setPermitVis={setPermissionsPopupVis} />
-        )}
-      </AppContext.Provider>
-      <AlertBar />
-    </>
+          {/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
+            This also includes if onboarding is DONE altogether (because "DONE" is > "PROTOCOL") */}
+          {onboardingState && onboardingState.route > OnboardingRoute.PROTOCOL && (
+            <AppStatusModal permitVis={permissionsPopupVis} setPermitVis={setPermissionsPopupVis} />
+          )}
+        </AppContext.Provider>
+        <AlertBar />
+      </SafeAreaView>
+    </PaperProvider>
   );
 };
 
-export default App;
+export default IS_EXPO ? registerRootComponent(App) : App;

@@ -1,9 +1,4 @@
-import {
-  markConsented,
-  isConsented,
-  readConsentState,
-  getConsentDocument,
-} from '../js/splash/startprefs';
+import { markConsented, readConsentState, getConsentDocument } from '../js/splash/startprefs';
 
 import { mockBEMUserCache, mockBEMDataCollection } from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
@@ -31,9 +26,9 @@ global.fetch = (url: string) =>
   }) as any;
 
 it('checks state of consent before and after marking consent', async () => {
-  expect(await readConsentState().then(isConsented)).toBeFalsy();
-  let marked = await markConsented();
-  expect(await readConsentState().then(isConsented)).toBeTruthy();
+  expect(await readConsentState()).toBeFalsy();
+  await markConsented();
+  expect(await readConsentState()).toBeTruthy();
   expect(await getConsentDocument()).toEqual({
     approval_date: '2016-07-14',
     protocol_id: '2014-04-6267',

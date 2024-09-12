@@ -5,6 +5,9 @@ import L, { Map as LeafletMap } from 'leaflet';
 import { GeoJSONData, GeoJSONStyledFeature } from '../types/diaryTypes';
 import useLeafletCache from './useLeafletCache';
 
+// styles for Leaflet
+import 'leaflet/dist/leaflet.css';
+
 const mapSet = new Set<any>();
 
 // open the URL in the system browser & prevent any other effects of the click event
