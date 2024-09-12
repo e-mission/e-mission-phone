@@ -57,7 +57,7 @@ if [ $SETUP_IOS ] || ( [ !$SETUP_ANDROID ] && [ !$SETUP_IOS ] ); then
     export PLATFORMS+=" ios"
 fi
 
-if [ $SETUP_ANDROID ] || [ [ !$SETUP_ANDROID ] && [ !$SETUP_IOS ] ]; then
+if [ $SETUP_ANDROID ] || ( [ !$SETUP_ANDROID ] && [ !$SETUP_IOS ] ); then
     # we can build android on both ubuntu and OSX
     # should try both since there may be subtle differences
     PLATFORM=`uname -a`
