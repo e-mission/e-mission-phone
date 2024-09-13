@@ -40,10 +40,14 @@ it('stores a client stats event', async () => {
 
 it('stores a client stats error', async () => {
   const errorStr = 'test error';
-  await addStatError('missing_keys', errorStr);
+  try {
+    throw new Error(errorStr);
+  } catch (error) {
+    await addStatError(error.message);
+  }
   const storedMessages = await db.getAllMessages('stats/client_error', false);
   expect(storedMessages).toContainEqual({
-    name: 'missing_keys',
+    name: 'ui_error',
     ts: expect.any(Number),
     reading: errorStr,
     client_app_version: '1.2.3',

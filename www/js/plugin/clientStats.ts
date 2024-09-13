@@ -12,7 +12,8 @@ type StatKey =
   | 'set_reminder_prefs'
   | 'force_sync'
   | 'open_notification'
-  | 'missing_keys';
+  | 'missing_keys'
+  | 'ui_error';
 
 let appVersion;
 export function getAppVersion() {
@@ -39,9 +40,9 @@ export async function addStatReading(name: StatKey, reading?: any) {
   displayErrorMsg('addStatReading: db is not defined');
 }
 
-export async function addStatError(name: StatKey, errorStr: string) {
+export async function addStatError(errorMsg: string) {
   const db = window['cordova']?.plugins?.BEMUserCache;
-  const event = await getStatsEvent(name, errorStr);
+  const event = await getStatsEvent('ui_error', errorMsg);
   logDebug('addStatError: adding CLIENT_ERROR event: ' + JSON.stringify(event));
   if (db) return db.putMessage(CLIENT_ERROR, event);
   displayErrorMsg('addStatError: db is not defined');
