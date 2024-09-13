@@ -26,7 +26,7 @@ beforeEach(() => {
 
 it('does not adds a statEvent if not subscribed', async () => {
   publish(EVENTS.CLOUD_NOTIFICATION_EVENT, 'test data');
-  const storedMessages = await db.getAllMessages('stats/client_nav_event', false);
+  const storedMessages = await db.getAllMessages('stats/client_time', false);
   expect(storedMessages).toEqual([]);
 });
 
@@ -35,11 +35,11 @@ it('adds a statEvent if subscribed', async () => {
   await new Promise((r) => setTimeout(r, 500)); //wait for subscription
   publish(EVENTS.CLOUD_NOTIFICATION_EVENT, 'test data');
   await new Promise((r) => setTimeout(r, 500)); //wait for event handling
-  const storedMessages = await db.getAllMessages('stats/client_nav_event', false);
+  const storedMessages = await db.getAllMessages('stats/client_time', false);
   expect(storedMessages).toContainEqual({
-    name: 'notification_open',
+    name: 'open_notification',
     ts: expect.any(Number),
-    reading: null,
+    reading: 'test data',
     client_app_version: '1.2.3',
     client_os_version: '14.0.0',
   });

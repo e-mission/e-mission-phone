@@ -11,7 +11,7 @@
  * notification handling gets more complex, we should consider decoupling it as well.
  */
 import { EVENTS, subscribe } from '../customEventHandler';
-import { addStatEvent, statKeys } from '../plugin/clientStats';
+import { addStatReading } from '../plugin/clientStats';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
 
 const options = 'location=yes,clearcache=no,toolbar=yes,hideurlbar=yes';
@@ -31,7 +31,7 @@ const launchWebpage = (url) => window['cordova'].InAppBrowser.open(url, '_blank'
  */
 function onCloudNotifEvent(event) {
   const data = event.detail;
-  addStatEvent(statKeys.NOTIFICATION_OPEN);
+  addStatReading('open_notification', data);
   logDebug('data = ' + JSON.stringify(data));
   if (
     data.additionalData &&

@@ -1,4 +1,4 @@
-import { addStatReading, statKeys } from './clientStats';
+import { addStatReading } from './clientStats';
 import { logDebug, logWarn } from './logger';
 
 function mungeValue(key, value) {
@@ -162,7 +162,7 @@ export function storageSyncLocalAndNative() {
       logDebug('STORAGE_PLUGIN: Syncing all missing keys ' + allMissing);
       allMissing.forEach(getUnifiedValue);
       if (allMissing.length != 0) {
-        addStatReading(statKeys.MISSING_KEYS, {
+        addStatReading('missing_keys', {
           type: 'local_storage_mismatch',
           allMissingLength: allMissing.length,
           missingWebLength: missingWeb.length,
@@ -178,7 +178,7 @@ export function storageSyncLocalAndNative() {
     (nativeKeys) => {
       logDebug('STORAGE_PLUGIN: For the record, all unique native keys are ' + nativeKeys);
       if (nativeKeys.length == 0) {
-        addStatReading(statKeys.MISSING_KEYS, {
+        addStatReading('missing_keys', {
           type: 'all_native',
         }).then(logDebug('Logged all missing native keys to client stats'));
       }

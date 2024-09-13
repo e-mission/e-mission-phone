@@ -5,7 +5,7 @@
 
 import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
-import { logDebug } from './plugin/logger';
+import { addStatReading } from './plugin/clientStats';
 
 const useAppStateChange = (onResume) => {
   const appState = useRef(AppState.currentState);
@@ -17,8 +17,9 @@ const useAppStateChange = (onResume) => {
       }
 
       appState.current = nextAppState;
-      logDebug('new AppState: ' + appState.current);
+      addStatReading('app_state_change', appState.current);
     });
+    return () => subscription.remove();
   }, []);
 
   return {};
