@@ -5,9 +5,16 @@ import {
   getConsentDocument,
 } from '../js/splash/startprefs';
 
-import { mockBEMUserCache, mockBEMDataCollection } from '../__mocks__/cordovaMocks';
+import {
+  mockBEMUserCache,
+  mockBEMDataCollection,
+  mockDevice,
+  mockGetAppVersion,
+} from '../__mocks__/cordovaMocks';
 import { mockLogger } from '../__mocks__/globalMocks';
 
+mockDevice();
+mockGetAppVersion();
 mockBEMUserCache();
 mockBEMDataCollection();
 mockLogger();

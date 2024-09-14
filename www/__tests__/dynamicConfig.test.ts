@@ -1,4 +1,4 @@
-import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
+import { mockBEMUserCache, mockDevice, mockGetAppVersion } from '../__mocks__/cordovaMocks';
 import { mockAlert, mockLogger } from '../__mocks__/globalMocks';
 import { getConfig, initByUser } from '../js/config/dynamicConfig';
 
@@ -8,6 +8,8 @@ window['i18next'] = initializedI18next;
 
 mockLogger();
 mockAlert();
+mockDevice();
+mockGetAppVersion();
 mockBEMUserCache();
 
 beforeEach(() => {
