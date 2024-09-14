@@ -6,12 +6,10 @@ import {
   initCustomDatasetHelper,
 } from '../js/metrics/customMetricsHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
-import { mockLogger } from '../__mocks__/globalMocks';
 import fakeLabels from '../__mocks__/fakeLabels.json';
 import fakeConfig from '../__mocks__/fakeConfig.json';
 
 mockBEMUserCache(fakeConfig);
-mockLogger();
 
 beforeEach(() => {
   _test_clearCustomMetrics();

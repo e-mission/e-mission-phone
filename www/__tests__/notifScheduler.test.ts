@@ -1,6 +1,3 @@
-import { mockReminders } from '../__mocks__/cordovaMocks';
-import { mockLogger } from '../__mocks__/globalMocks';
-import i18next from 'i18next';
 import { logDebug } from '../js/plugin/logger';
 import { DateTime } from 'luxon';
 import { getUser, updateUser } from '../js/services/commHelper';
@@ -59,9 +56,6 @@ const exampleReminderSchemes = {
     defaultTime: '23:00',
   },
 };
-
-mockLogger();
-mockReminders();
 
 jest.mock('i18next', () => ({
   resolvedLanguage: 'en',

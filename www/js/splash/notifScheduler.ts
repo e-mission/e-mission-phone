@@ -1,4 +1,4 @@
-import { addStatReading, statKeys } from '../plugin/clientStats';
+import { addStatReading } from '../plugin/clientStats';
 import { getUser, updateUser } from '../services/commHelper';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
 import { DateTime } from 'luxon';
@@ -286,7 +286,7 @@ export async function setReminderPrefs(
       // extract only the relevant fields from the prefs,
       // and add as a reading to client stats
       const { reminder_assignment, reminder_join_date, reminder_time_of_day } = prefs;
-      addStatReading(statKeys.REMINDER_PREFS, {
+      addStatReading('set_reminder_prefs', {
         reminder_assignment,
         reminder_join_date,
         reminder_time_of_day,

@@ -32,6 +32,7 @@ import useAppConfig from '../../useAppConfig';
 import { MultilabelKey } from '../../types/labelTypes';
 // import { updateUserCustomLabel } from '../../services/commHelper';
 import { AppContext } from '../../App';
+import { addStatReading } from '../../plugin/clientStats';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
@@ -70,6 +71,11 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     } else {
       store({ [modalVisibleFor]: chosenValue });
     }
+  }
+
+  function openModalFor(inputType: MultilabelKey) {
+    addStatReading('multilabel_open', inputType);
+    setModalVisibleFor(inputType);
   }
 
   function dismiss() {
@@ -123,6 +129,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     }
     Promise.all(storePromises).then(() => {
       logDebug('Successfully stored input data ' + JSON.stringify(inputsToStore));
+      addStatReading('multilabel_choose', inputsToStore);
       dismiss();
       addUserInputToEntry(trip._id.$oid, inputsToStore, 'label');
     });
@@ -156,7 +163,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                   fillColor={fillColor}
                   borderColor={borderColor}
                   textColor={textColor}
-                  onPress={(e) => setModalVisibleFor(input.name)}>
+                  onPress={(e) => openModalFor(input.name)}>
                   {t(btnText)}
                 </DiaryButton>
               </View>

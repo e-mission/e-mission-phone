@@ -1,4 +1,3 @@
-import { clearAlerts, mockAlert, mockLogger } from '../__mocks__/globalMocks';
 import {
   useGeojsonForTrip,
   readAllCompositeTrips,
@@ -10,21 +9,8 @@ import {
   unprocessedLabels,
   unprocessedNotes,
 } from '../js/diary/timelineHelper';
-import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
 import * as mockTLH from '../__mocks__/timelineHelperMocks';
 import { GeoJSONData, GeoJSONStyledFeature } from '../js/types/diaryTypes';
-
-mockLogger();
-mockAlert();
-mockBEMUserCache();
-
-beforeEach(() => {
-  clearAlerts();
-});
-
-afterAll(() => {
-  jest.restoreAllMocks();
-});
 
 describe('useGeojsonForTrip', () => {
   it('work with an empty input', () => {

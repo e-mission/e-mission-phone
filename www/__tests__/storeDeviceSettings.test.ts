@@ -2,25 +2,8 @@ import { readConsentState, markConsented } from '../js/splash/startprefs';
 import { storageClear } from '../js/plugin/storage';
 import { getUser } from '../js/services/commHelper';
 import { initStoreDeviceSettings, teardownDeviceSettings } from '../js/splash/storeDeviceSettings';
-import {
-  mockBEMDataCollection,
-  mockBEMServerCom,
-  mockBEMUserCache,
-  mockCordova,
-  mockDevice,
-  mockGetAppVersion,
-} from '../__mocks__/cordovaMocks';
-import { mockLogger } from '../__mocks__/globalMocks';
 import { EVENTS, publish } from '../js/customEventHandler';
 import { markIntroDone } from '../js/onboarding/onboardingHelper';
-
-mockBEMUserCache();
-mockDevice();
-mockCordova();
-mockLogger();
-mockGetAppVersion();
-mockBEMServerCom();
-mockBEMDataCollection();
 
 global.fetch = (url: string) =>
   new Promise((rs, rj) => {

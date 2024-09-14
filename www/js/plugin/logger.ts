@@ -1,3 +1,5 @@
+import { addStatError } from './clientStats';
+
 export const logDebug = (message: string) =>
   window['Logger']?.log(window['Logger'].LEVEL_DEBUG, message);
 
@@ -19,6 +21,7 @@ export function displayErrorMsg(errorMsg: string, title?: string) {
   }
   const displayMsg = `━━━━\n${title}\n━━━━\n` + errorMsg;
   window.alert(displayMsg);
+  addStatError(title ? `${title}: ${errorMsg}` : errorMsg);
   console.error(displayMsg);
   window['Logger']?.log(window['Logger'].LEVEL_ERROR, displayMsg);
 }

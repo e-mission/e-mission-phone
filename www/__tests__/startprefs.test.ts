@@ -5,13 +5,6 @@ import {
   getConsentDocument,
 } from '../js/splash/startprefs';
 
-import { mockBEMUserCache, mockBEMDataCollection } from '../__mocks__/cordovaMocks';
-import { mockLogger } from '../__mocks__/globalMocks';
-
-mockBEMUserCache();
-mockBEMDataCollection();
-mockLogger();
-
 global.fetch = (url: string) =>
   new Promise((rs, rj) => {
     setTimeout(() =>

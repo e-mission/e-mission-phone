@@ -17,6 +17,7 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   moduleDirectories: ["node_modules", "src"],
   globals: {"__DEV__": false},
+  setupFiles: ["<rootDir>/www/__mocks__/setupJestEnv.js"],
   collectCoverage: true,
   collectCoverageFrom: [
     "www/js/**/*.{ts,tsx,js,jsx}",

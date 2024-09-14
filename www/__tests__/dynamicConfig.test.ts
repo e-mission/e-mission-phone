@@ -1,14 +1,8 @@
-import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
-import { mockAlert, mockLogger } from '../__mocks__/globalMocks';
 import { getConfig, initByUser } from '../js/config/dynamicConfig';
 
 import initializedI18next from '../js/i18nextInit';
 import { storageClear } from '../js/plugin/storage';
 window['i18next'] = initializedI18next;
-
-mockLogger();
-mockAlert();
-mockBEMUserCache();
 
 beforeEach(() => {
   // clear all storage and the config document

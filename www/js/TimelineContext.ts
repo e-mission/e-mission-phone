@@ -24,6 +24,7 @@ import { getNotDeletedCandidates, mapInputsToTimelineEntries } from './survey/in
 import { EnketoUserInputEntry } from './survey/enketo/enketoHelper';
 import { VehicleIdentity } from './types/appConfigTypes';
 import { primarySectionForTrip } from './diary/diaryHelper';
+import useAppStateChange from './useAppStateChange';
 
 const TODAY_DATE = DateTime.now().toISODate();
 
@@ -53,6 +54,7 @@ type ContextProps = {
 export const useTimelineContext = (): ContextProps => {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
+  useAppStateChange(() => refreshTimeline());
 
   const [labelOptions, setLabelOptions] = useState<LabelOptions | null>(null);
   // timestamp range that has been processed by the pipeline on the server

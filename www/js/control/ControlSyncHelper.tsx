@@ -6,7 +6,7 @@ import { settingStyles } from './ProfileSettings';
 import ActionMenu from '../components/ActionMenu';
 import SettingRow from './SettingRow';
 import { AlertManager } from '../components/AlertBar';
-import { addStatEvent, statKeys } from '../plugin/clientStats';
+import { addStatReading } from '../plugin/clientStats';
 import { updateUser } from '../services/commHelper';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { DateTime } from 'luxon';
@@ -42,8 +42,8 @@ export const ForceSyncRow = ({ getState }) => {
 
   async function forceSync() {
     try {
-      let addedEvent = await addStatEvent(statKeys.BUTTON_FORCE_SYNC);
-      let sync = await forcePluginSync();
+      await addStatReading('force_sync');
+      await forcePluginSync();
       /*
        * Change to sensorKey to "background/location" after fixing issues
        * with getLastSensorData and getLastMessages in the usercache

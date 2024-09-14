@@ -2,11 +2,6 @@ import React, { useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { act, render, screen, waitFor } from '@testing-library/react-native';
 import { useTimelineContext } from '../js/TimelineContext';
-import { mockLogger } from '../__mocks__/globalMocks';
-import { mockBEMServerCom, mockBEMUserCache } from '../__mocks__/cordovaMocks';
-
-mockLogger();
-mockBEMUserCache();
 
 jest.mock('../js/services/commHelper', () => ({
   getPipelineRangeTs: jest.fn(() => Promise.resolve({ start_ts: 1, end_ts: 10 })),

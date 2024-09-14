@@ -1,8 +1,5 @@
-import { mockLogger } from '../__mocks__/globalMocks';
 import { removeDup, combinedPromises } from '../js/services/unifiedDataLoader';
 import { LocalDt, BEMData } from '../js/types/serverData';
-
-mockLogger();
 
 const testOne: BEMData<any> = {
   data: '',

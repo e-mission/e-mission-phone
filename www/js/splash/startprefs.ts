@@ -1,6 +1,7 @@
 import { storageGet, storageSet } from '../plugin/storage';
 import { logInfo, logDebug, displayErrorMsg } from '../plugin/logger';
 import { EVENTS, publish } from '../customEventHandler';
+import { addStatReading } from '../plugin/clientStats';
 
 // data collection consented protocol: string, represents the date on
 // which the consented protocol was approved by the IRB
@@ -106,7 +107,12 @@ function checkNativeConsent() {
     if (resultDoc == null) {
       if (isConsented()) {
         logDebug('Local consent found, native consent missing, writing consent to native');
-        displayErrorMsg('Local consent found, native consent missing, writing consent to native');
+        addStatReading('missing_keys', {
+          type: 'document_mismatch',
+          document: 'config/consent',
+          localConsent: _curr_consented,
+          nativeConsent: resultDoc,
+        }).then(logDebug('Logged missing_keys event to client stats for missing native consent'));
         return writeConsentToNative();
       } else {
         logDebug('Both local and native consent not found, nothing to sync');
