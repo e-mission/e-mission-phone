@@ -1,5 +1,18 @@
 import packageJsonBuild from '../../package.cordovabuild.json';
 
+export let alerts: string[] = [];
+
+export const mockLogger = () => {
+  window['Logger'] = { log: console.log };
+  window['alert'] = (message) => {
+    console.log(message);
+    alerts.push(message);
+  };
+  console.error = (msg) => {
+    console.log(msg);
+  };
+};
+
 export const mockCordova = () => {
   window['cordova'] ||= {};
   window['cordova'].platformId ||= 'ios';

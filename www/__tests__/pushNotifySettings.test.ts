@@ -3,20 +3,7 @@ import { EVENTS, publish } from '../js/customEventHandler';
 import { INTRO_DONE_KEY, readIntroDone } from '../js/onboarding/onboardingHelper';
 import { storageSet } from '../js/plugin/storage';
 import { initPushNotify } from '../js/splash/pushNotifySettings';
-import { mockCordova, mockBEMUserCache, mockBEMDataCollection } from '../__mocks__/cordovaMocks';
-import { mockLogger } from '../__mocks__/globalMocks';
-import {
-  clearNotifMock,
-  getOnList,
-  mockPushNotification,
-  getCalled,
-} from '../__mocks__/pushNotificationMocks';
-
-mockCordova();
-mockLogger();
-mockPushNotification();
-mockBEMUserCache();
-mockBEMDataCollection();
+import { clearNotifMock, getOnList, getCalled } from '../__mocks__/pushNotificationMocks';
 
 global.fetch = (url: string) =>
   new Promise((rs, rj) => {

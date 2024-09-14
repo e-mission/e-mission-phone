@@ -3,17 +3,6 @@
 //at some point we hope to restore this functionality
 
 import { uploadFile } from '../js/control/uploadService';
-import { mockLogger } from '../__mocks__/globalMocks';
-import { mockDevice, mockGetAppVersion, mockCordova, mockFile } from '../__mocks__/cordovaMocks';
-import { mockFileSystem } from '../__mocks__/fileSystemMocks';
-
-mockDevice();
-mockGetAppVersion();
-mockCordova();
-
-mockLogger();
-mockFile(); //mocks the base directory
-mockFileSystem(); //comnplex mock, allows the readDBFile to work in testing
 
 //use this message to verify that the post went through
 let message = '';

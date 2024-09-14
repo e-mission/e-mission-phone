@@ -1,5 +1,3 @@
-import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
-import { mockLogger } from '../__mocks__/globalMocks';
 import { updateLocalUnprocessedInputs } from '../js/diary/timelineHelper';
 import * as logger from '../js/plugin/logger';
 import { EnketoUserInputEntry } from '../js/survey/enketo/enketoHelper';
@@ -16,9 +14,6 @@ import {
 } from '../js/survey/inputMatcher';
 import { AppConfig } from '../js/types/appConfigTypes';
 import { CompositeTrip, TimelineEntry, UserInputEntry } from '../js/types/diaryTypes';
-
-mockLogger();
-mockBEMUserCache();
 
 describe('input-matcher', () => {
   let userTrip: UserInputEntry;

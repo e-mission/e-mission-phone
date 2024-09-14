@@ -10,12 +10,10 @@ import {
 } from '../js/metrics/footprintHelper';
 import { getConfig } from '../js/config/dynamicConfig';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
-import { mockLogger } from '../__mocks__/globalMocks';
 import fakeLabels from '../__mocks__/fakeLabels.json';
 import fakeConfig from '../__mocks__/fakeConfig.json';
 
 mockBEMUserCache(fakeConfig);
-mockLogger();
 
 global.fetch = (url: string) =>
   new Promise((rs, rj) => {
