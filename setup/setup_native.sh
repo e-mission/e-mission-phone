@@ -6,9 +6,6 @@ source setup/setup_shared.sh
 export PLATFORMS=""
 
 if [ $SETUP_IOS ]; then
-    OSX_MAJOR_VERSION=`sw_vers | grep ProductVersion | cut -d ':' -f 2 | cut -d '.' -f 1`
-    echo "Found OSX major version" $OSX_MAJOR_VERSION
-
     # The Homebrew pac-man is installed in different locations, depending on whether the processor
     # is an Intel or Apple Silicone chip.  Intel uses x86_64, Apple chips are amd64, so we can
     # check the chip type using these hardware platforms.
