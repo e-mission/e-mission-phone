@@ -90,7 +90,8 @@
     "react-native-web": "^0.19.7",
     "react-native-web-webview": "^1.0.2",
     "react-qr-code": "^2.0.11",
-    "shelljs": "^0.8.5"
+    "shelljs": "^0.8.5",
+    "setimmediate": "^1.0.5"
   },
   "cordova": {
     "platforms": [

@@ -23,13 +23,22 @@ window['i18next'] = initializedI18next;
 
 describe('metricsHelper', () => {
   describe('getUniqueLabelsForDays', () => {
-    const days1 = [
-      { mode_confirm_a: 1, mode_confirm_b: 2 },
-      { mode_confirm_b: 1, mode_confirm_c: 3 },
-      { mode_confirm_c: 1, mode_confirm_d: 3 },
-    ] as any as DayOfMetricData[];
     it("should return unique labels for days with 'mode_confirm_*'", () => {
+      const days1 = [
+        { mode_confirm_a: 1, mode_confirm_b: 2 },
+        { mode_confirm_b: 1, mode_confirm_c: 3 },
+        { mode_confirm_c: 1, mode_confirm_d: 3 },
+      ] as any as DayOfMetricData[];
       expect(getUniqueLabelsForDays(days1)).toEqual(['a', 'b', 'c', 'd']);
+    });
+
+    it('should return unique labels for days with duplicated labels', () => {
+      const days2 = [
+        { mode_confirm_a: 1, mode_confirm_b: 2 },
+        { mode_confirm_a: 1, mode_confirm_b: 2 },
+        { mode_confirm_a: 1, mode_confirm_b: 2 },
+      ] as any as DayOfMetricData[];
+      expect(getUniqueLabelsForDays(days2)).toEqual(['a', 'b']);
     });
   });
 
@@ -229,17 +238,17 @@ describe('metricsHelper', () => {
       expect(result).toBe(true);
     });
 
-    it('returns true for all sensed labels', () => {
+    it('returns false for all sensed labels', () => {
       const modeMap = [
         {
-          key: 'label_mode1',
+          key: 'SENSED_MODE_1',
           values: [
             ['value1', 10],
             ['value2', 20],
           ],
         },
         {
-          key: 'label_mode2',
+          key: 'SENSED_MODE_2',
           values: [
             ['value3', 30],
             ['value4', 40],
@@ -247,7 +256,7 @@ describe('metricsHelper', () => {
         },
       ];
       const result = isCustomLabels(modeMap);
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
 
     it('returns false for mixed custom and sensed labels', () => {
