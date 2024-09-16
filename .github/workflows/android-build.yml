@@ -54,7 +54,7 @@ jobs:
       shell: bash -l {0}
       run: |
         export JAVA_HOME=$JAVA_HOME_17_arm64
-        bash setup/setup_native.sh
+        SETUP_ANDROID=1 bash setup/setup_native.sh
 
     - name: Check tool versions
       shell: bash -l {0}
