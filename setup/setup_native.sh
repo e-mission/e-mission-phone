@@ -5,7 +5,7 @@ source setup/setup_shared.sh
 
 export PLATFORMS=""
 
-if [ $SETUP_IOS ] || ( [ !$SETUP_ANDROID ] && [ !$SETUP_IOS ] ); then
+if [ $SETUP_IOS ]; then
     OSX_MAJOR_VERSION=`sw_vers | grep ProductVersion | cut -d ':' -f 2 | cut -d '.' -f 1`
     echo "Found OSX major version" $OSX_MAJOR_VERSION
 
@@ -57,7 +57,7 @@ if [ $SETUP_IOS ] || ( [ !$SETUP_ANDROID ] && [ !$SETUP_IOS ] ); then
     export PLATFORMS+=" ios"
 fi
 
-if [ $SETUP_ANDROID ] || ( [ !$SETUP_ANDROID ] && [ !$SETUP_IOS ] ); then
+if [ $SETUP_ANDROID ]; then
     # we can build android on both ubuntu and OSX
     # should try both since there may be subtle differences
     PLATFORM=`uname -a`
