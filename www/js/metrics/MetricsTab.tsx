@@ -79,7 +79,7 @@ const MetricsTab = () => {
   const appConfig = useAppConfig();
   const { t } = useTranslation();
   const {
-    dateRange,
+    queriedDateRange,
     timelineMap,
     timelineLabelMap,
     labelOptions,
@@ -94,22 +94,28 @@ const MetricsTab = () => {
   const [userMetrics, setUserMetrics] = useState<MetricsData | undefined>(undefined);
   const [aggMetrics, setAggMetrics] = useState<MetricsData | undefined>(undefined);
   const [aggMetricsIsLoading, setAggMetricsIsLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const readyToLoad = useMemo(() => {
-    if (!appConfig || !dateRange) return false;
-    const dateRangeDays = isoDatesDifference(...dateRange);
-    if (dateRangeDays < N_DAYS_TO_LOAD) {
-      logDebug('MetricsTab: not enough days loaded, trying to load more');
-      const loadingMore = loadMoreDays('past', N_DAYS_TO_LOAD - dateRangeDays);
-      if (loadingMore !== false) return false;
-      logDebug('MetricsTab: no more days can be loaded, continuing with what we have');
+  useEffect(() => {
+    if (!isInitialized && appConfig && queriedDateRange) {
+      logDebug('MetricsTab: initializing');
+      const queriedNumDays = isoDatesDifference(...queriedDateRange) + 1;
+      if (queriedNumDays < N_DAYS_TO_LOAD) {
+        logDebug('MetricsTab: not enough days loaded, trying to load more');
+        const loadingMore = loadMoreDays('past', N_DAYS_TO_LOAD - queriedNumDays);
+        if (!loadingMore) {
+          logDebug('MetricsTab: no more days can be loaded, continuing with what we have');
+          setIsInitialized(true);
+        }
+      } else {
+        setIsInitialized(true);
+      }
     }
-    return true;
-  }, [appConfig, dateRange]);
+  }, [appConfig, queriedDateRange]);
 
   useEffect(() => {
     if (
-      !readyToLoad ||
+      !isInitialized ||
       !appConfig ||
       timelineIsLoading ||
       !timelineMap ||
@@ -121,17 +127,23 @@ const MetricsTab = () => {
     computeUserMetrics(metricList, timelineMap, appConfig, timelineLabelMap, labelOptions).then(
       (result) => setUserMetrics(result),
     );
-  }, [readyToLoad, appConfig, timelineIsLoading, timelineMap, timelineLabelMap]);
+  }, [isInitialized, appConfig, timelineIsLoading, timelineMap, timelineLabelMap]);
 
   useEffect(() => {
-    if (!readyToLoad || !appConfig || !dateRange) return;
+    if (!isInitialized || !appConfig || !queriedDateRange || !labelOptions) return;
     logDebug('MetricsTab: ready to fetch aggMetrics');
     setAggMetricsIsLoading(true);
-    fetchAggMetrics(metricList, dateRange, appConfig).then((response) => {
+    fetchAggMetrics(metricList, queriedDateRange, appConfig, labelOptions).then((response) => {
       setAggMetricsIsLoading(false);
       setAggMetrics(response);
     });
-  }, [readyToLoad, appConfig, dateRange]);
+  }, [isInitialized, appConfig, queriedDateRange]);
+
+  function refresh() {
+    refreshTimeline();
+    setIsInitialized(false);
+    setAggMetricsIsLoading(true);
+  }
 
   return (
     <>
@@ -149,7 +161,12 @@ const MetricsTab = () => {
             loadDateRange([start, end]);
           }}
         />
-        <Appbar.Action icon="refresh" size={32} onPress={refreshTimeline} />
+        <Appbar.Action
+          icon="refresh"
+          size={32}
+          onPress={refresh}
+          style={{ margin: 0, marginLeft: 'auto' }}
+        />
       </NavBar>
       <MetricsScreen {...{ userMetrics, aggMetrics, metricList }} />
     </>
