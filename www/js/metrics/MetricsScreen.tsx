@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, ViewStyle } from 'react-native';
 import { shadow } from 'react-native-paper';
 import { TabsProvider, Tabs, TabScreen } from 'react-native-paper-tabs';
 import FootprintSection from './footprint/FootprintSection';
-import ActiveTravelSection from './activetravel/ActiveTravelSection';
+import MovementSection from './movement/MovementSection';
 import TravelSection from './travel/TravelSection';
 import useAppConfig from '../useAppConfig';
 import { MetricsUiSection } from '../types/appConfigTypes';
@@ -13,10 +13,10 @@ import { useAppTheme } from '../appTheme';
 const DEFAULT_SECTIONS_TO_SHOW: MetricsUiSection[] = ['footprint', 'movement', 'travel'];
 
 const SECTIONS: Record<string, [any, string, string]> = {
-  footprint: [FootprintSection, 'shoe-print', 'Footprint'],
-  movement: [ActiveTravelSection, 'walk', 'Movement'],
-  travel: [TravelSection, 'chart-timeline', 'Travel'],
-  surveys: [SurveysSection, 'clipboard-list', 'Surveys'],
+  footprint: [FootprintSection, 'shoe-print', i18next.t('metrics.footprint.footprint')],
+  movement: [MovementSection, 'run', i18next.t('metrics.movement.movement')],
+  travel: [TravelSection, 'chart-timeline', i18next.t('metrics.travel.travel')],
+  surveys: [SurveysSection, 'clipboard-list', i18next.t('metrics.surveys.surveys')],
 };
 
 const MetricsScreen = ({ userMetrics, aggMetrics, metricList }) => {

@@ -1,10 +1,10 @@
 import { DateTime } from 'luxon';
 import { DayOfMetricData } from './metricsTypes';
 import { logDebug } from '../plugin/logger';
-import { isoDateWithOffset, isoDatesDifference } from '../diary/timelineHelper';
 import { MetricName, groupingFields } from '../types/appConfigTypes';
 import { ImperialConfig } from '../config/useImperialConfig';
 import i18next from 'i18next';
+import { base_modes, metrics_summaries } from 'e-mission-common';
 import { formatForDisplay, formatIsoNoYear, isoDatesDifference, isoDateWithOffset } from '../util';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
@@ -67,6 +67,12 @@ export function formatDateRangeOfDays(days: DayOfMetricData[]) {
   const endIsoDate = days[days.length - 1].date;
   return formatIsoNoYear(startIsoDate, endIsoDate);
 }
+
+export function getActiveModes(labelOptions: LabelOptions) {
+  return labelOptions.MODE.filter((mode) => {
+    const richMode = base_modes.get_rich_mode(mode) as RichMode;
+    return richMode.met && Object.values(richMode.met).some((met) => met?.mets || -1 > 0);
+  }).map((mode) => mode.value);
 }
 
 /* formatting data form carbon footprint calculations */

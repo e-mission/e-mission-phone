@@ -1,6 +1,6 @@
 import { getLabelOptions } from '../survey/multilabel/confirmHelper';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
-import { standardMETs } from './activetravel/metDataset';
+import { standardMETs } from './movement/metDataset';
 import { AppConfig } from '../types/appConfigTypes';
 
 //variables to store values locally
