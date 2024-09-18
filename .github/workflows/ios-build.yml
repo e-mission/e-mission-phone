@@ -50,7 +50,7 @@ jobs:
     - name: Setup the cordova environment
       shell: bash -l {0}
       run: |
-        SETUP_IOS=1 bash setup/setup_native.sh
+        bash setup/setup_native.sh
 
     - name: Check tool versions
       shell: bash -l {0}
