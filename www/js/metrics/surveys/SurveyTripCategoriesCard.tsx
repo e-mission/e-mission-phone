@@ -55,9 +55,8 @@ const SurveyTripCategoriesCard = ({ userMetrics, aggMetrics }: Props) => {
       <Card.Title
         title={t('main-metrics.surveys')}
         titleVariant="titleLarge"
-        titleStyle={metricsStyles.titleText(colors)}
         subtitle={t('main-metrics.trip-categories')}
-        subtitleStyle={[metricsStyles.titleText(colors), metricsStyles.subtitleText]}
+        subtitleStyle={metricsStyles.subtitleText}
         style={metricsStyles.title(colors)}
       />
       <Card.Content style={metricsStyles.content}>

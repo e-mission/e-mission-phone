@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Card, Text } from 'react-native-paper';
-import color from 'color';
 import { formatForDisplay } from '../util';
-import { useAppTheme } from '../appTheme';
+import { colors } from '../appTheme';
+import { t } from 'i18next';
+import { FootprintGoal } from '../types/appConfigTypes';
+import { metricsStyles } from './MetricsScreen';
 
 type Value = [number, number];
 type Props = {
@@ -32,14 +34,10 @@ const SummaryCard = ({ title, unit, value, nDays, guidelines }: Props) => {
     return colors.onSurfaceVariant;
   };
 
-  useEffect(() => {
-    console.debug('SummaryCard: value', value);
-  }, [value]);
-
   return (
-    <Card contentStyle={{ flex: 1 }}>
+    <Card style={{ flex: 1 }}>
       {!isNaN(value[0]) ? (
-        <Card.Content style={{ gap: 12, paddingBottom: 20, flex: 1 }}>
+        <Card.Content style={metricsStyles.content}>
           <Text variant="bodyLarge">{title}</Text>
           <Text style={s.titleText}>
             {formatVal(value)} {unit}
@@ -59,9 +57,9 @@ const SummaryCard = ({ title, unit, value, nDays, guidelines }: Props) => {
           </View>
         </Card.Content>
       ) : (
-        <Card.Content style={{ flex: 1 }}>
-          <Text>{title}</Text>
-          <Text>No data available</Text>
+        <Card.Content style={metricsStyles.content}>
+          <Text variant="bodyLarge">{title}</Text>
+          <Text variant="labelMedium">{t('metrics.chart-no-data')}</Text>
         </Card.Content>
       )}
     </Card>

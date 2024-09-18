@@ -58,14 +58,8 @@ export const metricsStyles = StyleSheet.create({
     minHeight: 300,
   },
   title: (colors) => ({
-    backgroundColor: colors.primary,
     paddingHorizontal: 8,
     minHeight: 52,
-  }),
-  titleText: (colors) => ({
-    color: colors.onPrimary,
-    fontWeight: '500',
-    textAlign: 'center',
   }),
   subtitleText: {
     fontSize: 13,
@@ -74,8 +68,7 @@ export const metricsStyles = StyleSheet.create({
     fontStyle: 'italic',
   },
   content: {
-    padding: 8,
-    paddingBottom: 12,
+    gap: 12,
     flex: 1,
   },
 });

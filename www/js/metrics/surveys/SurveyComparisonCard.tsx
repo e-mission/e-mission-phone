@@ -113,26 +113,25 @@ const SurveyComparisonCard = ({ userMetrics, aggMetrics }: Props) => {
   return (
     <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
-        title={t('main-metrics.surveys')}
+        title={t('metrics.surveys.surveys-tab')}
         titleVariant="titleLarge"
-        titleStyle={metricsStyles.titleText(colors)}
-        subtitle={t('main-metrics.comparison')}
-        subtitleStyle={[metricsStyles.titleText(colors), metricsStyles.subtitleText]}
+        subtitle={t('metrics.surveys.comparison')}
+        subtitleStyle={metricsStyles.subtitleText}
         style={metricsStyles.title(colors)}
       />
       <Card.Content style={metricsStyles.content}>
         {typeof myResponsePct !== 'number' || typeof othersResponsePct !== 'number' ? (
           <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
-            {t('metrics.chart-no-data')}
+            {t('metrics.no-data-available')}
           </Text>
         ) : (
           <View>
-            <Text style={styles.chartTitle}>{t('main-metrics.survey-response-rate')}</Text>
+            <Text style={styles.chartTitle}>{t('metrics.surveys.survey-response-rate')}</Text>
             <View style={styles.chartWrapper}>
               {renderDoughnutChart(myResponsePct, colors.navy, true)}
               {renderDoughnutChart(othersResponsePct, colors.orange, false)}
             </View>
-            <LabelPanel first={t('main-metrics.you')} second={t('main-metrics.others')} />
+            <LabelPanel first={t('metrics.surveys.you')} second={t('metrics.surveys.others')} />
           </View>
         )}
       </Card.Content>

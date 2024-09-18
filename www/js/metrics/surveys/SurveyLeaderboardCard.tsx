@@ -70,20 +70,18 @@ const SurveyLeaderboardCard = ({ studyStartDate, surveyMetric }: Props) => {
   return (
     <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
-        title={t('main-metrics.surveys')}
+        title={t('metrics.surveys.surveys-tab')}
         titleVariant="titleLarge"
-        titleStyle={metricsStyles.titleText(colors)}
-        subtitle={t('main-metrics.leaderboard')}
-        subtitleStyle={[metricsStyles.titleText(colors), metricsStyles.subtitleText]}
+        subtitle={t('metrics.leaderboard.leaderboard')}
+        subtitleStyle={metricsStyles.subtitleText}
         style={metricsStyles.title(colors)}
       />
       <Card.Content style={metricsStyles.content}>
         <View>
           <Text style={styles.chartDesc}>
-            * {t('main-metrics.survey-leaderboard-desc')}
-            {studyStartDate}
+            * {t('metrics.leaderboard.data-accumulated-since-date', { date: studyStartDate })}
           </Text>
-          <Text style={styles.chartTitle}>{t('main-metrics.survey-response-rate')}</Text>
+          <Text style={styles.chartTitle}>{t('metrics.surveys.survey-response-rate')}</Text>
           <BarChart
             records={leaderboardRecords}
             axisTitle=""
@@ -97,9 +95,7 @@ const SurveyLeaderboardCard = ({ studyStartDate, surveyMetric }: Props) => {
             enableTooltip={false}
           />
           <View style={styles.statusTextWrapper}>
-            <Text>{t('main-metrics.you-are-in')}</Text>
-            <Text style={{ color: colors.navy, fontWeight: 'bold' }}> #{myRank + 1} </Text>
-            <Text>{t('main-metrics.place')}</Text>
+            <Text>{t('metrics.leaderboard.you-are-in-x-place', { x: myRank + 1 })}</Text>
           </View>
         </View>
       </Card.Content>
