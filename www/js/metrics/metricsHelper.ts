@@ -254,18 +254,22 @@ export function getUnitUtilsForMetric(
       (x) => imperialConfig.getFormattedDistance(x) + ' ' + imperialConfig.distanceSuffix,
     ],
     duration: [
-      i18next.t('metrics.hours'),
+      i18next.t('metrics.travel.hours'),
       (v) => secondsToHours(v),
-      (v) => formatForDisplay(secondsToHours(v)) + ' ' + i18next.t('metrics.hours'),
+      (v) => formatForDisplay(secondsToHours(v)) + ' ' + i18next.t('metrics.travel.hours'),
     ],
-    count: [i18next.t('metrics.trips'), (v) => v, (v) => v + ' ' + i18next.t('metrics.trips')],
+    count: [
+      i18next.t('metrics.travel.trips'),
+      (v) => v,
+      (v) => v + ' ' + i18next.t('metrics.travel.trips'),
+    ],
     response_count: [
-      i18next.t('metrics.responses'),
+      i18next.t('metrics.surveys.responses'),
       (v) => v.responded || 0,
       (v) => {
         const responded = v.responded || 0;
         const total = responded + (v.not_responded || 0);
-        return `${responded}/${total} ${i18next.t('metrics.responses')}`;
+        return `${responded}/${total} ${i18next.t('metrics.surveys.responses')}`;
       },
     ],
   };

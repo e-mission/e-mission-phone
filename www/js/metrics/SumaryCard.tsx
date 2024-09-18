@@ -58,7 +58,7 @@ const SummaryCard = ({ title, unit, value, nDays, goals }: Props) => {
       ) : (
         <Card.Content style={metricsStyles.content}>
           <Text variant="bodyLarge">{title}</Text>
-          <Text variant="labelMedium">{t('metrics.chart-no-data')}</Text>
+          <Text variant="labelMedium">{t('metrics.no-data')}</Text>
         </Card.Content>
       )}
     </Card>

@@ -157,7 +157,7 @@ const MetricsCard = ({
             </View>
           ) : (
             <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
-              {t('metrics.chart-no-data')}
+              {t('metrics.no-data-available')}
             </Text>
           ))}
         {viewMode == 'graph' &&
@@ -187,7 +187,7 @@ const MetricsCard = ({
             </>
           ) : (
             <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
-              {t('metrics.chart-no-data')}
+              {t('metrics.no-data-available')}
             </Text>
           ))}
       </Card.Content>

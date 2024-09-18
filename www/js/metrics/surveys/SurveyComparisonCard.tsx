@@ -113,7 +113,7 @@ const SurveyComparisonCard = ({ userMetrics, aggMetrics }: Props) => {
   return (
     <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
-        title={t('metrics.surveys.surveys-tab')}
+        title={t('metrics.surveys.surveys')}
         titleVariant="titleLarge"
         subtitle={t('metrics.surveys.comparison')}
         subtitleStyle={metricsStyles.subtitleText}

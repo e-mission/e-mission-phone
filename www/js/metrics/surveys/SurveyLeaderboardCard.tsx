@@ -70,7 +70,7 @@ const SurveyLeaderboardCard = ({ studyStartDate, surveyMetric }: Props) => {
   return (
     <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
-        title={t('metrics.surveys.surveys-tab')}
+        title={t('metrics.surveys.surveys')}
         titleVariant="titleLarge"
         subtitle={t('metrics.leaderboard.leaderboard')}
         subtitleStyle={metricsStyles.subtitleText}

@@ -15,7 +15,7 @@ const TravelSection = ({ userMetrics, aggMetrics, metricList }) => {
               key={metricName}
               metricName={metricName}
               groupingFields={groupingFields}
-              cardTitle={t(`main-metrics.${metricName}`)}
+              cardTitle={t(`metrics.travel.${metricName}`)}
               userMetricsDays={userMetrics?.[metricName]}
               aggMetricsDays={aggMetrics?.[metricName]}
             />

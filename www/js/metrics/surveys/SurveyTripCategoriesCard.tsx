@@ -53,9 +53,9 @@ const SurveyTripCategoriesCard = ({ userMetrics, aggMetrics }: Props) => {
   return (
     <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
-        title={t('main-metrics.surveys')}
+        title={t('metrics.surveys.surveys')}
         titleVariant="titleLarge"
-        subtitle={t('main-metrics.trip-categories')}
+        subtitle={t('metrics.surveys.trip-categories')}
         subtitleStyle={metricsStyles.subtitleText}
         style={metricsStyles.title(colors)}
       />
@@ -74,11 +74,14 @@ const SurveyTripCategoriesCard = ({ userMetrics, aggMetrics }: Props) => {
               reverse={false}
               maxBarThickness={60}
             />
-            <LabelPanel first={t('main-metrics.response')} second={t('main-metrics.no-response')} />
+            <LabelPanel
+              first={t('metrics.surveys.response')}
+              second={t('metrics.surveys.no-response')}
+            />
           </>
         ) : (
           <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
-            {t('metrics.chart-no-data')}
+            {t('metrics.no-data-available')}
           </Text>
         )}
       </Card.Content>
