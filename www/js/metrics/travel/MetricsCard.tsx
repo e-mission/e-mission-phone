@@ -11,6 +11,7 @@ import {
   getUniqueLabelsForDays,
   valueForFieldOnDay,
   getUnitUtilsForMetric,
+  getColorForModeLabel,
 } from '../metricsHelper';
 import ToggleSwitch from '../../components/ToggleSwitch';
 import { metricsStyles } from '../MetricsScreen';
@@ -80,7 +81,7 @@ const MetricsCard = ({
   const cardSubtitleText = useMemo(() => {
     if (!metricDataDays) return;
     const groupText =
-      populationMode == 'user' ? t('main-metrics.user-totals') : t('main-metrics.group-totals');
+      populationMode == 'user' ? t('metrics.travel.user-totals') : t('metrics.travel.group-totals');
     return `${groupText} (${formatDateRangeOfDays(metricDataDays)})`;
   }, [metricDataDays, populationMode]);
 
@@ -112,24 +113,13 @@ const MetricsCard = ({
     return vals;
   }, [metricDataDays, viewMode]);
 
-  // Unlabelled data shows up as 'UNKNOWN' grey and mostly transparent
-  // All other modes are colored according to their base mode
-  const getColorForLabel = (label: string) => {
-    if (label == 'Unlabeled') {
-      const unknownModeColor = base_modes.get_base_mode_by_key('UNKNOWN').color;
-      return colorLib(unknownModeColor).alpha(0.15).rgb().string();
-    }
-    return getBaseModeByText(label, labelOptions).color;
-  };
-
   return (
     <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={cardTitle}
         titleVariant="titleLarge"
-        titleStyle={metricsStyles.titleText(colors)}
         subtitle={cardSubtitleText}
-        subtitleStyle={[metricsStyles.titleText(colors), metricsStyles.subtitleText]}
+        subtitleStyle={metricsStyles.subtitleText}
         right={() => (
           <View style={{ gap: 3 }}>
             <ToggleSwitch
@@ -179,7 +169,7 @@ const MetricsCard = ({
                 isHorizontal={true}
                 timeAxis={true}
                 stacked={graphIsStacked}
-                getColorForLabel={getColorForLabel}
+                getColorForLabel={getColorForModeLabel}
               />
               <View
                 style={{

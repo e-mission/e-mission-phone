@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import color from 'color';
 import { DayOfMetricData, MetricEntry, MetricValue } from './metricsTypes';
 import { logDebug } from '../plugin/logger';
 import { MetricName, groupingFields } from '../types/appConfigTypes';
@@ -7,6 +8,9 @@ import i18next from 'i18next';
 import { base_modes, metrics_summaries } from 'e-mission-common';
 import { formatForDisplay, formatIsoNoYear, isoDatesDifference, isoDateWithOffset } from '../util';
 import { LabelOptions, RichMode } from '../types/labelTypes';
+import { getBaseModeByText } from '../diary/diaryHelper';
+import { labelOptions } from '../survey/multilabel/confirmHelper';
+import { UNCERTAIN_OPACITY } from '../components/charting';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];
@@ -265,4 +269,13 @@ export function getUnitUtilsForMetric(
     ],
   };
   return fns[metricName];
+}
+// Unlabelled data shows up as 'UNKNOWN' grey and mostly transparent
+// All other modes are colored according to their base mode
+export function getColorForModeLabel(label: string) {
+  if (label.startsWith(i18next.t('metrics.footprint.unlabeled'))) {
+    const unknownModeColor = base_modes.get_base_mode_by_key('UNKNOWN').color;
+    return color(unknownModeColor).alpha(UNCERTAIN_OPACITY).rgb().string();
+  }
+  return getBaseModeByText(label, labelOptions).color;
 }
