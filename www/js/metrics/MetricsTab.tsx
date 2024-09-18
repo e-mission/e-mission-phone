@@ -10,13 +10,12 @@ import useAppConfig from '../useAppConfig';
 import { AppConfig, MetricList } from '../types/appConfigTypes';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext, { TimelineLabelMap, TimelineMap } from '../TimelineContext';
-import { isoDatesDifference } from '../diary/timelineHelper';
 import { metrics_summaries } from 'e-mission-common';
 import MetricsScreen from './MetricsScreen';
 import { LabelOptions } from '../types/labelTypes';
 import { useAppTheme } from '../appTheme';
+import { isoDatesDifference } from '../util';
 
-// 2 weeks of data is needed in order to compare "past week" vs "previous week"
 const N_DAYS_TO_LOAD = 14; // 2 weeks
 export const DEFAULT_METRIC_LIST: MetricList = {
   footprint: ['mode_confirm'],
@@ -34,12 +33,15 @@ async function computeUserMetrics(
 ) {
   try {
     const timelineValues = [...timelineMap.values()];
+    const app_config = {
+      ...appConfig,
+      ...(metricList.footprint ? { label_options: labelOptions } : {}),
+    };
     const result = await metrics_summaries.generate_summaries(
       { ...metricList },
       timelineValues,
-      appConfig,
+      app_config,
       timelineLabelMap,
-      labelOptions,
     );
     logDebug('MetricsTab: computed userMetrics');
     console.debug('MetricsTab: computed userMetrics', result);
@@ -53,6 +55,7 @@ async function fetchAggMetrics(
   metricList: MetricList,
   dateRange: [string, string],
   appConfig: AppConfig,
+  labelOptions: LabelOptions,
 ) {
   logDebug('MetricsTab: fetching agg metrics from server for dateRange ' + dateRange);
   const query = {
@@ -61,7 +64,10 @@ async function fetchAggMetrics(
     end_time: dateRange[1],
     metric_list: metricList,
     is_return_aggregate: true,
-    app_config: { survey_info: appConfig.survey_info },
+    app_config: {
+      ...(metricList.response_count ? { survey_info: appConfig.survey_info } : {}),
+      ...(metricList.footprint ? { label_options: labelOptions } : {}),
+    },
   };
   return getAggregateData('result/metrics/yyyy_mm_dd', query, appConfig.server)
     .then((response) => {

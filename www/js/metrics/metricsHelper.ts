@@ -1,11 +1,12 @@
 import { DateTime } from 'luxon';
-import { DayOfMetricData } from './metricsTypes';
+import { DayOfMetricData, MetricEntry, MetricValue } from './metricsTypes';
 import { logDebug } from '../plugin/logger';
 import { MetricName, groupingFields } from '../types/appConfigTypes';
 import { ImperialConfig } from '../config/useImperialConfig';
 import i18next from 'i18next';
 import { base_modes, metrics_summaries } from 'e-mission-common';
 import { formatForDisplay, formatIsoNoYear, isoDatesDifference, isoDateWithOffset } from '../util';
+import { LabelOptions, RichMode } from '../types/labelTypes';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];

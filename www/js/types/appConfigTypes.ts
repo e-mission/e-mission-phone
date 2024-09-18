@@ -107,6 +107,16 @@ export const groupingFields = [
 export type GroupingField = (typeof groupingFields)[number];
 export type MetricList = { [k in MetricName]?: GroupingField[] };
 export type MetricsUiSection = 'footprint' | 'movement' | 'surveys' | 'travel';
+export type FootprintGoal = {
+  label: { [lang: string]: string };
+  value: number;
+  color?: string;
+};
+export type FootprintGoals = {
+  carbon: FootprintGoal[];
+  energy: FootprintGoal[];
+  goals_footnote?: { [lang: string]: string };
+};
 export type MetricsConfig = {
   include_test_users: boolean;
   phone_dashboard_ui?: {
@@ -114,13 +124,12 @@ export type MetricsConfig = {
     metric_list: MetricList;
     footprint_options?: {
       unlabeled_uncertainty: boolean;
+      goals?: FootprintGoals;
     };
-    summary_options?: {};
-    engagement_options?: {
-      leaderboard_metric: [string, string];
-    };
-    active_travel_options?: {
-      modes_list: string[];
-    };
+    movement_options?: {};
+    surveys_options?: {};
+    travel_options?: {};
   };
 };
+
+export default AppConfig;
