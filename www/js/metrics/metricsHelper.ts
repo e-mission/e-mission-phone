@@ -50,7 +50,7 @@ export function segmentDaysByWeeks(days: DayOfMetricData[], lastDate: string) {
   let cutoff = isoDateWithOffset(lastDate, -7 * weeks.length);
   for (let i = days.length - 1; i >= 0; i--) {
     // if date is older than cutoff, start a new week
-    if (isoDatesDifference(days[i].date, cutoff) > 0) {
+    while (isoDatesDifference(days[i].date, cutoff) >= 0) {
       weeks.push([]);
       cutoff = isoDateWithOffset(lastDate, -7 * weeks.length);
     }
