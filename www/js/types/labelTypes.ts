@@ -23,7 +23,7 @@ export type RichMode = {
   };
 };
 
-export type LabelOption<T extends string> = T extends 'MODE'
+export type LabelOption<T extends string = MultilabelKey> = T extends 'MODE'
   ? {
       value: string;
       base_mode: string;
