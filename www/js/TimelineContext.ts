@@ -25,6 +25,8 @@ import { primarySectionForTrip } from './diary/diaryHelper';
 import { isoDateRangeToTsRange, isoDateWithOffset } from './util';
 
 const TODAY_DATE = DateTime.now().toISODate();
+// initial date range is the past week: [TODAY - 6 days, TODAY]
+const INITIAL_DATE_RANGE: [string, string] = [isoDateWithOffset(TODAY_DATE, -6), TODAY_DATE];
 
 type ContextProps = {
   labelOptions: LabelOptions | null;
@@ -40,7 +42,7 @@ type ContextProps = {
   addUserInputToEntry: (oid: string, userInput: any, inputType: 'label' | 'note') => void;
   pipelineRange: TimestampRange | null;
   queriedDateRange: [string, string] | null; // YYYY-MM-DD format
-  dateRange: [string, string] | null; // YYYY-MM-DD format
+  dateRange: [string, string]; // YYYY-MM-DD format
   timelineIsLoading: string | false;
   loadMoreDays: (when: 'past' | 'future', nDays: number) => boolean | void;
   loadDateRange: (d: [string, string]) => boolean | void;
@@ -59,7 +61,7 @@ export const useTimelineContext = (): ContextProps => {
   // date range (inclusive) that has been loaded into the UI [YYYY-MM-DD, YYYY-MM-DD]
   const [queriedDateRange, setQueriedDateRange] = useState<[string, string] | null>(null);
   // date range (inclusive) chosen by datepicker [YYYY-MM-DD, YYYY-MM-DD]
-  const [dateRange, setDateRange] = useState<[string, string] | null>(null);
+  const [dateRange, setDateRange] = useState<[string, string]>(INITIAL_DATE_RANGE);
   // map of timeline entries (trips, places, untracked time), ids to objects
   const [timelineMap, setTimelineMap] = useState<TimelineMap | null>(null);
   const [timelineIsLoading, setTimelineIsLoading] = useState<string | false>('replace');
@@ -83,8 +85,11 @@ export const useTimelineContext = (): ContextProps => {
 
   // when a new date range is chosen, load more data, then update the queriedDateRange
   useEffect(() => {
+    if (!pipelineRange) {
+      logDebug('No pipelineRange yet - skipping dateRange useEffect');
+      return;
+    }
     const onDateRangeChange = async () => {
-      if (!dateRange) return logDebug('No dateRange chosen, skipping onDateRangeChange');
       logDebug('Timeline: onDateRangeChange with dateRange = ' + dateRange?.join(' to '));
 
       // determine if this will be a new range or an expansion of the existing range
@@ -119,7 +124,7 @@ export const useTimelineContext = (): ContextProps => {
       setTimelineIsLoading(false);
       displayError(e, 'While loading date range ' + dateRange?.join(' to '));
     }
-  }, [dateRange]);
+  }, [dateRange, pipelineRange]);
 
   useEffect(() => {
     if (!timelineMap) return;
@@ -150,13 +155,6 @@ export const useTimelineContext = (): ContextProps => {
         `);
       }
       setPipelineRange(pipelineRange);
-      if (pipelineRange.end_ts) {
-        // set initial date range to past week: [TODAY - 6 days, TODAY]
-        setDateRange([isoDateWithOffset(TODAY_DATE, -6), TODAY_DATE]);
-      } else {
-        logWarn('Timeline: no pipeline end date. dateRange will stay null');
-        setTimelineIsLoading(false);
-      }
     } catch (e) {
       displayError(e, t('errors.while-loading-pipeline-range'));
       setTimelineIsLoading(false);
@@ -260,7 +258,7 @@ export const useTimelineContext = (): ContextProps => {
     try {
       logDebug('timelineContext: refreshTimeline');
       setTimelineIsLoading('replace');
-      setDateRange(null);
+      setDateRange(INITIAL_DATE_RANGE);
       setQueriedDateRange(null);
       setTimelineMap(null);
       setRefreshTime(new Date());
