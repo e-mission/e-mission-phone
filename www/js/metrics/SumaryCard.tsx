@@ -13,10 +13,9 @@ type Props = {
   unit: string;
   value: Value;
   nDays: number;
-  guidelines: number[];
+  goals: FootprintGoal[];
 };
-const SummaryCard = ({ title, unit, value, nDays, guidelines }: Props) => {
-  const { colors } = useAppTheme();
+const SummaryCard = ({ title, unit, value, nDays, goals }: Props) => {
   const valueIsRange = value[0] != value[1];
   const perDayValue = value.map((v) => v / nDays) as Value;
 
@@ -29,8 +28,8 @@ const SummaryCard = ({ title, unit, value, nDays, guidelines }: Props) => {
   const colorFn = (v: Value) => {
     const low = v[0];
     const high = v[1];
-    if (high < guidelines[guidelines.length - 1]) return colors.success;
-    if (low > guidelines[0]) return colors.error;
+    if (high < goals[0]?.value) return colors.success;
+    if (low > goals[goals.length - 1]?.value) return colors.error;
     return colors.onSurfaceVariant;
   };
 
