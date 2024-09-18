@@ -2,6 +2,8 @@ import color from 'color';
 import { readableLabelToKey } from '../survey/multilabel/confirmHelper';
 import { logDebug } from '../plugin/logger';
 
+export const UNCERTAIN_OPACITY = 0.12;
+
 export const defaultPalette = [
   '#c95465', // red oklch(60% 0.15 14)
   '#4a71b1', // blue oklch(55% 0.11 260)
@@ -89,7 +91,7 @@ export function getMeteredBackgroundColor(meter, currDataset, barCtx, colors, da
     return color(meteredColor).darken(darken).hex();
   }
   //if "unlabeled", etc -> stripes
-  if (currDataset.label == meter.dash_key) {
+  if (currDataset.label == meter.uncertainty_prefix) {
     return createDiagonalPattern(meteredColor);
   }
   //if :labeled", etc -> solid
@@ -115,7 +117,7 @@ export function getGradient(
   if (!chartArea) return null;
   let gradient: CanvasGradient;
   const total = getBarHeight(barCtx.parsed._stacks);
-  alpha = alpha || (currDataset.label == meter.dash_key ? 0.2 : 1);
+  alpha = alpha || (currDataset.label.startsWith(meter.uncertainty_prefix) ? UNCERTAIN_OPACITY : 1);
   if (total < meter.middle) {
     const adjColor =
       darken || alpha
