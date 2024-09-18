@@ -5,7 +5,7 @@ import { isoDateWithOffset, isoDatesDifference } from '../diary/timelineHelper';
 import { MetricName, groupingFields } from '../types/appConfigTypes';
 import { ImperialConfig } from '../config/useImperialConfig';
 import i18next from 'i18next';
-import { formatForDisplay } from '../util';
+import { formatForDisplay, formatIsoNoYear, isoDatesDifference, isoDateWithOffset } from '../util';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];
@@ -59,18 +59,14 @@ export function segmentDaysByWeeks(days: DayOfMetricData[], lastDate: string) {
   return weeks.map((week) => week.reverse());
 }
 
-export function formatDate(day: DayOfMetricData) {
-  const dt = DateTime.fromISO(day.date, { zone: 'utc' });
-  return dt.toLocaleString({ ...DateTime.DATE_SHORT, year: undefined });
-}
+export const formatDate = (day: DayOfMetricData) => formatIsoNoYear(day.date);
 
 export function formatDateRangeOfDays(days: DayOfMetricData[]) {
   if (!days?.length) return '';
-  const firstDayDt = DateTime.fromISO(days[0].date, { zone: 'utc' });
-  const lastDayDt = DateTime.fromISO(days[days.length - 1].date, { zone: 'utc' });
-  const firstDay = firstDayDt.toLocaleString({ ...DateTime.DATE_SHORT, year: undefined });
-  const lastDay = lastDayDt.toLocaleString({ ...DateTime.DATE_SHORT, year: undefined });
-  return `${firstDay} - ${lastDay}`;
+  const startIsoDate = days[0].date;
+  const endIsoDate = days[days.length - 1].date;
+  return formatIsoNoYear(startIsoDate, endIsoDate);
+}
 }
 
 /* formatting data form carbon footprint calculations */

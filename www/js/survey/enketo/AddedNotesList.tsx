@@ -7,11 +7,11 @@ import { DateTime } from 'luxon';
 import { Modal } from 'react-native';
 import { Text, Button, DataTable, Dialog, Icon } from 'react-native-paper';
 import TimelineContext from '../../TimelineContext';
-import { getFormattedDateAbbr, isMultiDay } from '../../diary/diaryHelper';
 import EnketoModal from './EnketoModal';
 import { useTranslation } from 'react-i18next';
 import { EnketoUserInputEntry } from './enketoHelper';
 import { displayErrorMsg, logDebug } from '../../plugin/logger';
+import { formatIsoNoYear, isoDatesDifference } from '../../util';
 
 type Props = {
   timelineEntry: any;
@@ -43,8 +43,8 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
     const beginIso = DateTime.fromSeconds(beginTs).setZone(timezone).toISO() || undefined;
     const stopIso = DateTime.fromSeconds(stopTs).setZone(timezone).toISO() || undefined;
     let d;
-    if (isMultiDay(beginIso, stopIso)) {
-      d = getFormattedDateAbbr(beginIso, stopIso);
+    if (beginIso && stopIso && isoDatesDifference(beginIso, stopIso)) {
+      d = formatIsoNoYear(beginIso, stopIso);
     }
     const begin = DateTime.fromSeconds(beginTs)
       .setZone(timezone)
