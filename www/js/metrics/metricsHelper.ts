@@ -37,6 +37,7 @@ export const trimGroupingPrefix = (label: string) => {
       return label.substring(field.length + 1);
     }
   }
+  return '';
 };
 
 export const getLabelsForDay = (metricDataDay: DayOfMetricData) =>
@@ -270,6 +271,42 @@ export function getUnitUtilsForMetric(
   };
   return fns[metricName];
 }
+
+/**
+ * @param entries an array of metric entries
+ * @param metricName the metric that the values are for
+ * @returns a metric entry with fields of the same name summed across all entries
+ */
+export function aggMetricEntries<T extends MetricName>(entries: MetricEntry<T>[], metricName: T) {
+  let acc = {};
+  entries?.forEach((e) => {
+    for (let field in e) {
+      if (groupingFields.some((f) => field.startsWith(f))) {
+        acc[field] = metrics_summaries.acc_value_of_metric(metricName, acc?.[field], e[field]);
+      }
+    }
+  });
+  return acc as MetricEntry<T extends `${infer U}` ? U : never>;
+}
+
+/**
+ * @param a metric entry
+ * @param metricName the metric that the values are for
+ * @returns the result of summing the values across all fields in the entry
+ */
+export function sumMetricEntry<T extends MetricName>(entry: MetricEntry<T>, metricName: T) {
+  let acc;
+  for (let field in entry) {
+    if (groupingFields.some((f) => field.startsWith(f))) {
+      acc = metrics_summaries.acc_value_of_metric(metricName, acc, entry[field]);
+    }
+  }
+  return (acc || {}) as MetricValue<T extends `${infer U}` ? U : never>;
+}
+
+export const sumMetricEntries = <T extends MetricName>(days: DayOfMetricData[], metricName: T) =>
+  sumMetricEntry<T>(aggMetricEntries(days, metricName) as any, metricName);
+
 // Unlabelled data shows up as 'UNKNOWN' grey and mostly transparent
 // All other modes are colored according to their base mode
 export function getColorForModeLabel(label: string) {
