@@ -7,7 +7,6 @@ import { displayError, displayErrorMsg, logDebug, logWarn } from './plugin/logge
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import {
-  isoDateWithOffset,
   compositeTrips2TimelineMap,
   readAllCompositeTrips,
   readUnprocessedTrips,
@@ -17,13 +16,13 @@ import {
   unprocessedBleScans,
   updateAllUnprocessedInputs,
   updateLocalUnprocessedInputs,
-  isoDateRangeToTsRange,
 } from './diary/timelineHelper';
 import { getPipelineRangeTs } from './services/commHelper';
 import { getNotDeletedCandidates, mapInputsToTimelineEntries } from './survey/inputMatcher';
 import { EnketoUserInputEntry } from './survey/enketo/enketoHelper';
 import { VehicleIdentity } from './types/appConfigTypes';
 import { primarySectionForTrip } from './diary/diaryHelper';
+import { isoDateRangeToTsRange, isoDateWithOffset } from './util';
 
 const TODAY_DATE = DateTime.now().toISODate();
 
@@ -152,11 +151,8 @@ export const useTimelineContext = (): ContextProps => {
       }
       setPipelineRange(pipelineRange);
       if (pipelineRange.end_ts) {
-        // set initial date range to [pipelineEndDate - 7 days, TODAY_DATE]
-        setDateRange([
-          DateTime.fromSeconds(pipelineRange.end_ts).minus({ days: 7 }).toISODate(),
-          TODAY_DATE,
-        ]);
+        // set initial date range to past week: [TODAY - 6 days, TODAY]
+        setDateRange([isoDateWithOffset(TODAY_DATE, -6), TODAY_DATE]);
       } else {
         logWarn('Timeline: no pipeline end date. dateRange will stay null');
         setTimelineIsLoading(false);

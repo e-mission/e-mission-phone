@@ -154,7 +154,8 @@
     "show-more-travel": "Show More Travel",
     "show-older-travel": "Show Older Travel",
     "no-travel": "No travel to show",
-    "no-travel-hint": "To see more, change the filters above or go record some travel!"
+    "no-travel-hint": "To see more, change the filters above or go record some travel!",
+    "jump-to-last-processed-week": "Jump to the last processed week"
   },
 
   "multilabel": {
