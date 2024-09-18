@@ -9,6 +9,7 @@ import useAppConfig from '../useAppConfig';
 import { MetricsUiSection } from '../types/appConfigTypes';
 import SurveysSection from './surveys/SurveysSection';
 import { useAppTheme } from '../appTheme';
+import i18next from 'i18next';
 
 const DEFAULT_SECTIONS_TO_SHOW: MetricsUiSection[] = ['footprint', 'movement', 'travel'];
 
