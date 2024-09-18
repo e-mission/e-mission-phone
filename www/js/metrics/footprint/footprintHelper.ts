@@ -1,95 +1,51 @@
-import { displayError, displayErrorMsg, logDebug, logWarn } from '../../plugin/logger';
-import { getCustomFootprint } from '../customMetricsHelper';
+import i18next from 'i18next';
+import color from 'color';
+import { colors } from '../../appTheme';
+import AppConfig from '../../types/appConfigTypes';
 
-//variables for the highest footprint in the set and if using custom
-let highestFootprint: number | undefined = 0;
+const lang = i18next.resolvedLanguage || 'en';
+const darkWarn = color(colors.warn).darken(0.65).saturate(0.5).rgb().toString();
+const darkDanger = color(colors.danger).darken(0.65).saturate(0.5).rgb().toString();
+const DEFAULT_FOOTPRINT_GOALS = {
+  carbon: [
+    {
+      label: { [lang]: i18next.t('metrics.footprint.us-2050-goal') },
+      value: 2,
+      color: darkDanger,
+    },
+    {
+      label: { [lang]: i18next.t('metrics.footprint.us-2030-goal') },
+      value: 7.7,
+      color: darkWarn,
+    },
+  ],
+  energy: [
+    {
+      label: { [lang]: i18next.t('metrics.footprint.us-2050-goal') },
+      value: 5.7,
+      color: darkDanger,
+    },
+    {
+      label: { [lang]: i18next.t('metrics.footprint.us-2030-goal') },
+      value: 22,
+      color: darkWarn,
+    },
+  ],
+  goals_footnote: { [lang]: i18next.t('metrics.footprint.us-goals-footnote') },
+};
 
-/**
- * @function converts meters to kilometers
- * @param {number} v value in meters to be converted
- * @returns {number} converted value in km
- */
-const mtokm = (v) => v / 1000;
-
-/**
- * @function clears the stored highest footprint
- */
-export function clearHighestFootprint() {
-  //need to clear for testing
-  highestFootprint = undefined;
-}
-
-/**
- * @function gets the footprint
- * currently will only be custom, as all labels are "custom"
- * @returns the footprint or undefined
- */
-function getFootprint() {
-  let footprint = getCustomFootprint();
-  if (footprint) {
-    return footprint;
-  } else {
-    throw new Error('In Footprint Calculatins, failed to use custom labels');
-  }
-}
-
-/**
- * @function calculates footprint for given metrics
- * @param {Array} userMetrics string mode + number distance in meters pairs
- * ex: const custom_metrics = [ { key: 'walk', values: 3000 }, { key: 'bike', values: 6500 }, ];
- * @param {number} defaultIfMissing optional, carbon intensity if mode not in footprint
- * @returns {number} the sum of carbon emissions for userMetrics given
- */
-export function getFootprintForMetrics(userMetrics, defaultIfMissing = 0) {
-  const footprint = getFootprint();
-  logDebug('getting footprint for ' + userMetrics + ' with ' + footprint);
-  let result = 0;
-  userMetrics.forEach((userMetric) => {
-    let mode = userMetric.key;
-
-    //either the mode is in our custom footprint or it is not
-    if (mode in footprint) {
-      result += footprint[mode] * mtokm(userMetric.values);
-    } else if (mode == 'IN_VEHICLE') {
-      const sum =
-        footprint['CAR'] +
-        footprint['BUS'] +
-        footprint['LIGHT_RAIL'] +
-        footprint['TRAIN'] +
-        footprint['TRAM'] +
-        footprint['SUBWAY'];
-      result += (sum / 6) * mtokm(userMetric.values);
-    } else {
-      logWarn(
-        `WARNING getFootprintFromMetrics() was requested for an unknown mode: ${mode} metrics JSON: ${JSON.stringify(
-          userMetrics,
-        )}`,
-      );
-      result += defaultIfMissing * mtokm(userMetric.values);
+export function getFootprintGoals(appConfig: AppConfig, addFootnote: (footnote: string) => any) {
+  const goals = {
+    ...(appConfig?.metrics?.phone_dashboard_ui?.footprint_options?.goals ??
+      DEFAULT_FOOTPRINT_GOALS),
+  };
+  const footnoteNumber = goals.goals_footnote ? addFootnote(goals.goals_footnote[lang]) : '';
+  for (const goalType of ['carbon', 'energy']) {
+    for (const goal of goals[goalType] || []) {
+      if (typeof goal.label == 'object') {
+        goal.label = goal.label[lang] + footnoteNumber;
+      }
     }
-  });
-  return result;
-}
-
-/**
- * @function gets highest co2 intensity in the footprint
- * @returns {number} the highest co2 intensity in the footprint
- */
-export function getHighestFootprint() {
-  if (!highestFootprint) {
-    const footprint = getFootprint();
-    let footprintList: number[] = [];
-    for (let mode in footprint) {
-      footprintList.push(footprint[mode]);
-    }
-    highestFootprint = Math.max(...footprintList);
   }
-  return highestFootprint;
+  return goals;
 }
-
-/**
- * @function gets highest theoretical footprint for given distance
- * @param {number} distance in meters to calculate max footprint
- * @returns max footprint for given distance
- */
-export const getHighestFootprintForDistance = (distance) => getHighestFootprint() * mtokm(distance);
