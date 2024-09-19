@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import BarChart from '../../components/BarChart';
 import { labelKeyToText } from '../../survey/multilabel/confirmHelper';
 import TimelineContext from '../../TimelineContext';
+import { formatIsoNoYear, isoDateWithOffset } from '../../util';
 
 type Props = { userMetrics?: MetricsData; activeModes: string[] };
 const WeeklyActiveMinutesCard = ({ userMetrics, activeModes }: Props) => {
@@ -30,13 +31,16 @@ const WeeklyActiveMinutesCard = ({ userMetrics, activeModes }: Props) => {
 
   const weeklyActiveMinutesRecords = useMemo(() => {
     let records: { label: string; x: string; y: number }[] = [];
-    activeModes.forEach((mode) => {
-      if (weekDurations.some((week) => valueForFieldOnDay(week, 'mode_confirm', mode))) {
-        weekDurations.forEach((week) => {
-          const val = valueForFieldOnDay(week, 'mode_confirm', mode);
+    activeModes.forEach((modeKey) => {
+      if (weekDurations.some((week) => valueForFieldOnDay(week, 'mode_confirm', modeKey))) {
+        weekDurations.forEach((week, i) => {
+          const startDate = isoDateWithOffset(dateRange[1], -7 * (i + 1) + 1);
+          if (startDate < dateRange[0]) return; // partial week at beginning of queried range; skip
+          const endDate = isoDateWithOffset(dateRange[1], -7 * i);
+          const val = valueForFieldOnDay(week, 'mode_confirm', modeKey);
           records.push({
             label: labelKeyToText(modeKey),
-            x: formatDateRangeOfDays(week),
+            x: formatIsoNoYear(startDate, endDate),
             y: val / 60,
           });
         });
