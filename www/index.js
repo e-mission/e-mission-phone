@@ -28,12 +28,12 @@ deviceReady.then(() => {
   const reactRoot = createRoot(rootEl);
 
   const theme = getTheme();
-   /* Set Cordova StatusBar color to match the "elevated" AppBar
+  /* Set Cordova StatusBar color to match the "elevated" AppBar
    https://cordova.apache.org/docs/en/10.x/reference/cordova-plugin-statusbar/#statusbarbackgroundcolorbyhexstring
    https://callstack.github.io/react-native-paper/docs/components/Appbar/#theme-colors */
-   if (window['StatusBar']) {
+  if (window['StatusBar']) {
     window['StatusBar'].backgroundColorByHexString(theme.colors.elevation.level2);
-   }
+  }
 
   reactRoot.render(
     <PaperProvider theme={theme}>
