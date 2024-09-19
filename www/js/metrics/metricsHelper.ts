@@ -307,7 +307,9 @@ export function sumMetricEntry<T extends MetricName>(entry: MetricEntry<T>, metr
       acc = metrics_summaries.acc_value_of_metric(metricName, acc, entry[field]);
     }
   }
-  acc['nUsers'] = entry['nUsers'] || 1;
+  if (acc && typeof acc == 'object') {
+    acc['nUsers'] = entry['nUsers'] || 1;
+  }
   return (acc || {}) as MetricValue<T extends `${infer U}` ? U : never>;
 }
 
