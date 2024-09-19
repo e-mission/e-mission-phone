@@ -17,7 +17,7 @@ import { ChartRecord } from '../../components/Chart';
 import i18next from 'i18next';
 import { MetricsData } from '../metricsTypes';
 import { GroupingField, MetricList } from '../../types/appConfigTypes';
-import { labelKeyToRichMode } from '../../survey/multilabel/confirmHelper';
+import { labelKeyToText } from '../../survey/multilabel/confirmHelper';
 
 type Props = {
   type: 'carbon' | 'energy';
@@ -66,7 +66,7 @@ const WeeklyFootprintCard = ({
           .forEach((key) => {
             if (weekAgg[key][unit]) {
               records.push({
-                label: labelKeyToRichMode(trimGroupingPrefix(key)),
+                label: labelKeyToText(trimGroupingPrefix(key)),
                 x: weekAgg[key][unit] / 7,
                 y: displayDateRange,
               });
@@ -84,7 +84,7 @@ const WeeklyFootprintCard = ({
           label:
             t('metrics.footprint.unlabeled') +
             addFootnote(t('metrics.footprint.uncertainty-footnote')),
-          x: weekSum[`${unit}_uncertain`] / 7,
+          x: weekSum[`${unit}_uncertain`]! / 7,
           y: displayDateRange,
         });
       }

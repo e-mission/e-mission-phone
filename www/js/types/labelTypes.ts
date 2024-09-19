@@ -33,8 +33,10 @@ export type LabelOption<T extends string = MultilabelKey> = T extends 'MODE'
     };
 
 export type MultilabelKey = 'MODE' | 'PURPOSE' | 'REPLACED_MODE';
-export type LabelOptions<T extends string = MultilabelKey> = {
-  [k in T]: LabelOption<T>[];
+export type LabelOptions = {
+  MODE: LabelOption<'MODE'>[];
+  PURPOSE: LabelOption<'PURPOSE'>[];
+  REPLACED_MODE?: LabelOption<'REPLACED_MODE'>[];
 } & {
   translations: {
     [lang: string]: { [translationKey: string]: string };

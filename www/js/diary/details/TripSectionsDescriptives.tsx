@@ -4,6 +4,7 @@ import { Icon, Text, useTheme } from 'react-native-paper';
 import useDerivedProperties from '../useDerivedProperties';
 import TimelineContext from '../../TimelineContext';
 import { base_modes } from 'e-mission-common';
+import { labelKeyToText } from '../../survey/multilabel/confirmHelper';
 
 const TripSectionsDescriptives = ({ trip, showConfirmedMode = false }) => {
   const { labelOptions, labelFor, confirmedModeFor } = useContext(TimelineContext);
@@ -17,25 +18,19 @@ const TripSectionsDescriptives = ({ trip, showConfirmedMode = false }) => {
 
   const { colors } = useTheme();
 
-  const confirmedModeForTrip = confirmedModeFor(trip);
+  const confirmedModeForTrip = showConfirmedMode && confirmedModeFor(trip);
   let sections = formattedSectionProperties;
   /* if we're only showing the labeled mode, or there are no sections (i.e. unprocessed trip),
     we treat this as unimodal and use trip-level attributes to construct a single section */
-  if ((showConfirmedMode && confirmedModeForTrip) || !trip.sections?.length) {
-    let baseMode;
-    if (showConfirmedMode && labelOptions && confirmedModeForTrip) {
-      baseMode = base_modes.get_base_mode_by_key(confirmedModeForTrip.baseMode);
-    } else {
-      baseMode = base_modes.get_base_mode_by_key('UNPROCESSED');
-    }
+  if (confirmedModeForTrip || !trip.sections?.length) {
     sections = [
       {
         startTime: displayStartTime,
         duration: displayTime,
         distance: formattedDistance,
         distanceSuffix,
-        color: baseMode.color,
-        icon: baseMode.icon,
+        color: (confirmedModeForTrip || base_modes.BASE_MODES['UNPROCESSED']).color,
+        icon: (confirmedModeForTrip || base_modes.BASE_MODES['UNPROCESSED']).icon,
       },
     ];
   }
@@ -62,9 +57,9 @@ const TripSectionsDescriptives = ({ trip, showConfirmedMode = false }) => {
             <View style={s.modeIconContainer(section.color)}>
               <Icon source={section.icon} color={colors.onPrimary} size={18} />
             </View>
-            {showConfirmedMode && confirmedModeForTrip && (
+            {confirmedModeForTrip && (
               <Text variant="labelSmall" numberOfLines={2} style={{ textAlign: 'center' }}>
-                {confirmedModeForTrip.text}
+                {labelKeyToText(confirmedModeForTrip.value)}
               </Text>
             )}
           </View>

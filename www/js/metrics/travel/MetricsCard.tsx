@@ -15,12 +15,10 @@ import {
 } from '../metricsHelper';
 import ToggleSwitch from '../../components/ToggleSwitch';
 import { metricsStyles } from '../MetricsScreen';
-import { labelKeyToRichMode, labelOptions } from '../../survey/multilabel/confirmHelper';
-import { getBaseModeByText } from '../../diary/diaryHelper';
+import { labelKeyToText } from '../../survey/multilabel/confirmHelper';
 import { useTranslation } from 'react-i18next';
 import { GroupingField, MetricName } from '../../types/appConfigTypes';
 import { useImperialConfig } from '../../config/useImperialConfig';
-import { base_modes } from 'e-mission-common';
 
 type Props = {
   metricName: MetricName;
@@ -62,7 +60,7 @@ const MetricsCard = ({
         const rawVal = valueForFieldOnDay(day, groupingFields[0], label);
         if (rawVal) {
           records.push({
-            label: labelKeyToRichMode(label),
+            label: labelKeyToText(label),
             x: unitConvertFn(rawVal),
             y: tsForDayOfMetricData(day) * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
           });

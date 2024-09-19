@@ -6,6 +6,7 @@ import { logDebug } from '../../plugin/logger';
 import { Text, Icon, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { base_modes } from 'e-mission-common';
+import { labelKeyToText } from '../../survey/multilabel/confirmHelper';
 
 const ModesIndicator = ({ trip, detectedModes }) => {
   const { t } = useTranslation();
@@ -16,23 +17,22 @@ const ModesIndicator = ({ trip, detectedModes }) => {
   let indicatorBorderColor = color('black').alpha(0.5).rgb().string();
 
   let modeViews;
-  const confirmedModeForTrip = confirmedModeFor(trip);
-  if (labelOptions && confirmedModeForTrip?.value) {
-    const baseMode = base_modes.get_base_mode_by_key(confirmedModeForTrip.baseMode);
-    indicatorBorderColor = baseMode.color;
-    logDebug(`TripCard: got baseMode = ${JSON.stringify(baseMode)}`);
+  const confirmedMode = confirmedModeFor(trip);
+  if (labelOptions && confirmedMode?.value) {
+    indicatorBorderColor = confirmedMode.color;
+    logDebug(`TripCard: got confirmedMode = ${JSON.stringify(confirmedMode)}`);
     modeViews = (
       <View style={s.mode}>
-        <Icon source={baseMode.icon} color={baseMode.color} size={15} />
+        <Icon source={confirmedMode.icon} color={confirmedMode.color} size={15} />
         <Text
-          accessibilityLabel={`Labeled mode: ${baseMode.icon}`}
+          accessibilityLabel={`Labeled mode: ${confirmedMode.icon}`}
           style={{
-            color: baseMode.color,
+            color: confirmedMode.color,
             fontSize: 12,
             fontWeight: '500',
             textDecorationLine: 'underline',
           }}>
-          {confirmedModeForTrip.text}
+          {labelKeyToText(confirmedMode.value)}
         </Text>
       </View>
     );

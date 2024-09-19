@@ -22,11 +22,6 @@ export type MotionTypeKey =
   | 'STOPPED_WHILE_IN_VEHICLE'
   | 'AIR_OR_HSR';
 
-export function getBaseModeByText(text: string, labelOptions: LabelOptions) {
-  const modeOption = labelOptions?.MODE?.find((opt) => opt.text == text);
-  return base_modes.get_base_mode_by_key(modeOption?.baseMode || 'OTHER');
-}
-
 /**
  * @param trip A composite trip object
  * @returns An array of objects containing the mode key, icon, color, and percentage for each mode

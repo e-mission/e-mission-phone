@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 import { CompositeTrip, TimelineEntry, TimestampRange, UserInputEntry } from './types/diaryTypes';
 import useAppConfig from './useAppConfig';
-import { LabelOption, LabelOptions, MultilabelKey } from './types/labelTypes';
+import { LabelOption, LabelOptions, MultilabelKey, RichMode } from './types/labelTypes';
 import { getLabelOptions, labelOptionByValue } from './survey/multilabel/confirmHelper';
 import { displayError, displayErrorMsg, logDebug, logWarn } from './plugin/logger';
 import { useTranslation } from 'react-i18next';
@@ -20,9 +20,9 @@ import {
 import { getPipelineRangeTs } from './services/commHelper';
 import { getNotDeletedCandidates, mapInputsToTimelineEntries } from './survey/inputMatcher';
 import { EnketoUserInputEntry } from './survey/enketo/enketoHelper';
-import { VehicleIdentity } from './types/appConfigTypes';
 import { primarySectionForTrip } from './diary/diaryHelper';
 import { isoDateRangeToTsRange, isoDateWithOffset } from './util';
+import { base_modes } from 'e-mission-common';
 
 const TODAY_DATE = DateTime.now().toISODate();
 // initial date range is the past week: [TODAY - 6 days, TODAY]
@@ -34,11 +34,8 @@ type ContextProps = {
   timelineLabelMap: TimelineLabelMap | null;
   userInputFor: (tlEntry: TimelineEntry) => UserInputMap | undefined;
   notesFor: (tlEntry: TimelineEntry) => UserInputEntry[] | undefined;
-  labelFor: (
-    tlEntry: TimelineEntry,
-    labelType: MultilabelKey,
-  ) => VehicleIdentity | LabelOption | undefined;
-  confirmedModeFor: (tlEntry: TimelineEntry) => LabelOption | undefined;
+  labelFor: (tlEntry: TimelineEntry, labelType: MultilabelKey) => LabelOption | undefined;
+  confirmedModeFor: (tlEntry: TimelineEntry) => RichMode | undefined;
   addUserInputToEntry: (oid: string, userInput: any, inputType: 'label' | 'note') => void;
   pipelineRange: TimestampRange | null;
   queriedDateRange: [string, string] | null; // YYYY-MM-DD format
@@ -283,11 +280,13 @@ export const useTimelineContext = (): ContextProps => {
 
   /**
    * @param tlEntry The trip or place object to get the confirmed mode for
-   * @returns Confirmed mode, which could be a vehicle identity as determined by Bluetooth scans,
+   * @returns Rich confirmed mode, which could be a vehicle identity as determined by Bluetooth scans,
    *  or the label option from a user-given 'MODE' label, or undefined if neither exists.
    */
   const confirmedModeFor = (tlEntry: CompositeTrip) =>
-    primarySectionForTrip(tlEntry)?.ble_sensed_mode || labelFor(tlEntry, 'MODE');
+    base_modes.get_rich_mode(
+      primarySectionForTrip(tlEntry)?.ble_sensed_mode || labelFor(tlEntry, 'MODE'),
+    ) as RichMode;
 
   function addUserInputToEntry(oid: string, userInput: any, inputType: 'label' | 'note') {
     const tlEntry = timelineMap?.get(oid);

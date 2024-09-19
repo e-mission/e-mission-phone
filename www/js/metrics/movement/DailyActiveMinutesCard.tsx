@@ -3,10 +3,9 @@ import { Card, Text } from 'react-native-paper';
 import { MetricsData } from '../metricsTypes';
 import { metricsStyles } from '../MetricsScreen';
 import { useTranslation } from 'react-i18next';
-import { labelKeyToRichMode, labelOptions } from '../../survey/multilabel/confirmHelper';
+import { labelKeyToText } from '../../survey/multilabel/confirmHelper';
 import LineChart from '../../components/LineChart';
-import { getBaseModeByText } from '../../diary/diaryHelper';
-import { tsForDayOfMetricData, valueForFieldOnDay } from '../metricsHelper';
+import { getColorForModeLabel, tsForDayOfMetricData, valueForFieldOnDay } from '../metricsHelper';
 
 type Props = { userMetrics?: MetricsData; activeModes: string[] };
 const DailyActiveMinutesCard = ({ userMetrics, activeModes }: Props) => {
@@ -20,7 +19,7 @@ const DailyActiveMinutesCard = ({ userMetrics, activeModes }: Props) => {
         recentDays?.forEach((day) => {
           const activeSeconds = valueForFieldOnDay(day, 'mode_confirm', mode);
           records.push({
-            label: labelKeyToRichMode(mode),
+            label: labelKeyToText(mode),
             x: tsForDayOfMetricData(day) * 1000, // vertical chart, milliseconds on X axis
             y: (activeSeconds || 0) / 60, // minutes on Y axis
           });

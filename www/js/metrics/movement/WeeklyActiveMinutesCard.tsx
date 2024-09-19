@@ -5,14 +5,13 @@ import { MetricsData } from '../metricsTypes';
 import { metricsStyles } from '../MetricsScreen';
 import {
   aggMetricEntries,
-  formatDateRangeOfDays,
+  getColorForModeLabel,
   segmentDaysByWeeks,
   valueForFieldOnDay,
 } from '../metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../../components/BarChart';
-import { labelKeyToRichMode, labelOptions } from '../../survey/multilabel/confirmHelper';
-import { getBaseModeByText } from '../../diary/diaryHelper';
+import { labelKeyToText } from '../../survey/multilabel/confirmHelper';
 import TimelineContext from '../../TimelineContext';
 
 type Props = { userMetrics?: MetricsData; activeModes: string[] };
@@ -36,7 +35,7 @@ const WeeklyActiveMinutesCard = ({ userMetrics, activeModes }: Props) => {
         weekDurations.forEach((week) => {
           const val = valueForFieldOnDay(week, 'mode_confirm', mode);
           records.push({
-            label: labelKeyToRichMode(mode),
+            label: labelKeyToText(modeKey),
             x: formatDateRangeOfDays(week),
             y: val / 60,
           });
@@ -60,7 +59,7 @@ const WeeklyActiveMinutesCard = ({ userMetrics, activeModes }: Props) => {
               lineAnnotations={[
                 { value: 150, label: t('metrics.movement.weekly-goal'), position: 'center' },
               ]}
-              getColorForLabel={(l) => getBaseModeByText(l, labelOptions).color}
+              getColorForLabel={getColorForModeLabel}
             />
             <Text
               variant="labelSmall"

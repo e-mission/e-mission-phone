@@ -1,13 +1,13 @@
 import { fetchUrlCached } from '../../services/commHelper';
 import i18next from 'i18next';
-import enJson from '../../../i18n/en.json';
 import { logDebug } from '../../plugin/logger';
 import { LabelOption, LabelOptions, MultilabelKey, InputDetails } from '../../types/labelTypes';
 import { CompositeTrip, InferredLabels, TimelineEntry } from '../../types/diaryTypes';
 import { UserInputMap } from '../../TimelineContext';
+import DEFAULT_LABEL_OPTIONS from 'e-mission-common/src/emcommon/resources/label-options.default.json';
 
 let appConfig;
-export let labelOptions: LabelOptions<MultilabelKey>;
+export let labelOptions: LabelOptions;
 export let inputDetails: InputDetails<MultilabelKey>;
 
 export async function getLabelOptions(appConfigParam?) {
@@ -19,31 +19,11 @@ export async function getLabelOptions(appConfigParam?) {
       logDebug(`label_options found in config, using dynamic label options 
         at ${appConfig.label_options}`);
       labelOptions = JSON.parse(labelOptionsJson) as LabelOptions;
+    } else {
+      throw new Error('Label options were falsy from ' + appConfig.label_options);
     }
   } else {
-    const defaultLabelOptionsURL = 'json/label-options.json.sample';
-    logDebug(`No label_options found in config, using default label options 
-      at ${defaultLabelOptionsURL}`);
-    const defaultLabelOptionsJson = await fetchUrlCached(defaultLabelOptionsURL);
-    if (defaultLabelOptionsJson) {
-      labelOptions = JSON.parse(defaultLabelOptionsJson) as LabelOptions;
-    }
-  }
-  /* fill in the translations to the 'text' fields of the labelOptions,
-    according to the current language */
-  const lang = i18next.resolvedLanguage || 'en';
-  for (const opt in labelOptions) {
-    labelOptions[opt]?.forEach?.((o, i) => {
-      const translationKey = o.value;
-      /* If translation exists in labelOptions, use that. Otherwise, try i18next translations. */
-      const translationFromLabelOptions = labelOptions.translations?.[lang]?.[translationKey];
-      if (translationFromLabelOptions) {
-        labelOptions[opt][i].text = translationFromLabelOptions;
-      } else {
-        const i18nextKey = translationKey as keyof typeof enJson.multilabel; // cast for type safety
-        labelOptions[opt][i].text = i18next.t(`multilabel.${i18nextKey}`);
-      }
-    });
+    labelOptions = DEFAULT_LABEL_OPTIONS;
   }
   return labelOptions;
 }
@@ -124,13 +104,23 @@ export const readableLabelToKey = (otherText: string) =>
 export function getFakeEntry(otherValue): Partial<LabelOption> | undefined {
   if (!otherValue) return undefined;
   return {
-    text: labelKeyToReadable(otherValue),
     value: otherValue,
   };
 }
 
-export const labelKeyToRichMode = (labelKey: string) =>
-  labelOptionByValue(labelKey, 'MODE')?.text || labelKeyToReadable(labelKey);
+export let labelTextToKeyMap: { [key: string]: string } = {};
+
+export const labelKeyToText = (labelKey: string) => {
+  const lang = i18next.resolvedLanguage || 'en';
+  const text =
+    labelOptions?.translations?.[lang]?.[labelKey] ||
+    labelOptions?.translations?.[lang]?.[labelKey] ||
+    labelKeyToReadable(labelKey);
+  labelTextToKeyMap[text] = labelKey;
+  return text;
+};
+
+export const textToLabelKey = (text: string) => labelTextToKeyMap[text] || readableLabelToKey(text);
 
 /** @description e.g. manual/mode_confirm becomes mode_confirm */
 export const removeManualPrefix = (key: string) => key.split('/')[1];

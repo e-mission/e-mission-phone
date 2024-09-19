@@ -8,8 +8,7 @@ import i18next from 'i18next';
 import { base_modes, metrics_summaries } from 'e-mission-common';
 import { formatForDisplay, formatIsoNoYear, isoDatesDifference, isoDateWithOffset } from '../util';
 import { LabelOptions, RichMode } from '../types/labelTypes';
-import { getBaseModeByText } from '../diary/diaryHelper';
-import { labelOptions } from '../survey/multilabel/confirmHelper';
+import { labelOptions, textToLabelKey } from '../survey/multilabel/confirmHelper';
 import { UNCERTAIN_OPACITY } from '../components/charting';
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
@@ -172,7 +171,7 @@ export const tsForDayOfMetricData = (day: DayOfMetricData) => {
   return _datesTsCache[day.date];
 };
 
-export const valueForFieldOnDay = (day: DayOfMetricData, field: string, key: string) =>
+export const valueForFieldOnDay = (day: MetricEntry, field: string, key: string) =>
   day[`${field}_${key}`];
 
 export type MetricsSummary = { key: string; values: number };
@@ -318,5 +317,5 @@ export function getColorForModeLabel(label: string) {
     const unknownModeColor = base_modes.get_base_mode_by_key('UNKNOWN').color;
     return color(unknownModeColor).alpha(UNCERTAIN_OPACITY).rgb().string();
   }
-  return getBaseModeByText(label, labelOptions).color;
+  base_modes.get_rich_mode_for_value(textToLabelKey(label), labelOptions).color;
 }
