@@ -48,8 +48,8 @@ const WeeklyActiveMinutesCard = ({ userMetrics, activeModes }: Props) => {
 
   return (
     <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
+      <Card.Title title={t('metrics.movement.weekly-active-minutes')} />
       <Card.Content style={metricsStyles.content}>
-        <Text variant="bodyLarge">{t('metrics.movement.weekly-active-minutes')}</Text>
         {weeklyActiveMinutesRecords.length ? (
           <View style={{ flex: 1 }}>
             <BarChart

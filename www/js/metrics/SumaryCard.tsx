@@ -35,9 +35,9 @@ const SummaryCard = ({ title, unit, value, nDays, goals }: Props) => {
 
   return (
     <Card style={{ flex: 1 }}>
+      <Card.Title title={title} />
       {!isNaN(value[0]) ? (
         <Card.Content style={metricsStyles.content}>
-          <Text variant="bodyLarge">{title}</Text>
           <Text style={s.titleText}>
             {formatVal(value)} {unit}
           </Text>
@@ -57,7 +57,6 @@ const SummaryCard = ({ title, unit, value, nDays, goals }: Props) => {
         </Card.Content>
       ) : (
         <Card.Content style={metricsStyles.content}>
-          <Text variant="bodyLarge">{title}</Text>
           <Text variant="labelMedium">{t('metrics.no-data')}</Text>
         </Card.Content>
       )}

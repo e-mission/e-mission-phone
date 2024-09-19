@@ -102,23 +102,28 @@ const WeeklyFootprintCard = ({
 
   return (
     <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
+      <Card.Title title={title} />
       <Card.Content style={metricsStyles.content}>
-        <Text variant="bodyLarge">{title}</Text>
         {chartRecords?.length > 0 ? (
-          <View>
+          <>
             <BarChart
               records={chartRecords}
               axisTitle={axisTitle}
               isHorizontal={true}
               timeAxis={false}
               stacked={true}
-              lineAnnotations={goals[type]}
+              lineAnnotations={goals[type].map((g) => ({ ...g, label: g.label[i18next.language] }))}
               meter={!groupingField ? meter : undefined}
               getColorForLabel={groupingField == 'mode_confirm' ? getColorForModeLabel : undefined}
             />
             {metricList.footprint!.map((gf: GroupingField) => (
               <View
-                style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}
+                style={{
+                  flexDirection: 'row',
+                  height: 10,
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                }}
                 key={gf}>
                 <Text variant="labelMedium">
                   {t('metrics.split-by', { field: t(`metrics.grouping-fields.${gf}`) })}
@@ -132,7 +137,7 @@ const WeeklyFootprintCard = ({
                 />
               </View>
             ))}
-          </View>
+          </>
         ) : (
           <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
             {t('metrics.no-data')}

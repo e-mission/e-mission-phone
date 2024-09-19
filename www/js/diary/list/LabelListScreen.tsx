@@ -39,7 +39,7 @@ const LabelListScreen = () => {
           size={32}
           onPress={() => refreshTimeline()}
           accessibilityLabel="Refresh"
-          style={{ marginLeft: 'auto' }}
+          style={{ margin: 0, marginLeft: 'auto' }}
         />
       </NavBar>
       <View style={{ flex: 1, backgroundColor: colors.background }}>

@@ -44,7 +44,7 @@ const TripCard = ({ trip, isFirstInList }: Props) => {
   const navigation = useNavigation<any>();
   const { labelOptions, confirmedModeFor, notesFor } = useContext(TimelineContext);
   const tripGeojson =
-    trip && labelOptions && useGeojsonForTrip(trip, confirmedModeFor(trip)?.baseMode);
+    trip && labelOptions && useGeojsonForTrip(trip, confirmedModeFor(trip)?.base_mode);
 
   const isDraft = trip.key.includes('UNPROCESSED');
   const flavoredTheme = getTheme(isDraft ? 'draft' : undefined);

@@ -117,13 +117,12 @@ const MetricsCard = ({
     <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={cardTitle}
-        titleVariant="titleLarge"
         subtitle={cardSubtitleText}
         subtitleStyle={metricsStyles.subtitleText}
         right={() => (
-          <View style={{ gap: 3 }}>
+          <View style={{ gap: 3, marginRight: 5 }}>
             <ToggleSwitch
-              density="high"
+              density="medium"
               value={viewMode}
               onValueChange={(v) => setViewMode(v as any)}
               buttons={[
@@ -132,7 +131,7 @@ const MetricsCard = ({
               ]}
             />
             <ToggleSwitch
-              density="high"
+              density="medium"
               value={populationMode}
               onValueChange={(p) => setPopulationMode(p as any)}
               buttons={[
@@ -142,15 +141,14 @@ const MetricsCard = ({
             />
           </View>
         )}
-        style={metricsStyles.title(colors)}
       />
       <Card.Content style={metricsStyles.content}>
         {viewMode == 'details' &&
           (Object.keys(metricSumValues).length ? (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 }}>
               {Object.keys(metricSumValues).map((label, i) => (
                 <View style={{ width: '50%', paddingHorizontal: 8 }} key={i}>
-                  <Text variant="titleSmall">{labelKeyToRichMode(label)}</Text>
+                  <Text variant="titleSmall">{labelKeyToText(label)}</Text>
                   <Text>{metricSumValues[label]}</Text>
                 </View>
               ))}
@@ -178,7 +176,7 @@ const MetricsCard = ({
                   alignItems: 'center',
                   justifyContent: 'flex-end',
                 }}>
-                <Text variant="labelMedium">Stack bars:</Text>
+                <Text variant="labelMedium">{t('metrics.stack-bars')}</Text>
                 <Checkbox
                   status={graphIsStacked ? 'checked' : 'unchecked'}
                   onPress={() => setGraphIsStacked(!graphIsStacked)}

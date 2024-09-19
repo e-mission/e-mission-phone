@@ -58,10 +58,6 @@ export const metricsStyles = StyleSheet.create({
     overflow: 'hidden',
     minHeight: 300,
   },
-  title: (colors) => ({
-    paddingHorizontal: 8,
-    minHeight: 52,
-  }),
   subtitleText: {
     fontSize: 13,
     lineHeight: 13,

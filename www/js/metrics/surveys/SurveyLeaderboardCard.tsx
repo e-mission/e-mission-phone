@@ -71,10 +71,8 @@ const SurveyLeaderboardCard = ({ studyStartDate, surveyMetric }: Props) => {
     <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={t('metrics.surveys.surveys')}
-        titleVariant="titleLarge"
         subtitle={t('metrics.leaderboard.leaderboard')}
         subtitleStyle={metricsStyles.subtitleText}
-        style={metricsStyles.title(colors)}
       />
       <Card.Content style={metricsStyles.content}>
         <View>

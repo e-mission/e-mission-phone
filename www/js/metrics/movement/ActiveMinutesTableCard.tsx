@@ -10,7 +10,7 @@ import {
   valueForFieldOnDay,
 } from '../metricsHelper';
 import { useTranslation } from 'react-i18next';
-import { labelKeyToRichMode } from '../../survey/multilabel/confirmHelper';
+import { labelKeyToText } from '../../survey/multilabel/confirmHelper';
 import TimelineContext from '../../TimelineContext';
 
 type Props = { userMetrics?: MetricsData; activeModes: string[] };
@@ -75,15 +75,17 @@ const ActiveMinutesTableCard = ({ userMetrics, activeModes }: Props) => {
 
   return (
     <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
+      <Card.Title
+        title={t('metrics.movement.active-minutes-table')}
+        subtitleStyle={metricsStyles.subtitleText}
+      />
       <Card.Content style={metricsStyles.content}>
-        <Text variant="bodyLarge">{t('metrics.movement.active-minutes')}</Text>
-        <Text variant="labelMedium">{t('metrics.movement.active-minutes-table')}</Text>
         <DataTable>
           <DataTable.Header>
             <DataTable.Title> </DataTable.Title>
             {activeModes.map((mode, i) => (
               <DataTable.Title style={{ padding: 5 }} key={i}>
-                {labelKeyToRichMode(mode)}
+                {labelKeyToText(mode)}
               </DataTable.Title>
             ))}
           </DataTable.Header>
@@ -92,7 +94,7 @@ const ActiveMinutesTableCard = ({ userMetrics, activeModes }: Props) => {
               <DataTable.Cell>{total['period']}</DataTable.Cell>
               {activeModes.map((mode, j) => (
                 <DataTable.Cell key={j}>
-                  {total[mode]} {t('metrics.minutes')}
+                  {total[mode]} {t('metrics.movement.minutes')}
                 </DataTable.Cell>
               ))}
             </DataTable.Row>

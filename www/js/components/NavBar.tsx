@@ -15,7 +15,7 @@ type NavBarProps = AppbarHeaderProps & { isLoading?: boolean };
 const NavBar = ({ children, isLoading, ...rest }: NavBarProps) => {
   const { colors } = useTheme();
   return (
-    <Appbar.Header statusBarHeight={0} style={s.navBar} {...rest}>
+    <Appbar.Header {...rest} statusBarHeight={0} style={[s.navBar, rest.style]}>
       {children}
       <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2 }}>
         <ProgressBar

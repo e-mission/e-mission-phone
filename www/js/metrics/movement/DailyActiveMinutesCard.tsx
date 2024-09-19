@@ -32,15 +32,15 @@ const DailyActiveMinutesCard = ({ userMetrics, activeModes }: Props) => {
 
   return (
     <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
+      <Card.Title title={t('metrics.movement.daily-active-minutes')} />
       <Card.Content style={metricsStyles.content}>
-        <Text variant="bodyLarge">{t('metrics.movement.daily-active-minutes')}</Text>
         {dailyActiveMinutesRecords.length ? (
           <LineChart
             records={dailyActiveMinutesRecords}
             axisTitle={t('metrics.movement.active-minutes')}
             timeAxis={true}
             isHorizontal={false}
-            getColorForLabel={(l) => getBaseModeByText(l, labelOptions).color}
+            getColorForLabel={getColorForModeLabel}
           />
         ) : (
           <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>

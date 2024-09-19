@@ -114,10 +114,8 @@ const SurveyComparisonCard = ({ userMetrics, aggMetrics }: Props) => {
     <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={t('metrics.surveys.surveys')}
-        titleVariant="titleLarge"
         subtitle={t('metrics.surveys.comparison')}
         subtitleStyle={metricsStyles.subtitleText}
-        style={metricsStyles.title(colors)}
       />
       <Card.Content style={metricsStyles.content}>
         {typeof myResponsePct !== 'number' || typeof othersResponsePct !== 'number' ? (
