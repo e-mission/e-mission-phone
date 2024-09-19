@@ -112,7 +112,7 @@ const WeeklyFootprintCard = ({
               isHorizontal={true}
               timeAxis={false}
               stacked={true}
-              lineAnnotations={goals[type].map((g) => ({ ...g, label: g.label[i18next.language] }))}
+              lineAnnotations={goals[type]}
               meter={!groupingField ? meter : undefined}
               getColorForLabel={groupingField == 'mode_confirm' ? getColorForModeLabel : undefined}
             />
