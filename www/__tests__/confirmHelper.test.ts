@@ -1,5 +1,3 @@
-import { mockLogger } from '../__mocks__/globalMocks';
-import * as CommHelper from '../js/services/commHelper';
 import {
   baseLabelInputDetails,
   getLabelInputDetails,
@@ -16,7 +14,6 @@ import initializedI18next from '../js/i18nextInit';
 import { CompositeTrip, UserInputEntry } from '../js/types/diaryTypes';
 import { UserInputMap } from '../js/TimelineContext';
 window['i18next'] = initializedI18next;
-mockLogger();
 
 const fakeAppConfigWithModeOfStudy = {
   intro: {

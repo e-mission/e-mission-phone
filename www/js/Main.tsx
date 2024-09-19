@@ -1,7 +1,7 @@
 /* Once onboarding is done, this is the main app content.
   Includes the bottom navigation bar and each of the tabs. */
 
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useContext, useMemo, useState } from 'react';
 import { BottomNavigation, useTheme } from 'react-native-paper';
 import { AppContext } from './App';
@@ -11,6 +11,7 @@ import LabelTab from './diary/LabelTab';
 import MetricsTab from './metrics/MetricsTab';
 import ProfileSettings from './control/ProfileSettings';
 import TimelineContext, { useTimelineContext } from './TimelineContext';
+import { addStatReading } from './plugin/clientStats';
 
 const defaultRoutes = (t) => [
   {
@@ -57,6 +58,14 @@ const Main = () => {
     return showMetrics ? defaultRoutes(t) : defaultRoutes(t).filter((r) => r.key != 'metrics');
   }, [appConfig, t]);
 
+  const onIndexChange = useCallback(
+    (i: number) => {
+      addStatReading('nav_tab_change', routes[i].key);
+      setIndex(i);
+    },
+    [routes],
+  );
+
   useEffect(() => {
     const { setShouldUpdateTimeline } = timelineContext;
     // update TimelineScrollList component only when the active tab is 'label' to fix leaflet map issue
@@ -67,7 +76,7 @@ const Main = () => {
     <TimelineContext.Provider value={timelineContext}>
       <BottomNavigation
         navigationState={{ index, routes }}
-        onIndexChange={setIndex}
+        onIndexChange={onIndexChange}
         renderScene={renderScene}
         // Place at bottom, color of 'surface' (white) by default, and 68px tall (default was 80)
         safeAreaInsets={{ bottom: 0 }}

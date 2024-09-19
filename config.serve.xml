@@ -10,6 +10,7 @@
     <content src="index.html" />
     <access origin="*" />
     <hook src="hooks/before_prepare/download_translation.js" type="before_prepare" />
+    <preference name="InspectableWebview" value="true" />
     <preference name="webviewbounce" value="false" />
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />

@@ -1,7 +1,4 @@
 import { publish, subscribe, unsubscribe } from '../js/customEventHandler';
-import { mockLogger } from '../__mocks__/globalMocks';
-
-mockLogger();
 
 it('subscribes and publishes to an event', () => {
   const listener = jest.fn();

@@ -1,17 +1,5 @@
-import { mockBEMUserCache, mockDevice, mockGetAppVersion } from '../__mocks__/cordovaMocks';
-import {
-  addStatError,
-  addStatEvent,
-  addStatReading,
-  getAppVersion,
-  statKeys,
-} from '../js/plugin/clientStats';
+import { addStatError, addStatReading, getAppVersion } from '../js/plugin/clientStats';
 
-mockDevice();
-// this mocks cordova-plugin-app-version, generating a "Mock App", version "1.2.3"
-mockGetAppVersion();
-// clientStats.ts uses BEMUserCache to store the stats, so we need to mock that too
-mockBEMUserCache();
 const db = window['cordova']?.plugins?.BEMUserCache;
 
 it('gets the app version', async () => {
@@ -21,10 +9,10 @@ it('gets the app version', async () => {
 
 it('stores a client stats reading', async () => {
   const reading = { a: 1, b: 2 };
-  await addStatReading(statKeys.REMINDER_PREFS, reading);
+  await addStatReading('set_reminder_prefs', reading);
   const storedMessages = await db.getAllMessages('stats/client_time', false);
   expect(storedMessages).toContainEqual({
-    name: statKeys.REMINDER_PREFS,
+    name: 'set_reminder_prefs',
     ts: expect.any(Number),
     reading,
     client_app_version: '1.2.3',
@@ -33,10 +21,10 @@ it('stores a client stats reading', async () => {
 });
 
 it('stores a client stats event', async () => {
-  await addStatEvent(statKeys.BUTTON_FORCE_SYNC);
-  const storedMessages = await db.getAllMessages('stats/client_nav_event', false);
+  await addStatReading('force_sync');
+  const storedMessages = await db.getAllMessages('stats/client_time', false);
   expect(storedMessages).toContainEqual({
-    name: statKeys.BUTTON_FORCE_SYNC,
+    name: 'force_sync',
     ts: expect.any(Number),
     reading: null,
     client_app_version: '1.2.3',
@@ -46,10 +34,14 @@ it('stores a client stats event', async () => {
 
 it('stores a client stats error', async () => {
   const errorStr = 'test error';
-  await addStatError(statKeys.MISSING_KEYS, errorStr);
+  try {
+    throw new Error(errorStr);
+  } catch (error) {
+    await addStatError(error.message);
+  }
   const storedMessages = await db.getAllMessages('stats/client_error', false);
   expect(storedMessages).toContainEqual({
-    name: statKeys.MISSING_KEYS,
+    name: 'ui_error',
     ts: expect.any(Number),
     reading: errorStr,
     client_app_version: '1.2.3',

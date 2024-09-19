@@ -25,6 +25,7 @@ import ModesIndicator from './ModesIndicator';
 import { useGeojsonForTrip } from '../timelineHelper';
 import { CompositeTrip } from '../../types/diaryTypes';
 import { EnketoUserInputEntry } from '../../survey/enketo/enketoHelper';
+import { addStatReading } from '../../plugin/clientStats';
 
 type Props = { trip: CompositeTrip; isFirstInList?: boolean };
 const TripCard = ({ trip, isFirstInList }: Props) => {
@@ -50,6 +51,7 @@ const TripCard = ({ trip, isFirstInList }: Props) => {
 
   function showDetail() {
     const tripId = trip._id.$oid;
+    addStatReading('view_trip_details', { tripId });
     navigation.navigate('label.details', { tripId, flavoredTheme });
   }
 

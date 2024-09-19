@@ -30,8 +30,9 @@ import {
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
 import { MultilabelKey } from '../../types/labelTypes';
-import { updateUserCustomLabel } from '../../services/commHelper';
+// import { updateUserCustomLabel } from '../../services/commHelper';
 import { AppContext } from '../../App';
+import { addStatReading } from '../../plugin/clientStats';
 import { UserInputData } from '../../types/diaryTypes';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
@@ -73,6 +74,11 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     }
   }
 
+  function openModalFor(inputType: MultilabelKey) {
+    addStatReading('multilabel_open', inputType);
+    setModalVisibleFor(inputType);
+  }
+
   function dismiss() {
     setModalVisibleFor(null);
     setOtherLabel(null);
@@ -94,21 +100,21 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
       // If a user saves a new customized label or makes changes to/from customized labels, the labels need to be updated.
       const key = inputType.toLowerCase();
       if (
-        isOther ||
-        (initialLabel && customLabelMap[key].indexOf(initialLabel) > -1) ||
-        (newLabel && customLabelMap[key].indexOf(newLabel) > -1)
+        isOther
+        // (initialLabel && customLabelMap[key].indexOf(initialLabel) > -1) ||
+        // (newLabel && customLabelMap[key].indexOf(newLabel) > -1)
       ) {
-        updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther ?? false)
-          .then((res) => {
-            setCustomLabelMap({
-              ...customLabelMap,
-              [key]: res['label'],
-            });
-            logDebug('Successfuly stored custom label ' + JSON.stringify(res));
-          })
-          .catch((e) => {
-            displayErrorMsg(e, 'Create Label Error');
-          });
+        // updateUserCustomLabel(key, initialLabel ?? '', newLabel, isOther ?? false)
+        //   .then((res) => {
+        //     setCustomLabelMap({
+        //       ...customLabelMap,
+        //       [key]: res['label'],
+        //     });
+        //     logDebug('Successfuly stored custom label ' + JSON.stringify(res));
+        //   })
+        //   .catch((e) => {
+        //     displayErrorMsg(e, 'Create Label Error');
+        //   });
       }
       const inputDataToStore = {
         start_ts: trip.start_ts,
@@ -124,6 +130,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     }
     Promise.all(storePromises).then(() => {
       logDebug('Successfully stored input data ' + JSON.stringify(inputsToStore));
+      addStatReading('multilabel_choose', inputsToStore);
       dismiss();
       addUserInputToEntry(trip._id.$oid, inputsToStore, 'label');
     });
@@ -158,7 +165,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                   fillColor={fillColor}
                   borderColor={borderColor}
                   textColor={textColor}
-                  onPress={(e) => setModalVisibleFor(input.name)}>
+                  onPress={(e) => openModalFor(input.name)}>
                   {btnText}
                 </DiaryButton>
               </View>

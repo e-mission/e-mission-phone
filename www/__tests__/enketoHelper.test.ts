@@ -8,7 +8,6 @@ import {
   EnketoUserInputEntry,
 } from '../js/survey/enketo/enketoHelper';
 import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
-import { mockLogger } from '../__mocks__/globalMocks';
 import { getConfig, _test_resetPromisedConfig } from '../../www/js/config/dynamicConfig';
 import fakeConfig from '../__mocks__/fakeConfig.json';
 
@@ -18,7 +17,6 @@ import { AppConfig } from '../js/types/appConfigTypes';
 window['i18next'] = initializedI18next;
 
 mockBEMUserCache(fakeConfig);
-mockLogger();
 
 global.URL = require('url').URL;
 global.Blob = require('node:buffer').Blob;

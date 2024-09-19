@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="51" id="edu.berkeley.eecs.emission" ios-CFBundleVersion="49" version="3.2.8" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="52" id="edu.berkeley.eecs.emission" ios-CFBundleVersion="50" version="3.2.9" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>emission</name>
     <description>
         A commute pattern tracker and carbon footprint estimator.
@@ -10,6 +10,7 @@
     <content src="index.html" />
     <access origin="*" />
     <hook src="hooks/before_prepare/download_translation.js" type="before_prepare" />
+    <preference name="InspectableWebview" value="true" />
     <preference name="webviewbounce" value="false" />
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
@@ -37,7 +38,7 @@
     </feature>
     <platform name="ios">
         <preference name="deployment-target" value="13.0"/>
-        <hook src="hooks/before_build/ios/ios_change_deployment.js" type="before_build" />
+        <hook src="hooks/before_compile/ios/ios_change_deployment.js" type="before_compile" />
         <hook src="hooks/after_platform_add/ios/ios_copy_locales.js" type="after_platform_add" />
         <resource-file src="GoogleService-Info.plist" />
         <preference name="WKWebViewOnly" value="true" />
