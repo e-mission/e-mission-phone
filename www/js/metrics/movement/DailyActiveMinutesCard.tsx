@@ -13,11 +13,10 @@ const DailyActiveMinutesCard = ({ userMetrics, activeModes }: Props) => {
 
   const dailyActiveMinutesRecords = useMemo(() => {
     const records: { label: string; x: number; y: number }[] = [];
-    const recentDays = userMetrics?.duration?.slice(-14);
-    activeModes.forEach((mode) => {
-      if (recentDays?.some((d) => valueForFieldOnDay(d, 'mode_confirm', mode))) {
-        recentDays?.forEach((day) => {
-          const activeSeconds = valueForFieldOnDay(day, 'mode_confirm', mode);
+    activeModes.forEach((modeKey) => {
+      if (userMetrics?.duration?.some((d) => valueForFieldOnDay(d, 'mode_confirm', modeKey))) {
+        userMetrics?.duration?.forEach((day) => {
+          const activeSeconds = valueForFieldOnDay(day, 'mode_confirm', modeKey);
           records.push({
             label: labelKeyToText(mode),
             x: tsForDayOfMetricData(day) * 1000, // vertical chart, milliseconds on X axis
