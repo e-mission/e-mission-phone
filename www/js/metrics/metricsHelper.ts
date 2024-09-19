@@ -271,6 +271,7 @@ export function getUnitUtilsForMetric(
         return `${responded}/${total} ${i18next.t('metrics.surveys.responses')}`;
       },
     ],
+    footprint: [] as any, // TODO
   };
   return fns[metricName];
 }

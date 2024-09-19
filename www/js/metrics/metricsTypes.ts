@@ -13,11 +13,11 @@ export type MetricValue<T extends MetricName> = T extends TravelMetricName
       ? { kg_co2: number; kg_co2_uncertain?: number; kwh: number; kwh_uncertain?: number }
       : never;
 
-export type MetricEntry<T extends MetricName> = {
+export type MetricEntry<T extends MetricName = MetricName> = {
   [k in `${GroupingField}_${string}`]?: MetricValue<T>;
 };
 
-export type DayOfMetricData<T = MetricName> = {
+export type DayOfMetricData<T extends MetricName = MetricName> = {
   date: string; // yyyy-mm-dd
   nUsers: number;
 } & MetricEntry<T>;

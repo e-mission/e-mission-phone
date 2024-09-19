@@ -1,15 +1,16 @@
 import React from 'react';
-import { GroupingField, MetricName } from '../../types/appConfigTypes';
+import { GroupingField } from '../../types/appConfigTypes';
 import MetricsCard from './MetricsCard';
 import { t } from 'i18next';
 
-const TRAVEL_METRICS = ['distance', 'duration', 'count'];
+const TRAVEL_METRICS = ['count', 'distance', 'duration'] as const;
+export type TravelMetricName = (typeof TRAVEL_METRICS)[number];
 
 const TravelSection = ({ userMetrics, aggMetrics, metricList }) => {
   return (
     <>
       {Object.entries(metricList).map(
-        ([metricName, groupingFields]: [MetricName, GroupingField[]]) =>
+        ([metricName, groupingFields]: [TravelMetricName, GroupingField[]]) =>
           TRAVEL_METRICS.includes(metricName) ? (
             <MetricsCard
               key={metricName}
