@@ -97,10 +97,14 @@
       "labeled": "Labeled",
       "unlabeled": "Unlabeled",
       "uncertainty-footnote": "Due to the uncertainty of unlabeled trips, estimates may fall anywhere within the shown range. Label more trips for richer estimates.",
-      "daily-emissions-by-week": "Average Daily Emissions by Week",
-      "kg-co2e-per-day": "kg CO₂e / day",
-      "daily-energy-by-week": "Average Daily Energy Usage by Week",
-      "kwh-per-day": "kWh / day"
+      "daily-emissions-by-week": "Daily Emissions by Week",
+      "kg-co2e-per-day": "Average kg CO₂e / day",
+      "daily-energy-by-week": "Daily Energy Usage by Week",
+      "kwh-per-day": "Average kWh / day",
+      "daily-emissions-comparison": "Daily Emissions vs. Group",
+      "daily-energy-comparison": "Daily Energy Usage vs. Group",
+      "you": "You",
+      "group-average": "Group Average"
     },
     "movement": {
       "movement": "Movement",
@@ -129,7 +133,7 @@
       "trip-categories": "Trip Categories",
       "response": "Response",
       "no-response": "No Response",
-      "responses": "Responses",
+      "responses": "responses",
       "comparison": "Comparison",
       "you": "You",
       "others": "Others in group"
