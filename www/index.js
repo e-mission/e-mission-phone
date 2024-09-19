@@ -23,14 +23,17 @@ window.skipLocalNotificationReady = true;
 
 deviceReady.then(() => {
   logDebug('deviceReady');
-  /* give status bar dark text because we have a light background
-   https://cordova.apache.org/docs/en/10.x/reference/cordova-plugin-statusbar/#statusbarstyledefault */
-  if (window['StatusBar']) window['StatusBar'].styleDefault();
   cordova.plugin.http.setDataSerializer('json');
   const rootEl = document.getElementById('appRoot');
   const reactRoot = createRoot(rootEl);
 
   const theme = getTheme();
+   /* Set Cordova StatusBar color to match the "elevated" AppBar
+   https://cordova.apache.org/docs/en/10.x/reference/cordova-plugin-statusbar/#statusbarbackgroundcolorbyhexstring
+   https://callstack.github.io/react-native-paper/docs/components/Appbar/#theme-colors */
+   if (window['StatusBar']) {
+    window['StatusBar'].backgroundColorByHexString(theme.colors.elevation.level2);
+   }
 
   reactRoot.render(
     <PaperProvider theme={theme}>
