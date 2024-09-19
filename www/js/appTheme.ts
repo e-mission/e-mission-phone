@@ -103,3 +103,5 @@ export function getTheme(flavor?: keyof typeof flavorOverrides) {
   };
   return { ...AppTheme, colors: scopedColors };
 }
+
+export const colors = AppTheme.colors;
