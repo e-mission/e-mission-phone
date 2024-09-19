@@ -18,11 +18,7 @@ import { UserInputMap } from '../js/TimelineContext';
 window['i18next'] = initializedI18next;
 mockLogger();
 
-const fakeAppConfig = {
-  label_options: 'json/label-options.json.sample',
-};
 const fakeAppConfigWithModeOfStudy = {
-  ...fakeAppConfig,
   intro: {
     mode_studied: 'walk',
   },
@@ -63,8 +59,8 @@ jest.mock('../js/services/commHelper', () => ({
 }));
 
 describe('confirmHelper', () => {
-  it('returns labelOptions given an appConfig', async () => {
-    const labelOptions = await getLabelOptions(fakeAppConfig);
+  it('returns default labelOptions given a blank appConfig', async () => {
+    const labelOptions = await getLabelOptions({});
     expect(labelOptions).toBeTruthy();
     expect(labelOptions.MODE[0].value).toEqual('walk');
   });

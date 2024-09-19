@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import useAppConfig from '../useAppConfig';
 import { formatForDisplay } from '../util';
 
@@ -24,25 +24,21 @@ export function convertSpeed(speedMetersPerSec: number, imperial: boolean): numb
   return speedMetersPerSec * MPS_TO_KMPH;
 }
 
+export const getImperialConfig = (useImperial: boolean): ImperialConfig => ({
+  distanceSuffix: useImperial ? 'mi' : 'km',
+  speedSuffix: useImperial ? 'mph' : 'kmph',
+  convertDistance: (d) => convertDistance(d, useImperial),
+  convertSpeed: (s) => convertSpeed(s, useImperial),
+  getFormattedDistance: useImperial
+    ? (d) => formatForDisplay(convertDistance(d, true))
+    : (d) => formatForDisplay(convertDistance(d, false)),
+  getFormattedSpeed: useImperial
+    ? (s) => formatForDisplay(convertSpeed(s, true))
+    : (s) => formatForDisplay(convertSpeed(s, false)),
+});
+
 export function useImperialConfig(): ImperialConfig {
   const appConfig = useAppConfig();
-  const [useImperial, setUseImperial] = useState(false);
-
-  useEffect(() => {
-    if (!appConfig) return;
-    setUseImperial(appConfig.display_config.use_imperial);
-  }, [appConfig]);
-
-  return {
-    distanceSuffix: useImperial ? 'mi' : 'km',
-    speedSuffix: useImperial ? 'mph' : 'kmph',
-    convertDistance: (d) => convertDistance(d, useImperial),
-    convertSpeed: (s) => convertSpeed(s, useImperial),
-    getFormattedDistance: useImperial
-      ? (d) => formatForDisplay(convertDistance(d, true))
-      : (d) => formatForDisplay(convertDistance(d, false)),
-    getFormattedSpeed: useImperial
-      ? (s) => formatForDisplay(convertSpeed(s, true))
-      : (s) => formatForDisplay(convertSpeed(s, false)),
-  };
+  const useImperial = useMemo(() => appConfig?.display_config.use_imperial, [appConfig]);
+  return getImperialConfig(useImperial);
 }

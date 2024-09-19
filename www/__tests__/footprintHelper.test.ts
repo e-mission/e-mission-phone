@@ -1,89 +1,66 @@
-import {
-  _test_clearCustomMetrics,
-  initCustomDatasetHelper,
-} from '../js/metrics/customMetricsHelper';
-import {
-  clearHighestFootprint,
-  getFootprintForMetrics,
-  getHighestFootprint,
-  getHighestFootprintForDistance,
-} from '../js/metrics/footprint/footprintHelper';
-import { getConfig } from '../js/config/dynamicConfig';
-import { mockBEMUserCache } from '../__mocks__/cordovaMocks';
-import { mockLogger } from '../__mocks__/globalMocks';
-import fakeLabels from '../__mocks__/fakeLabels.json';
-import fakeConfig from '../__mocks__/fakeConfig.json';
+import i18next from 'i18next';
+import { getFootprintGoals } from '../js/metrics/footprint/footprintHelper';
+import AppConfig from '../js/types/appConfigTypes';
 
-mockBEMUserCache(fakeConfig);
-mockLogger();
-
-global.fetch = (url: string) =>
-  new Promise((rs, rj) => {
-    setTimeout(() =>
-      rs({
-        text: () =>
-          new Promise((rs, rj) => {
-            let myJSON = JSON.stringify(fakeLabels);
-            setTimeout(() => rs(myJSON), 100);
-          }),
-      }),
-    );
-  }) as any;
-
-beforeEach(() => {
-  clearHighestFootprint();
-  _test_clearCustomMetrics();
-});
-
-const custom_metrics = [
-  { key: 'ON_FOOT', values: 3000 }, //hits fallback under custom paradigm
-  { key: 'bike', values: 6500 },
-  { key: 'drove_alone', values: 10000 },
-  { key: 'scootershare', values: 25000 },
-  { key: 'unicycle', values: 5000 },
-];
-
-/*
-  3*0 + 6.5*0 + 10*0.22031 + 25*0.00894 + 5*0
-  0 + 0 + 2.2031 + 0.2235 + 0
-  2.4266
-*/
-it('gets footprint for metrics (custom, fallback 0)', async () => {
-  const appConfig = await getConfig();
-  await initCustomDatasetHelper(appConfig!);
-  expect(getFootprintForMetrics(custom_metrics, 0)).toBe(2.4266);
-});
-
-/* 
-  3*0.1 + 6.5*0 + 10*0.22031 + 25*0.00894 + 5*0.1
-  0.3 + 0 + 2.2031 + 0.2235 + 0.5
-  0.3 2.4266 + 0.5
-*/
-it('gets footprint for metrics (custom, fallback 0.1)', async () => {
-  const appConfig = await getConfig();
-  await initCustomDatasetHelper(appConfig!);
-  expect(getFootprintForMetrics(custom_metrics, 0.1)).toBe(3.2266);
-});
-
-//expects TAXI from the fake labels
-it('gets the highest footprint from the dataset, custom', async () => {
-  const appConfig = await getConfig();
-  await initCustomDatasetHelper(appConfig!);
-  expect(getHighestFootprint()).toBe(0.30741);
-});
-
-/*
-  TAXI co2/km * meters/1000
-*/
-it('gets the highest footprint for distance, custom', async () => {
-  const appConfig = await getConfig();
-  await initCustomDatasetHelper(appConfig!);
-  expect(getHighestFootprintForDistance(12345)).toBe(0.30741 * (12345 / 1000));
-});
-
-it('errors out if not initialized', () => {
-  const t = () => {
-    getFootprintForMetrics(custom_metrics, 0);
+describe('footprintHelper', () => {
+  const fakeAppConfig1 = {
+    metrics: {
+      phone_dashboard_ui: {
+        footprint_options: {
+          goals: {
+            carbon: [
+              {
+                label: { en: 'Foo goal' },
+                value: 1.1,
+                color: 'rgb(255, 0, 0)',
+              },
+              {
+                label: { en: 'Bar goal' },
+                value: 5.5,
+                color: 'rgb(0, 255, 0)',
+              },
+            ],
+            energy: [
+              {
+                label: { en: 'Baz goal' },
+                value: 4.4,
+                color: 'rgb(0, 0, 255)',
+              },
+              {
+                label: { en: 'Zab goal' },
+                value: 9.9,
+                color: 'rgb(255, 255, 0)',
+              },
+            ],
+            goals_footnote: { en: 'Foobar footnote' },
+          },
+        },
+      },
+    },
   };
-  expect(t).toThrow(Error);
+
+  const myFakeFootnotes: string[] = [];
+  const addFakeFootnote = (footnote: string) => {
+    myFakeFootnotes.push(footnote);
+    return myFakeFootnotes.length.toString();
+  };
+  describe('getFootprintGoals', () => {
+    it('should use default goals if appConfig is blank / does not have goals, extract the label, and add footnote', () => {
+      myFakeFootnotes.length = 0;
+      const goals = getFootprintGoals({} as any as AppConfig, addFakeFootnote);
+      expect(goals.carbon[0].label).toEqual(i18next.t('metrics.footprint.us-2050-goal') + '1');
+      expect(goals.carbon[1].label).toEqual(i18next.t('metrics.footprint.us-2030-goal') + '1');
+      expect(goals.energy[0].label).toEqual(i18next.t('metrics.footprint.us-2050-goal') + '1');
+      expect(goals.energy[1].label).toEqual(i18next.t('metrics.footprint.us-2030-goal') + '1');
+    });
+
+    it('should use goals from appConfig when provided, extract the label, and add footnote', () => {
+      myFakeFootnotes.length = 0;
+      const goals = getFootprintGoals(fakeAppConfig1 as any as AppConfig, addFakeFootnote);
+      expect(goals.carbon[0].label).toEqual('Foo goal1');
+      expect(goals.carbon[1].label).toEqual('Bar goal1');
+      expect(goals.energy[0].label).toEqual('Baz goal1');
+      expect(goals.energy[1].label).toEqual('Zab goal1');
+    });
+  });
 });

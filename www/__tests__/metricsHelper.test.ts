@@ -80,7 +80,7 @@ describe('metricsHelper', () => {
   describe('formatDate', () => {
     const day1 = { date: '2021-01-01' } as any as DayOfMetricData;
     it('should format date', () => {
-      expect(formatDate(day1)).toEqual('1/1');
+      expect(formatDate(day1)).toEqual('Jan 1');
     });
   });
 
@@ -91,7 +91,7 @@ describe('metricsHelper', () => {
       { date: '2021-01-04' },
     ] as any as DayOfMetricData[];
     it('should format date range for days with date', () => {
-      expect(formatDateRangeOfDays(days1)).toEqual('1/1 - 1/4');
+      expect(formatDateRangeOfDays(days1)).toEqual('Jan 1 – Jan 4'); // note: en dash
     });
   });
 
