@@ -14,7 +14,6 @@ import { initPushNotify } from './splash/pushNotifySettings';
 import { initStoreDeviceSettings } from './splash/storeDeviceSettings';
 import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
 import { getUserCustomLabels } from './services/commHelper';
-import { initCustomDatasetHelper } from './metrics/customMetricsHelper';
 import AlertBar from './components/AlertBar';
 import Main from './Main';
 
@@ -46,7 +45,6 @@ const App = () => {
     initStoreDeviceSettings();
     initRemoteNotifyHandler();
     getUserCustomLabels(CUSTOM_LABEL_KEYS_IN_DATABASE).then((res) => setCustomLabelMap(res));
-    initCustomDatasetHelper(appConfig);
   }, [appConfig]);
 
   const appContextValue = {
