@@ -10,6 +10,7 @@ import { formatIso, isoDatesDifference } from '../../util';
 import WeeklyFootprintCard from './WeeklyFootprintCard';
 import useAppConfig from '../../useAppConfig';
 import { getFootprintGoals } from './footprintHelper';
+import FootprintComparisonCard from './FootprintComparisonCard';
 
 const FootprintSection = ({ userMetrics, aggMetrics, metricList }) => {
   const { t } = useTranslation();
@@ -35,10 +36,16 @@ const FootprintSection = ({ userMetrics, aggMetrics, metricList }) => {
       .join('');
   }
 
-  const cumulativeFootprintSum = useMemo(
+  const userCumulativeFootprint = useMemo(
     () =>
       userMetrics?.footprint?.length ? sumMetricEntries(userMetrics?.footprint, 'footprint') : null,
     [userMetrics?.footprint],
+  );
+
+  const groupCumulativeFootprint = useMemo(
+    () =>
+      aggMetrics?.footprint?.length ? sumMetricEntries(aggMetrics?.footprint, 'footprint') : null,
+    [aggMetrics?.footprint],
   );
 
   const goals = getFootprintGoals(appConfig, addFootnote);
@@ -56,14 +63,14 @@ const FootprintSection = ({ userMetrics, aggMetrics, metricList }) => {
         <Text variant="titleMedium">{t('metrics.footprint.estimated-footprint')}</Text>
         <Text variant="bodyMedium">{`${formatIso(...queriedDateRange)} (${nDays} days)`}</Text>
       </View>
-      {cumulativeFootprintSum && (
+      {userCumulativeFootprint && (
         <View style={{ flexDirection: 'row', gap: 16 }}>
           <SummaryCard
             title={t('metrics.footprint.ghg-emissions')}
             unit="kg"
             value={[
-              cumulativeFootprintSum?.kg_co2,
-              cumulativeFootprintSum?.kg_co2 + (cumulativeFootprintSum?.kg_co2_uncertain || 0),
+              userCumulativeFootprint?.kg_co2,
+              userCumulativeFootprint?.kg_co2 + (userCumulativeFootprint?.kg_co2_uncertain || 0),
             ]}
             nDays={nDays}
             goals={goals['carbon'] || []}
@@ -72,8 +79,8 @@ const FootprintSection = ({ userMetrics, aggMetrics, metricList }) => {
             title={t('metrics.footprint.energy-usage')}
             unit="kWh"
             value={[
-              cumulativeFootprintSum?.kwh,
-              cumulativeFootprintSum?.kwh + (cumulativeFootprintSum?.kwh_uncertain || 0),
+              userCumulativeFootprint?.kwh,
+              userCumulativeFootprint?.kwh + (userCumulativeFootprint?.kwh_uncertain || 0),
             ]}
             nDays={nDays}
             goals={goals['energy'] || []}
@@ -93,6 +100,34 @@ const FootprintSection = ({ userMetrics, aggMetrics, metricList }) => {
         title={t('metrics.footprint.daily-energy-by-week')}
         axisTitle={t('metrics.footprint.kwh-per-day')}
         {...{ goals, addFootnote, showUncertainty, userMetrics, metricList }}
+      />
+      <FootprintComparisonCard
+        type="carbon"
+        unit="kg_co2"
+        title={t('metrics.footprint.daily-emissions-comparison')}
+        axisTitle={t('metrics.footprint.kg-co2e-per-day')}
+        {...{
+          userCumulativeFootprint,
+          groupCumulativeFootprint,
+          goals,
+          addFootnote,
+          showUncertainty,
+          nDays,
+        }}
+      />
+      <FootprintComparisonCard
+        type="energy"
+        unit="kwh"
+        title={t('metrics.footprint.daily-energy-comparison')}
+        axisTitle={t('metrics.footprint.kwh-per-day')}
+        {...{
+          userCumulativeFootprint,
+          groupCumulativeFootprint,
+          goals,
+          addFootnote,
+          showUncertainty,
+          nDays,
+        }}
       />
       {footnotes.length && (
         <View>
