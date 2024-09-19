@@ -287,6 +287,8 @@ export function aggMetricEntries<T extends MetricName>(entries: MetricEntry<T>[]
     for (let field in e) {
       if (groupingFields.some((f) => field.startsWith(f))) {
         acc[field] = metrics_summaries.acc_value_of_metric(metricName, acc?.[field], e[field]);
+      } else if (field == 'nUsers') {
+        acc[field] = (acc[field] || 0) + e[field];
       }
     }
   });
@@ -305,6 +307,7 @@ export function sumMetricEntry<T extends MetricName>(entry: MetricEntry<T>, metr
       acc = metrics_summaries.acc_value_of_metric(metricName, acc, entry[field]);
     }
   }
+  acc['nUsers'] = entry['nUsers'] || 1;
   return (acc || {}) as MetricValue<T extends `${infer U}` ? U : never>;
 }
 
