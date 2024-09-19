@@ -317,5 +317,5 @@ export function getColorForModeLabel(label: string) {
     const unknownModeColor = base_modes.get_base_mode_by_key('UNKNOWN').color;
     return color(unknownModeColor).alpha(UNCERTAIN_OPACITY).rgb().string();
   }
-  base_modes.get_rich_mode_for_value(textToLabelKey(label), labelOptions).color;
+  return base_modes.get_rich_mode_for_value(textToLabelKey(label), labelOptions).color;
 }
