@@ -23,17 +23,13 @@ window.skipLocalNotificationReady = true;
 
 deviceReady.then(() => {
   logDebug('deviceReady');
+  // On init, use 'default' status bar (black text)
+  window['StatusBar']?.styleDefault();
   cordova.plugin.http.setDataSerializer('json');
   const rootEl = document.getElementById('appRoot');
   const reactRoot = createRoot(rootEl);
 
   const theme = getTheme();
-  /* Set Cordova StatusBar color to match the "elevated" AppBar
-   https://cordova.apache.org/docs/en/10.x/reference/cordova-plugin-statusbar/#statusbarbackgroundcolorbyhexstring
-   https://callstack.github.io/react-native-paper/docs/components/Appbar/#theme-colors */
-  if (window['StatusBar']) {
-    window['StatusBar'].backgroundColorByHexString(theme.colors.elevation.level2);
-  }
 
   reactRoot.render(
     <PaperProvider theme={theme}>
@@ -45,7 +41,9 @@ deviceReady.then(() => {
           }
         `}
       </style>
-      <SafeAreaView style={{ flex: 1 }}>
+      {/* The background color of this SafeAreaView effectively controls the status bar background color.
+      Set to theme.colors.elevation.level2 to match the background of the elevated AppBars present on each tab. */}
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.elevation.level2 }}>
         <App />
       </SafeAreaView>
     </PaperProvider>,
