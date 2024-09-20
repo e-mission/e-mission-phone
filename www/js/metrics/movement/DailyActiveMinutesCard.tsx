@@ -18,7 +18,7 @@ const DailyActiveMinutesCard = ({ userMetrics, activeModes }: Props) => {
         userMetrics?.duration?.forEach((day) => {
           const activeSeconds = valueForFieldOnDay(day, 'mode_confirm', modeKey);
           records.push({
-            label: labelKeyToText(mode),
+            label: labelKeyToText(modeKey),
             x: tsForDayOfMetricData(day) * 1000, // vertical chart, milliseconds on X axis
             y: (activeSeconds || 0) / 60, // minutes on Y axis
           });
