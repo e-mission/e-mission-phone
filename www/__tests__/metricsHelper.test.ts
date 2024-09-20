@@ -8,13 +8,8 @@ import {
   secondsToHours,
   secondsToMinutes,
   segmentDaysByWeeks,
-  metricToValue,
   tsForDayOfMetricData,
   valueForFieldOnDay,
-  generateSummaryFromData,
-  isCustomLabels,
-  isAllCustom,
-  isOnFoot,
   getUnitUtilsForMetric,
 } from '../js/metrics/metricsHelper';
 import { DayOfMetricData } from '../js/metrics/metricsTypes';
@@ -95,34 +90,6 @@ describe('metricsHelper', () => {
     });
   });
 
-  describe('metricToValue', () => {
-    const metric = {
-      walking: 10,
-      nUsers: 5,
-    };
-    it('returns correct value for user population', () => {
-      const result = metricToValue('user', metric, 'walking');
-      expect(result).toBe(10);
-    });
-
-    it('returns correct value for aggregate population', () => {
-      const result = metricToValue('aggregate', metric, 'walking');
-      expect(result).toBe(2);
-    });
-  });
-
-  describe('isOnFoot', () => {
-    it('returns true for on foot mode', () => {
-      const result = isOnFoot('WALKING');
-      expect(result).toBe(true);
-    });
-
-    it('returns false for non on foot mode', () => {
-      const result = isOnFoot('DRIVING');
-      expect(result).toBe(false);
-    });
-  });
-
   describe('calculatePercentChange', () => {
     it('calculates percent change correctly for low and high values', () => {
       const pastWeekRange = { low: 10, high: 30 };
@@ -166,132 +133,6 @@ describe('metricsHelper', () => {
     it('returns the value for a specified field and key', () => {
       const result = valueForFieldOnDay(mockDay, 'field', 'key');
       expect(result).toBe('example_value');
-    });
-  });
-
-  describe('generateSummaryFromData', () => {
-    const modeMap = [
-      {
-        key: 'mode1',
-        values: [
-          ['value1', 10],
-          ['value2', 20],
-        ],
-      },
-      {
-        key: 'mode2',
-        values: [
-          ['value3', 30],
-          ['value4', 40],
-        ],
-      },
-    ];
-    it('returns summary with sum for non-speed metric', () => {
-      const metric = 'some_metric';
-      const expectedResult = [
-        { key: 'mode1', values: 30 },
-        { key: 'mode2', values: 70 },
-      ];
-      const result = generateSummaryFromData(modeMap, metric);
-      expect(result).toEqual(expectedResult);
-    });
-
-    it('returns summary with average for speed metric', () => {
-      const metric = 'mean_speed';
-      const expectedResult = [
-        { key: 'mode1', values: 15 },
-        { key: 'mode2', values: 35 },
-      ];
-      const result = generateSummaryFromData(modeMap, metric);
-      expect(result).toEqual(expectedResult);
-    });
-  });
-
-  describe('isCustomLabels', () => {
-    it('returns true for all custom labels', () => {
-      const modeMap = [
-        {
-          key: 'label_mode1',
-          values: [
-            ['value1', 10],
-            ['value2', 20],
-          ],
-        },
-        {
-          key: 'label_mode2',
-          values: [
-            ['value3', 30],
-            ['value4', 40],
-          ],
-        },
-      ];
-      const result = isCustomLabels(modeMap);
-      expect(result).toBe(true);
-    });
-
-    it('returns true for all sensed labels', () => {
-      const modeMap = [
-        {
-          key: 'label_mode1',
-          values: [
-            ['value1', 10],
-            ['value2', 20],
-          ],
-        },
-        {
-          key: 'label_mode2',
-          values: [
-            ['value3', 30],
-            ['value4', 40],
-          ],
-        },
-      ];
-      const result = isCustomLabels(modeMap);
-      expect(result).toBe(true);
-    });
-
-    it('returns false for mixed custom and sensed labels', () => {
-      const modeMap = [
-        {
-          key: 'label_mode1',
-          values: [
-            ['value1', 10],
-            ['value2', 20],
-          ],
-        },
-        {
-          key: 'MODE2',
-          values: [
-            ['value3', 30],
-            ['value4', 40],
-          ],
-        },
-      ];
-      const result = isCustomLabels(modeMap);
-      expect(result).toBe(false);
-    });
-  });
-
-  describe('isAllCustom', () => {
-    it('returns true when all keys are custom', () => {
-      const isSensedKeys = [false, false, false];
-      const isCustomKeys = [true, true, true];
-      const result = isAllCustom(isSensedKeys, isCustomKeys);
-      expect(result).toBe(true);
-    });
-
-    it('returns false when all keys are sensed', () => {
-      const isSensedKeys = [true, true, true];
-      const isCustomKeys = [false, false, false];
-      const result = isAllCustom(isSensedKeys, isCustomKeys);
-      expect(result).toBe(false);
-    });
-
-    it('returns undefined for mixed custom and sensed keys', () => {
-      const isSensedKeys = [true, false, true];
-      const isCustomKeys = [false, true, false];
-      const result = isAllCustom(isSensedKeys, isCustomKeys);
-      expect(result).toBe(undefined);
     });
   });
 
