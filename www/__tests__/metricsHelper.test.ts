@@ -3,7 +3,9 @@ import {
   calculatePercentChange,
   formatDate,
   formatDateRangeOfDays,
+  getActiveModes,
   getLabelsForDay,
+  trimGroupingPrefix,
   getUniqueLabelsForDays,
   secondsToHours,
   secondsToMinutes,
@@ -11,9 +13,20 @@ import {
   tsForDayOfMetricData,
   valueForFieldOnDay,
   getUnitUtilsForMetric,
+  aggMetricEntries,
+  sumMetricEntry,
+  sumMetricEntries,
+  getColorForModeLabel,
 } from '../js/metrics/metricsHelper';
 import { DayOfMetricData } from '../js/metrics/metricsTypes';
 import initializedI18next from '../js/i18nextInit';
+import { LabelOptions } from '../js/types/labelTypes';
+import {
+  getLabelOptions,
+  labelKeyToText,
+  labelOptions,
+} from '../js/survey/multilabel/confirmHelper';
+import { base_modes } from 'e-mission-common';
 window['i18next'] = initializedI18next;
 
 describe('metricsHelper', () => {
@@ -25,6 +38,17 @@ describe('metricsHelper', () => {
     ] as any as DayOfMetricData[];
     it("should return unique labels for days with 'mode_confirm_*'", () => {
       expect(getUniqueLabelsForDays(days1)).toEqual(['a', 'b', 'c', 'd']);
+    });
+  });
+
+  describe('trimGroupingPrefix', () => {
+    it('should trim the grouping field prefix from a metrics key', () => {
+      expect(trimGroupingPrefix('mode_confirm_access_recreation')).toEqual('access_recreation');
+      expect(trimGroupingPrefix('primary_ble_sensed_mode_CAR')).toEqual('CAR');
+    });
+
+    it('should return "" if the key did not start with a grouping field', () => {
+      expect(trimGroupingPrefix('invalid_foo')).toEqual('');
     });
   });
 
@@ -87,6 +111,22 @@ describe('metricsHelper', () => {
     ] as any as DayOfMetricData[];
     it('should format date range for days with date', () => {
       expect(formatDateRangeOfDays(days1)).toEqual('Jan 1 – Jan 4'); // note: en dash
+    });
+  });
+
+  describe('getActiveModes', () => {
+    const fakeLabelOptions = {
+      MODE: [
+        { value: 'walk', base_mode: 'WALKING' },
+        { value: 'bike', base_mode: 'BICYCLING' },
+        { value: 'ebike', base_mode: 'E_BIKE' },
+        { value: 'car', base_mode: 'CAR' },
+        { value: 'bus', base_mode: 'BUS' },
+        { value: 'myskateboard', met: { ZOOMING: { mets: 5 } } },
+      ],
+    } as LabelOptions;
+    it('should return active modes', () => {
+      expect(getActiveModes(fakeLabelOptions)).toEqual(['walk', 'bike', 'ebike', 'myskateboard']);
     });
   });
 
@@ -174,6 +214,83 @@ describe('metricsHelper', () => {
       const mockResponse = { responded: 5, not_responded: 2 };
       expect(result[1](mockResponse)).toBe(5);
       expect(result[2](mockResponse)).toBe('5/7 responses');
+    });
+  });
+
+  const fakeFootprintEntries = [
+    {
+      date: '2024-05-28',
+      nUsers: 10,
+      mode_confirm_a: { kwh: 1, kg_co2: 2 },
+    },
+    {
+      date: '2024-05-29',
+      nUsers: 20,
+      mode_confirm_a: { kwh: 5, kg_co2: 8 },
+      mode_confirm_b: { kwh: 2, kg_co2: 4, kwh_uncertain: 1, kg_co2_uncertain: 2 },
+    },
+  ];
+
+  describe('aggMetricEntries', () => {
+    it('aggregates footprint metric entries', () => {
+      const result = aggMetricEntries(fakeFootprintEntries, 'footprint');
+      expect(result).toEqual({
+        nUsers: 30,
+        mode_confirm_a: expect.objectContaining({
+          kwh: 6,
+          kg_co2: 10,
+        }),
+        mode_confirm_b: expect.objectContaining({
+          kwh: 2,
+          kg_co2: 4,
+          kwh_uncertain: 1,
+          kg_co2_uncertain: 2,
+        }),
+      });
+    });
+  });
+
+  describe('sumMetricEntry', () => {
+    it('sums a single footprint metric entry', () => {
+      expect(sumMetricEntry(fakeFootprintEntries[0], 'footprint')).toEqual(
+        expect.objectContaining({
+          nUsers: 10,
+          kwh: 1,
+          kg_co2: 2,
+        }),
+      );
+    });
+  });
+
+  describe('sumMetricEntries', () => {
+    it('aggregates and sums footprint metric entries', () => {
+      expect(sumMetricEntries(fakeFootprintEntries, 'footprint')).toEqual(
+        expect.objectContaining({
+          nUsers: 30,
+          kwh: 8,
+          kg_co2: 14,
+          kwh_uncertain: 1,
+          kg_co2_uncertain: 2,
+        }),
+      );
+    });
+  });
+
+  describe('getColorForModeLabel', () => {
+    // initialize label options (blank appconfig so the default label options will be used)
+    getLabelOptions({});
+    // access the text for each mode option to initialize the color map
+    labelOptions.MODE.forEach((mode) => labelKeyToText(mode.value));
+
+    it('returns semi-transparent grey if the label starts with "Unlabeled"', () => {
+      expect(getColorForModeLabel('Unlabeledzzzzz')).toBe('rgba(85, 85, 85, 0.12)');
+    });
+
+    it('returns color for modes that exist in the label options', () => {
+      expect(getColorForModeLabel('walk')).toBe(base_modes.BASE_MODES['WALKING'].color);
+      expect(getColorForModeLabel('bike')).toBe(base_modes.BASE_MODES['BICYCLING'].color);
+      expect(getColorForModeLabel('e-bike')).toBe(base_modes.BASE_MODES['E_BIKE'].color);
+      expect(getColorForModeLabel('bus')).toBe(base_modes.BASE_MODES['BUS'].color);
     });
   });
 });
