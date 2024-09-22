@@ -5,8 +5,7 @@ import {
   inferFinalLabels,
   labelInputDetailsForTrip,
   labelKeyToReadable,
-  labelKeyToRichMode,
-  labelOptionByValue,
+  labelKeyToText,
   readableLabelToKey,
   verifiabilityForTrip,
 } from '../js/survey/multilabel/confirmHelper';
@@ -16,11 +15,7 @@ import { CompositeTrip, UserInputEntry } from '../js/types/diaryTypes';
 import { UserInputMap } from '../js/TimelineContext';
 window['i18next'] = initializedI18next;
 
-const fakeAppConfig = {
-  label_options: 'json/label-options.json.sample',
-};
 const fakeAppConfigWithModeOfStudy = {
-  ...fakeAppConfig,
   intro: {
     mode_studied: 'walk',
   },
@@ -61,10 +56,10 @@ jest.mock('../js/services/commHelper', () => ({
 }));
 
 describe('confirmHelper', () => {
-  it('returns labelOptions given an appConfig', async () => {
-    const labelOptions = await getLabelOptions(fakeAppConfig);
+  it('returns default labelOptions given a blank appConfig', async () => {
+    const labelOptions = await getLabelOptions({});
     expect(labelOptions).toBeTruthy();
-    expect(labelOptions.MODE[0].text).toEqual('Walk'); // translation is filled in
+    expect(labelOptions.MODE[0].value).toEqual('walk');
   });
 
   it('returns base labelInputDetails for a labelUserInput which does not have mode of study', () => {
@@ -112,10 +107,10 @@ describe('confirmHelper', () => {
 
   it('looks up a rich mode from a label key, or humanizes the label key if there is no rich mode', () => {
     const key = 'walk';
-    const richMode = labelKeyToRichMode(key);
+    const richMode = labelKeyToText(key);
     expect(richMode).toEqual('Walk');
     const key2 = 'scooby_doo_mystery_machine';
-    const readableMode = labelKeyToRichMode(key2);
+    const readableMode = labelKeyToText(key2);
     expect(readableMode).toEqual('Scooby Doo Mystery Machine');
   });
 

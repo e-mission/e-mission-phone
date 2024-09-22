@@ -2,8 +2,7 @@
  Alerts can be added to the queue from anywhere by calling AlertManager.addMessage. */
 
 import React, { useState, useEffect } from 'react';
-import { Snackbar } from 'react-native-paper';
-import { Modal } from 'react-native';
+import { Portal, Snackbar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { ParseKeys } from 'i18next';
 
@@ -41,7 +40,7 @@ const AlertBar = () => {
   const { msgKey, text } = messages[0];
   const alertText = [msgKey && t(msgKey), text].filter((x) => x).join(' ');
   return (
-    <Modal visible={true} onDismiss={onDismissSnackBar} transparent={true}>
+    <Portal>
       <Snackbar
         visible={true}
         onDismiss={onDismissSnackBar}
@@ -52,7 +51,7 @@ const AlertBar = () => {
         }}>
         {alertText}
       </Snackbar>
-    </Modal>
+    </Portal>
   );
 };
 

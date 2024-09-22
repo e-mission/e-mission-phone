@@ -13,8 +13,13 @@ const OnboardingStack = () => {
   const { onboardingState } = useContext(AppContext);
 
   if (onboardingState.route == OnboardingRoute.WELCOME) {
+    // This page needs 'light content' status bar (white text) due to blue header at the top
+    window['StatusBar']?.styleLightContent();
     return <WelcomePage />;
-  } else if (onboardingState.route == OnboardingRoute.SUMMARY) {
+  }
+  // All other pages go back to 'default' (black text)
+  window['StatusBar']?.styleDefault();
+  if (onboardingState.route == OnboardingRoute.SUMMARY) {
     return <SummaryPage />;
   } else if (onboardingState.route == OnboardingRoute.PROTOCOL) {
     return <ProtocolPage />;

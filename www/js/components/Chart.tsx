@@ -14,9 +14,10 @@ type ChartDataset = {
   label: string;
   data: XYPair[];
 };
+export type ChartRecord = { label: string; x: number | string; y: number | string };
 
 export type Props = {
-  records: { label: string; x: number | string; y: number | string }[];
+  records: ChartRecord[];
   axisTitle: string;
   type: 'bar' | 'line';
   getColorForLabel?: (label: string) => string;

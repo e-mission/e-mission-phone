@@ -4,7 +4,7 @@ import { useTheme } from 'react-native-paper';
 import { getGradient } from './charting';
 
 type Props = Omit<ChartProps, 'type'> & {
-  meter?: { high: number; middle: number; dash_key: string };
+  meter?: { high: number; middle: number; uncertainty_prefix: string };
 };
 const BarChart = ({ meter, ...rest }: Props) => {
   const { colors } = useTheme();

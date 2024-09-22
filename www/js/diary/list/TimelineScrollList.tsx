@@ -3,11 +3,12 @@ import TripCard from '../cards/TripCard';
 import PlaceCard from '../cards/PlaceCard';
 import UntrackedTimeCard from '../cards/UntrackedTimeCard';
 import { View, FlatList } from 'react-native';
-import { ActivityIndicator, Banner, Icon, Text } from 'react-native-paper';
+import { ActivityIndicator, Banner, Button, Icon, Text } from 'react-native-paper';
 import LoadMoreButton from './LoadMoreButton';
 import { useTranslation } from 'react-i18next';
-import { isoDateRangeToTsRange } from '../timelineHelper';
 import TimelineContext from '../../TimelineContext';
+import { isoDateRangeToTsRange, isoDateWithOffset } from '../../util';
+import { DateTime } from 'luxon';
 
 function renderCard({ item: listEntry, index }) {
   if (listEntry.origin_key.includes('trip')) {
@@ -30,7 +31,7 @@ type Props = {
 };
 const TimelineScrollList = ({ listEntries }: Props) => {
   const { t } = useTranslation();
-  const { pipelineRange, queriedDateRange, timelineIsLoading, loadMoreDays } =
+  const { pipelineRange, queriedDateRange, timelineIsLoading, loadMoreDays, loadDateRange } =
     useContext(TimelineContext);
   const listRef = React.useRef<FlatList | null>(null);
 
@@ -56,11 +57,22 @@ const TimelineScrollList = ({ listEntries }: Props) => {
     </LoadMoreButton>
   );
 
+  const pipelineEndDate = pipelineRange && DateTime.fromSeconds(pipelineRange.end_ts).toISODate();
   const noTravelBanner = (
     <Banner visible={true} icon={({ size }) => <Icon source="alert-circle" size={size} />}>
       <View style={{ width: '100%' }}>
         <Text variant="titleMedium">{t('diary.no-travel')}</Text>
         <Text variant="bodySmall">{t('diary.no-travel-hint')}</Text>
+        {queriedDateRange?.[0] && pipelineEndDate && queriedDateRange?.[0] > pipelineEndDate && (
+          <Button
+            style={{ marginEnd: 'auto' }}
+            labelStyle={{ marginHorizontal: 0 }}
+            onPress={() =>
+              loadDateRange([isoDateWithOffset(pipelineEndDate, -6), pipelineEndDate])
+            }>
+            {t('diary.jump-to-last-processed-week')}
+          </Button>
+        )}
       </View>
     </Banner>
   );

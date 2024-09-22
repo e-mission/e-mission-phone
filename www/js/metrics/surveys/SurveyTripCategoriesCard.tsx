@@ -1,13 +1,13 @@
 import React, { useMemo } from 'react';
 import { Text, Card } from 'react-native-paper';
-import { cardStyles } from './MetricsTab';
+import { metricsStyles } from '../MetricsScreen';
 import { useTranslation } from 'react-i18next';
-import BarChart from '../components/BarChart';
-import { useAppTheme } from '../appTheme';
+import BarChart from '../../components/BarChart';
+import { useAppTheme } from '../../appTheme';
 import { LabelPanel } from './SurveyComparisonCard';
-import { DayOfMetricData, MetricsData } from './metricsTypes';
-import { GroupingField } from '../types/appConfigTypes';
-import { getUniqueLabelsForDays } from './metricsHelper';
+import { DayOfMetricData, MetricsData } from '../metricsTypes';
+import { GroupingField } from '../../types/appConfigTypes';
+import { getUniqueLabelsForDays } from '../metricsHelper';
 
 function sumResponseCountsForValue(
   days: DayOfMetricData<'response_count'>[],
@@ -51,16 +51,13 @@ const SurveyTripCategoriesCard = ({ userMetrics, aggMetrics }: Props) => {
   }, [userMetrics]);
 
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
-        title={t('main-metrics.surveys')}
-        titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
-        subtitle={t('main-metrics.trip-categories')}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
-        style={cardStyles.title(colors)}
+        title={t('metrics.surveys.surveys')}
+        subtitle={t('metrics.surveys.trip-categories')}
+        subtitleStyle={metricsStyles.subtitleText}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         {records.length ? (
           <>
             <BarChart
@@ -75,11 +72,14 @@ const SurveyTripCategoriesCard = ({ userMetrics, aggMetrics }: Props) => {
               reverse={false}
               maxBarThickness={60}
             />
-            <LabelPanel first={t('main-metrics.response')} second={t('main-metrics.no-response')} />
+            <LabelPanel
+              first={t('metrics.surveys.response')}
+              second={t('metrics.surveys.no-response')}
+            />
           </>
         ) : (
           <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
-            {t('metrics.chart-no-data')}
+            {t('metrics.no-data-available')}
           </Text>
         )}
       </Card.Content>

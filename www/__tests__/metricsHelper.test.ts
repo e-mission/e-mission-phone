@@ -3,22 +3,30 @@ import {
   calculatePercentChange,
   formatDate,
   formatDateRangeOfDays,
+  getActiveModes,
   getLabelsForDay,
+  trimGroupingPrefix,
   getUniqueLabelsForDays,
   secondsToHours,
   secondsToMinutes,
   segmentDaysByWeeks,
-  metricToValue,
   tsForDayOfMetricData,
   valueForFieldOnDay,
-  generateSummaryFromData,
-  isCustomLabels,
-  isAllCustom,
-  isOnFoot,
   getUnitUtilsForMetric,
+  aggMetricEntries,
+  sumMetricEntry,
+  sumMetricEntries,
+  getColorForModeLabel,
 } from '../js/metrics/metricsHelper';
 import { DayOfMetricData } from '../js/metrics/metricsTypes';
 import initializedI18next from '../js/i18nextInit';
+import { LabelOptions } from '../js/types/labelTypes';
+import {
+  getLabelOptions,
+  labelKeyToText,
+  labelOptions,
+} from '../js/survey/multilabel/confirmHelper';
+import { base_modes } from 'e-mission-common';
 window['i18next'] = initializedI18next;
 
 describe('metricsHelper', () => {
@@ -30,6 +38,17 @@ describe('metricsHelper', () => {
     ] as any as DayOfMetricData[];
     it("should return unique labels for days with 'mode_confirm_*'", () => {
       expect(getUniqueLabelsForDays(days1)).toEqual(['a', 'b', 'c', 'd']);
+    });
+  });
+
+  describe('trimGroupingPrefix', () => {
+    it('should trim the grouping field prefix from a metrics key', () => {
+      expect(trimGroupingPrefix('mode_confirm_access_recreation')).toEqual('access_recreation');
+      expect(trimGroupingPrefix('primary_ble_sensed_mode_CAR')).toEqual('CAR');
+    });
+
+    it('should return "" if the key did not start with a grouping field', () => {
+      expect(trimGroupingPrefix('invalid_foo')).toEqual('');
     });
   });
 
@@ -80,7 +99,7 @@ describe('metricsHelper', () => {
   describe('formatDate', () => {
     const day1 = { date: '2021-01-01' } as any as DayOfMetricData;
     it('should format date', () => {
-      expect(formatDate(day1)).toEqual('1/1');
+      expect(formatDate(day1)).toEqual('Jan 1');
     });
   });
 
@@ -91,35 +110,23 @@ describe('metricsHelper', () => {
       { date: '2021-01-04' },
     ] as any as DayOfMetricData[];
     it('should format date range for days with date', () => {
-      expect(formatDateRangeOfDays(days1)).toEqual('1/1 - 1/4');
+      expect(formatDateRangeOfDays(days1)).toEqual('Jan 1 – Jan 4'); // note: en dash
     });
   });
 
-  describe('metricToValue', () => {
-    const metric = {
-      walking: 10,
-      nUsers: 5,
-    };
-    it('returns correct value for user population', () => {
-      const result = metricToValue('user', metric, 'walking');
-      expect(result).toBe(10);
-    });
-
-    it('returns correct value for aggregate population', () => {
-      const result = metricToValue('aggregate', metric, 'walking');
-      expect(result).toBe(2);
-    });
-  });
-
-  describe('isOnFoot', () => {
-    it('returns true for on foot mode', () => {
-      const result = isOnFoot('WALKING');
-      expect(result).toBe(true);
-    });
-
-    it('returns false for non on foot mode', () => {
-      const result = isOnFoot('DRIVING');
-      expect(result).toBe(false);
+  describe('getActiveModes', () => {
+    const fakeLabelOptions = {
+      MODE: [
+        { value: 'walk', base_mode: 'WALKING' },
+        { value: 'bike', base_mode: 'BICYCLING' },
+        { value: 'ebike', base_mode: 'E_BIKE' },
+        { value: 'car', base_mode: 'CAR' },
+        { value: 'bus', base_mode: 'BUS' },
+        { value: 'myskateboard', met: { ZOOMING: { mets: 5 } } },
+      ],
+    } as LabelOptions;
+    it('should return active modes', () => {
+      expect(getActiveModes(fakeLabelOptions)).toEqual(['walk', 'bike', 'ebike', 'myskateboard']);
     });
   });
 
@@ -169,132 +176,6 @@ describe('metricsHelper', () => {
     });
   });
 
-  describe('generateSummaryFromData', () => {
-    const modeMap = [
-      {
-        key: 'mode1',
-        values: [
-          ['value1', 10],
-          ['value2', 20],
-        ],
-      },
-      {
-        key: 'mode2',
-        values: [
-          ['value3', 30],
-          ['value4', 40],
-        ],
-      },
-    ];
-    it('returns summary with sum for non-speed metric', () => {
-      const metric = 'some_metric';
-      const expectedResult = [
-        { key: 'mode1', values: 30 },
-        { key: 'mode2', values: 70 },
-      ];
-      const result = generateSummaryFromData(modeMap, metric);
-      expect(result).toEqual(expectedResult);
-    });
-
-    it('returns summary with average for speed metric', () => {
-      const metric = 'mean_speed';
-      const expectedResult = [
-        { key: 'mode1', values: 15 },
-        { key: 'mode2', values: 35 },
-      ];
-      const result = generateSummaryFromData(modeMap, metric);
-      expect(result).toEqual(expectedResult);
-    });
-  });
-
-  describe('isCustomLabels', () => {
-    it('returns true for all custom labels', () => {
-      const modeMap = [
-        {
-          key: 'label_mode1',
-          values: [
-            ['value1', 10],
-            ['value2', 20],
-          ],
-        },
-        {
-          key: 'label_mode2',
-          values: [
-            ['value3', 30],
-            ['value4', 40],
-          ],
-        },
-      ];
-      const result = isCustomLabels(modeMap);
-      expect(result).toBe(true);
-    });
-
-    it('returns true for all sensed labels', () => {
-      const modeMap = [
-        {
-          key: 'label_mode1',
-          values: [
-            ['value1', 10],
-            ['value2', 20],
-          ],
-        },
-        {
-          key: 'label_mode2',
-          values: [
-            ['value3', 30],
-            ['value4', 40],
-          ],
-        },
-      ];
-      const result = isCustomLabels(modeMap);
-      expect(result).toBe(true);
-    });
-
-    it('returns false for mixed custom and sensed labels', () => {
-      const modeMap = [
-        {
-          key: 'label_mode1',
-          values: [
-            ['value1', 10],
-            ['value2', 20],
-          ],
-        },
-        {
-          key: 'MODE2',
-          values: [
-            ['value3', 30],
-            ['value4', 40],
-          ],
-        },
-      ];
-      const result = isCustomLabels(modeMap);
-      expect(result).toBe(false);
-    });
-  });
-
-  describe('isAllCustom', () => {
-    it('returns true when all keys are custom', () => {
-      const isSensedKeys = [false, false, false];
-      const isCustomKeys = [true, true, true];
-      const result = isAllCustom(isSensedKeys, isCustomKeys);
-      expect(result).toBe(true);
-    });
-
-    it('returns false when all keys are sensed', () => {
-      const isSensedKeys = [true, true, true];
-      const isCustomKeys = [false, false, false];
-      const result = isAllCustom(isSensedKeys, isCustomKeys);
-      expect(result).toBe(false);
-    });
-
-    it('returns undefined for mixed custom and sensed keys', () => {
-      const isSensedKeys = [true, false, true];
-      const isCustomKeys = [false, true, false];
-      const result = isAllCustom(isSensedKeys, isCustomKeys);
-      expect(result).toBe(undefined);
-    });
-  });
-
   describe('getUnitUtilsForMetric', () => {
     const imperialConfig = {
       distanceSuffix: 'mi',
@@ -333,6 +214,83 @@ describe('metricsHelper', () => {
       const mockResponse = { responded: 5, not_responded: 2 };
       expect(result[1](mockResponse)).toBe(5);
       expect(result[2](mockResponse)).toBe('5/7 responses');
+    });
+  });
+
+  const fakeFootprintEntries = [
+    {
+      date: '2024-05-28',
+      nUsers: 10,
+      mode_confirm_a: { kwh: 1, kg_co2: 2 },
+    },
+    {
+      date: '2024-05-29',
+      nUsers: 20,
+      mode_confirm_a: { kwh: 5, kg_co2: 8 },
+      mode_confirm_b: { kwh: 2, kg_co2: 4, kwh_uncertain: 1, kg_co2_uncertain: 2 },
+    },
+  ];
+
+  describe('aggMetricEntries', () => {
+    it('aggregates footprint metric entries', () => {
+      const result = aggMetricEntries(fakeFootprintEntries, 'footprint');
+      expect(result).toEqual({
+        nUsers: 30,
+        mode_confirm_a: expect.objectContaining({
+          kwh: 6,
+          kg_co2: 10,
+        }),
+        mode_confirm_b: expect.objectContaining({
+          kwh: 2,
+          kg_co2: 4,
+          kwh_uncertain: 1,
+          kg_co2_uncertain: 2,
+        }),
+      });
+    });
+  });
+
+  describe('sumMetricEntry', () => {
+    it('sums a single footprint metric entry', () => {
+      expect(sumMetricEntry(fakeFootprintEntries[0], 'footprint')).toEqual(
+        expect.objectContaining({
+          nUsers: 10,
+          kwh: 1,
+          kg_co2: 2,
+        }),
+      );
+    });
+  });
+
+  describe('sumMetricEntries', () => {
+    it('aggregates and sums footprint metric entries', () => {
+      expect(sumMetricEntries(fakeFootprintEntries, 'footprint')).toEqual(
+        expect.objectContaining({
+          nUsers: 30,
+          kwh: 8,
+          kg_co2: 14,
+          kwh_uncertain: 1,
+          kg_co2_uncertain: 2,
+        }),
+      );
+    });
+  });
+
+  describe('getColorForModeLabel', () => {
+    // initialize label options (blank appconfig so the default label options will be used)
+    getLabelOptions({});
+    // access the text for each mode option to initialize the color map
+    labelOptions.MODE.forEach((mode) => labelKeyToText(mode.value));
+
+    it('returns semi-transparent grey if the label starts with "Unlabeled"', () => {
+      expect(getColorForModeLabel('Unlabeledzzzzz')).toBe('rgba(85, 85, 85, 0.12)');
+    });
+
+    it('returns color for modes that exist in the label options', () => {
+      expect(getColorForModeLabel('walk')).toBe(base_modes.BASE_MODES['WALKING'].color);
+      expect(getColorForModeLabel('bike')).toBe(base_modes.BASE_MODES['BICYCLING'].color);
+      expect(getColorForModeLabel('e-bike')).toBe(base_modes.BASE_MODES['E_BIKE'].color);
+      expect(getColorForModeLabel('bus')).toBe(base_modes.BASE_MODES['BUS'].color);
     });
   });
 });

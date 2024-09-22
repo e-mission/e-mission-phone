@@ -49,6 +49,7 @@ type EnketoResponse = {
 
 export type EnketoUserInputData = UserInputData & {
   key?: string;
+  name: string;
   version: number;
   xmlResponse: string;
   jsonDocResponse: { [k: string]: any };

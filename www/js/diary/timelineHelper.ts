@@ -19,7 +19,7 @@ import {
   SectionSummary,
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
-import { LabelOptions } from '../types/labelTypes';
+import { RichMode } from '../types/labelTypes';
 import {
   EnketoUserInputEntry,
   filterByNameAndVersion,
@@ -34,21 +34,18 @@ const cachedGeojsons: Map<string, GeoJSONData> = new Map();
 /**
  * @description Gets a formatted GeoJSON object for a trip, including the start and end places and the trajectory.
  */
-export function useGeojsonForTrip(trip: CompositeTrip, baseMode?: string) {
+export function useGeojsonForTrip(trip: CompositeTrip, richMode?: RichMode) {
   if (!trip?._id?.$oid) return;
-  const gjKey = `trip-${trip._id.$oid}-${baseMode || 'detected'}`;
+  const gjKey = `trip-${trip._id.$oid}-${richMode?.value || 'detected'}`;
   if (cachedGeojsons.has(gjKey)) {
     return cachedGeojsons.get(gjKey);
   }
-
-  const trajectoryColor =
-    (baseMode && base_modes.get_base_mode_by_key(baseMode)?.color) || undefined;
 
   logDebug("Reading trip's " + trip.locations.length + ' location points at ' + new Date());
   const features = [
     location2GeojsonPoint(trip.start_loc, 'start_place'),
     location2GeojsonPoint(trip.end_loc, 'end_place'),
-    ...locations2GeojsonTrajectory(trip, trip.locations, trajectoryColor),
+    ...locations2GeojsonTrajectory(trip, trip.locations, richMode?.color),
   ];
 
   const gj: GeoJSONData = {
@@ -649,26 +646,3 @@ export function readUnprocessedTrips(
     },
   );
 }
-
-/**
- * @example IsoDateWithOffset('2024-03-22', 1) -> '2024-03-23'
- * @example IsoDateWithOffset('2024-03-22', -1000) -> '2021-06-26'
- */
-export function isoDateWithOffset(date: string, offset: number) {
-  let d = new Date(date);
-  d.setUTCDate(d.getUTCDate() + offset);
-  return d.toISOString().substring(0, 10);
-}
-
-export const isoDateRangeToTsRange = (dateRange: [string, string], zone?) => [
-  DateTime.fromISO(dateRange[0], { zone: zone }).startOf('day').toSeconds(),
-  DateTime.fromISO(dateRange[1], { zone: zone }).endOf('day').toSeconds(),
-];
-
-/**
- * @example isoDatesDifference('2024-03-22', '2024-03-29') -> 7
- * @example isoDatesDifference('2024-03-22', '2021-06-26') -> 1000
- * @example isoDatesDifference('2024-03-29', '2024-03-25') -> -4
- */
-export const isoDatesDifference = (date1: string, date2: string) =>
-  -DateTime.fromISO(date1).diff(DateTime.fromISO(date2), 'days').days;

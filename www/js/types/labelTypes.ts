@@ -6,17 +6,37 @@ export type InputDetails<T extends string> = {
     key: string;
   };
 };
-export type LabelOption = {
+
+type FootprintFuelType = 'gasoline' | 'diesel' | 'electric' | 'cng' | 'lpg' | 'hydrogen';
+
+export type RichMode = {
   value: string;
-  baseMode: string;
-  met?: { range: any[]; mets: number };
-  met_equivalent?: string;
-  kgCo2PerKm: number;
-  text?: string;
+  base_mode: string;
+  icon: string;
+  color: string;
+  met?: { [k in string]?: { range: [number, number]; mets: number } };
+  footprint?: {
+    [f in FootprintFuelType]?: {
+      wh_per_km?: number;
+      wh_per_trip?: number;
+    };
+  };
 };
+
+export type LabelOption<T extends string = MultilabelKey> = T extends 'MODE'
+  ? {
+      value: string;
+      base_mode: string;
+    } & Partial<RichMode>
+  : {
+      value: string;
+    };
+
 export type MultilabelKey = 'MODE' | 'PURPOSE' | 'REPLACED_MODE';
-export type LabelOptions<T extends string = MultilabelKey> = {
-  [k in T]: LabelOption[];
+export type LabelOptions = {
+  MODE: LabelOption<'MODE'>[];
+  PURPOSE: LabelOption<'PURPOSE'>[];
+  REPLACED_MODE?: LabelOption<'REPLACED_MODE'>[];
 } & {
   translations: {
     [lang: string]: { [translationKey: string]: string };

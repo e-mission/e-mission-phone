@@ -80,8 +80,7 @@ const Main = () => {
         renderScene={renderScene}
         // Place at bottom, color of 'surface' (white) by default, and 68px tall (default was 80)
         safeAreaInsets={{ bottom: 0 }}
-        style={{ backgroundColor: colors.surface }}
-        barStyle={{ height: 68, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0)' }}
+        barStyle={{ height: 68, justifyContent: 'center' }}
         // BottomNavigation uses secondaryContainer color for the background, but we want primaryContainer
         // (light blue), so we override here.
         theme={{ colors: { secondaryContainer: colors.primaryContainer } }}

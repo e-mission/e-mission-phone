@@ -1,29 +1,23 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { Card, DataTable, useTheme } from 'react-native-paper';
-import { MetricsData } from './metricsTypes';
-import { cardStyles } from './MetricsTab';
+import { Card, DataTable, Text, useTheme } from 'react-native-paper';
+import { MetricsData } from '../metricsTypes';
+import { metricsStyles } from '../MetricsScreen';
 import {
   formatDate,
   formatDateRangeOfDays,
   secondsToMinutes,
   segmentDaysByWeeks,
   valueForFieldOnDay,
-} from './metricsHelper';
+} from '../metricsHelper';
 import { useTranslation } from 'react-i18next';
-import { ACTIVE_MODES } from './WeeklyActiveMinutesCard';
-import { labelKeyToRichMode } from '../survey/multilabel/confirmHelper';
-import TimelineContext from '../TimelineContext';
-import useAppConfig from '../useAppConfig';
+import { labelKeyToText } from '../../survey/multilabel/confirmHelper';
+import TimelineContext from '../../TimelineContext';
 
-type Props = { userMetrics?: MetricsData };
-const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
+type Props = { userMetrics?: MetricsData; activeModes: string[] };
+const ActiveMinutesTableCard = ({ userMetrics, activeModes }: Props) => {
   const { colors } = useTheme();
   const { dateRange } = useContext(TimelineContext);
   const { t } = useTranslation();
-  const appConfig = useAppConfig();
-  // modes to consider as "active" for the purpose of calculating "active minutes", default : ['walk', 'bike']
-  const activeModes =
-    appConfig?.metrics?.phone_dashboard_ui?.active_travel_options?.modes_list ?? ACTIVE_MODES;
 
   const cumulativeTotals = useMemo(() => {
     if (!userMetrics?.duration) return [];
@@ -80,22 +74,18 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
   const to = Math.min((page + 1) * itemsPerPage, allTotals.length);
 
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
-        title={t('main-metrics.active-minutes')}
-        titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
-        subtitle={t('main-metrics.active-minutes-table')}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
-        style={cardStyles.title(colors)}
+        title={t('metrics.movement.active-minutes-table')}
+        subtitleStyle={metricsStyles.subtitleText}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         <DataTable>
           <DataTable.Header>
             <DataTable.Title> </DataTable.Title>
             {activeModes.map((mode, i) => (
               <DataTable.Title style={{ padding: 5 }} key={i}>
-                {labelKeyToRichMode(mode)}
+                {labelKeyToText(mode)}
               </DataTable.Title>
             ))}
           </DataTable.Header>
@@ -104,7 +94,7 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
               <DataTable.Cell>{total['period']}</DataTable.Cell>
               {activeModes.map((mode, j) => (
                 <DataTable.Cell key={j}>
-                  {total[mode]} {t('metrics.minutes')}
+                  {total[mode]} {t('metrics.movement.minutes')}
                 </DataTable.Cell>
               ))}
             </DataTable.Row>

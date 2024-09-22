@@ -52,7 +52,7 @@ const SensedPage = ({ pageVis, setPageVis }) => {
   return (
     <Modal visible={pageVis} onDismiss={() => setPageVis(false)}>
       <SafeAreaView style={{ flex: 1 }}>
-        <NavBar>
+        <NavBar elevated={true}>
           <Appbar.BackAction onPress={() => setPageVis(false)} />
           <Appbar.Content title={t('control.sensed-title')} />
         </NavBar>

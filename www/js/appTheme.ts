@@ -13,8 +13,8 @@ const AppTheme = {
     secondary: '#c08331', // lch(60% 55 70)
     secondaryContainer: '#fcefda', // lch(95% 12 80)
     onSecondaryContainer: '#45392e', // lch(25% 10 65)
-    background: '#edf1f6', // lch(95% 3 250) - background of label screen, other screens still have this as CSS .pane
-    surface: '#fafdff', // lch(99% 30 250)
+    background: '#f9fdff', // lch(99% 2 250)
+    surface: '#f9fdff', // lch(99% 2 250)
     surfaceVariant: '#e0f0ff', // lch(94% 50 250) - background of DataTable
     surfaceDisabled: '#c7e0f7', // lch(88% 15 250)
     onSurfaceDisabled: '#3a4955', // lch(30% 10 250)
@@ -24,11 +24,11 @@ const AppTheme = {
     inverseOnSurface: '#edf1f6', // lch(95% 3 250) - SnackBar text
     elevation: {
       level0: 'transparent',
-      level1: '#fafdff', // lch(99% 30 250)
-      level2: '#f2f9ff', // lch(97.5% 50 250)
-      level3: '#ebf5ff', // lch(96% 50 250)
-      level4: '#e0f0ff', // lch(94% 50 250)
-      level5: '#d6ebff', // lch(92% 50 250)
+      level1: '#f4f7fa', // lch(97% 2 250)
+      level2: '#edf1f6', // lch(95% 3 250)
+      level3: '#e7eff7', // lch(94% 5 250)
+      level4: '#e4ecf4', // lch(93% 5 250)
+      level5: '#e1e9f1', // lch(92% 5 250)
     },
     success: '#00a665', // lch(60% 55 155)
     warn: '#f8cf53', //lch(85% 65 85)
@@ -103,3 +103,5 @@ export function getTheme(flavor?: keyof typeof flavorOverrides) {
   };
   return { ...AppTheme, colors: scopedColors };
 }
+
+export const colors = AppTheme.colors;

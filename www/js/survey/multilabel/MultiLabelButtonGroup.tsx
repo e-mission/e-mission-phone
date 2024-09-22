@@ -24,7 +24,7 @@ import {
   inferFinalLabels,
   labelInputDetailsForTrip,
   labelKeyToReadable,
-  labelKeyToRichMode,
+  labelKeyToText,
   readableLabelToKey,
   verifiabilityForTrip,
 } from './confirmHelper';
@@ -33,6 +33,7 @@ import { MultilabelKey } from '../../types/labelTypes';
 // import { updateUserCustomLabel } from '../../services/commHelper';
 import { AppContext } from '../../App';
 import { addStatReading } from '../../plugin/clientStats';
+import { UserInputData } from '../../types/diaryTypes';
 
 const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
   const { colors } = useTheme();
@@ -87,7 +88,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
     and inform LabelTab of new inputs */
   function store(inputs: { [k in MultilabelKey]?: string }, isOther?) {
     if (!Object.keys(inputs).length) return displayErrorMsg('No inputs to store');
-    const inputsToStore: UserInputMap = {};
+    const inputsToStore: { [k in MultilabelKey]?: UserInputData } = {};
     const storePromises: any[] = [];
 
     for (let [inputType, newLabel] of Object.entries(inputs)) {
@@ -144,17 +145,18 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
         <View style={{ flex: 1, flexDirection: buttonsInline ? 'row' : 'column', columnGap: 8 }}>
           {Object.keys(tripInputDetails).map((key, i) => {
             const input = tripInputDetails[key];
-            const inputIsConfirmed = labelFor(trip, input.name);
-            const inputIsInferred = inferFinalLabels(trip, userInputFor(trip))[input.name];
+            const confirmedInput = labelFor(trip, input.name);
+            const inferredInput = inferFinalLabels(trip, userInputFor(trip))[input.name];
             let fillColor, textColor, borderColor;
-            if (inputIsConfirmed) {
+            if (confirmedInput) {
               fillColor = colors.primary;
-            } else if (inputIsInferred) {
+            } else if (inferredInput) {
               fillColor = colors.secondaryContainer;
               borderColor = colors.secondary;
               textColor = colors.onSecondaryContainer;
             }
-            const btnText = inputIsConfirmed?.text || inputIsInferred?.text || input.choosetext;
+            const labelOption = confirmedInput || inferredInput;
+            const btnText = labelOption ? labelKeyToText(labelOption.value) : t(input.choosetext);
 
             return (
               <View key={i} style={{ flex: 1 }}>
@@ -164,7 +166,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                   borderColor={borderColor}
                   textColor={textColor}
                   onPress={(e) => openModalFor(input.name)}>
-                  {t(btnText)}
+                  {btnText}
                 </DiaryButton>
               </View>
             );
@@ -202,7 +204,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                       const radioItemForOption = (
                         <RadioButton.Item
                           key={i}
-                          label={o.text || labelKeyToReadable(o.value)}
+                          label={labelKeyToText(o.value)}
                           value={o.value}
                           style={{ paddingVertical: 2 }}
                         />
@@ -211,7 +213,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                       show the custom labels section before 'other' */
                       if (o.value == 'other' && customLabelMap[customLabelKeyInDatabase]?.length) {
                         return (
-                          <>
+                          <React.Fragment key={i}>
                             <Divider style={{ marginVertical: 10 }} />
                             <Text
                               style={{ fontSize: 12, color: colors.onSurface, paddingVertical: 4 }}>
@@ -230,7 +232,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline = false }) => {
                             ))}
                             <Divider style={{ marginVertical: 10 }} />
                             {radioItemForOption}
-                          </>
+                          </React.Fragment>
                         );
                       }
                       // otherwise, just show the radio item as normal

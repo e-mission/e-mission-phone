@@ -1,20 +1,26 @@
 import { GroupingField, MetricName } from '../types/appConfigTypes';
 
+type TravelMetricName = 'distance' | 'duration' | 'count';
+
 // distance, duration, and count use number values in meters, seconds, and count respectively
 // response_count uses object values containing responded and not_responded counts
-type MetricValue<T> = T extends 'response_count'
-  ? { responded?: number; not_responded?: number }
-  : number;
+// footprint uses object values containing kg_co2 and kwh values with optional _uncertain values
+export type MetricValue<T extends MetricName> = T extends TravelMetricName
+  ? number
+  : T extends 'response_count'
+    ? { responded?: number; not_responded?: number }
+    : T extends 'footprint'
+      ? { kg_co2: number; kg_co2_uncertain?: number; kwh: number; kwh_uncertain?: number }
+      : never;
 
-export type DayOfMetricData<T = MetricName> = {
+export type MetricEntry<T extends MetricName = MetricName> = {
+  [k in `${GroupingField}_${string}`]?: MetricValue<T>;
+};
+
+export type DayOfMetricData<T extends MetricName = MetricName> = {
   date: string; // yyyy-mm-dd
   nUsers: number;
-} & {
-  // each key is a value for a specific grouping field
-  // and the value is the respective metric value
-  // e.g. { mode_confirm_bikeshare: 123, survey_TripConfirmSurvey: { responded: 4, not_responded: 5 }
-  [k in `${GroupingField}_${string}`]: MetricValue<T>;
-};
+} & MetricEntry<T>;
 
 export type MetricsData = {
   [key in MetricName]: DayOfMetricData<key>[];

@@ -43,9 +43,8 @@ const TripCard = ({ trip, isFirstInList }: Props) => {
   } = useDerivedProperties(trip);
   let [tripStartDisplayName, tripEndDisplayName] = useAddressNames(trip);
   const navigation = useNavigation<any>();
-  const { labelOptions, confirmedModeFor, notesFor } = useContext(TimelineContext);
-  const tripGeojson =
-    trip && labelOptions && useGeojsonForTrip(trip, confirmedModeFor(trip)?.baseMode);
+  const { confirmedModeFor, notesFor } = useContext(TimelineContext);
+  const tripGeojson = trip && useGeojsonForTrip(trip, confirmedModeFor(trip));
 
   const isDraft = trip.key.includes('UNPROCESSED');
   const flavoredTheme = getTheme(isDraft ? 'draft' : undefined);

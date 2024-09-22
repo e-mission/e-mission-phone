@@ -2,12 +2,12 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Icon, Card, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useAppTheme } from '../appTheme';
+import { useAppTheme } from '../../appTheme';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { cardStyles } from './MetricsTab';
-import { DayOfMetricData, MetricsData } from './metricsTypes';
-import { getUniqueLabelsForDays } from './metricsHelper';
+import { metricsStyles } from '../MetricsScreen';
+import { DayOfMetricData, MetricsData } from '../metricsTypes';
+import { getUniqueLabelsForDays } from '../metricsHelper';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 /**
@@ -111,28 +111,25 @@ const SurveyComparisonCard = ({ userMetrics, aggMetrics }: Props) => {
   };
 
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
-        title={t('main-metrics.surveys')}
-        titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
-        subtitle={t('main-metrics.comparison')}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
-        style={cardStyles.title(colors)}
+        title={t('metrics.surveys.surveys')}
+        subtitle={t('metrics.surveys.comparison')}
+        subtitleStyle={metricsStyles.subtitleText}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         {typeof myResponsePct !== 'number' || typeof othersResponsePct !== 'number' ? (
           <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
-            {t('metrics.chart-no-data')}
+            {t('metrics.no-data-available')}
           </Text>
         ) : (
           <View>
-            <Text style={styles.chartTitle}>{t('main-metrics.survey-response-rate')}</Text>
+            <Text style={styles.chartTitle}>{t('metrics.surveys.survey-response-rate')}</Text>
             <View style={styles.chartWrapper}>
               {renderDoughnutChart(myResponsePct, colors.navy, true)}
               {renderDoughnutChart(othersResponsePct, colors.orange, false)}
             </View>
-            <LabelPanel first={t('main-metrics.you')} second={t('main-metrics.others')} />
+            <LabelPanel first={t('metrics.surveys.you')} second={t('metrics.surveys.others')} />
           </View>
         )}
       </Card.Content>

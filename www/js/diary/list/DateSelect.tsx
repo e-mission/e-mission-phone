@@ -15,11 +15,17 @@ import {
   DatePickerModalRangeProps,
   DatePickerModalSingleProps,
 } from 'react-native-paper-dates';
-import { Text, Divider, useTheme } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { NavBarButton } from '../../components/NavBar';
-import { isoDateRangeToTsRange } from '../timelineHelper';
+import { formatIsoNoYear, isoDateRangeToTsRange } from '../../util';
+
+// formats as e.g. 'Aug 1'
+const MONTH_DAY_SHORT: Intl.DateTimeFormatOptions = {
+  month: 'short',
+  day: 'numeric',
+};
 
 type Props = Partial<DatePickerModalSingleProps | DatePickerModalRangeProps> & {
   mode: 'single' | 'range';
@@ -43,18 +49,15 @@ const DateSelect = ({ mode, onChoose, ...rest }: Props) => {
     [queriedDateRange],
   );
 
-  const displayDateRange = useMemo(() => {
-    if (!pipelineRange || !queriedDateRange?.[0]) return null;
-    const [queriedStartTs, queriedEndTs] = isoDateRangeToTsRange(queriedDateRange);
-    const displayStartTs = Math.max(queriedStartTs, pipelineRange.start_ts);
-    const displayStartDate = DateTime.fromSeconds(displayStartTs).toLocaleString(
-      DateTime.DATE_SHORT,
-    );
-    let displayEndDate;
-    if (queriedEndTs < pipelineRange.end_ts) {
-      displayEndDate = DateTime.fromSeconds(queriedEndTs).toLocaleString(DateTime.DATE_SHORT);
+  const displayDateText = useMemo(() => {
+    if (!pipelineRange || !queriedDateRange?.[0]) {
+      return ' – '; // en dash surrounded by em spaces
     }
-    return [displayStartDate, displayEndDate];
+    const displayDateRange = [...queriedDateRange];
+    if (queriedDateRange[1] == DateTime.now().toISODate()) {
+      displayDateRange[1] = t('diary.today');
+    }
+    return formatIsoNoYear(...displayDateRange);
   }, [pipelineRange, queriedDateRange]);
 
   const midpointDate = useMemo<Date | undefined>(() => {
@@ -68,27 +71,13 @@ const DateSelect = ({ mode, onChoose, ...rest }: Props) => {
     setOpen(false);
   }, [setOpen]);
 
-  const displayDateRangeEnd = displayDateRange?.[1] || t('diary.today');
   return (
     <>
       <NavBarButton
         icon="calendar"
-        accessibilityLabel={
-          'Date range: ' +
-          (displayDateRange?.[0] ? displayDateRange?.[0] + ' to ' : '') +
-          displayDateRangeEnd
-        }
+        accessibilityLabel={'Date range: ' + displayDateText}
         onPress={() => setOpen(true)}>
-        {displayDateRange?.[0] && (
-          <>
-            <Text>{displayDateRange?.[0]}</Text>
-            <Divider
-              horizontalInset={true}
-              style={[s.divider, { backgroundColor: colors.onBackground }]}
-            />
-          </>
-        )}
-        <Text>{displayDateRangeEnd}</Text>
+        <Text>{displayDateText}</Text>
       </NavBarButton>
       <DatePickerModal
         locale={i18next.resolvedLanguage || 'en'}

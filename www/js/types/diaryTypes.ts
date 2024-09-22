@@ -156,7 +156,6 @@ export type UserInputData = {
   end_local_dt?: LocalDt;
   status?: string;
   match_id?: string;
-  name: string;
 };
 export type UserInputEntry<T = UserInputData> = {
   data: T;

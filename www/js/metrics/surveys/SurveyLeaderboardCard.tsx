@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { View, Text } from 'react-native';
 import { Card } from 'react-native-paper';
-import { cardStyles, SurveyMetric, SurveyObject } from './MetricsTab';
+import { metricsStyles } from '../MetricsScreen';
 import { useTranslation } from 'react-i18next';
-import BarChart from '../components/BarChart';
-import { useAppTheme } from '../appTheme';
+import BarChart from '../../components/BarChart';
+import { useAppTheme } from '../../appTheme';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import Annotation from 'chartjs-plugin-annotation';
 
@@ -12,7 +12,7 @@ ChartJS.register(...registerables, Annotation);
 
 type Props = {
   studyStartDate: string;
-  surveyMetric: SurveyMetric;
+  surveyMetric;
 };
 
 type LeaderboardRecord = {
@@ -41,7 +41,7 @@ const SurveyLeaderboardCard = ({ studyStartDate, surveyMetric }: Props) => {
   }
 
   const leaderboardRecords: LeaderboardRecord[] = useMemo(() => {
-    const combinedLeaderboard: SurveyObject[] = [...surveyMetric.others.leaderboard];
+    const combinedLeaderboard = [...surveyMetric.others.leaderboard];
     combinedLeaderboard.splice(myRank, 0, mySurveyMetric);
 
     // This is to prevent the leaderboard from being too long for UX purposes.
@@ -68,22 +68,18 @@ const SurveyLeaderboardCard = ({ studyStartDate, surveyMetric }: Props) => {
   }, [surveyMetric]);
 
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
-        title={t('main-metrics.surveys')}
-        titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
-        subtitle={t('main-metrics.leaderboard')}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
-        style={cardStyles.title(colors)}
+        title={t('metrics.surveys.surveys')}
+        subtitle={t('metrics.leaderboard.leaderboard')}
+        subtitleStyle={metricsStyles.subtitleText}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         <View>
           <Text style={styles.chartDesc}>
-            * {t('main-metrics.survey-leaderboard-desc')}
-            {studyStartDate}
+            * {t('metrics.leaderboard.data-accumulated-since-date', { date: studyStartDate })}
           </Text>
-          <Text style={styles.chartTitle}>{t('main-metrics.survey-response-rate')}</Text>
+          <Text style={styles.chartTitle}>{t('metrics.surveys.survey-response-rate')}</Text>
           <BarChart
             records={leaderboardRecords}
             axisTitle=""
@@ -97,9 +93,7 @@ const SurveyLeaderboardCard = ({ studyStartDate, surveyMetric }: Props) => {
             enableTooltip={false}
           />
           <View style={styles.statusTextWrapper}>
-            <Text>{t('main-metrics.you-are-in')}</Text>
-            <Text style={{ color: colors.navy, fontWeight: 'bold' }}> #{myRank + 1} </Text>
-            <Text>{t('main-metrics.place')}</Text>
+            <Text>{t('metrics.leaderboard.you-are-in-x-place', { x: myRank + 1 })}</Text>
           </View>
         </View>
       </Card.Content>

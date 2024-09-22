@@ -2,8 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Card, Checkbox, Text, useTheme } from 'react-native-paper';
 import colorLib from 'color';
-import BarChart from '../components/BarChart';
-import { DayOfMetricData } from './metricsTypes';
+import BarChart from '../../components/BarChart';
+import { DayOfMetricData } from '../metricsTypes';
 import {
   formatDateRangeOfDays,
   getLabelsForDay,
@@ -11,15 +11,14 @@ import {
   getUniqueLabelsForDays,
   valueForFieldOnDay,
   getUnitUtilsForMetric,
-} from './metricsHelper';
-import ToggleSwitch from '../components/ToggleSwitch';
-import { cardStyles } from './MetricsTab';
-import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
-import { getBaseModeByText } from '../diary/diaryHelper';
+  getColorForModeLabel,
+} from '../metricsHelper';
+import ToggleSwitch from '../../components/ToggleSwitch';
+import { metricsStyles } from '../MetricsScreen';
+import { labelKeyToText } from '../../survey/multilabel/confirmHelper';
 import { useTranslation } from 'react-i18next';
-import { GroupingField, MetricName } from '../types/appConfigTypes';
-import { useImperialConfig } from '../config/useImperialConfig';
-import { base_modes } from 'e-mission-common';
+import { GroupingField, MetricName } from '../../types/appConfigTypes';
+import { useImperialConfig } from '../../config/useImperialConfig';
 
 type Props = {
   metricName: MetricName;
@@ -61,7 +60,7 @@ const MetricsCard = ({
         const rawVal = valueForFieldOnDay(day, groupingFields[0], label);
         if (rawVal) {
           records.push({
-            label: labelKeyToRichMode(label),
+            label: labelKeyToText(label),
             x: unitConvertFn(rawVal),
             y: tsForDayOfMetricData(day) * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
           });
@@ -80,7 +79,7 @@ const MetricsCard = ({
   const cardSubtitleText = useMemo(() => {
     if (!metricDataDays) return;
     const groupText =
-      populationMode == 'user' ? t('main-metrics.user-totals') : t('main-metrics.group-totals');
+      populationMode == 'user' ? t('metrics.travel.user-totals') : t('metrics.travel.group-totals');
     return `${groupText} (${formatDateRangeOfDays(metricDataDays)})`;
   }, [metricDataDays, populationMode]);
 
@@ -112,28 +111,16 @@ const MetricsCard = ({
     return vals;
   }, [metricDataDays, viewMode]);
 
-  // Unlabelled data shows up as 'UNKNOWN' grey and mostly transparent
-  // All other modes are colored according to their base mode
-  const getColorForLabel = (label: string) => {
-    if (label == 'Unlabeled') {
-      const unknownModeColor = base_modes.get_base_mode_by_key('UNKNOWN').color;
-      return colorLib(unknownModeColor).alpha(0.15).rgb().string();
-    }
-    return getBaseModeByText(label, labelOptions).color;
-  };
-
   return (
-    <Card style={cardStyles.card} contentStyle={{ flex: 1 }}>
+    <Card style={metricsStyles.card} contentStyle={{ flex: 1 }}>
       <Card.Title
         title={cardTitle}
-        titleVariant="titleLarge"
-        titleStyle={cardStyles.titleText(colors)}
         subtitle={cardSubtitleText}
-        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
+        subtitleStyle={metricsStyles.subtitleText}
         right={() => (
-          <View style={{ gap: 3 }}>
+          <View style={{ gap: 3, marginRight: 5 }}>
             <ToggleSwitch
-              density="high"
+              density="medium"
               value={viewMode}
               onValueChange={(v) => setViewMode(v as any)}
               buttons={[
@@ -142,7 +129,7 @@ const MetricsCard = ({
               ]}
             />
             <ToggleSwitch
-              density="high"
+              density="medium"
               value={populationMode}
               onValueChange={(p) => setPopulationMode(p as any)}
               buttons={[
@@ -152,22 +139,21 @@ const MetricsCard = ({
             />
           </View>
         )}
-        style={cardStyles.title(colors)}
       />
-      <Card.Content style={cardStyles.content}>
+      <Card.Content style={metricsStyles.content}>
         {viewMode == 'details' &&
           (Object.keys(metricSumValues).length ? (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 }}>
               {Object.keys(metricSumValues).map((label, i) => (
                 <View style={{ width: '50%', paddingHorizontal: 8 }} key={i}>
-                  <Text variant="titleSmall">{labelKeyToRichMode(label)}</Text>
+                  <Text variant="titleSmall">{labelKeyToText(label)}</Text>
                   <Text>{metricSumValues[label]}</Text>
                 </View>
               ))}
             </View>
           ) : (
             <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
-              {t('metrics.chart-no-data')}
+              {t('metrics.no-data-available')}
             </Text>
           ))}
         {viewMode == 'graph' &&
@@ -179,7 +165,7 @@ const MetricsCard = ({
                 isHorizontal={true}
                 timeAxis={true}
                 stacked={graphIsStacked}
-                getColorForLabel={getColorForLabel}
+                getColorForLabel={getColorForModeLabel}
               />
               <View
                 style={{
@@ -188,7 +174,7 @@ const MetricsCard = ({
                   alignItems: 'center',
                   justifyContent: 'flex-end',
                 }}>
-                <Text variant="labelMedium">Stack bars:</Text>
+                <Text variant="labelMedium">{t('metrics.stack-bars')}</Text>
                 <Checkbox
                   status={graphIsStacked ? 'checked' : 'unchecked'}
                   onPress={() => setGraphIsStacked(!graphIsStacked)}
@@ -197,7 +183,7 @@ const MetricsCard = ({
             </>
           ) : (
             <Text variant="labelMedium" style={{ textAlign: 'center', margin: 'auto' }}>
-              {t('metrics.chart-no-data')}
+              {t('metrics.no-data-available')}
             </Text>
           ))}
       </Card.Content>

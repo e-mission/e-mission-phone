@@ -48,16 +48,13 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const tripGeojson =
     trip &&
     labelOptions &&
-    useGeojsonForTrip(
-      trip,
-      modesShown == 'confirmed' ? confirmedModeFor(trip)?.baseMode : undefined,
-    );
+    useGeojsonForTrip(trip, modesShown == 'confirmed' ? confirmedModeFor(trip) : undefined);
   const mapOpts = { minZoom: 3, maxZoom: 17 };
 
   const modal = (
     <Modal visible={true}>
       <SafeAreaView style={{ flex: 1 }}>
-        <NavBar>
+        <NavBar elevated={true}>
           <Appbar.BackAction
             onPress={() => {
               navigation.goBack();

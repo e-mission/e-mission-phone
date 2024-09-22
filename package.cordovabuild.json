@@ -98,7 +98,8 @@
       },
       "cordova-plugin-bluetooth-classic-serial-port": {},
       "cordova-custom-config": {},
-      "com.unarin.cordova.beacon": {}
+      "com.unarin.cordova.beacon": {},
+      "cordova-plugin-statusbar": {}
     }
   },
   "dependencies": {
@@ -136,8 +137,9 @@
     "cordova-plugin-bluetooth-classic-serial-port": "git+https://github.com/e-mission/cordova-plugin-bluetooth-classic-serial-port.git",
     "cordova-custom-config": "^5.1.1",
     "com.unarin.cordova.beacon": "github:e-mission/cordova-plugin-ibeacon",
+    "cordova-plugin-statusbar": "^4.0.0",
     "core-js": "^2.5.7",
-    "e-mission-common": "github:JGreenlee/e-mission-common#semver:0.5.4",
+    "e-mission-common": "github:JGreenlee/e-mission-common#semver:0.6.1",
     "enketo-core": "^6.1.7",
     "enketo-transformer": "^4.0.0",
     "fast-xml-parser": "^4.2.2",
@@ -156,7 +158,8 @@
     "react-dom": "~18.2.0",
     "react-i18next": "^13.5.0",
     "react-native-paper": "^5.11.0",
-    "react-native-paper-dates": "^0.18.12",
+    "react-native-paper-dates": "0.21.8",
+    "react-native-paper-tabs": "^0.10.4",
     "react-native-safe-area-context": "^4.6.3",
     "react-native-screens": "^3.22.0",
     "react-native-vector-icons": "^9.2.0",
