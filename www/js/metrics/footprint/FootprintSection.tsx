@@ -2,7 +2,7 @@ import React, { useContext, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import color from 'color';
-import SummaryCard from '../SumaryCard';
+import SummaryCard from '../SummaryCard';
 import { useTranslation } from 'react-i18next';
 import { sumMetricEntries } from '../metricsHelper';
 import TimelineContext from '../../TimelineContext';
