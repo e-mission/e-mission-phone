@@ -20,9 +20,8 @@ const SummaryCard = ({ title, unit, value, nDays, goals }: Props) => {
   const perDayValue = value.map((v) => v / nDays) as Value;
 
   const formatVal = (v: Value) => {
-    const opts = { maximumFractionDigits: 1 };
-    if (valueIsRange) return `${formatForDisplay(v[0], opts)} - ${formatForDisplay(v[1], opts)}`;
-    return `${formatForDisplay(v[0], opts)}`;
+    if (valueIsRange) return `${formatForDisplay(v[0])} - ${formatForDisplay(v[1])}`;
+    return `${formatForDisplay(v[0])}`;
   };
 
   const colorFn = (v: Value) => {
