@@ -59,44 +59,44 @@ function getBarHeight(stacks) {
   return totalHeight;
 }
 
-//fill pattern creation
-//https://stackoverflow.com/questions/28569667/fill-chart-js-bar-chart-with-diagonal-stripes-or-other-patterns
-function createDiagonalPattern(color = 'black') {
-  let shape = document.createElement('canvas');
-  shape.width = 10;
-  shape.height = 10;
-  let c = shape.getContext('2d') as CanvasRenderingContext2D;
-  c.strokeStyle = color;
-  c.lineWidth = 2;
-  c.beginPath();
-  c.moveTo(2, 0);
-  c.lineTo(10, 8);
-  c.stroke();
-  c.beginPath();
-  c.moveTo(0, 8);
-  c.lineTo(2, 10);
-  c.stroke();
-  return c.createPattern(shape, 'repeat');
-}
+// //fill pattern creation
+// //https://stackoverflow.com/questions/28569667/fill-chart-js-bar-chart-with-diagonal-stripes-or-other-patterns
+// function createDiagonalPattern(color = 'black') {
+//   let shape = document.createElement('canvas');
+//   shape.width = 10;
+//   shape.height = 10;
+//   let c = shape.getContext('2d') as CanvasRenderingContext2D;
+//   c.strokeStyle = color;
+//   c.lineWidth = 2;
+//   c.beginPath();
+//   c.moveTo(2, 0);
+//   c.lineTo(10, 8);
+//   c.stroke();
+//   c.beginPath();
+//   c.moveTo(0, 8);
+//   c.lineTo(2, 10);
+//   c.stroke();
+//   return c.createPattern(shape, 'repeat');
+// }
 
-export function getMeteredBackgroundColor(meter, currDataset, barCtx, colors, darken = 0) {
-  if (!barCtx || !currDataset) return;
-  let bar_height = getBarHeight(barCtx.parsed._stacks);
-  logDebug(`bar height for ${barCtx.raw.y} is ${bar_height} which in chart is ${currDataset}`);
-  let meteredColor;
-  if (bar_height > meter.high) meteredColor = colors.danger;
-  else if (bar_height > meter.middle) meteredColor = colors.warn;
-  else meteredColor = colors.success;
-  if (darken) {
-    return color(meteredColor).darken(darken).hex();
-  }
-  //if "unlabeled", etc -> stripes
-  if (currDataset.label == meter.uncertainty_prefix) {
-    return createDiagonalPattern(meteredColor);
-  }
-  //if :labeled", etc -> solid
-  return meteredColor;
-}
+// export function getMeteredBackgroundColor(meter, currDataset, barCtx, colors, darken = 0) {
+//   if (!barCtx || !currDataset) return;
+//   let bar_height = getBarHeight(barCtx.parsed._stacks);
+//   logDebug(`bar height for ${barCtx.raw.y} is ${bar_height} which in chart is ${currDataset}`);
+//   let meteredColor;
+//   if (bar_height > meter.high) meteredColor = colors.danger;
+//   else if (bar_height > meter.middle) meteredColor = colors.warn;
+//   else meteredColor = colors.success;
+//   if (darken) {
+//     return color(meteredColor).darken(darken).hex();
+//   }
+//   //if "unlabeled", etc -> stripes
+//   if (currDataset.label == meter.uncertainty_prefix) {
+//     return createDiagonalPattern(meteredColor);
+//   }
+//   //if :labeled", etc -> solid
+//   return meteredColor;
+// }
 
 const meterColors = {
   below: '#00cc95', // green oklch(75% 0.3 165)
@@ -141,43 +141,4 @@ export function getGradient(
     gradient.addColorStop((meter.high + 20) / scaleMaxX, adjColor);
   }
   return gradient;
-}
-
-/**
- * @param baseColor a color string
- * @param change a number between -1 and 1, indicating the amount to darken or lighten the color
- * @returns an adjusted color, either darkened or lightened, depending on the sign of change
- */
-export function darkenOrLighten(baseColor: string, change: number) {
-  if (!baseColor) return baseColor;
-  let colorObj = color(baseColor);
-  if (change < 0) {
-    // darkening appears more drastic than lightening, so we will be less aggressive (scale change by .5)
-    return colorObj.darken(Math.abs(change * 0.5)).hex();
-  } else {
-    return colorObj.lighten(Math.abs(change)).hex();
-  }
-}
-
-/**
- * @param colors an array of colors, each of which is an array of [key, color string]
- * @returns an object mapping keys to colors, with duplicates darkened/lightened to be distinguishable
- */
-export function dedupColors(colors: string[][]) {
-  const dedupedColors = {};
-  const maxAdjustment = 0.7; // more than this is too drastic and the colors approach black/white
-  for (const [key, clr] of colors) {
-    if (!clr) continue; // skip empty colors
-    const duplicates = colors.filter(([k, c]) => c == clr);
-    if (duplicates.length > 1) {
-      // there are duplicates; calculate an evenly-spaced adjustment for each one
-      duplicates.forEach(([k, c], i) => {
-        const change = -maxAdjustment + ((maxAdjustment * 2) / (duplicates.length - 1)) * i;
-        dedupedColors[k] = darkenOrLighten(clr, change);
-      });
-    } else if (!dedupedColors[key]) {
-      dedupedColors[key] = clr; // not a dupe, & not already deduped, so use the color as-is
-    }
-  }
-  return dedupedColors;
 }

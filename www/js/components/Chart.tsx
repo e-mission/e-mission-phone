@@ -4,7 +4,8 @@ import { useTheme } from 'react-native-paper';
 import { ChartData, Chart as ChartJS, ScriptableContext, registerables } from 'chart.js';
 import { Chart as ChartJSChart } from 'react-chartjs-2';
 import Annotation, { AnnotationOptions, LabelPosition } from 'chartjs-plugin-annotation';
-import { dedupColors, getChartHeight, darkenOrLighten } from './charting';
+import { getChartHeight } from './charting';
+import { base_modes } from 'e-mission-common';
 import { logDebug } from '../plugin/logger';
 
 ChartJS.register(...registerables, Annotation);
@@ -64,7 +65,7 @@ const Chart = ({
     let labelColorMap; // object mapping labels to colors
     if (getColorForLabel) {
       const colorEntries = chartDatasets.map((d) => [d.label, getColorForLabel(d.label)]);
-      labelColorMap = dedupColors(colorEntries);
+      labelColorMap = base_modes.dedupe_colors(colorEntries, [0.4, 1.6]);
     }
     return {
       datasets: chartDatasets.map((e, i) => ({
@@ -73,7 +74,7 @@ const Chart = ({
           labelColorMap?.[e.label] ||
           getColorForChartEl?.(chartRef.current, e, barCtx, 'background'),
         borderColor: (barCtx) =>
-          darkenOrLighten(labelColorMap?.[e.label], -0.5) ||
+          base_modes.scale_lightness(labelColorMap?.[e.label], 0.5) ||
           getColorForChartEl?.(chartRef.current, e, barCtx, 'border'),
         borderWidth: borderWidth || 2,
         borderRadius: 3,
