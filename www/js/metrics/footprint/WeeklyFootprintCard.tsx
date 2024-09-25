@@ -10,7 +10,7 @@ import {
   sumMetricEntries,
   trimGroupingPrefix,
 } from '../metricsHelper';
-import { formatIsoNoYear, isoDateWithOffset } from '../../util';
+import { formatIsoNoYear, isoDateWithOffset } from '../../datetimeUtil';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../../components/BarChart';
 import { ChartRecord } from '../../components/Chart';

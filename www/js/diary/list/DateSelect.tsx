@@ -19,7 +19,7 @@ import { Text, useTheme } from 'react-native-paper';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { NavBarButton } from '../../components/NavBar';
-import { formatIsoNoYear, isoDateRangeToTsRange } from '../../util';
+import { formatIsoNoYear, isoDateRangeToTsRange } from '../../datetimeUtil';
 
 // formats as e.g. 'Aug 1'
 const MONTH_DAY_SHORT: Intl.DateTimeFormatOptions = {

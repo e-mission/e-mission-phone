@@ -1,4 +1,4 @@
-import { formatForDisplay } from '../js/util';
+import { formatForDisplay } from '../js/datetimeUtil';
 
 describe('util.ts', () => {
   describe('formatForDisplay', () => {

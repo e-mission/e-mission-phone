@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Card, Text } from 'react-native-paper';
-import { formatForDisplay } from '../util';
+import { formatForDisplay } from '../datetimeUtil';
 import { colors } from '../appTheme';
 import { t } from 'i18next';
 import { FootprintGoal } from '../types/appConfigTypes';

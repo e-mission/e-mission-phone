@@ -6,7 +6,7 @@ import SummaryCard from '../SummaryCard';
 import { useTranslation } from 'react-i18next';
 import { sumMetricEntries } from '../metricsHelper';
 import TimelineContext from '../../TimelineContext';
-import { formatIso, isoDatesDifference } from '../../util';
+import { formatIso, isoDatesDifference } from '../../datetimeUtil';
 import WeeklyFootprintCard from './WeeklyFootprintCard';
 import useAppConfig from '../../useAppConfig';
 import { getFootprintGoals } from './footprintHelper';

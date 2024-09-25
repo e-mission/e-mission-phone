@@ -7,7 +7,7 @@ import {
   primarySectionForTrip,
 } from './diaryHelper';
 import TimelineContext from '../TimelineContext';
-import { formatIsoNoYear, formatIsoWeekday, humanizeIsoRange, isoDatesDifference } from '../util';
+import { formatIsoNoYear, formatIsoWeekday, humanizeIsoRange } from '../datetimeUtil';
 
 const useDerivedProperties = (tlEntry) => {
   const imperialConfig = useImperialConfig();
