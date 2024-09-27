@@ -5,7 +5,7 @@ import BarChart from '../../components/BarChart';
 import { useTranslation } from 'react-i18next';
 import { ChartRecord } from '../../components/Chart';
 import TimelineContext from '../../TimelineContext';
-import { formatIsoNoYear } from '../../util';
+import { formatIsoNoYear } from '../../datetimeUtil';
 
 const FootprintComparisonCard = ({
   type,

@@ -7,7 +7,7 @@ import { ActivityIndicator, Banner, Button, Icon, Text } from 'react-native-pape
 import LoadMoreButton from './LoadMoreButton';
 import { useTranslation } from 'react-i18next';
 import TimelineContext from '../../TimelineContext';
-import { isoDateRangeToTsRange, isoDateWithOffset } from '../../util';
+import { isoDateRangeToTsRange, isoDateWithOffset } from '../../datetimeUtil';
 import { DateTime } from 'luxon';
 
 function renderCard({ item: listEntry, index }) {

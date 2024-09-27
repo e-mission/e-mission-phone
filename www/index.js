@@ -24,7 +24,7 @@ window.skipLocalNotificationReady = true;
 deviceReady.then(() => {
   logDebug('deviceReady');
   // On init, use 'default' status bar (black text)
-  window['StatusBar']?.styleDefault();
+  // window['StatusBar']?.styleDefault();
   cordova.plugin.http.setDataSerializer('json');
   const rootEl = document.getElementById('appRoot');
   const reactRoot = createRoot(rootEl);

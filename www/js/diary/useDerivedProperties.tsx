@@ -7,7 +7,7 @@ import {
   primarySectionForTrip,
 } from './diaryHelper';
 import TimelineContext from '../TimelineContext';
-import { formatIsoNoYear, formatIsoWeekday, humanizeIsoRange, isoDatesDifference } from '../util';
+import { formatIsoNoYear, formatIsoWeekday, humanizeIsoRange } from '../datetimeUtil';
 
 const useDerivedProperties = (tlEntry) => {
   const imperialConfig = useImperialConfig();
@@ -18,7 +18,8 @@ const useDerivedProperties = (tlEntry) => {
     const endFmt = tlEntry.end_fmt_time || tlEntry.exit_fmt_time;
     const beginDt = tlEntry.start_local_dt || tlEntry.enter_local_dt;
     const endDt = tlEntry.end_local_dt || tlEntry.exit_local_dt;
-    const tlEntryIsMultiDay = isoDatesDifference(beginFmt, endFmt);
+    // given YYYY-MM-DDTHH:MM:SSZ strings: if YYYY-MM-DD differs, is multi-day
+    const tlEntryIsMultiDay = beginFmt.substring(0, 10) != endFmt.substring(0, 10);
 
     return {
       confirmedMode: confirmedModeFor(tlEntry),

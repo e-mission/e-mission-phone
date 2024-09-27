@@ -22,7 +22,7 @@ import { getNotDeletedCandidates, mapInputsToTimelineEntries } from './survey/in
 import { EnketoUserInputEntry } from './survey/enketo/enketoHelper';
 import { primarySectionForTrip } from './diary/diaryHelper';
 import useAppStateChange from './useAppStateChange';
-import { isoDateRangeToTsRange, isoDateWithOffset } from './util';
+import { isoDateRangeToTsRange, isoDateWithOffset } from './datetimeUtil';
 import { base_modes } from 'e-mission-common';
 
 const TODAY_DATE = DateTime.now().toISODate();

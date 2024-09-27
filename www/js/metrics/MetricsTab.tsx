@@ -14,7 +14,7 @@ import { metrics_summaries } from 'e-mission-common';
 import MetricsScreen from './MetricsScreen';
 import { LabelOptions } from '../types/labelTypes';
 import { useAppTheme } from '../appTheme';
-import { isoDatesDifference } from '../util';
+import { isoDatesDifference } from '../datetimeUtil';
 
 const N_DAYS_TO_LOAD = 14; // 2 weeks
 export const DEFAULT_METRIC_LIST: MetricList = {

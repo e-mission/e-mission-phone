@@ -4,7 +4,7 @@ import { LabelOptions } from '../types/labelTypes';
 import { LocalDt } from '../types/serverData';
 import { ImperialConfig } from '../config/useImperialConfig';
 import { base_modes } from 'e-mission-common';
-import { humanizeIsoRange } from '../util';
+import { humanizeIsoRange } from '../datetimeUtil';
 
 export type BaseModeKey = string; // TODO figure out how to get keyof typeof base_modes.BASE_MODES
 
