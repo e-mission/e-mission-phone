@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Card, Text } from 'react-native-paper';
-import { formatForDisplay } from '../util';
+import { formatForDisplay } from '../datetimeUtil';
 import { colors } from '../appTheme';
 import { t } from 'i18next';
 import { FootprintGoal } from '../types/appConfigTypes';
@@ -20,9 +20,8 @@ const SummaryCard = ({ title, unit, value, nDays, goals }: Props) => {
   const perDayValue = value.map((v) => v / nDays) as Value;
 
   const formatVal = (v: Value) => {
-    const opts = { maximumFractionDigits: 1 };
-    if (valueIsRange) return `${formatForDisplay(v[0], opts)} - ${formatForDisplay(v[1], opts)}`;
-    return `${formatForDisplay(v[0], opts)}`;
+    if (valueIsRange) return `${formatForDisplay(v[0])} - ${formatForDisplay(v[1])}`;
+    return `${formatForDisplay(v[0])}`;
   };
 
   const colorFn = (v: Value) => {

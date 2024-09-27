@@ -6,7 +6,12 @@ import { MetricName, groupingFields } from '../types/appConfigTypes';
 import { ImperialConfig } from '../config/useImperialConfig';
 import i18next from 'i18next';
 import { base_modes, metrics_summaries } from 'e-mission-common';
-import { formatForDisplay, formatIsoNoYear, isoDatesDifference, isoDateWithOffset } from '../util';
+import {
+  formatForDisplay,
+  formatIsoNoYear,
+  isoDatesDifference,
+  isoDateWithOffset,
+} from '../datetimeUtil';
 import { LabelOptions, RichMode } from '../types/labelTypes';
 import { labelOptions, textToLabelKey } from '../survey/multilabel/confirmHelper';
 import { UNCERTAIN_OPACITY } from '../components/charting';

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import useAppConfig from '../useAppConfig';
-import { formatForDisplay } from '../util';
+import { formatForDisplay } from '../datetimeUtil';
 
 export type ImperialConfig = {
   distanceSuffix: string;

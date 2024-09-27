@@ -11,7 +11,7 @@ import EnketoModal from './EnketoModal';
 import { useTranslation } from 'react-i18next';
 import { EnketoUserInputEntry } from './enketoHelper';
 import { displayErrorMsg, logDebug } from '../../plugin/logger';
-import { formatIsoNoYear, isoDatesDifference } from '../../util';
+import { formatIsoNoYear, isoDatesDifference } from '../../datetimeUtil';
 
 type Props = {
   timelineEntry: any;

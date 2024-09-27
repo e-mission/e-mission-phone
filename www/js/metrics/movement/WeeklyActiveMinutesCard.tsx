@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import BarChart from '../../components/BarChart';
 import { labelKeyToText } from '../../survey/multilabel/confirmHelper';
 import TimelineContext from '../../TimelineContext';
-import { formatIsoNoYear, isoDateWithOffset } from '../../util';
+import { formatIsoNoYear, isoDateWithOffset } from '../../datetimeUtil';
 
 type Props = { userMetrics?: MetricsData; activeModes: string[] };
 const WeeklyActiveMinutesCard = ({ userMetrics, activeModes }: Props) => {
