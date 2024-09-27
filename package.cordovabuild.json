@@ -139,7 +139,7 @@
     "com.unarin.cordova.beacon": "github:e-mission/cordova-plugin-ibeacon",
     "cordova-plugin-statusbar": "^4.0.0",
     "core-js": "^2.5.7",
-    "e-mission-common": "github:JGreenlee/e-mission-common#semver:0.6.1",
+    "e-mission-common": "github:JGreenlee/e-mission-common#semver:0.6.2",
     "enketo-core": "^6.1.7",
     "enketo-transformer": "^4.0.0",
     "fast-xml-parser": "^4.2.2",
