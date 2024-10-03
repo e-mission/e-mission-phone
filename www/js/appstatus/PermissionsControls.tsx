@@ -13,14 +13,7 @@ const PermissionsControls = ({ onAccept }) => {
   const { t } = useTranslation();
   const [explainVis, setExplainVis] = useState<boolean>(false);
   const { permissionStatus } = useContext(AppContext);
-  const { checkList, overallStatus, error, explanationList } = permissionStatus;
-
-  useEffect(() => {
-    if (!error) return;
-    AlertManager.addMessage({
-      text: error,
-    });
-  }, [error]);
+  const { checkList, overallStatus, explanationList } = permissionStatus;
 
   return (
     <>
@@ -34,7 +27,9 @@ const PermissionsControls = ({ onAccept }) => {
           explanationList={explanationList}
           visible={explainVis}
           setVisible={setExplainVis}></ExplainPermissions>
-        {checkList?.map((lc) => <PermissionItem key={lc.name} check={lc}></PermissionItem>)}
+        {checkList?.map((lc) => (
+          <PermissionItem key={lc.name} check={lc}></PermissionItem>
+        ))}
       </ScrollView>
       <View style={styles.buttonBox}>
         <Button onPress={() => refreshAllChecks(checkList)}>{t('intro.appstatus.refresh')}</Button>
