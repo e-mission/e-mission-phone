@@ -86,7 +86,8 @@ const usePermissionStatus = () => {
       return 'intro.appstatus.locperms.description.android-gte-12';
     } else if (DEVICE_PLATFORM == 'ios') {
       if (DEVICE_VERSION < 13) return 'intro.appstatus.locperms.description.ios-lt-13';
-      return 'intro.appstatus.locperms.description.ios-gte-13';
+      if (DEVICE_VERSION < 13.4) return 'intro.appstatus.locperms.description.ios-13-13.3';
+      return 'intro.appstatus.locperms.description.ios-gte-13.4';
     }
     throw new Error(`Unknown platform ${DEVICE_PLATFORM} – unable to proceed`);
   }
@@ -239,7 +240,7 @@ const usePermissionStatus = () => {
     };
     let appAndChannelNotificationsCheck = {
       name: t('intro.appstatus.notificationperms.app-enabled-name'),
-      desc: t('intro.appstatus.notificationperms.description.android-enable'),
+      desc: t(`intro.appstatus.notificationperms.description.${DEVICE_PLATFORM}-enable`),
       fix: fixPerms,
       refresh: checkPerms,
       isOptional: true,
