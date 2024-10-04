@@ -36,7 +36,7 @@ const usePermissionStatus = () => {
 
   const overallStatus = useMemo<boolean | undefined>(() => {
     if (!checkList?.length) return undefined; // if checks not loaded yet, status is undetermined
-    return checkList.some((check) => !check.status && !check.isOptional);
+    return checkList.every((check) => check.status || check.isOptional);
   }, [checkList]);
 
   //using this function to update checks rather than mutate
