@@ -31,7 +31,7 @@ const AppTheme = {
       level5: '#e1e9f1', // lch(92% 5 250)
     },
     success: '#00a665', // lch(60% 55 155)
-    warn: '#f8cf53', //lch(85% 65 85)
+    warn: '#ebac3e', // lch(75% 65 75)
     danger: '#f23934', // lch(55% 85 35),
     silver: '#d9d9d9',
     skyblue: '#7fcaea',

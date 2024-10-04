@@ -7,8 +7,14 @@ const PermissionItem = ({ check }) => {
   const { t } = useTranslation();
   const { colors } = useAppTheme();
 
-  const icon = check.status ? 'check-circle-outline' : 'alpha-x-circle-outline';
-  const color = check.status ? colors.success : colors.error;
+  let icon, color;
+  if (check.status) {
+    icon = 'check-circle';
+    color = colors.success;
+  } else {
+    icon = check.isOptional ? 'minus-circle-off' : 'alert-circle-outline';
+    color = check.isOptional ? colors.warn : colors.error;
+  }
 
   return (
     <List.Item
