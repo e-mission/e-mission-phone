@@ -25,6 +25,7 @@ type Check = {
   refresh: () => Promise<any>;
   status?: boolean;
   isOptional?: boolean;
+  wasRequested?: boolean;
 };
 
 const usePermissionStatus = () => {
@@ -36,7 +37,7 @@ const usePermissionStatus = () => {
 
   const overallStatus = useMemo<boolean | undefined>(() => {
     if (!checkList?.length) return undefined; // if checks not loaded yet, status is undetermined
-    return checkList.every((check) => check.status || check.isOptional);
+    return checkList.every((check) => check.status || (check.isOptional && check.wasRequested));
   }, [checkList]);
 
   //using this function to update checks rather than mutate
@@ -226,11 +227,16 @@ const usePermissionStatus = () => {
   function setupNotificationChecks() {
     let fixPerms = () => {
       logDebug('fix and refresh notification permissions');
+      appAndChannelNotificationsCheck.wasRequested = true;
       return checkOrFix(
         appAndChannelNotificationsCheck,
         window['cordova'].plugins.BEMDataCollection.fixShowNotifications,
         true,
-      );
+      ).then((error) => {
+        if (error) {
+          appAndChannelNotificationsCheck.desc = error;
+        }
+      });
     };
     let checkPerms = () => {
       logDebug('refresh notification permissions');
@@ -246,6 +252,7 @@ const usePermissionStatus = () => {
       fix: fixPerms,
       refresh: checkPerms,
       isOptional: true,
+      wasRequested: false,
     };
     let tempChecks = checkList;
     tempChecks.push(appAndChannelNotificationsCheck);
