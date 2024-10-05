@@ -296,8 +296,8 @@ const usePermissionStatus = () => {
       DEVICE_VERSION == 12
         ? 'intro.appstatus.unusedapprestrict.description.android-disable-12'
         : DEVICE_VERSION < 12
-        ? 'intro.appstatus.unusedapprestrict.description.android-disable-lt-12'
-        : 'intro.appstatus.unusedapprestrict.description.android-disable-gte-13';
+          ? 'intro.appstatus.unusedapprestrict.description.android-disable-lt-12'
+          : 'intro.appstatus.unusedapprestrict.description.android-disable-gte-13';
     let unusedAppsUnrestrictedCheck = {
       name: t('intro.appstatus.unusedapprestrict.name'),
       desc: t(androidUnusedDescTag),
