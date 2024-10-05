@@ -41,11 +41,11 @@ const usePermissionStatus = () => {
 
   //using this function to update checks rather than mutate
   //this cues React to update UI
-  function updateCheck(check, newProps) {
+  function updateCheck(newCheck) {
     const tempList = [...checkList];
     //"find and replace" the check
-    const i = tempList.findIndex((item) => item.name == check.name);
-    tempList[i] = { ...tempList[i], ...newProps };
+    const i = tempList.findIndex((item) => item.name == newCheck.name);
+    tempList[i] = newCheck;
     setCheckList(tempList);
   }
 
@@ -55,13 +55,15 @@ const usePermissionStatus = () => {
     try {
       const status = await nativeFn();
       logDebug(`${checkObj.name} status = ${status}`);
-      updateCheck(newCheck, { status: true });
+      newCheck.status = true;
+      updateCheck(newCheck);
       return status;
     } catch (error) {
       if (showError) {
         AlertManager.addMessage({ text: error });
       }
-      updateCheck(newCheck, { status: false });
+      newCheck.status = false;
+      updateCheck(newCheck);
       return error;
     }
   }
