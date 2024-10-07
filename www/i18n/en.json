@@ -308,7 +308,7 @@
           "android-11": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time'",
           "android-gte-12": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time' and 'Precise'",
           "ios-lt-13": "Select 'Always Allow' to enable location tracking",
-          "ios-13-13.3": "Select 'Always' and 'Precise' on the next screen to enable location tracking, then return here to continue",
+          "ios-13-13.3": "Select 'Always' location permissions on the next screen to enable location tracking, then return here to continue",
           "ios-gte-13.4": "Select 'Precise' and 'Allow While Using App' on the next screen, then 'Change to Always Allow' to enable location tracking"
         }
       },
