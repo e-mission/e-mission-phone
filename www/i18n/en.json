@@ -318,16 +318,16 @@
       "fitnessperms": {
         "name": "Fitness Permission",
         "description": {
-          "android": "Please allow.",
+          "android": "Allow motion and fitness tracking to enable mode detection",
           "ios": "Allow motion and fitness tracking to enable mode detection"
         }
       },
       "overall-notification-name": "Notifications",
-      "overall-notification-description": "We use notifications to inform you if the settings are incorrect. We also use hourly invisible push notifications to wake up the app and allow it to upload data and check app status. We also use notifications to remind you to label your trips.",
+      "overall-notification-description": "We use notifications to alert you if settings are incorrect and to remind you to label your trips.",
       "notificationperms": {
         "app-enabled-name": "App Notifications",
         "description": {
-          "android-enable": "On the app settings page, ensure that all notifications and channels are enabled.",
+          "android-enable": "On the app settings page, enable notifications for reminders and app status alerts.",
           "ios-enable": "Allow notifications for reminders and app status alerts"
         }
       },
