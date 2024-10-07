@@ -13,14 +13,7 @@ const PermissionsControls = ({ onAccept }) => {
   const { t } = useTranslation();
   const [explainVis, setExplainVis] = useState<boolean>(false);
   const { permissionStatus } = useContext(AppContext);
-  const { checkList, overallStatus, error, explanationList } = permissionStatus;
-
-  useEffect(() => {
-    if (!error) return;
-    AlertManager.addMessage({
-      text: error,
-    });
-  }, [error]);
+  const { checkList, overallStatus, explanationList } = permissionStatus;
 
   return (
     <>
