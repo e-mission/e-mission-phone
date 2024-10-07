@@ -231,7 +231,7 @@ const usePermissionStatus = () => {
       return checkOrFix(
         appAndChannelNotificationsCheck,
         window['cordova'].plugins.BEMDataCollection.fixShowNotifications,
-        true,
+        false,
       ).then((error) => {
         if (error) {
           appAndChannelNotificationsCheck.desc = error;
