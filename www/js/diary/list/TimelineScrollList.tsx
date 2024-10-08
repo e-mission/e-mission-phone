@@ -57,7 +57,8 @@ const TimelineScrollList = ({ listEntries }: Props) => {
     </LoadMoreButton>
   );
 
-  const pipelineEndDate = pipelineRange && DateTime.fromSeconds(pipelineRange.end_ts).toISODate();
+  const pipelineEndDate =
+    pipelineRange?.end_ts && DateTime.fromSeconds(pipelineRange.end_ts).toISODate();
   const noTravelBanner = (
     <Banner visible={true} icon={({ size }) => <Icon source="alert-circle" size={size} />}>
       <View style={{ width: '100%' }}>
