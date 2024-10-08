@@ -5,6 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { useAppTheme } from './appTheme';
 import { logDebug, logWarn } from './plugin/logger';
 import { AlertManager } from './components/AlertBar';
+import { storageGet } from './plugin/storage';
+
+const HAS_REQUESTED_NOTIFS_KEY = 'HasRequestedNotificationPermission';
 
 let DEVICE_PLATFORM: 'android' | 'ios';
 let DEVICE_VERSION: number;
@@ -224,7 +227,7 @@ const usePermissionStatus = () => {
     }
   }
 
-  function setupNotificationChecks() {
+  function setupNotificationChecks(hasRequestedNotifs) {
     let fixPerms = () => {
       logDebug('fix and refresh notification permissions');
       appAndChannelNotificationsCheck.wasRequested = true;
@@ -252,7 +255,7 @@ const usePermissionStatus = () => {
       fix: fixPerms,
       refresh: checkPerms,
       isOptional: true,
-      wasRequested: false,
+      wasRequested: hasRequestedNotifs,
     };
     let tempChecks = checkList;
     tempChecks.push(appAndChannelNotificationsCheck);
@@ -344,7 +347,7 @@ const usePermissionStatus = () => {
     logDebug('Explanation = ' + explanationList);
   }
 
-  function createChecklist() {
+  function createChecklist(hasRequestedNotifs) {
     setupLocChecks();
     setupFitnessChecks();
     if (DEVICE_PLATFORM == 'android') {
@@ -353,7 +356,7 @@ const usePermissionStatus = () => {
       }
       setupAndroidBackgroundRestrictionChecks();
     }
-    setupNotificationChecks();
+    setupNotificationChecks(hasRequestedNotifs);
     refreshAllChecks(checkList);
   }
 
@@ -365,11 +368,13 @@ const usePermissionStatus = () => {
   //load when ready
   useEffect(() => {
     if (appConfig && window['device']?.platform) {
-      DEVICE_PLATFORM = window['device'].platform.toLowerCase();
-      DEVICE_VERSION = window['device'].version.split('.')[0];
-      setupPermissionText();
-      logDebug('setting up permissions');
-      createChecklist();
+      storageGet(HAS_REQUESTED_NOTIFS_KEY).then((hasRequestedNotifs) => {
+        DEVICE_PLATFORM = window['device'].platform.toLowerCase();
+        DEVICE_VERSION = window['device'].version.split('.')[0];
+        setupPermissionText();
+        logDebug('setting up permissions');
+        createChecklist(hasRequestedNotifs);
+      });
     }
   }, [appConfig]);
 
