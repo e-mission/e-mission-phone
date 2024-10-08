@@ -176,8 +176,8 @@ export const useTimelineContext = (): ContextProps => {
 
   function loadDateRange(range: [string, string]) {
     logDebug('Timeline: loadDateRange with newDateRange = ' + range);
-    if (!pipelineRange) {
-      logWarn('No pipelineRange yet - early return from loadDateRange');
+    if (!pipelineRange?.start_ts) {
+      logWarn('No pipelineRange start_ts yet - early return from loadDateRange');
       return;
     }
     const pipelineStartDate = DateTime.fromSeconds(pipelineRange.start_ts).toISODate();
@@ -220,8 +220,10 @@ export const useTimelineContext = (): ContextProps => {
   }
 
   async function fetchTripsInRange(dateRange: [string, string]) {
-    if (!pipelineRange?.start_ts || !pipelineRange?.end_ts)
-      return logWarn('No pipelineRange yet - early return');
+    if (!pipelineRange?.start_ts || !pipelineRange?.end_ts) {
+      logDebug('No pipelineRange yet, returning empty lists');
+      return [[], []];
+    }
     logDebug('Timeline: fetchTripsInRange from ' + dateRange[0] + ' to ' + dateRange[1]);
 
     const [startTs, endTs] = isoDateRangeToTsRange(dateRange);
