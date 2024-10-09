@@ -25,9 +25,12 @@ import useAppStateChange from './useAppStateChange';
 import { isoDateRangeToTsRange, isoDateWithOffset } from './datetimeUtil';
 import { base_modes } from 'e-mission-common';
 
-const TODAY_DATE = DateTime.now().toISODate();
+const getTodayDate = () => DateTime.now().toISODate();
 // initial date range is the past week: [TODAY - 6 days, TODAY]
-const INITIAL_DATE_RANGE: [string, string] = [isoDateWithOffset(TODAY_DATE, -6), TODAY_DATE];
+const getPastWeekDateRange = (): [string, string] => {
+  const todayDate = getTodayDate();
+  return [isoDateWithOffset(todayDate, -6), todayDate];
+};
 
 type ContextProps = {
   labelOptions: LabelOptions | null;
@@ -60,7 +63,7 @@ export const useTimelineContext = (): ContextProps => {
   // date range (inclusive) that has been loaded into the UI [YYYY-MM-DD, YYYY-MM-DD]
   const [queriedDateRange, setQueriedDateRange] = useState<[string, string] | null>(null);
   // date range (inclusive) chosen by datepicker [YYYY-MM-DD, YYYY-MM-DD]
-  const [dateRange, setDateRange] = useState<[string, string]>(INITIAL_DATE_RANGE);
+  const [dateRange, setDateRange] = useState<[string, string]>(getPastWeekDateRange);
   // map of timeline entries (trips, places, untracked time), ids to objects
   const [timelineMap, setTimelineMap] = useState<TimelineMap | null>(null);
   const [timelineIsLoading, setTimelineIsLoading] = useState<string | false>('replace');
@@ -176,15 +179,15 @@ export const useTimelineContext = (): ContextProps => {
 
   function loadDateRange(range: [string, string]) {
     logDebug('Timeline: loadDateRange with newDateRange = ' + range);
-    if (!pipelineRange) {
-      logWarn('No pipelineRange yet - early return from loadDateRange');
+    if (!pipelineRange?.start_ts) {
+      logWarn('No pipelineRange start_ts yet - early return from loadDateRange');
       return;
     }
     const pipelineStartDate = DateTime.fromSeconds(pipelineRange.start_ts).toISODate();
     // clamp range to ensure it is within [pipelineStartDate, TODAY_DATE]
     const clampedDateRange: [string, string] = [
       new Date(range[0]) < new Date(pipelineStartDate) ? pipelineStartDate : range[0],
-      new Date(range[1]) > new Date(TODAY_DATE) ? TODAY_DATE : range[1],
+      new Date(range[1]) > new Date(getTodayDate()) ? getTodayDate() : range[1],
     ];
     if (clampedDateRange[0] != dateRange?.[0] || clampedDateRange[1] != dateRange?.[1]) {
       logDebug('Timeline: loadDateRange setting new date range = ' + clampedDateRange);
@@ -220,8 +223,10 @@ export const useTimelineContext = (): ContextProps => {
   }
 
   async function fetchTripsInRange(dateRange: [string, string]) {
-    if (!pipelineRange?.start_ts || !pipelineRange?.end_ts)
-      return logWarn('No pipelineRange yet - early return');
+    if (!pipelineRange?.start_ts || !pipelineRange?.end_ts) {
+      logDebug('No pipelineRange yet, returning empty lists');
+      return [[], []];
+    }
     logDebug('Timeline: fetchTripsInRange from ' + dateRange[0] + ' to ' + dateRange[1]);
 
     const [startTs, endTs] = isoDateRangeToTsRange(dateRange);
@@ -257,7 +262,7 @@ export const useTimelineContext = (): ContextProps => {
     try {
       logDebug('timelineContext: refreshTimeline');
       setTimelineIsLoading('replace');
-      setDateRange(INITIAL_DATE_RANGE);
+      setDateRange(getPastWeekDateRange());
       setQueriedDateRange(null);
       setTimelineMap(null);
       setRefreshTime(new Date());
