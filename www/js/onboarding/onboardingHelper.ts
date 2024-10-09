@@ -73,7 +73,7 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
   );
 }
 
-async function readConsented() {
+export async function readConsented() {
   return readConsentState().then(isConsented) as Promise<boolean>;
 }
 
