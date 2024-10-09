@@ -5,9 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppTheme } from './appTheme';
 import { logDebug, logWarn } from './plugin/logger';
 import { AlertManager } from './components/AlertBar';
-import { storageGet } from './plugin/storage';
-
-const HAS_REQUESTED_NOTIFS_KEY = 'HasRequestedNotificationPermission';
+import { readConsented } from './onboarding/onboardingHelper';
 
 let DEVICE_PLATFORM: 'android' | 'ios';
 let DEVICE_VERSION: number;
@@ -368,12 +366,12 @@ const usePermissionStatus = () => {
   //load when ready
   useEffect(() => {
     if (appConfig && window['device']?.platform) {
-      storageGet(HAS_REQUESTED_NOTIFS_KEY).then((hasRequestedNotifs) => {
+      readConsented().then((isConsented) => {
         DEVICE_PLATFORM = window['device'].platform.toLowerCase();
         DEVICE_VERSION = window['device'].version.split('.')[0];
         setupPermissionText();
         logDebug('setting up permissions');
-        createChecklist(hasRequestedNotifs);
+        createChecklist(isConsented);
       });
     }
   }, [appConfig]);
