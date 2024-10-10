@@ -26,6 +26,9 @@ import { initByUser } from '../config/dynamicConfig';
 import { AppContext } from '../App';
 import { displayError, logDebug } from '../plugin/logger';
 import { onboardingStyles } from './OnboardingStack';
+import { AlertManager } from '../components/AlertBar';
+
+let barcodeScannerIsOpen = false;
 
 const WelcomePage = () => {
   const { t } = useTranslation();
@@ -57,8 +60,11 @@ const WelcomePage = () => {
   }
 
   function scanCode() {
+    if (barcodeScannerIsOpen) return;
+    barcodeScannerIsOpen = true;
     window['cordova'].plugins.barcodeScanner.scan(
       (result) => {
+        barcodeScannerIsOpen = false;
         logDebug('scanCode: scanned ' + JSON.stringify(result));
         let code = getCode(result);
         if (code != false) {
@@ -69,7 +75,8 @@ const WelcomePage = () => {
         }
       },
       (error) => {
-        displayError(error, 'Scanning failed: ');
+        barcodeScannerIsOpen = false;
+        AlertManager.addMessage({ text: 'Scanning failed: ' + error.message });
       },
     );
   }
