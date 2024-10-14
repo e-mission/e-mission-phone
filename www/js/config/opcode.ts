@@ -143,11 +143,23 @@ function getTokenFromUrl(url: string) {
 }
 
 export async function joinWithTokenOrUrl(tokenOrUrl: string) {
-  const token = tokenOrUrl.includes('://') ? getTokenFromUrl(tokenOrUrl) : tokenOrUrl;
-  AlertManager.addMessage({ text: i18next.t('join.proceeding-with-token', { token }) });
   try {
-    return await initByUser({ token });
+    const token = tokenOrUrl.includes('://') ? getTokenFromUrl(tokenOrUrl) : tokenOrUrl;
+    try {
+      const result = await initByUser({ token });
+      if (result) {
+        AlertManager.addMessage({
+          text: i18next.t('join.proceeding-with-token', { token }),
+          style: { wordBreak: 'break-all' },
+        });
+      }
+      return result;
+    } catch (err) {
+      displayError(err, 'Error logging in with token: ' + token);
+      return false;
+    }
   } catch (err) {
-    displayError(err, 'Error logging in with token');
+    displayError(err, 'Error parsing token or URL: ' + tokenOrUrl);
+    return false;
   }
 }
