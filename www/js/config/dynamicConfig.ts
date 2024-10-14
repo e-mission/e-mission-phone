@@ -127,7 +127,7 @@ async function fetchConfig(studyLabel: string, alreadyTriedLocal?: boolean) {
     logDebug('Running in dev environment, checking for locally hosted config');
     try {
       if (window['cordova'].platformId == 'android') {
-        // downloadURL = `http://10.0.2.2:9090/configs/${studyLabel}.nrel-op.json`;
+        downloadURL = `http://10.0.2.2:9090/configs/${studyLabel}.nrel-op.json`;
       } else {
         downloadURL = `http://localhost:9090/configs/${studyLabel}.nrel-op.json`;
       }
