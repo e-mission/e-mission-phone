@@ -6,12 +6,9 @@ import QrCode from '../components/QrCode';
 import { AlertManager } from '../components/AlertBar';
 import { settingStyles } from './ProfileSettings';
 
-const PopOpCode = ({ visibilityValue, tokenURL, action, setVis }) => {
+const PopOpCode = ({ visibilityValue, token, action, setVis }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-
-  const opcodeList = tokenURL.split('=');
-  const opcode = opcodeList[opcodeList.length - 1];
 
   function copyText(textToCopy) {
     navigator.clipboard.writeText(textToCopy).then(() => {
@@ -22,13 +19,7 @@ const PopOpCode = ({ visibilityValue, tokenURL, action, setVis }) => {
   let copyButton;
   if (window['cordova'].platformId == 'ios') {
     copyButton = (
-      <IconButton
-        icon="content-copy"
-        onPress={() => {
-          copyText(opcode);
-        }}
-        style={styles.button}
-      />
+      <IconButton icon="content-copy" onPress={() => copyText(token)} style={styles.button} />
     );
   }
 
@@ -41,8 +32,8 @@ const PopOpCode = ({ visibilityValue, tokenURL, action, setVis }) => {
         <Dialog.Title>{t('general-settings.qrcode')}</Dialog.Title>
         <Dialog.Content style={styles.content}>
           <Text style={styles.text}>{t('general-settings.qrcode-share-title')}</Text>
-          <QrCode value={tokenURL} style={{ marginHorizontal: 8 }}></QrCode>
-          <Text style={styles.opcode}>{opcode}</Text>
+          <QrCode value={token} style={{ marginHorizontal: 8 }}></QrCode>
+          <Text style={styles.opcode}>{token}</Text>
         </Dialog.Content>
         <Dialog.Actions>
           <IconButton icon="share" onPress={() => action()} style={styles.button} />
