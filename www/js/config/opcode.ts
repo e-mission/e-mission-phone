@@ -123,7 +123,7 @@ function generateOpcodeFromUrl(url: URL) {
  * @example getTokenFromUrl('emission://login_token?token=nrelop_study_subgroup_random') => nrelop_study_subgroup_random
  * @example getTokenFromUrl('nrelopenpath://login_token?token=nrelop_study_subgroup_random') => nrelop_study_subgroup_random
  */
-function getTokenFromUrl(url: string) {
+export function getTokenFromUrl(url: string) {
   const parsedUrl = new URL(url);
   const path = parsedUrl.pathname.replace(/\//g, '') || parsedUrl.hostname;
   if (path == 'join') {
