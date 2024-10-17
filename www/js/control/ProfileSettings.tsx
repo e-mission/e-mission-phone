@@ -579,7 +579,7 @@ const ProfileSettings = () => {
       <PopOpCode
         visibilityValue={opCodeVis}
         setVis={setOpCodeVis}
-        tokenURL={'emission://login_token?token=' + authSettings.opcode}
+        token={authSettings.opcode}
         action={() => shareQR(authSettings.opcode)}></PopOpCode>
 
       {/* {view privacy} */}

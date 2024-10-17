@@ -3,6 +3,12 @@ import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { fetchUrlCached } from '../services/commHelper';
 import { storageClear, storageGet, storageSet } from '../plugin/storage';
 import { AppConfig } from '../types/appConfigTypes';
+import {
+  getStudyNameFromToken,
+  getStudyNameFromUrl,
+  getSubgroupFromToken,
+  getTokenFromUrl,
+} from './opcode';
 
 export const CONFIG_PHONE_UI = 'config/app_ui_config';
 export const CONFIG_PHONE_UI_KVSTORE = 'CONFIG_PHONE_UI';
@@ -17,35 +23,14 @@ export const _test_resetPromisedConfig = () => {
 };
 
 /**
- * @param connectUrl The URL endpoint specified in the config
- * @returns The study name (like 'stage' or whatever precedes 'openpath' in the URL),
- *   or undefined if it can't be determined
- */
-function _getStudyName(connectUrl: `https://${string}`) {
-  const orig_host = new URL(connectUrl).hostname;
-  const first_domain = orig_host.split('.')[0];
-  if (first_domain == 'openpath-stage') {
-    return 'stage';
-  }
-  const openpath_index = first_domain.search('-openpath');
-  if (openpath_index == -1) {
-    return undefined;
-  }
-  const study_name = first_domain.substr(0, openpath_index);
-  return study_name;
-}
-
-/**
  * @param config The app config which might be missing 'name'
  * @returns Shallow copy of the app config with 'name' filled in if it was missing
  */
 function _fillStudyName(config: Partial<AppConfig>): AppConfig {
   if (config.name) return config as AppConfig;
-  if (config.server) {
-    return { ...config, name: _getStudyName(config.server.connectUrl) } as AppConfig;
-  } else {
-    return { ...config, name: 'dev' } as AppConfig;
-  }
+  const url = config.server && new URL(config.server.connectUrl);
+  const name = url ? getStudyNameFromUrl(url) : 'dev';
+  return { ...config, name } as AppConfig;
 }
 
 /**
@@ -161,74 +146,6 @@ async function fetchConfig(studyLabel: string, alreadyTriedLocal?: boolean) {
   }
 }
 
-/*
- * We want to support both old style and new style tokens.
- * Theoretically, we don't need anything from this except the study
- * name, but we should re-validate the token for extra robustness.
- * The control flow here is a bit tricky, though.
- * - we need to first get the study name
- * - then we need to retrieve the study config
- * - then we need to re-validate the token against the study config,
- * and the subgroups in the study config, in particular.
- *
- * So let's support two separate functions here - extractStudyName and extractSubgroup
- */
-function extractStudyName(token: string): string {
-  const tokenParts = token.split('_');
-  if (tokenParts.length < 3 || tokenParts.some((part) => part == '')) {
-    // all tokens must have at least nrelop_[studyname]_[usercode]
-    // and neither [studyname] nor [usercode] can be blank
-    throw new Error(i18next.t('config.not-enough-parts-old-style', { token: token }));
-  }
-  if (tokenParts[0] != 'nrelop') {
-    throw new Error(i18next.t('config.no-nrelop-start', { token: token }));
-  }
-  return tokenParts[1];
-}
-
-function extractSubgroup(token: string, config: AppConfig): string | undefined {
-  if (config.opcode) {
-    // new style study, expects token with sub-group
-    const tokenParts = token.split('_');
-    if (tokenParts.length <= 3) {
-      // no subpart defined
-      throw new Error(i18next.t('config.not-enough-parts', { token: token }));
-    }
-    if (config.opcode.subgroups) {
-      if (config.opcode.subgroups.indexOf(tokenParts[2]) == -1) {
-        // subpart not in config list
-        throw new Error(
-          i18next.t('config.invalid-subgroup', {
-            token: token,
-            subgroup: tokenParts[2],
-            config_subgroups: config.opcode.subgroups,
-          }),
-        );
-      } else {
-        logDebug('subgroup ' + tokenParts[2] + ' found in list ' + config.opcode.subgroups);
-        return tokenParts[2];
-      }
-    } else {
-      if (tokenParts[2] != 'default') {
-        // subpart not in config list
-        throw new Error(i18next.t('config.invalid-subgroup-no-default', { token: token }));
-      } else {
-        logDebug("no subgroups in config, 'default' subgroup found in token ");
-        return tokenParts[2];
-      }
-    }
-  } else {
-    /* old style study, expect token without subgroup
-     * nothing further to validate at this point
-     * only validation required is `nrelop_` and valid study name
-     * first is already handled in extractStudyName, second is handled
-     * by default since download will fail if it is invalid
-     */
-    logDebug('Old-style study, expecting token without a subgroup...');
-    return undefined;
-  }
-}
-
 /**
  * @description Download and load a new config from the server if it is a different version
  * @param newToken The new token, which includes parts for the study label, subgroup, and user
@@ -236,7 +153,7 @@ function extractSubgroup(token: string, config: AppConfig): string | undefined {
  * @returns boolean representing whether the config was updated or not
  */
 export function loadNewConfig(newToken: string, existingVersion?: number): Promise<boolean> {
-  const newStudyLabel = extractStudyName(newToken);
+  const newStudyLabel = getStudyNameFromToken(newToken);
   return readConfigFromServer(newStudyLabel)
     .then((downloadedConfig) => {
       if (downloadedConfig.version == existingVersion) {
@@ -245,7 +162,7 @@ export function loadNewConfig(newToken: string, existingVersion?: number): Promi
       }
       // we want to validate before saving because we don't want to save
       // an invalid configuration
-      const subgroup = extractSubgroup(newToken, downloadedConfig);
+      const subgroup = getSubgroupFromToken(newToken, downloadedConfig);
       const toSaveConfig = {
         ...downloadedConfig,
         joined: { opcode: newToken, study_name: newStudyLabel, subgroup: subgroup },
@@ -267,26 +184,28 @@ export function loadNewConfig(newToken: string, existingVersion?: number): Promi
         })
         .catch((storeError) => {
           displayError(storeError, i18next.t('config.unable-to-store-config'));
-          return Promise.reject(storeError);
+          return Promise.resolve(false);
         });
     })
     .catch((fetchErr) => {
       displayError(fetchErr, i18next.t('config.unable-download-config'));
-      return Promise.reject(fetchErr);
+      return Promise.resolve(false);
     });
 }
 
 // exported wrapper around loadNewConfig that includes error handling
-export function initByUser(urlComponents: { token: string }) {
-  const { token } = urlComponents;
+export async function joinWithTokenOrUrl(tokenOrUrl: string) {
   try {
-    return loadNewConfig(token).catch((fetchErr) => {
-      displayError(fetchErr, i18next.t('config.unable-download-config'));
-      return Promise.reject(fetchErr);
-    });
-  } catch (error) {
-    displayError(error, i18next.t('config.invalid-opcode-format'));
-    return Promise.reject(error);
+    const token = tokenOrUrl.includes('://') ? getTokenFromUrl(tokenOrUrl) : tokenOrUrl;
+    try {
+      return await loadNewConfig(token);
+    } catch (err) {
+      displayError(err, i18next.t('config.invalid-opcode-format'));
+      return false;
+    }
+  } catch (err) {
+    displayError(err, 'Error parsing token or URL: ' + tokenOrUrl);
+    return false;
   }
 }
 

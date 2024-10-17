@@ -404,7 +404,8 @@
     "all-green-status": "Make sure that all status checks are green",
     "dont-force-kill": "Do not force kill the app",
     "background-restrictions": "On Samsung and Huwaei phones, make sure that background restrictions are turned off",
-    "close": "Close"
+    "close": "Close",
+    "proceeding-with-token": "Proceeding with OPcode: {{token}}"
   },
   "config": {
     "unable-read-saved-config": "Unable to read saved config",

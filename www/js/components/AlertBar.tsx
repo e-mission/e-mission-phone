@@ -10,6 +10,7 @@ type AlertMessage = {
   msgKey?: ParseKeys<'translation'>;
   text?: string;
   duration?: number;
+  style?: object;
 };
 
 // public static AlertManager that can add messages from a global context
@@ -45,6 +46,7 @@ const AlertBar = () => {
         visible={true}
         onDismiss={onDismissSnackBar}
         duration={messages[0].duration}
+        style={messages[0].style}
         action={{
           label: t('join.close'),
           onPress: onDismissSnackBar,
