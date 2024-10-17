@@ -1,8 +1,6 @@
 import i18next from 'i18next';
-import { displayError, logDebug } from '../plugin/logger';
+import { logDebug } from '../plugin/logger';
 import AppConfig from '../types/appConfigTypes';
-import { initByUser } from './dynamicConfig';
-import { AlertManager } from '../components/AlertBar';
 
 /**
  * Adapted from https://stackoverflow.com/a/63363662/4040267
@@ -139,27 +137,5 @@ function getTokenFromUrl(url: string) {
     return token;
   } else {
     throw new Error(`URL ${url} had path ${path}, expected 'join' or 'login_token'`);
-  }
-}
-
-export async function joinWithTokenOrUrl(tokenOrUrl: string) {
-  try {
-    const token = tokenOrUrl.includes('://') ? getTokenFromUrl(tokenOrUrl) : tokenOrUrl;
-    try {
-      const result = await initByUser({ token });
-      if (result) {
-        AlertManager.addMessage({
-          text: i18next.t('join.proceeding-with-token', { token }),
-          style: { wordBreak: 'break-all' },
-        });
-      }
-      return result;
-    } catch (err) {
-      displayError(err, 'Error logging in with token: ' + token);
-      return false;
-    }
-  } catch (err) {
-    displayError(err, 'Error parsing token or URL: ' + tokenOrUrl);
-    return false;
   }
 }

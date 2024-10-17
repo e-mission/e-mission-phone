@@ -3,7 +3,12 @@ import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { fetchUrlCached } from '../services/commHelper';
 import { storageClear, storageGet, storageSet } from '../plugin/storage';
 import { AppConfig } from '../types/appConfigTypes';
-import { getStudyNameFromToken, getStudyNameFromUrl, getSubgroupFromToken } from './opcode';
+import {
+  getStudyNameFromToken,
+  getStudyNameFromUrl,
+  getSubgroupFromToken,
+  getTokenFromUrl,
+} from './opcode';
 
 export const CONFIG_PHONE_UI = 'config/app_ui_config';
 export const CONFIG_PHONE_UI_KVSTORE = 'CONFIG_PHONE_UI';
@@ -179,26 +184,28 @@ export function loadNewConfig(newToken: string, existingVersion?: number): Promi
         })
         .catch((storeError) => {
           displayError(storeError, i18next.t('config.unable-to-store-config'));
-          return Promise.reject(storeError);
+          return Promise.resolve(false);
         });
     })
     .catch((fetchErr) => {
       displayError(fetchErr, i18next.t('config.unable-download-config'));
-      return Promise.reject(fetchErr);
+      return Promise.resolve(false);
     });
 }
 
 // exported wrapper around loadNewConfig that includes error handling
-export function initByUser(urlComponents: { token: string }) {
-  const { token } = urlComponents;
+export async function joinWithTokenOrUrl(tokenOrUrl: string) {
   try {
-    return loadNewConfig(token).catch((fetchErr) => {
-      displayError(fetchErr, i18next.t('config.unable-download-config'));
-      return Promise.reject(fetchErr);
-    });
-  } catch (error) {
-    displayError(error, i18next.t('config.invalid-opcode-format'));
-    return Promise.reject(error);
+    const token = tokenOrUrl.includes('://') ? getTokenFromUrl(tokenOrUrl) : tokenOrUrl;
+    try {
+      return await loadNewConfig(token);
+    } catch (err) {
+      displayError(err, i18next.t('config.invalid-opcode-format'));
+      return false;
+    }
+  } catch (err) {
+    displayError(err, 'Error parsing token or URL: ' + tokenOrUrl);
+    return false;
   }
 }
 
