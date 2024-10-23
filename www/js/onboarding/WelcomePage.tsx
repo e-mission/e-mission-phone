@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import {
   View,
@@ -22,11 +22,11 @@ import {
   useTheme,
 } from 'react-native-paper';
 import color from 'color';
-import { initByUser } from '../config/dynamicConfig';
 import { AppContext } from '../App';
-import { displayError, logDebug } from '../plugin/logger';
+import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { onboardingStyles } from './OnboardingStack';
 import { AlertManager } from '../components/AlertBar';
+import { addStatReading } from '../plugin/clientStats';
 
 let barcodeScannerIsOpen = false;
 
@@ -34,45 +34,25 @@ const WelcomePage = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const { width: windowWidth } = useWindowDimensions();
-  const context = useContext(AppContext);
-  const { refreshOnboardingState } = context;
+  const { handleOpenURL } = useContext(AppContext);
   const [pasteModalVis, setPasteModalVis] = useState(false);
   const [infoPopupVis, setInfoPopupVis] = useState(false);
   const [existingToken, setExistingToken] = useState('');
 
-  function getCode(result) {
-    let url = new window.URL(result.text);
-    let notCancelled = result.cancelled == false;
-    let isQR = result.format == 'QR_CODE';
-    let hasPrefix = url.protocol == 'emission:';
-    let hasToken = url.searchParams.has('token');
-    let code = url.searchParams.get('token');
-
-    logDebug(`QR code ${result.text} checks: 
-      cancel, format, prefix, params, code: 
-      ${notCancelled}, ${isQR}, ${hasPrefix}, ${hasToken}, ${code}`);
-
-    if (notCancelled && isQR && hasPrefix && hasToken) {
-      return code;
-    } else {
-      return false;
-    }
-  }
-
   function scanCode() {
     if (barcodeScannerIsOpen) return;
     barcodeScannerIsOpen = true;
+    addStatReading('open_qr_scanner');
     window['cordova'].plugins.barcodeScanner.scan(
       (result) => {
         barcodeScannerIsOpen = false;
         logDebug('scanCode: scanned ' + JSON.stringify(result));
-        let code = getCode(result);
-        if (code != false) {
-          logDebug('scanCode: found code ' + code);
-          loginWithToken(code);
-        } else {
-          displayError(result.text, 'invalid study reference');
+        if (result.cancelled) return;
+        if (!result?.text || result.format != 'QR_CODE') {
+          AlertManager.addMessage({ text: 'No QR code found in scan. Please try again.' });
+          return;
         }
+        handleOpenURL(result.text, 'scan');
       },
       (error) => {
         barcodeScannerIsOpen = false;
@@ -81,18 +61,19 @@ const WelcomePage = () => {
     );
   }
 
-  function loginWithToken(token) {
-    initByUser({ token })
-      .then((configUpdated) => {
-        if (configUpdated) {
-          setPasteModalVis(false);
-          refreshOnboardingState();
+  function pasteCode() {
+    window['cordova'].plugins.clipboard.paste((clipboardContent: string) => {
+      addStatReading('paste_token');
+      try {
+        if (!clipboardContent?.startsWith('nrelop_') && !clipboardContent?.includes('://')) {
+          throw new Error('Clipboard content is not a valid token or URL');
         }
-      })
-      .catch((err) => {
-        displayError(err, 'Error logging in with token');
-        setExistingToken('');
-      });
+        handleOpenURL(clipboardContent, 'paste');
+      } catch (e) {
+        logWarn(`Tried using clipboard content ${clipboardContent}: ${e}`);
+        setPasteModalVis(true);
+      }
+    });
   }
 
   return (
@@ -136,7 +117,7 @@ const WelcomePage = () => {
             <Divider style={{ width: 2, height: '100%' }} />
             <View style={{ width: windowWidth / 2 - 5, paddingHorizontal: 10, gap: 8 }}>
               <View accessibilityRole="button">
-                <WelcomePageButton onPress={() => setPasteModalVis(true)} icon="content-paste">
+                <WelcomePageButton onPress={pasteCode} icon="content-paste">
                   {t('join.paste-code')}
                 </WelcomePageButton>
               </View>
@@ -157,19 +138,26 @@ const WelcomePage = () => {
             contentStyle={{ fontFamily: 'monospace' }}
           />
           <Dialog.Actions>
-            <Button onPress={() => setPasteModalVis(false)}> {t('login.button-decline')} </Button>
-            <Button onPress={() => loginWithToken(existingToken)}>
-              {' '}
-              {t('login.button-accept')}{' '}
+            <Button onPress={() => setPasteModalVis(false)}>{t('login.button-decline')}</Button>
+            <Button
+              onPress={() =>
+                handleOpenURL(existingToken, 'textbox').catch((e) =>
+                  displayError(e, `Tried using token ${existingToken}`),
+                )
+              }>
+              {t('login.button-accept')}
             </Button>
           </Dialog.Actions>
         </Dialog>
       </Modal>
       <Modal visible={infoPopupVis} transparent={true} onDismiss={() => setInfoPopupVis(false)}>
-        <Dialog visible={infoPopupVis} onDismiss={() => setInfoPopupVis(false)}>
+        <Dialog
+          visible={infoPopupVis}
+          onDismiss={() => setInfoPopupVis(false)}
+          style={{ maxHeight: '80%' }}>
           <Dialog.Title>{t('join.about-app-title', { appName: t('join.app-name') })}</Dialog.Title>
-          <Dialog.Content>
-            <ScrollView>
+          <ScrollView>
+            <Dialog.Content>
               <Text>{t('join.about-app-para-1')}</Text>
               <Text>{t('join.about-app-para-2')}</Text>
               <Text>{t('join.about-app-para-3')}</Text>
@@ -177,8 +165,8 @@ const WelcomePage = () => {
               <Text>- {t('join.all-green-status')}</Text>
               <Text>- {t('join.dont-force-kill')}</Text>
               <Text>- {t('join.background-restrictions')}</Text>
-            </ScrollView>
-          </Dialog.Content>
+            </Dialog.Content>
+          </ScrollView>
           <Dialog.Actions>
             <Button onPress={() => setInfoPopupVis(false)}>{t('join.close')}</Button>
           </Dialog.Actions>
