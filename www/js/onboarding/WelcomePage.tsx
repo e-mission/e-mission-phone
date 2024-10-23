@@ -26,6 +26,7 @@ import { AppContext } from '../App';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { onboardingStyles } from './OnboardingStack';
 import { AlertManager } from '../components/AlertBar';
+import { addStatReading } from '../plugin/clientStats';
 
 let barcodeScannerIsOpen = false;
 
@@ -41,6 +42,7 @@ const WelcomePage = () => {
   function scanCode() {
     if (barcodeScannerIsOpen) return;
     barcodeScannerIsOpen = true;
+    addStatReading('open_qr_scanner');
     window['cordova'].plugins.barcodeScanner.scan(
       (result) => {
         barcodeScannerIsOpen = false;
@@ -50,7 +52,7 @@ const WelcomePage = () => {
           AlertManager.addMessage({ text: 'No QR code found in scan. Please try again.' });
           return;
         }
-        handleOpenURL(result.text);
+        handleOpenURL(result.text, 'scan');
       },
       (error) => {
         barcodeScannerIsOpen = false;
@@ -61,11 +63,12 @@ const WelcomePage = () => {
 
   function pasteCode() {
     window['cordova'].plugins.clipboard.paste((clipboardContent: string) => {
+      addStatReading('paste_token');
       try {
         if (!clipboardContent?.startsWith('nrelop_') && !clipboardContent?.includes('://')) {
           throw new Error('Clipboard content is not a valid token or URL');
         }
-        handleOpenURL(clipboardContent);
+        handleOpenURL(clipboardContent, 'paste');
       } catch (e) {
         logWarn(`Tried using clipboard content ${clipboardContent}: ${e}`);
         setPasteModalVis(true);
@@ -138,7 +141,7 @@ const WelcomePage = () => {
             <Button onPress={() => setPasteModalVis(false)}>{t('login.button-decline')}</Button>
             <Button
               onPress={() =>
-                handleOpenURL(existingToken).catch((e) =>
+                handleOpenURL(existingToken, 'textbox').catch((e) =>
                   displayError(e, `Tried using token ${existingToken}`),
                 )
               }>

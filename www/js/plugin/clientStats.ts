@@ -4,15 +4,25 @@ const CLIENT_TIME = 'stats/client_time';
 const CLIENT_ERROR = 'stats/client_error';
 
 type StatKey =
+  // app-wide interaction stats
   | 'app_state_change'
   | 'nav_tab_change'
+  | 'open_notification'
+  // onboarding interaction stats
+  | 'onboard' // { configUpdated (true if success, onboarding began), joinMethod (scan if in-app QR scan, paste if in-app paste, textbox if manually entered, external if launched from browser or external QR scanner)}
+  | 'onboarding_state' // { route (current OnoardingRoute enum value), opcode}
+  | 'open_qr_scanner' // user opened in-app qr scanner
+  | 'paste_token' // user clicked 'paste code'
+  // 'label' interaction stats
   | 'view_trip_details'
   | 'multilabel_open'
   | 'multilabel_choose'
+  // 'control' interaction stats
   | 'set_reminder_prefs'
   | 'force_sync'
-  | 'open_notification'
+  // unexpected states for debugging
   | 'missing_keys'
+  // errors
   | 'ui_error';
 
 let appVersion;

@@ -16,13 +16,15 @@ import { initRemoteNotifyHandler } from './splash/remoteNotifyHandler';
 // import { getUserCustomLabels } from './services/commHelper';
 import AlertBar from './components/AlertBar';
 import Main from './Main';
-import { joinWithTokenOrUrl } from './config/opcode';
+import { joinWithTokenOrUrl } from './config/dynamicConfig';
+import { addStatReading } from './plugin/clientStats';
 
 export const AppContext = createContext<any>({});
 const CUSTOM_LABEL_KEYS_IN_DATABASE = ['mode', 'purpose'];
 type CustomLabelMap = {
   [k: string]: string[];
 };
+type OnboardingJoinMethod = 'scan' | 'paste' | 'textbox' | 'external';
 
 const App = () => {
   // will remain null while the onboarding state is still being determined
@@ -39,8 +41,9 @@ const App = () => {
 
   // handleOpenURL function must be provided globally for cordova-plugin-customurlscheme
   // https://www.npmjs.com/package/cordova-plugin-customurlscheme
-  window['handleOpenURL'] = async (url: string) => {
+  window['handleOpenURL'] = async (url: string, joinMethod: OnboardingJoinMethod = 'external') => {
     const configUpdated = await joinWithTokenOrUrl(url);
+    addStatReading('onboard', { configUpdated, joinMethod });
     if (configUpdated) {
       refreshOnboardingState();
     }
