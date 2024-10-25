@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import useAppStateChange from './useAppStateChange';
+import useAppState from './useAppState';
 import useAppConfig from './useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { useAppTheme } from './appTheme';
@@ -358,9 +358,11 @@ const usePermissionStatus = () => {
     refreshAllChecks(checkList);
   }
 
-  useAppStateChange(() => {
-    logDebug('PERMISSION CHECK: app has resumed, should refresh');
-    refreshAllChecks(checkList);
+  useAppState({
+    onResume: () => {
+      logDebug('PERMISSION CHECK: app has resumed, should refresh');
+      refreshAllChecks(checkList);
+    },
   });
 
   //load when ready

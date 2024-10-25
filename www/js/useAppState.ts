@@ -3,26 +3,30 @@
 //the executes "onResume" function that is passed in
 //https://reactnative.dev/docs/appstate based on react's example of detecting becoming active
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 import { addStatReading } from './plugin/clientStats';
 
-const useAppStateChange = (onResume) => {
-  const appState = useRef(AppState.currentState);
+type Props = {
+  onResume?: () => void;
+  onChange?: (nextAppState: string) => void;
+};
+const useAppState = ({ onResume, onChange }: Props) => {
+  const [appState, setAppState] = useState(AppState.currentState);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (appState.current != 'active' && nextAppState === 'active') {
-        onResume();
+      addStatReading('app_state_change', nextAppState);
+      onChange?.(nextAppState);
+      if (nextAppState == 'active' && appState != 'active') {
+        onResume?.();
       }
-
-      appState.current = nextAppState;
-      addStatReading('app_state_change', appState.current);
+      setAppState(nextAppState);
     });
     return () => subscription.remove();
   }, []);
 
-  return {};
+  return appState;
 };
 
-export default useAppStateChange;
+export default useAppState;

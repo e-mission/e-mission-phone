@@ -21,7 +21,6 @@ import { getPipelineRangeTs } from './services/commHelper';
 import { getNotDeletedCandidates, mapInputsToTimelineEntries } from './survey/inputMatcher';
 import { EnketoUserInputEntry } from './survey/enketo/enketoHelper';
 import { primarySectionForTrip } from './diary/diaryHelper';
-import useAppStateChange from './useAppStateChange';
 import { isoDateRangeToTsRange, isoDateWithOffset } from './datetimeUtil';
 import { base_modes } from 'e-mission-common';
 
@@ -55,7 +54,6 @@ type ContextProps = {
 export const useTimelineContext = (): ContextProps => {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
-  useAppStateChange(() => refreshTimeline());
 
   const [labelOptions, setLabelOptions] = useState<LabelOptions | null>(null);
   // timestamp range that has been processed by the pipeline on the server
