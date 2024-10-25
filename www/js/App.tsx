@@ -18,6 +18,8 @@ import AlertBar from './components/AlertBar';
 import Main from './Main';
 import { joinWithTokenOrUrl } from './config/dynamicConfig';
 import { addStatReading } from './plugin/clientStats';
+import { displayErrorMsg, logDebug } from './plugin/logger';
+import i18next from 'i18next';
 
 export const AppContext = createContext<any>({});
 const CUSTOM_LABEL_KEYS_IN_DATABASE = ['mode', 'purpose'];
@@ -34,21 +36,33 @@ const App = () => {
   const appConfig = useAppConfig();
   const permissionStatus = usePermissionStatus();
 
-  const refreshOnboardingState = () => getPendingOnboardingState().then(setOnboardingState);
+  const refreshOnboardingState = () =>
+    getPendingOnboardingState().then((state) => {
+      setOnboardingState(state);
+      return state;
+    });
+
   useEffect(() => {
     refreshOnboardingState();
   }, []);
 
-  // handleOpenURL function must be provided globally for cordova-plugin-customurlscheme
-  // https://www.npmjs.com/package/cordova-plugin-customurlscheme
-  window['handleOpenURL'] = async (url: string, joinMethod: OnboardingJoinMethod = 'external') => {
-    const configUpdated = await joinWithTokenOrUrl(url);
+  async function handleTokenOrUrl(tokenOrUrl: string, joinMethod: OnboardingJoinMethod) {
+    const onboardingState = await refreshOnboardingState();
+    logDebug(`handleTokenOrUrl: onboardingState = ${JSON.stringify(onboardingState)}`);
+    if (onboardingState.route > OnboardingRoute.WELCOME) {
+      displayErrorMsg(i18next.t('join.already-logged-in', { token: onboardingState.opcode }));
+      return;
+    }
+    const configUpdated = await joinWithTokenOrUrl(tokenOrUrl);
     addStatReading('onboard', { configUpdated, joinMethod });
     if (configUpdated) {
       refreshOnboardingState();
     }
     return configUpdated;
-  };
+  }
+  // handleOpenURL function must be provided globally for cordova-plugin-customurlscheme
+  // https://www.npmjs.com/package/cordova-plugin-customurlscheme
+  window['handleOpenURL'] = (url: string) => handleTokenOrUrl(url, 'external');
 
   useEffect(() => {
     if (!appConfig) return;
@@ -63,7 +77,7 @@ const App = () => {
 
   const appContextValue = {
     appConfig,
-    handleOpenURL: window['handleOpenURL'],
+    handleTokenOrUrl,
     onboardingState,
     setOnboardingState,
     refreshOnboardingState,
