@@ -405,7 +405,8 @@
     "dont-force-kill": "Do not force kill the app",
     "background-restrictions": "On Samsung and Huwaei phones, make sure that background restrictions are turned off",
     "close": "Close",
-    "proceeding-with-token": "Proceeding with OPcode: {{token}}"
+    "proceeding-with-token": "Proceeding with OPcode: {{token}}",
+    "already-logged-in": "You are already logged in with OPcode {{token}}. If you wish to use a different OPcode, please log out first."
   },
   "config": {
     "unable-read-saved-config": "Unable to read saved config",

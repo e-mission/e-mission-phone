@@ -18,6 +18,9 @@ import AlertBar from './components/AlertBar';
 import Main from './Main';
 import { joinWithTokenOrUrl } from './config/dynamicConfig';
 import { addStatReading } from './plugin/clientStats';
+import useAppState from './useAppState';
+import { displayErrorMsg, logDebug } from './plugin/logger';
+import i18next from 'i18next';
 
 export const AppContext = createContext<any>({});
 const CUSTOM_LABEL_KEYS_IN_DATABASE = ['mode', 'purpose'];
@@ -34,21 +37,33 @@ const App = () => {
   const appConfig = useAppConfig();
   const permissionStatus = usePermissionStatus();
 
-  const refreshOnboardingState = () => getPendingOnboardingState().then(setOnboardingState);
+  const refreshOnboardingState = () =>
+    getPendingOnboardingState().then((state) => {
+      setOnboardingState(state);
+      return state;
+    });
+
   useEffect(() => {
     refreshOnboardingState();
   }, []);
 
-  // handleOpenURL function must be provided globally for cordova-plugin-customurlscheme
-  // https://www.npmjs.com/package/cordova-plugin-customurlscheme
-  window['handleOpenURL'] = async (url: string, joinMethod: OnboardingJoinMethod = 'external') => {
-    const configUpdated = await joinWithTokenOrUrl(url);
+  async function handleTokenOrUrl(tokenOrUrl: string, joinMethod: OnboardingJoinMethod) {
+    const onboardingState = await refreshOnboardingState();
+    logDebug(`handleTokenOrUrl: onboardingState = ${JSON.stringify(onboardingState)}`);
+    if (onboardingState.route > OnboardingRoute.WELCOME) {
+      displayErrorMsg(i18next.t('join.already-logged-in', { token: onboardingState.opcode }));
+      return;
+    }
+    const configUpdated = await joinWithTokenOrUrl(tokenOrUrl);
     addStatReading('onboard', { configUpdated, joinMethod });
     if (configUpdated) {
       refreshOnboardingState();
     }
     return configUpdated;
-  };
+  }
+  // handleOpenURL function must be provided globally for cordova-plugin-customurlscheme
+  // https://www.npmjs.com/package/cordova-plugin-customurlscheme
+  window['handleOpenURL'] = (url: string) => handleTokenOrUrl(url, 'external');
 
   useEffect(() => {
     if (!appConfig) return;
@@ -61,9 +76,24 @@ const App = () => {
     // getUserCustomLabels(CUSTOM_LABEL_KEYS_IN_DATABASE).then((res) => setCustomLabelMap(res));
   }, [appConfig]);
 
+  const appState = useAppState({});
+  if (appState != 'active') {
+    // Render nothing if the app state is not 'active'.
+    // On iOS, the UI can run if the app is launched by the OS in response to a notification,
+    // in which case the appState will be 'background'. In this case, we definitely do not want
+    // to load the UI because it is not visible.
+    // On Android, the UI can only be initiated by the user - but even so, the user can send it to
+    // the background and we don't need the UI to stay active.
+    // In the future, we may want to persist some UI states when the app is sent to the background;
+    // i.e. the user opens the app, navigates away, and back again.
+    // But currently, we're relying on a 'fresh' UI every time the app goes to 'active' state.
+    logDebug(`App: appState = ${appState}; returning null`);
+    return null;
+  }
+
   const appContextValue = {
     appConfig,
-    handleOpenURL: window['handleOpenURL'],
+    handleTokenOrUrl,
     onboardingState,
     setOnboardingState,
     refreshOnboardingState,
