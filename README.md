@@ -143,14 +143,10 @@ builds with your configuration. That is almost certainly the source of the error
 
 Installing (one time only)
 ---
-Run the setup script for the platform you want to build
+Run the setup script
 
 ```
-bash setup/setup_android_native.sh
-```
-AND/OR
-```
-bash setup/setup_ios_native.sh
+bash setup/setup__native.sh
 ```
 
 ### Activation (after install, and in every new shell)

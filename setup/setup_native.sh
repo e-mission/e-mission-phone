@@ -3,100 +3,85 @@ set -e
 
 source setup/setup_shared.sh
 
-export PLATFORMS=""
 
-if [ $SETUP_IOS ] || ( [ !$SETUP_ANDROID ] && [ !$SETUP_IOS ] ); then
-    OSX_MAJOR_VERSION=`sw_vers | grep ProductVersion | cut -d ':' -f 2 | cut -d '.' -f 1`
-    echo "Found OSX major version" $OSX_MAJOR_VERSION
+# The Homebrew pac-man is installed in different locations, depending on whether the processor
+# is an Intel or Apple Silicone chip.  Intel uses x86_64, Apple chips are amd64, so we can
+# check the chip type using these hardware platforms.
+CHIP_ARC=`uname -m`
+INTEL="x86_64"
+APPLE_SILICONE="arm64"
+WORKING_DIR=""
 
-    # The Homebrew pac-man is installed in different locations, depending on whether the processor
-    # is an Intel or Apple Silicone chip.  Intel uses x86_64, Apple chips are amd64, so we can
-    # check the chip type using these hardware platforms.
-    CHIP_ARC=`uname -m`
-    INTEL="x86_64"
-    APPLE_SILICONE="arm64"
-    WORKING_DIR=""
-
-    if [ $CHIP_ARC == $INTEL ]; then
-        echo "Found "$INTEL" chip"
-        WORKING_DIR="/usr/local/"
-    else
-        if [ $CHIP_ARC == $APPLE_SILICONE ]; then
-            echo "Found "$APPLE_SILICONE" chip"
-            WORKING_DIR=$HOMEBREW_PREFIX
-        fi
+if [ $CHIP_ARC == $INTEL ]; then
+    echo "Found "$INTEL" chip"
+    WORKING_DIR="/usr/local/"
+else
+    if [ $CHIP_ARC == $APPLE_SILICONE ]; then
+        echo "Found "$APPLE_SILICONE" chip"
+        WORKING_DIR=$HOMEBREW_PREFIX
     fi
-
-    CURR_RUBY_VERSION=`ruby --version | cut -d ' ' -f 2 | cut -d '.' -f 1-2`
-    echo "Found ruby version "$CURR_RUBY_VERSION
-
-    if [ $CURR_RUBY_VERSION == $RUBY_VERSION ]; then
-        echo "Found ruby version "$CURR_RUBY_VERSION" expected "$RUBY_VERSION" no need to upgrade"
-    else
-        if [ -x "${WORKING_DIR}/bin/brew" ]; then
-            echo "Found brew installation with version" ` brew --version`
-            echo "Installing ruby version to brew" $RUBY_VERSION
-            brew install ruby@$RUBY_VERSION
-        else
-            if [ $OSX_MAJOR_VERSION -ge $OSX_EXP_VERSION ]; then
-                echo "No brew installation found, but OSX major version "$OSX_MAJOR_VERSION" and expected version "$OSX_EXP_VERSION" so CocoaPods should work"
-            else
-                echo "No brew installation found, but OSX major version "$OSX_MAJOR_VERSION" != expected version "$OSX_EXP_VERSION" CocoaPods install will likely fail"
-                echo "Found ruby version "`ruby --version`
-                exit 1
-            fi
-        fi
-    fi
-
-    echo "Adding $RUBY_PATH to the path before the install"
-    export PATH=$RUBY_PATH:$PATH
-
-    echo "Installing cocoapods"
-    ${WORKING_DIR}/opt/ruby@$RUBY_VERSION/bin/gem install --no-document --user-install cocoapods -v $COCOAPODS_VERSION
-
-    export PLATFORMS+=" ios"
 fi
 
-if [ $SETUP_ANDROID ] || ( [ !$SETUP_ANDROID ] && [ !$SETUP_IOS ] ); then
-    # we can build android on both ubuntu and OSX
-    # should try both since there may be subtle differences
-    PLATFORM=`uname -a`
+CURR_RUBY_VERSION=`ruby --version | cut -d ' ' -f 2 | cut -d '.' -f 1-2`
+echo "Found ruby version "$CURR_RUBY_VERSION
 
-    # both of these have java on Github Actions
-    # but may not in docker, for example
-    # should check for the existence of java and die if it doesn't exist
-    echo "Checking for java in the path"
-    JAVA_VERSION=`javac -version`
-    echo "Found java in the path with version $JAVA_VERSION"
-
-    echo "Setting up SDK environment"
-    MIN_SDK_VERSION=21
-    TARGET_SDK_VERSION=28
-
-    if [ -z $ANDROID_HOME ] && [ -z $ANDROID_SDK_ROOT ];
-    then
-        echo "ANDROID_HOME and ANDROID_SDK_ROOT not set, android SDK not found, exiting"
+if [ $CURR_RUBY_VERSION == $RUBY_VERSION ]; then
+    echo "Found ruby version "$CURR_RUBY_VERSION" expected "$RUBY_VERSION" no need to upgrade"
+else
+    echo "Required ruby version not found, attempting to install through brew"
+    if [ -x "${WORKING_DIR}/bin/brew" ]; then
+        echo "Found brew installation with version" ` brew --version`
+        echo "Installing ruby version to brew" $RUBY_VERSION
+        brew install ruby@$RUBY_VERSION
+    else
+        echo "No brew installation found"
         exit 1
-    else
-        echo "ANDROID_HOME = $ANDROID_HOME; ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
     fi
+fi
 
-    echo "Setting up sdkman"
-    curl -s "https://get.sdkman.io" | bash
-    source ~/.sdkman/bin/sdkman-init.sh
+echo "Adding $RUBY_PATH to the path before the install"
+export PATH=$RUBY_PATH:$PATH
 
-    CURR_GRADLE_VER=`sdk current gradle | cut -d " " -f 4 | xargs`
+echo "Installing cocoapods"
+${WORKING_DIR}/opt/ruby@$RUBY_VERSION/bin/gem install --no-document --user-install cocoapods -v $COCOAPODS_VERSION
 
-    echo "CURR_GRADLE_VER = '$CURR_GRADLE_VER', expected $GRADLE_VERSION"
 
-    if [[ $CURR_GRADLE_VER == $GRADLE_VERSION ]]; then
-        echo "Already have gradle version $GRADLE_VERSION"
-    else
-        echo "Setting up gradle using SDKMan"
-        sdk install gradle $GRADLE_VERSION
-    fi
+# we can build android on both ubuntu and OSX
+# should try both since there may be subtle differences
+PLATFORM=`uname -a`
 
-    export PLATFORMS+=" android"
+# both of these have java on Github Actions
+# but may not in docker, for example
+# should check for the existence of java and die if it doesn't exist
+echo "Checking for java in the path"
+JAVA_VERSION=`javac -version`
+echo "Found java in the path with version $JAVA_VERSION"
+
+echo "Setting up SDK environment"
+MIN_SDK_VERSION=21
+TARGET_SDK_VERSION=28
+
+if [ -z $ANDROID_HOME ] && [ -z $ANDROID_SDK_ROOT ];
+then
+    echo "ANDROID_HOME and ANDROID_SDK_ROOT not set, android SDK not found, exiting"
+    exit 1
+else
+    echo "ANDROID_HOME = $ANDROID_HOME; ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+fi
+
+echo "Setting up sdkman"
+curl -s "https://get.sdkman.io" | bash
+source ~/.sdkman/bin/sdkman-init.sh
+
+CURR_GRADLE_VER=`sdk current gradle | cut -d " " -f 4 | xargs`
+
+echo "CURR_GRADLE_VER = '$CURR_GRADLE_VER', expected $GRADLE_VERSION"
+
+if [[ $CURR_GRADLE_VER == $GRADLE_VERSION ]]; then
+    echo "Already have gradle version $GRADLE_VERSION"
+else
+    echo "Setting up gradle using SDKMan"
+    sdk install gradle $GRADLE_VERSION
 fi
 
 ./bin/configure_xml_and_json.js cordovabuild
