@@ -424,7 +424,7 @@ function points2UnprocessedTrip(
   };
 }
 
-const tsEntrySort = (e1: BEMData<FilteredLocation>, e2: BEMData<FilteredLocation>) =>
+const tsEntrySort = (e1: BEMData<{ ts: number }>, e2: BEMData<{ ts: number }>) =>
   e1.data.ts - e2.data.ts; // compare timestamps
 
 /**
@@ -449,10 +449,10 @@ function tripTransitions2UnprocessedTrip(
       if (locationList.length == 0) {
         return undefined;
       }
-      const sortedLocationList = locationList.sort(tsEntrySort);
+      locationList.sort(tsEntrySort);
       const retainInRange = (loc) =>
         tripStartTransition.data.ts <= loc.data.ts && loc.data.ts <= tripEndTransition.data.ts;
-      const filteredLocationList = sortedLocationList.filter(retainInRange);
+      const filteredLocationList = locationList.filter(retainInRange);
 
       // Fix for https://github.com/e-mission/e-mission-docs/issues/417
       if (filteredLocationList.length == 0) {
@@ -600,6 +600,7 @@ export function readUnprocessedTrips(
         return [];
       } else {
         logDebug(`Found ${transitionList.length} transitions. yay!`);
+        transitionList.sort(tsEntrySort);
         const tripsList = transitions2TripTransitions(transitionList);
         logDebug(`Mapped into ${tripsList.length} trips. yay!`);
         const tripFillPromises = tripsList.map((t) =>

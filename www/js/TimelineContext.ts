@@ -221,19 +221,22 @@ export const useTimelineContext = (): ContextProps => {
   }
 
   async function fetchTripsInRange(dateRange: [string, string]) {
-    if (!pipelineRange?.start_ts || !pipelineRange?.end_ts) {
-      logDebug('No pipelineRange yet, returning empty lists');
-      return [[], []];
-    }
     logDebug('Timeline: fetchTripsInRange from ' + dateRange[0] + ' to ' + dateRange[1]);
-
     const [startTs, endTs] = isoDateRangeToTsRange(dateRange);
-    const maxStartTs = Math.max(startTs, pipelineRange.start_ts); // ensure that we don't read before the pipeline start
-    const minEndTs = Math.min(endTs, pipelineRange.end_ts); // ensure that we don't read after the pipeline end
 
-    const readCompositePromise = readAllCompositeTrips(maxStartTs, minEndTs);
+    let readCompositePromise; // comment
+    if (!pipelineRange?.start_ts || !pipelineRange?.end_ts) {
+      readCompositePromise = Promise.resolve([]);
+    } else {
+      const maxStartTs = Math.max(startTs, pipelineRange.start_ts); // ensure that we don't read before the pipeline start
+      const minEndTs = Math.min(endTs, pipelineRange.end_ts); // ensure that we don't read after the pipeline end
+      readCompositePromise = readAllCompositeTrips(maxStartTs, minEndTs);
+    }
+
     let readUnprocessedPromise;
-    if (endTs >= pipelineRange.end_ts) {
+    if (pipelineRange?.end_ts && pipelineRange.end_ts > endTs) {
+      readUnprocessedPromise = Promise.resolve([]);
+    } else {
       let lastProcessedTrip: CompositeTrip | undefined;
       if (timelineMap) {
         lastProcessedTrip = [...timelineMap?.values()]
@@ -241,13 +244,11 @@ export const useTimelineContext = (): ContextProps => {
           .find((trip) => trip.origin_key.includes('trip')) as CompositeTrip;
       }
       readUnprocessedPromise = readUnprocessedTrips(
-        Math.max(pipelineRange.end_ts, startTs),
+        Math.max(pipelineRange?.end_ts || 0, startTs),
         endTs,
         appConfig,
         lastProcessedTrip,
       );
-    } else {
-      readUnprocessedPromise = Promise.resolve([]);
     }
 
     const results = await Promise.all([readCompositePromise, readUnprocessedPromise]);
