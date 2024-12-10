@@ -62,7 +62,9 @@ const WelcomePage = () => {
   }
 
   function pasteCode() {
-    window['cordova'].plugins.clipboard.paste((clipboardContent: string) => {
+    // if clipboard plugin not available, the callback will be a no-op
+    const pasteFn = window['cordova'].plugins.clipboard?.paste || ((cb) => cb(''));
+    pasteFn((clipboardContent: string) => {
       addStatReading('paste_token');
       try {
         if (!clipboardContent?.startsWith('nrelop_') && !clipboardContent?.includes('://')) {

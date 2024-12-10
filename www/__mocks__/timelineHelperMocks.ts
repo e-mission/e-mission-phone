@@ -165,19 +165,19 @@ export const mockCompDataTwo = {
 export const mockTransitions: Array<BEMData<TripTransition>> = [
   {
     data: {
-      // mock of a startTransition
+      // mock of an endTransition
       currstate: '',
-      transition: 'T_EXITED_GEOFENCE',
-      ts: 1,
+      transition: 'T_TRIP_ENDED',
+      ts: 9999,
     },
     metadata: mockMetaData,
   },
   {
     data: {
-      // mock of an endTransition
+      // mock of a startTransition
       currstate: '',
-      transition: 'T_TRIP_ENDED',
-      ts: 9999,
+      transition: 'T_EXITED_GEOFENCE',
+      ts: 1,
     },
     metadata: mockMetaData,
   },
