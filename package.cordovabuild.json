@@ -104,7 +104,7 @@
     }
   },
   "dependencies": {
-    "@havesource/cordova-plugin-push": "git+https://github.com/havesource/cordova-plugin-push.git#4.0.0-dev.0",
+    "@havesource/cordova-plugin-push": "git+https://github.com/JGreenlee/cordova-plugin-push.git#force_register",
     "@messageformat/core": "^3.2.0",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/stack": "^6.3.17",
