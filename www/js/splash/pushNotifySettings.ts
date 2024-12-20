@@ -31,8 +31,8 @@ function startupInit() {
     ios: {
       badge: true,
       sound: true,
-      vibration: true,
       clearBadge: true,
+      forceRegister: true,
     },
     android: {
       iconColor: '#008acf',
