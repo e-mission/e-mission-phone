@@ -1,3 +1,7 @@
+coverage:
+  status:
+    project:
+      default: false  # disable the default status that measures entire project
 comment:                  
   layout: " diff, flags, files"
   behavior: default
