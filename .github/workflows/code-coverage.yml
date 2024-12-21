@@ -24,7 +24,15 @@ jobs:
         shell: bash -l {0}
         run: |
           source setup/activate_serve.sh
-          npx jest
+          npm run test
+
+      - name: Upload exact version(s) of packages used
+        uses: actions/upload-artifact@v4
+        with:
+          name: versions-results
+          path: |
+            package-lock.json
+            ./coverage/coverage-final.json
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
