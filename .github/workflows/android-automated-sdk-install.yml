@@ -87,7 +87,7 @@ jobs:
       run: |
         export JAVA_HOME=$JAVA_HOME_17_X64
         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
-        bash setup/setup_android_native.sh
+        bash setup/setup_native.sh
 
     - name: Ensure that the path is correct and the project can be activated
       shell: bash -l {0}
