@@ -19,7 +19,8 @@ const useDerivedProperties = (tlEntry) => {
     const beginDt = tlEntry.start_local_dt || tlEntry.enter_local_dt;
     const endDt = tlEntry.end_local_dt || tlEntry.exit_local_dt;
     // given YYYY-MM-DDTHH:MM:SSZ strings: if YYYY-MM-DD differs, is multi-day
-    const tlEntryIsMultiDay = beginFmt.substring(0, 10) != endFmt.substring(0, 10);
+    const tlEntryIsMultiDay =
+      beginFmt && endFmt ? beginFmt?.substring(0, 10) != endFmt?.substring(0, 10) : false;
 
     return {
       confirmedMode: confirmedModeFor(tlEntry),
