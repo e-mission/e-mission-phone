@@ -82,10 +82,14 @@ const TripCard = ({ trip, isFirstInList }: Props) => {
           {/* right panel */}
           <View style={[cardStyles.panelSection, { marginTop: 0 }]}>
             {/* date and distance */}
-            <Text style={{ fontSize: 14, textAlign: 'center' }}>
-              <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>
-                {displayDate}
-              </Text>
+            <Text
+              style={{
+                fontSize: 14,
+                textAlign: 'center',
+                fontWeight: 'bold',
+                textDecorationLine: 'underline',
+              }}>
+              {displayDate}
             </Text>
             <Text style={{ fontSize: 13, textAlign: 'center' }}>
               {t('diary.distance-in-time', {
