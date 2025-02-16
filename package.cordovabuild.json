@@ -134,7 +134,7 @@
     "cordova-plugin-file": "8.0.0",
     "cordova-plugin-inappbrowser": "6.0.0",
     "cordova-plugin-ionic-keyboard": "2.2.0",
-    "cordova-plugin-ionic-webview": "5.0.0",
+    "cordova-plugin-ionic-webview": "5.0.1",
     "cordova-plugin-local-notification-12": "github:e-mission/cordova-plugin-local-notification-12#v0.1.5-remove-exact-alarms",
     "cordova-plugin-x-socialsharing": "6.0.4",
     "cordova-plugin-bluetooth-classic-serial-port": "git+https://github.com/e-mission/cordova-plugin-bluetooth-classic-serial-port.git",
