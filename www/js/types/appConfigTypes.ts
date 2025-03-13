@@ -29,7 +29,7 @@ export type IntroConfig = {
   app_required: boolean;
   start_month: number;
   start_year: number;
-  mode_studied?: string;
+  mode_studied?: string | string[];
   program_admin_contact: string;
   deployment_partner_name: string;
   translated_text: {
