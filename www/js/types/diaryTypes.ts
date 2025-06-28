@@ -24,6 +24,7 @@ export type ConfirmedPlace = {
   _id: ObjectId;
   additions: UserInputEntry[];
   cleaned_place: ObjectId;
+  display_name: string; // e.g. "Main St, San Francisco"
   duration: number;
   ending_trip: ObjectId;
   enter_fmt_time: string; // ISO string e.g. 2023-10-31T12:00:00.000-04:00
@@ -32,10 +33,11 @@ export type ConfirmedPlace = {
   exit_fmt_time: string; // ISO string e.g. 2023-10-31T12:00:00.000-04:00
   exit_local_dt: LocalDt;
   exit_ts: number; // Unix timestamp
-  key: string;
-  location: Geometry;
-  origin_key: string;
+  key: 'analysis/confirmed_place';
+  location: Point;
+  origin_key: 'analysis/confirmed_place';
   raw_places: ObjectId[];
+  reverse_geocode: any; // Nominatim response obj
   source: string;
   user_input: UserInput;
   starting_trip: ObjectId;
@@ -84,7 +86,7 @@ export type UnprocessedTrip = {
   user_input: {}; // unprocessed trips won't have any matched processed inputs, so this is always empty
 };
 
-/* These are the properties received from the server (basically matches Python code)
+/* These are the properties received from the server after unpacking
   This should match what Timeline.readAllCompositeTrips returns (an array of these objects) */
 export type CompositeTrip = {
   _id: ObjectId;
@@ -96,7 +98,7 @@ export type CompositeTrip = {
   confirmed_trip: ObjectId;
   distance: number;
   duration: number;
-  end_confirmed_place: BEMData<ConfirmedPlace>;
+  end_confirmed_place: ConfirmedPlace;
   end_fmt_time: string;
   end_loc: Point;
   end_local_dt: LocalDt;
@@ -107,19 +109,28 @@ export type CompositeTrip = {
   inferred_labels: InferredLabels;
   inferred_section_summary: SectionSummary;
   inferred_trip: ObjectId;
-  key: string;
+  key: 'analysis/composite_trip';
   locations: CompositeTripLocation[];
-  origin_key: string;
+  origin_key: `${string}_trip`;
   raw_trip: ObjectId;
   sections: SectionData[];
   source: string;
-  start_confirmed_place: BEMData<ConfirmedPlace>;
+  start_confirmed_place: ConfirmedPlace;
   start_fmt_time: string;
   start_loc: Point;
   start_local_dt: LocalDt;
   start_place: ObjectId;
   start_ts: number;
   user_input: UserInput;
+};
+
+export type ServerResponseCompositeTrip = {
+  phone_data: Array<
+    BEMData<CompositeTrip> & {
+      start_confirmed_place: BEMData<ConfirmedPlace>;
+      end_confirmed_place: BEMData<ConfirmedPlace>;
+    }
+  >;
 };
 
 /* The 'timeline' for a user is a list of their trips and places,
