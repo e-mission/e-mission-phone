@@ -142,7 +142,7 @@
     "cordova-plugin-bluetooth-classic-serial-port": "git+https://github.com/e-mission/cordova-plugin-bluetooth-classic-serial-port.git",
     "cordova-custom-config": "^5.1.1",
     "core-js": "^2.5.7",
-    "e-mission-common": "github:JGreenlee/e-mission-common#semver:0.6.2",
+    "e-mission-common": "github:e-mission/e-mission-common#semver:0.6.2",
     "enketo-core": "^6.1.7",
     "enketo-transformer": "^4.0.0",
     "fast-xml-parser": "^4.2.2",
