@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import color from 'color';
 import { DayOfMetricData, MetricEntry, MetricValue } from './metricsTypes';
 import { logDebug } from '../plugin/logger';
-import { MetricName, groupingFields } from '../types/appConfigTypes';
+import AppConfig, { MetricName, groupingFields } from '../types/appConfigTypes';
 import { ImperialConfig } from '../config/useImperialConfig';
 import i18next from 'i18next';
 import { base_modes, metrics_summaries } from 'e-mission-common';
@@ -15,6 +15,17 @@ import {
 import { LabelOptions, RichMode } from '../types/labelTypes';
 import { labelOptions, textToLabelKey } from '../survey/multilabel/confirmHelper';
 import { UNCERTAIN_OPACITY } from '../components/charting';
+
+/**
+ * When phone_dashboard_ui is defined, we show the metrics tab if there is at least one section defined in phone_dashboard_ui.
+ * Default is to show the metrics tab for MULTILABEL configs (hide for ENKETO)
+ */
+export function showMetricsTab(appConfig: AppConfig) {
+  if (appConfig?.metrics?.phone_dashboard_ui !== undefined) {
+    return appConfig?.metrics?.phone_dashboard_ui?.sections?.length > 0;
+  }
+  return appConfig?.survey_info?.['trip-labels'] === 'MULTILABEL';
+}
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];
