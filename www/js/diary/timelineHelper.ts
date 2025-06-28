@@ -17,6 +17,7 @@ import {
   SectionData,
   CompositeTripLocation,
   SectionSummary,
+  ServerResponseCompositeTrip,
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
 import { RichMode } from '../types/labelTypes';
@@ -286,10 +287,10 @@ const unpackServerData = (obj: BEMData<any>) =>
     origin_key: obj.metadata.origin_key || obj.metadata.key,
   };
 
-export function readAllCompositeTrips(startTs: number, endTs: number) {
+export function readAllCompositeTrips(startTs: number, endTs: number): Promise<CompositeTrip[]> {
   const readPromises = [getRawEntries(['analysis/composite_trip'], startTs, endTs, 'data.end_ts')];
   return Promise.all(readPromises)
-    .then(([ctList]: [ServerResponse<TimelineEntry>]) => {
+    .then(([ctList]: [ServerResponseCompositeTrip]) => {
       return ctList.phone_data.map((ct) => {
         const unpackedCt = unpackServerData(ct);
         return {

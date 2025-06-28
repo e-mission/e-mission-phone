@@ -1,7 +1,7 @@
 /* This is a temporary solution; localstorage is not a good long-term option and we should
   be looking to other key-value storage options in the React Native ecosystem. */
 
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 
 export type Listener<EventType> = (event: EventType) => void;
 
@@ -75,7 +75,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
 
 import Bottleneck from 'bottleneck';
 import { displayError, logDebug } from '../plugin/logger';
-import { CompositeTrip } from '../types/diaryTypes';
+import { CompositeTrip, ConfirmedPlace, isTrip } from '../types/diaryTypes';
 
 let nominatimLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 export const resetNominatimLimiter = () => {
@@ -138,29 +138,57 @@ async function fetchNominatimLocName(loc_geojson) {
 
 // Schedules nominatim fetches for the start and end locations of a trip
 export function fillLocationNamesOfTrip(trip: CompositeTrip) {
-  nominatimLimiter.schedule(() => fetchNominatimLocName(trip.end_loc));
-  nominatimLimiter.schedule(() => fetchNominatimLocName(trip.start_loc));
+  if (!trip.start_confirmed_place?.display_name) {
+    nominatimLimiter.schedule(() => fetchNominatimLocName(trip.end_loc));
+  }
+  if (!trip.end_confirmed_place?.display_name) {
+    nominatimLimiter.schedule(() => fetchNominatimLocName(trip.start_loc));
+  }
 }
 
 // a React hook that takes a trip or place and returns an array of its address names
-export function useAddressNames(tlEntry) {
-  const [addressNames, setAddressNames] = useState(['', '']);
-  // if a place is passed in, it will need just one address name
-  const [locData] = useLocalStorage(tlEntry.location?.coordinates?.toString(), null);
-  // if a trip is passed in, it needs two address names (start and end locations)
-  const [startLocData] = useLocalStorage(tlEntry.start_loc?.coordinates?.toString(), null);
-  const [endLocData] = useLocalStorage(tlEntry.end_loc?.coordinates?.toString(), null);
+export function useAddressNames(tlEntry: CompositeTrip | ConfirmedPlace) {
+  const tlEntryIsTrip = isTrip(tlEntry);
 
-  useEffect(() => {
+  // if a place is passed in, it will need just one address name
+  const [locData] = useLocalStorage(
+    tlEntryIsTrip ? '' : tlEntry.location?.coordinates?.toString(),
+    '',
+  );
+
+  // if a trip is passed in, it needs two address names (start and end locations)
+  const [startLocData] = useLocalStorage(
+    tlEntryIsTrip ? tlEntry.start_loc?.coordinates?.toString() : '',
+    '',
+  );
+  const [endLocData] = useLocalStorage(
+    tlEntryIsTrip ? tlEntry.end_loc?.coordinates?.toString() : '',
+    '',
+  );
+
+  if (tlEntryIsTrip) {
+    let names = ['...', '...'];
+    if (tlEntry.start_confirmed_place?.display_name) {
+      names[0] = tlEntry.start_confirmed_place.display_name;
+    } else if (startLocData) {
+      const startLoc = typeof startLocData === 'string' ? JSON.parse(startLocData) : startLocData;
+      names[0] = toAddressName(startLoc);
+    }
+    if (tlEntry.end_confirmed_place?.display_name) {
+      names[1] = tlEntry.end_confirmed_place.display_name;
+    } else if (endLocData) {
+      const endLoc = typeof endLocData === 'string' ? JSON.parse(endLocData) : endLocData;
+      names[1] = toAddressName(endLoc);
+    }
+    return names;
+  } else {
+    if (tlEntry.display_name) {
+      return [tlEntry.display_name];
+    }
     if (locData) {
       const loc = typeof locData === 'string' ? JSON.parse(locData) : locData;
-      setAddressNames([toAddressName(loc)]);
-    } else if (startLocData && endLocData) {
-      const startLoc = typeof startLocData === 'string' ? JSON.parse(startLocData) : startLocData;
-      const endLoc = typeof endLocData === 'string' ? JSON.parse(endLocData) : endLocData;
-      setAddressNames([toAddressName(startLoc), toAddressName(endLoc)]);
+      return [toAddressName(loc)];
     }
-  }, [locData, startLocData, endLocData]);
-
-  return addressNames;
+    return ['...'];
+  }
 }

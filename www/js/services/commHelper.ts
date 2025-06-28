@@ -203,7 +203,7 @@ export function getAggregateData(path: string, query, serverConnConfig?: ServerC
       return log(prefix + `got ${JSON.stringify(summary)}`, r);
     })
     .catch((error) => {
-      error = `While getting aggregate data, ${error}`;
+      error = `While getting aggregate data, ${JSON.stringify(error)}`;
       throw error;
     });
 }
