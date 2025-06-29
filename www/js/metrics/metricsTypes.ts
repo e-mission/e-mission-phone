@@ -1,4 +1,4 @@
-import { GroupingField, MetricName } from '../types/appConfigTypes';
+import { GroupingField, MetricName } from 'nrel-openpath-deploy-configs';
 
 type TravelMetricName = 'distance' | 'duration' | 'count';
 

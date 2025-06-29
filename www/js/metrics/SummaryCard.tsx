@@ -4,7 +4,7 @@ import { Card, Text } from 'react-native-paper';
 import { formatForDisplay } from '../datetimeUtil';
 import { colors } from '../appTheme';
 import { t } from 'i18next';
-import { FootprintGoal } from '../types/appConfigTypes';
+import { FootprintGoal } from 'nrel-openpath-deploy-configs';
 import { metricsStyles } from './MetricsScreen';
 
 type Value = [number, number];

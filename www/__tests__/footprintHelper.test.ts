@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import { getFootprintGoals } from '../js/metrics/footprint/footprintHelper';
-import AppConfig from '../js/types/appConfigTypes';
+import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
 
 describe('footprintHelper', () => {
   const fakeAppConfig1 = {
@@ -47,7 +47,7 @@ describe('footprintHelper', () => {
   describe('getFootprintGoals', () => {
     it('should use default goals if appConfig is blank / does not have goals, extract the label, and add footnote', () => {
       myFakeFootnotes.length = 0;
-      const goals = getFootprintGoals({} as any as AppConfig, addFakeFootnote);
+      const goals = getFootprintGoals({} as any as DeploymentConfig, addFakeFootnote);
       expect(goals.carbon[0].label).toEqual(i18next.t('metrics.footprint.us-2050-goal') + '1');
       expect(goals.carbon[1].label).toEqual(i18next.t('metrics.footprint.us-2030-goal') + '1');
       expect(goals.energy[0].label).toEqual(i18next.t('metrics.footprint.us-2050-goal') + '1');
@@ -56,7 +56,7 @@ describe('footprintHelper', () => {
 
     it('should use goals from appConfig when provided, extract the label, and add footnote', () => {
       myFakeFootnotes.length = 0;
-      const goals = getFootprintGoals(fakeAppConfig1 as any as AppConfig, addFakeFootnote);
+      const goals = getFootprintGoals(fakeAppConfig1 as any as DeploymentConfig, addFakeFootnote);
       expect(goals.carbon[0].label).toEqual('Foo goal1');
       expect(goals.carbon[1].label).toEqual('Bar goal1');
       expect(goals.energy[0].label).toEqual('Baz goal1');

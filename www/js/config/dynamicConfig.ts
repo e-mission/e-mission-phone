@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { fetchUrlCached } from '../services/commHelper';
 import { storageClear, storageGet, storageSet } from '../plugin/storage';
-import { AppConfig } from '../types/appConfigTypes';
+import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
 import {
   getStudyNameFromToken,
   getStudyNameFromUrl,
@@ -13,7 +13,7 @@ import {
 export const CONFIG_PHONE_UI = 'config/app_ui_config';
 export const CONFIG_PHONE_UI_KVSTORE = 'CONFIG_PHONE_UI';
 
-export let _promisedConfig: Promise<AppConfig | null> | undefined;
+export let _promisedConfig: Promise<DeploymentConfig | null> | undefined;
 export let configChanged = false;
 export const setConfigChanged = (b) => (configChanged = b);
 
@@ -23,22 +23,11 @@ export const _test_resetPromisedConfig = () => {
 };
 
 /**
- * @param config The app config which might be missing 'name'
- * @returns Shallow copy of the app config with 'name' filled in if it was missing
- */
-function _fillStudyName(config: Partial<AppConfig>): AppConfig {
-  if (config.name) return config as AppConfig;
-  const url = config.server && new URL(config.server.connectUrl);
-  const name = url ? getStudyNameFromUrl(url) : 'dev';
-  return { ...config, name } as AppConfig;
-}
-
-/**
  * @param config The app config which might be missing 'survey_info'
  * @returns Shallow copy of the app config with the default 'survey_info' filled in if it was missing
  */
-function _fillSurveyInfo(config: Partial<AppConfig>): AppConfig {
-  if (config.survey_info) return config as AppConfig;
+function _fillSurveyInfo(config: Partial<DeploymentConfig>): DeploymentConfig {
+  if (config.survey_info) return config as DeploymentConfig;
   return {
     ...config,
     survey_info: {
@@ -56,15 +45,15 @@ function _fillSurveyInfo(config: Partial<AppConfig>): AppConfig {
       },
       'trip-labels': 'MULTILABEL',
     },
-  } as AppConfig;
+  } as DeploymentConfig;
 }
 
 /**
- * @description Fill in any fields that might be missing from the config ('name', 'survey_info') for
+ * @description Fill in any fields that might be missing from the config ('survey_info') for
  *  backwards compatibility with old configs
  */
-const _backwardsCompatFill = (config: Partial<AppConfig>): AppConfig =>
-  _fillSurveyInfo(_fillStudyName(config));
+const _backwardsCompatFill = (config: Partial<DeploymentConfig>): DeploymentConfig =>
+  _fillSurveyInfo(config);
 
 export let _cacheResourcesFetchPromise: Promise<(string | undefined)[]> = Promise.resolve([]);
 /**
@@ -74,7 +63,7 @@ export let _cacheResourcesFetchPromise: Promise<(string | undefined)[]> = Promis
  *   fetch them again unless local storage is cleared.
  * @param config The app config
  */
-function cacheResourcesFromConfig(config: AppConfig) {
+function cacheResourcesFromConfig(config: DeploymentConfig) {
   const fetchPromises: Promise<string | undefined>[] = [];
   if (config.survey_info?.surveys) {
     Object.values(config.survey_info.surveys).forEach((survey) => {
@@ -217,7 +206,7 @@ export const resetDataAndRefresh = () =>
  * @returns The app config, either from a cached copy, retrieved from local storage, or retrieved
  *   from user cache with getDocument()
  */
-export function getConfig(): Promise<AppConfig | null> {
+export function getConfig(): Promise<DeploymentConfig | null> {
   if (_promisedConfig) return _promisedConfig;
   let promise = storageGet(CONFIG_PHONE_UI_KVSTORE).then((config) => {
     if (config && Object.keys(config).length) {

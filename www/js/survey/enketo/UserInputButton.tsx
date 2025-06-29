@@ -19,7 +19,7 @@ import useAppConfig from '../../useAppConfig';
 import { getSurveyForTimelineEntry } from './conditionalSurveys';
 import useDerivedProperties from '../../diary/useDerivedProperties';
 import { resolveSurveyButtonConfig } from './enketoHelper';
-import { SurveyButtonConfig } from '../../types/appConfigTypes';
+import { SurveyButtonConfig } from 'nrel-openpath-deploy-configs';
 
 type Props = {
   timelineEntry: any;

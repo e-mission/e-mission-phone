@@ -16,7 +16,7 @@ import BarChart from '../../components/BarChart';
 import { ChartRecord } from '../../components/Chart';
 import i18next from 'i18next';
 import { MetricsData } from '../metricsTypes';
-import { GroupingField, MetricList } from '../../types/appConfigTypes';
+import { GroupingField, MetricList } from 'nrel-openpath-deploy-configs';
 import { labelKeyToText } from '../../survey/multilabel/confirmHelper';
 
 type Props = {

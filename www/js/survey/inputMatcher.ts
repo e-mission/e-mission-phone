@@ -21,7 +21,7 @@ import {
 import { TimelineLabelMap, TimelineNotesMap, UserInputMap } from '../TimelineContext';
 import { MultilabelKey } from '../types/labelTypes';
 import { EnketoUserInputEntry } from './enketo/enketoHelper';
-import { AppConfig } from '../types/appConfigTypes';
+import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
 import { BEMData } from '../types/serverData';
 
 const EPOCH_MAXIMUM = 2 ** 31 - 1;
@@ -271,7 +271,7 @@ export function getUniqueEntries(combinedList) {
  */
 export function mapInputsToTimelineEntries(
   allEntries: TimelineEntry[],
-  appConfig: AppConfig,
+  appConfig: DeploymentConfig,
 ): [TimelineLabelMap, TimelineNotesMap] {
   const timelineLabelMap: TimelineLabelMap = {};
   const timelineNotesMap: TimelineNotesMap = {};
@@ -403,7 +403,10 @@ function decimalToHex(d: string | number, padding?: number) {
   return hex;
 }
 
-export function mapBleScansToTimelineEntries(allEntries: TimelineEntry[], appConfig: AppConfig) {
+export function mapBleScansToTimelineEntries(
+  allEntries: TimelineEntry[],
+  appConfig: DeploymentConfig,
+) {
   const timelineBleMap = {};
   for (const tlEntry of allEntries) {
     const rangingScans = getBleRangingScansForTimelineEntry(tlEntry, unprocessedBleScans);

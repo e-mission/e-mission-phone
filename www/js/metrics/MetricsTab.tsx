@@ -7,7 +7,7 @@ import { MetricsData } from './metricsTypes';
 import { getAggregateData } from '../services/commHelper';
 import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
-import { AppConfig, MetricList } from '../types/appConfigTypes';
+import { DeploymentConfig, MetricList } from 'nrel-openpath-deploy-configs';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext, { TimelineLabelMap, TimelineMap } from '../TimelineContext';
 import { metrics_summaries } from 'e-mission-common';
@@ -27,7 +27,7 @@ export const DEFAULT_METRIC_LIST: MetricList = {
 async function computeUserMetrics(
   metricList: MetricList,
   timelineMap: TimelineMap,
-  appConfig: AppConfig,
+  appConfig: DeploymentConfig,
   timelineLabelMap: TimelineLabelMap | null,
   labelOptions: LabelOptions,
 ) {
@@ -54,7 +54,7 @@ async function computeUserMetrics(
 async function fetchAggMetrics(
   metricList: MetricList,
   dateRange: [string, string],
-  appConfig: AppConfig,
+  appConfig: DeploymentConfig,
   labelOptions: LabelOptions,
 ) {
   logDebug('MetricsTab: fetching agg metrics from server for dateRange ' + dateRange);

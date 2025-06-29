@@ -6,7 +6,7 @@ import BarChart from '../../components/BarChart';
 import { useAppTheme } from '../../appTheme';
 import { LabelPanel } from './SurveyComparisonCard';
 import { DayOfMetricData, MetricsData } from '../metricsTypes';
-import { GroupingField } from '../../types/appConfigTypes';
+import { GroupingField } from 'nrel-openpath-deploy-configs';
 import { getUniqueLabelsForDays } from '../metricsHelper';
 
 function sumResponseCountsForValue(

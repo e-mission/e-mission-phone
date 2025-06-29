@@ -17,7 +17,7 @@ import ToggleSwitch from '../../components/ToggleSwitch';
 import { metricsStyles } from '../MetricsScreen';
 import { labelKeyToText } from '../../survey/multilabel/confirmHelper';
 import { useTranslation } from 'react-i18next';
-import { GroupingField, MetricName } from '../../types/appConfigTypes';
+import { GroupingField, MetricName } from 'nrel-openpath-deploy-configs';
 import { useImperialConfig } from '../../config/useImperialConfig';
 
 type Props = {

@@ -8,7 +8,11 @@ import { getConfig } from '../../config/dynamicConfig';
 import { DateTime } from 'luxon';
 import { fetchUrlCached } from '../../services/commHelper';
 import { getUnifiedDataForInterval } from '../../services/unifiedDataLoader';
-import { AppConfig, EnketoSurveyConfig, SurveyButtonConfig } from '../../types/appConfigTypes';
+import {
+  DeploymentConfig,
+  EnketoSurveyConfig,
+  SurveyButtonConfig,
+} from 'nrel-openpath-deploy-configs';
 import {
   CompositeTrip,
   ConfirmedPlace,
@@ -112,7 +116,7 @@ let _config: EnketoSurveyConfig;
  * @param {string} name survey name (defined in enketo survey config)
  * @param {EnketoResponse[]} responses An array of previously recorded responses to Enketo surveys
  *  (presumably having been retrieved from unifiedDataLoader)
- * @param {AppConfig} appConfig the dynamic config file for the app
+ * @param {DeploymentConfig} appConfig the dynamic config file for the app
  * @return {Promise<EnketoResponse[]>} filtered survey responses
  */
 export function filterByNameAndVersion(name: string, responses: EnketoResponse[], appConfig) {
@@ -236,7 +240,7 @@ export function resolveTimestamps(
 export function saveResponse(
   surveyName: string,
   enketoForm: Form,
-  appConfig: AppConfig,
+  appConfig: DeploymentConfig,
   opts?: SurveyOptions,
 ) {
   const xmlParser = new window.DOMParser();
@@ -275,11 +279,11 @@ export function saveResponse(
         };
       }
       // use dataKey passed into opts if available, otherwise get it from the config
-      const dataKey = opts?.dataKey || appConfig.survey_info.surveys[surveyName].dataKey;
+      const dataKey = opts?.dataKey || appConfig.survey_info!.surveys[surveyName].dataKey;
       const data: EnketoUserInputData | EnketoResponseData = {
         ...(timestamps || {}),
         name: surveyName,
-        version: appConfig.survey_info.surveys[surveyName].version,
+        version: appConfig.survey_info!.surveys[surveyName].version,
         label: rsLabel,
         match_id,
         key: dataKey,
@@ -320,10 +324,10 @@ export function loadPreviousResponseForSurvey(dataKey: string) {
  *  Includes backwards compats for app config fields that didn't use to exist
  */
 export function resolveSurveyButtonConfig(
-  config: AppConfig,
+  config: DeploymentConfig,
   button: 'trip-label' | 'trip-notes' | 'place-label' | 'place-notes',
 ): SurveyButtonConfig[] {
-  const buttonConfig = config.survey_info.buttons?.[button];
+  const buttonConfig = config.survey_info!.buttons?.[button];
   // backwards compat: default to the trip confirm survey if this button isn't configured
   if (!buttonConfig) {
     return [
