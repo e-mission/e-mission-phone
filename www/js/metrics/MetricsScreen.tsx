@@ -6,7 +6,7 @@ import FootprintSection from './footprint/FootprintSection';
 import MovementSection from './movement/MovementSection';
 import TravelSection from './travel/TravelSection';
 import useAppConfig from '../useAppConfig';
-import { MetricsUiSection } from '../types/appConfigTypes';
+import { MetricsUiSection } from 'nrel-openpath-deploy-configs';
 import SurveysSection from './surveys/SurveysSection';
 import { useAppTheme } from '../appTheme';
 import i18next from 'i18next';

@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import { logDebug } from '../plugin/logger';
-import AppConfig from '../types/appConfigTypes';
+import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
 
 /**
  * Adapted from https://stackoverflow.com/a/63363662/4040267
@@ -40,7 +40,7 @@ export function getStudyNameFromToken(token: string): string {
   return tokenParts[1];
 }
 
-export function getSubgroupFromToken(token: string, config: AppConfig): string | undefined {
+export function getSubgroupFromToken(token: string, config: DeploymentConfig): string | undefined {
   if (config.opcode) {
     // new style study, expects token with sub-group
     const tokenParts = token.split('_');

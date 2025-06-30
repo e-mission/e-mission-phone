@@ -3,7 +3,7 @@
 //  * @example getTokenFromUrl('nrelopenpath://login_token?token=nrelop_study_subgroup_random') => nrelop_study_subgroup_random
 
 import { getStudyNameFromToken, getSubgroupFromToken, getTokenFromUrl } from '../js/config/opcode';
-import AppConfig from '../js/types/appConfigTypes';
+import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
 describe('opcode', () => {
   describe('getStudyNameFromToken', () => {
     const token = 'nrelop_great-study_default_randomLongStringWith32Characters';
@@ -19,7 +19,7 @@ describe('opcode', () => {
         opcode: {
           subgroups: ['amazing-subgroup', 'other-subgroup'],
         },
-      } as any as AppConfig;
+      } as any as DeploymentConfig;
       expect(getSubgroupFromToken(amazingSubgroupToken, fakeconfig)).toBe('amazing-subgroup');
     });
 
@@ -28,7 +28,7 @@ describe('opcode', () => {
         opcode: {
           subgroups: ['sad-subgroup', 'other-subgroup'],
         },
-      } as any as AppConfig;
+      } as any as DeploymentConfig;
       expect(() => getSubgroupFromToken(amazingSubgroupToken, fakeconfig)).toThrow();
     });
 
@@ -36,7 +36,7 @@ describe('opcode', () => {
       const defaultSubgroupToken = 'nrelop_great-study_default_000';
       const fakeconfig = {
         opcode: {},
-      } as any as AppConfig;
+      } as any as DeploymentConfig;
       expect(getSubgroupFromToken(defaultSubgroupToken, fakeconfig)).toBe('default');
     });
 
@@ -44,7 +44,7 @@ describe('opcode', () => {
       const invalidSubgroupToken = 'nrelop_great-study_imaginary-subgroup_000';
       const fakeconfig = {
         opcode: {},
-      } as any as AppConfig;
+      } as any as DeploymentConfig;
       expect(() => getSubgroupFromToken(invalidSubgroupToken, fakeconfig)).toThrow();
     });
   });

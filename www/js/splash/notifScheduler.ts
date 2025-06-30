@@ -3,7 +3,7 @@ import { getUser, updateUser } from '../services/commHelper';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
 import { DateTime } from 'luxon';
 import i18next from 'i18next';
-import { ReminderSchemesConfig } from '../types/appConfigTypes';
+import { ReminderSchemesConfig } from 'nrel-openpath-deploy-configs';
 
 // like python range()
 function range(start, stop, step) {

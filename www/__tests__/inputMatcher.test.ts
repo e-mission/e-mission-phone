@@ -12,7 +12,7 @@ import {
   getUniqueEntries,
   mapInputsToTimelineEntries,
 } from '../js/survey/inputMatcher';
-import { AppConfig } from '../js/types/appConfigTypes';
+import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
 import { CompositeTrip, TimelineEntry, UserInputEntry } from '../js/types/diaryTypes';
 
 describe('input-matcher', () => {
@@ -280,7 +280,7 @@ describe('mapInputsToTimelineEntries on a MULTILABEL configuration', () => {
     survey_info: {
       'trip-labels': 'MULTILABEL',
     },
-  } as AppConfig;
+  } as DeploymentConfig;
 
   const timelineEntriesMultilabel = [
     {
@@ -361,7 +361,7 @@ describe('mapInputsToTimelineEntries on an ENKETO configuration', () => {
       },
       surveys: { TripConfirmSurvey: { compatibleWith: 1 } },
     },
-  } as any as AppConfig;
+  } as any as DeploymentConfig;
   const timelineEntriesEnketo = [
     {
       _id: { $oid: 'trip1' },

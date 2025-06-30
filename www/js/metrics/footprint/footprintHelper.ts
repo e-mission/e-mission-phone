@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import color from 'color';
 import { colors } from '../../appTheme';
-import AppConfig from '../../types/appConfigTypes';
+import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
 
 const lang = i18next.resolvedLanguage || 'en';
 const darkWarn = color(colors.warn).darken(0.65).saturate(0.5).rgb().toString();
@@ -34,7 +34,10 @@ const DEFAULT_FOOTPRINT_GOALS = {
   goals_footnote: { [lang]: i18next.t('metrics.footprint.us-goals-footnote') },
 };
 
-export function getFootprintGoals(appConfig: AppConfig, addFootnote: (footnote: string) => any) {
+export function getFootprintGoals(
+  appConfig: DeploymentConfig,
+  addFootnote: (footnote: string) => any,
+) {
   const goals = {
     ...(appConfig?.metrics?.phone_dashboard_ui?.footprint_options?.goals ??
       DEFAULT_FOOTPRINT_GOALS),

@@ -46,7 +46,7 @@ import {
   setReminderPrefs,
 } from '../splash/notifScheduler';
 import { DateTime } from 'luxon';
-import { AppConfig } from '../types/appConfigTypes';
+import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
 import NavBar, { NavBarButton } from '../components/NavBar';
 
 //any pure functions can go outside
@@ -82,7 +82,7 @@ const ProfileSettings = () => {
   const [syncSettings, setSyncSettings] = useState<any>({});
   const [cacheResult, setCacheResult] = useState('');
   const [connectSettings, setConnectSettings] = useState({});
-  const [uiConfig, setUiConfig] = useState<AppConfig | undefined>(undefined);
+  const [uiConfig, setUiConfig] = useState<DeploymentConfig | undefined>(undefined);
   const [consentDoc, setConsentDoc] = useState<any>({});
   const [dumpDate, setDumpDate] = useState(new Date());
   const [uploadReason, setUploadReason] = useState('');
@@ -102,8 +102,7 @@ const ProfileSettings = () => {
   const [isScheduling, setIsScheduling] = useState(false);
 
   useEffect(() => {
-    //added appConfig.name needed to be defined because appConfig was defined but empty
-    if (appConfig && appConfig.name) {
+    if (appConfig && Object.keys(appConfig).length) {
       whenReady(appConfig);
     }
   }, [appConfig]);
@@ -124,7 +123,7 @@ const ProfileSettings = () => {
     refreshNotificationSettings();
   }, [uiConfig]);
 
-  function whenReady(newAppConfig: AppConfig) {
+  function whenReady(newAppConfig: DeploymentConfig) {
     const tempUiConfig = newAppConfig;
 
     // Backwards compat hack to fill in the `app_required` based on the
@@ -133,9 +132,10 @@ const ProfileSettings = () => {
     if (tempUiConfig.intro.app_required == undefined) {
       tempUiConfig.intro.app_required = tempUiConfig?.intro.program_or_study == 'program';
     }
-    tempUiConfig.opcode = tempUiConfig.opcode || {};
-    if (tempUiConfig.opcode.autogen == undefined) {
-      tempUiConfig.opcode.autogen = tempUiConfig?.intro.program_or_study == 'study';
+    if (tempUiConfig.opcode == undefined) {
+      tempUiConfig.opcode = {
+        autogen: tempUiConfig.intro.program_or_study == 'study',
+      };
     }
 
     if (tempUiConfig.reminderSchemes) {
@@ -657,7 +657,11 @@ const ProfileSettings = () => {
         open={dateDumpVis}
         setOpen={setDateDumpVis}
         minDate={
-          new Date(appConfig?.intro?.start_year, appConfig?.intro?.start_month - 1, 1)
+          new Date(
+            Number(appConfig?.intro?.start_year),
+            Number(appConfig?.intro?.start_month) - 1,
+            1,
+          )
         }></DataDatePicker>
 
       <SensedPage pageVis={showingSensed} setPageVis={setShowingSensed}></SensedPage>

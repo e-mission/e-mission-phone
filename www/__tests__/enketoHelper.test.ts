@@ -13,7 +13,7 @@ import fakeConfig from '../__mocks__/fakeConfig.json';
 
 import initializedI18next from '../js/i18nextInit';
 import { CompositeTrip } from '../js/types/diaryTypes';
-import { AppConfig } from '../js/types/appConfigTypes';
+import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
 window['i18next'] = initializedI18next;
 
 mockBEMUserCache(fakeConfig);
@@ -45,7 +45,7 @@ it('gets the survey config', async () => {
       version: 9,
     },
   };
-  expect(config!.survey_info.surveys).toMatchObject(mockSurveys);
+  expect(config?.survey_info?.surveys).toMatchObject(mockSurveys);
 });
 
 it('gets the model response, if avaliable, or returns null', () => {
@@ -236,7 +236,7 @@ it('gets the saved result or throws an error', async () => {
         },
       },
     },
-  } as unknown as AppConfig;
+  } as unknown as DeploymentConfig;
   const opts = {
     timelineEntry: {
       end_local_dt: { timezone: 'America/Los_Angeles' },

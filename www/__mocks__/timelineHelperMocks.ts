@@ -7,7 +7,7 @@ import {
   UnprocessedTrip,
 } from '../js/types/diaryTypes';
 import { LabelOptions } from '../js/types/labelTypes';
-import { AppConfig } from '../js/types/appConfigTypes';
+import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
 
 const mockMetaData: MetaData = {
   write_ts: 1,
@@ -212,13 +212,13 @@ export const mockConfigModeOfStudy = {
   intro: {
     mode_studied: 'sample_study',
   },
-} as AppConfig;
+} as DeploymentConfig;
 export const mockConfigNoModeOfStudy = {
   survey_info: {
     'trip-labels': 'MULTILABEL',
   },
   intro: {},
-} as AppConfig;
+} as DeploymentConfig;
 export const mockConfigEnketo = {
   survey_info: {
     'trip-labels': 'ENKETO',
@@ -229,7 +229,7 @@ export const mockConfigEnketo = {
     },
   },
   intro: {},
-} as unknown as AppConfig;
+} as unknown as DeploymentConfig;
 
 // Used by jest.mocks() to return a various mocked objects.
 export const fakeStartTsOne = -14576291;
