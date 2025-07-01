@@ -17,4 +17,5 @@ app-settings.json
 www/dist/
 config.xml
 package.json
+package-lock.json
 coverage/
