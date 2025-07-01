@@ -8,7 +8,7 @@ var copyInlinedFiles = function(inlineString) {
     var selPkgLockJson = "package-lock."+inlineString+".json";
     fs.copyFileSync(selConfigXml, "config.xml");
     fs.copyFileSync(selPkgJson, "package.json");
-    fs.copyFileSync(selPkgJson, "package-lock.json");
+    fs.copyFileSync(selPkgLockJson, "package-lock.json");
 
     console.log("Copied "+selConfigXml+" -> config.xml and "+
                 selPkgJson + " -> package.json " +
