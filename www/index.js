@@ -2,6 +2,9 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider as PaperProvider } from 'react-native-paper';
 
+import mdiFont from '../node_modules/@react-native-vector-icons/material-design-icons/fonts/MaterialDesignIcons.ttf';
+export const MDI_FONT_FAMILY = 'MaterialDesignIcons';
+
 import './css/style.scss';
 import 'chartjs-adapter-luxon';
 
@@ -36,8 +39,8 @@ deviceReady.then(() => {
       <style type="text/css">
         {`
           @font-face {
-            font-family: 'MaterialCommunityIcons';
-            src: url(${require('react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf')}) format('truetype');
+            font-family: ${MDI_FONT_FAMILY};
+            src: url(${mdiFont}) format('truetype');
           }
         `}
       </style>

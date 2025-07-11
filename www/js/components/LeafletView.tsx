@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { View, ViewProps } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import L, { Map as LeafletMap } from 'leaflet';
+import { MDI_FONT_FAMILY } from '../../index.js';
 import { GeoJSONData, GeoJSONStyledFeature } from '../types/diaryTypes';
 import useLeafletCache from './useLeafletCache';
 
@@ -128,13 +129,13 @@ const LeafletView = ({ geojson, opts, downscaleTiles, cacheHtml, ...otherProps }
           background-color: ${colors.onPrimary};
         }
         #${mapElId} .leaflet-div-icon-start::after {
-          font-family: MaterialCommunityIcons;
+          font-family: ${MDI_FONT_FAMILY};
           content: "󱘈"; ${
             /* glyph for 'map-marker-star' from https://pictogrammers.com/library/mdi/icon/map-marker-star/*/ ''
           }
         }
         #${mapElId} .leaflet-div-icon-stop::after {
-          font-family: MaterialCommunityIcons;
+          font-family: ${MDI_FONT_FAMILY};
           content: "󰈻"; ${
             /* glyph for 'flag' from https://pictogrammers.com/library/mdi/icon/flag/ */ ''
           }

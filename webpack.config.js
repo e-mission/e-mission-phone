@@ -29,7 +29,7 @@ module.exports = {
       {
         test: /\.(js|jsx|ts|tsx)$/,
         include: [path.resolve(__dirname, 'www'),
-                  path.resolve(__dirname, 'node_modules/react-native-vector-icons')],
+                  path.resolve(__dirname, 'node_modules/@react-native-vector-icons')],
         loader: 'babel-loader',
         options: {
           presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
@@ -50,7 +50,7 @@ module.exports = {
         test: /\.(jpg|png|woff|woff2|eot|ttf|svg)$/,
         include: [path.resolve(__dirname, 'www'),
                   path.resolve(__dirname, 'resources'),
-                  path.resolve(__dirname, 'node_modules/react-native-vector-icons')],
+                  path.resolve(__dirname, 'node_modules/@react-native-vector-icons')],
         type: 'asset/resource',
       },
     ],
