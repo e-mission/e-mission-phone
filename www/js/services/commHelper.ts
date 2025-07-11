@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { displayError, logDebug } from '../plugin/logger';
 import { ServerConnConfig } from 'nrel-openpath-deploy-configs';
 import { TimestampRange } from '../types/diaryTypes';
+import { ServerResponse } from '../types/serverData';
 
 const log = (str, r) => {
   logDebug(str);
@@ -38,7 +39,7 @@ export function getRawEntries(
   time_key = 'metadata.write_ts',
   max_entries = undefined,
   trunc_method = 'sample',
-) {
+): Promise<ServerResponse<any>> {
   let prefix = `getRawEntries, args: ${JSON.stringify(Object.values(arguments))};\n\n`;
   return new Promise<any>((rs, rj) => {
     const msgFiller = (message) => {
