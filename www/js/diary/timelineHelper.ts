@@ -286,25 +286,28 @@ const unpackServerData = (obj: BEMData<any>) =>
     origin_key: obj.metadata.origin_key || obj.metadata.key,
   };
 
-export function readAllCompositeTrips(startTs: number, endTs: number) {
-  const readPromises = [getRawEntries(['analysis/composite_trip'], startTs, endTs, 'data.end_ts')];
-  return Promise.all(readPromises)
-    .then(([ctList]: [ServerResponse<TimelineEntry>]) => {
-      return ctList.phone_data.map((ct) => {
-        const unpackedCt = unpackServerData(ct);
-        return {
-          ...unpackedCt,
-          start_confirmed_place: unpackServerData(unpackedCt.start_confirmed_place),
-          end_confirmed_place: unpackServerData(unpackedCt.end_confirmed_place),
-          locations: unpackedCt.locations?.map(unpackServerData),
-          sections: unpackedCt.sections?.map(unpackServerData),
-        };
-      });
-    })
-    .catch((err) => {
-      displayError(err, 'while reading confirmed trips');
-      return [];
-    });
+const unpackCompositeTrip = (ct: BEMData<CompositeTrip>): CompositeTrip => {
+  const unpackedCt = unpackServerData(ct);
+  return {
+    ...unpackedCt,
+    start_confirmed_place: unpackServerData(unpackedCt.start_confirmed_place),
+    end_confirmed_place: unpackServerData(unpackedCt.end_confirmed_place),
+    locations: unpackedCt.locations?.map(unpackServerData),
+    sections: unpackedCt.sections?.map(unpackServerData),
+  };
+};
+
+export async function readAllCompositeTrips(
+  startTs: number,
+  endTs: number,
+): Promise<CompositeTrip[]> {
+  try {
+    const ctList = await getRawEntries(['analysis/composite_trip'], startTs, endTs, 'data.end_ts');
+    return ctList.phone_data.map((ct) => unpackCompositeTrip(ct));
+  } catch (err) {
+    displayError(err, 'while reading confirmed trips');
+    return [];
+  }
 }
 
 const dateTime2localdate = (currtime: DateTime, tz: string) => ({
