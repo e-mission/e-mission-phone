@@ -5,9 +5,11 @@ we can remove this wrapper and just use the QRCode component directly */
 import React from 'react';
 import QRCode from 'react-qr-code';
 import { logDebug, logWarn } from '../plugin/logger';
-import packageJsonBuild from '../../../package.cordovabuild.json';
+import packageJson from '../../../package.json';
 
-const URL_SCHEME = packageJsonBuild.cordova.plugins['cordova-plugin-customurlscheme'].URL_SCHEME;
+const URL_SCHEME = (packageJson['cordova'] || packageJson['cordova-cordovabuild']).plugins[
+  'cordova-plugin-customurlscheme'
+].URL_SCHEME;
 
 export function shareQR(message) {
   /*code adapted from demo of react-qr-code*/
