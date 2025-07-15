@@ -2,9 +2,10 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { List, Switch, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import { ParseKeys } from 'i18next';
 
 type Props = {
-  textKey: string;
+  textKey: ParseKeys;
   iconName?: string;
   action: any;
   desc?: string;

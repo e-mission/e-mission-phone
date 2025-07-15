@@ -18,12 +18,9 @@ import { uploadFile } from './uploadService';
 import ActionMenu from '../components/ActionMenu';
 import SensedPage from './SensedPage';
 import LogPage from './LogPage';
-import ControlSyncHelper, { ForceSyncRow, getHelperSyncSettings } from './ControlSyncHelper';
+import ControlSyncHelper, { ForceSyncRow } from './ControlSyncHelper';
 import ControlCollectionHelper, {
-  getHelperCollectionSettings,
   getState,
-  isMediumAccuracy,
-  helperToggleLowAccuracy,
   forceTransition,
 } from './ControlCollectionHelper';
 import {
@@ -57,9 +54,6 @@ const ProfileSettings = () => {
   const { colors } = useTheme();
   const { setPermissionsPopupVis } = useContext(AppContext);
 
-  const editCollectionConfig = () => setEditCollectionVis(true);
-  const editSyncConfig = () => setEditSync(true);
-
   //states and variables used to control/create the settings
   const [opCodeVis, setOpCodeVis] = useState(false);
   const [nukeSetVis, setNukeVis] = useState(false);
@@ -72,15 +66,12 @@ const ProfileSettings = () => {
   const [uploadVis, setUploadVis] = useState(false);
   const [showingSensed, setShowingSensed] = useState(false);
   const [showingLog, setShowingLog] = useState(false);
-  const [editSync, setEditSync] = useState(false);
+  const [editSyncVis, setEditSyncVis] = useState(false);
   const [editCollectionVis, setEditCollectionVis] = useState(false);
 
-  // const [collectConfig, setCollectConfig] = useState({});
   const [collectSettings, setCollectSettings] = useState<any>({});
   const [notificationSettings, setNotificationSettings] = useState<any>({});
   const [authSettings, setAuthSettings] = useState<any>({});
-  const [syncSettings, setSyncSettings] = useState<any>({});
-  const [cacheResult, setCacheResult] = useState('');
   const [connectSettings, setConnectSettings] = useState({});
   const [uiConfig, setUiConfig] = useState<DeploymentConfig | undefined>(undefined);
   const [consentDoc, setConsentDoc] = useState<any>({});
@@ -111,7 +102,6 @@ const ProfileSettings = () => {
     refreshCollectSettings();
     refreshNotificationSettings();
     getOPCode();
-    getSyncSettings();
     getConnectURL();
     getAppVersion().then((version) => {
       appVersion.current = version;
@@ -160,24 +150,13 @@ const ProfileSettings = () => {
 
   async function refreshCollectSettings() {
     logDebug('refreshCollectSettings: collectSettings = ' + JSON.stringify(collectSettings));
-    const newCollectSettings: any = {};
-
-    // // refresh collect plugin configuration
-    const collectionPluginConfig = await getHelperCollectionSettings();
-    newCollectSettings.config = collectionPluginConfig;
-
     const collectionPluginState = await getState();
-    newCollectSettings.state = collectionPluginState;
-    newCollectSettings.trackingOn =
-      collectionPluginState != 'local.state.tracking_stopped' &&
-      collectionPluginState != 'STATE_TRACKING_STOPPED';
-
-    const isLowAccuracy = await isMediumAccuracy();
-    if (typeof isLowAccuracy != 'undefined') {
-      newCollectSettings.lowAccuracy = isLowAccuracy;
-    }
-
-    setCollectSettings(newCollectSettings);
+    setCollectSettings({
+      state: collectionPluginState,
+      trackingOn:
+        collectionPluginState != 'local.state.tracking_stopped' &&
+        collectionPluginState != 'STATE_TRACKING_STOPPED',
+    });
   }
 
   //ensure ui table updated when editor closes
@@ -218,20 +197,6 @@ const ProfileSettings = () => {
       ${JSON.stringify(notificationSettings)} - ${JSON.stringify(newNotificationSettings)}`);
     setNotificationSettings(newNotificationSettings);
   }
-
-  async function getSyncSettings() {
-    const newSyncSettings: any = {};
-    getHelperSyncSettings().then((showConfig) => {
-      newSyncSettings.show_config = showConfig;
-      setSyncSettings(newSyncSettings);
-      logDebug('sync settings are: ' + JSON.stringify(syncSettings));
-    });
-  }
-
-  //update sync settings in the table when close editor
-  useEffect(() => {
-    getSyncSettings();
-  }, [editSync]);
 
   async function getConnectURL() {
     getSettings().then(
@@ -303,13 +268,6 @@ const ProfileSettings = () => {
     const transitionToForce = collectSettings.trackingOn ? 'STOP_TRACKING' : 'START_TRACKING';
     await forceTransition(transitionToForce);
     refreshCollectSettings();
-  }
-
-  async function toggleLowAccuracy() {
-    let toggle = await helperToggleLowAccuracy();
-    setTimeout(() => {
-      refreshCollectSettings();
-    }, 1500);
   }
 
   async function refreshConfig() {
@@ -441,10 +399,6 @@ const ProfileSettings = () => {
           iconName="check"
           action={() => setPermissionsPopupVis(true)}></SettingRow>
         <SettingRow
-          textKey="control.medium-accuracy"
-          action={toggleLowAccuracy}
-          switchValue={collectSettings.lowAccuracy}></SettingRow>
-        <SettingRow
           textKey="control.download-json-dump"
           iconName="calendar"
           action={() => setDateDumpVis(true)}></SettingRow>
@@ -495,12 +449,13 @@ const ProfileSettings = () => {
             iconName="arrow-expand-right"
             action={() => setShowingSensed(true)}></SettingRow>
           <SettingRow
-            textKey="control.collection"
+            textKey="control.edit-tracking-config"
             iconName="pencil"
-            action={editCollectionConfig}></SettingRow>
-          <ControlDataTable controlData={collectSettings.config}></ControlDataTable>
-          <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
-          <ControlDataTable controlData={syncSettings.show_config}></ControlDataTable>
+            action={() => setEditCollectionVis(true)} />
+          <SettingRow
+            textKey="control.edit-sync-config"
+            iconName="pencil"
+            action={() => setEditSyncVis(true)} />
         </ExpansionSection>
         <SettingRow
           textKey="control.app-version"
@@ -667,7 +622,7 @@ const ProfileSettings = () => {
       <SensedPage pageVis={showingSensed} setPageVis={setShowingSensed}></SensedPage>
       <LogPage pageVis={showingLog} setPageVis={setShowingLog}></LogPage>
 
-      <ControlSyncHelper editVis={editSync} setEditVis={setEditSync}></ControlSyncHelper>
+      <ControlSyncHelper editVis={editSyncVis} setEditVis={setEditSyncVis}></ControlSyncHelper>
       <ControlCollectionHelper
         editVis={editCollectionVis}
         setEditVis={setEditCollectionVis}></ControlCollectionHelper>
