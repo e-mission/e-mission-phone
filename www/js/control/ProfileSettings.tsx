@@ -19,10 +19,7 @@ import ActionMenu from '../components/ActionMenu';
 import SensedPage from './SensedPage';
 import LogPage from './LogPage';
 import EditSyncConfigModal, { ForceSyncRow } from './EditSyncConfigModal';
-import EditTrackingConfigModal, {
-  getState,
-  forceTransition,
-} from './EditTrackingConfigModal';
+import EditTrackingConfigModal, { getState, forceTransition } from './EditTrackingConfigModal';
 import {
   _cacheResourcesFetchPromise,
   loadNewConfig,
@@ -116,12 +113,6 @@ const ProfileSettings = () => {
   function whenReady(newAppConfig: DeploymentConfig) {
     const tempUiConfig = newAppConfig;
 
-    // Backwards compat hack to fill in the `app_required` based on the
-    // old-style "program_or_study"
-    // remove this at the end of 2023 when all programs have been migrated over
-    if (tempUiConfig.intro.app_required == undefined) {
-      tempUiConfig.intro.app_required = tempUiConfig?.intro.program_or_study == 'program';
-    }
     if (tempUiConfig.opcode == undefined) {
       tempUiConfig.opcode = {
         autogen: tempUiConfig.intro.program_or_study == 'study',
@@ -451,11 +442,13 @@ const ProfileSettings = () => {
           <SettingRow
             textKey="control.edit-tracking-config"
             iconName="pencil"
-            action={() => setEditCollectionVis(true)} />
+            action={() => setEditCollectionVis(true)}
+          />
           <SettingRow
             textKey="control.edit-sync-config"
             iconName="pencil"
-            action={() => setEditSyncVis(true)} />
+            action={() => setEditSyncVis(true)}
+          />
         </ExpansionSection>
         <SettingRow
           textKey="control.app-version"
@@ -623,9 +616,7 @@ const ProfileSettings = () => {
       <LogPage pageVis={showingLog} setPageVis={setShowingLog}></LogPage>
 
       <EditSyncConfigModal editVis={editSyncVis} setEditVis={setEditSyncVis} />
-      <EditTrackingConfigModal
-        editVis={editCollectionVis}
-        setEditVis={setEditCollectionVis} />
+      <EditTrackingConfigModal editVis={editCollectionVis} setEditVis={setEditCollectionVis} />
     </>
   );
 };

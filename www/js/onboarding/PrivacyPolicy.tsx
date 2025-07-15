@@ -1,8 +1,7 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import useAppConfig from '../useAppConfig';
-import { getTemplateText } from './StudySummary';
 import { useTheme } from 'react-native-paper';
 
 const PrivacyPolicy = () => {
@@ -10,31 +9,20 @@ const PrivacyPolicy = () => {
   const appConfig = useAppConfig();
   const { colors } = useTheme();
 
-  let opCodeText;
-  if (appConfig?.opcode?.autogen) {
-    opCodeText = <Text style={styles.text}>{t('consent-text.opcode.autogen')}</Text>;
-  } else {
-    opCodeText = <Text style={styles.text}>{t('consent-text.opcode.not-autogen')}</Text>;
-  }
+  const opcodeText = appConfig?.opcode?.autogen
+    ? t('consent-text.opcode.autogen')
+    : t('consent-text.opcode.not-autogen');
 
-  let yourRightsText;
-  if (appConfig?.intro?.app_required) {
-    yourRightsText = (
-      <Text style={styles.text}>
-        {t('consent-text.rights.app-required', {
-          program_admin_contact: appConfig?.intro?.program_admin_contact,
-        })}
-      </Text>
-    );
-  } else {
-    yourRightsText = (
-      <Text style={styles.text}>
-        {t('consent-text.rights.app-not-required', {
-          program_or_study: appConfig?.intro?.program_or_study,
-        })}
-      </Text>
-    );
-  }
+  const appRequired =
+    appConfig?.intro?.app_required ?? appConfig?.intro?.program_or_study === 'program';
+
+  const yourRightsText = appRequired
+    ? t('consent-text.rights.app-required', {
+        program_admin_contact: appConfig?.intro?.program_admin_contact,
+      })
+    : t('consent-text.rights.app-not-required', {
+        program_or_study: appConfig?.intro?.program_or_study,
+      });
 
   // backwards compat hack to fill in the raw_data_use for programs that don't have it
   if (appConfig?.intro) {
@@ -47,10 +35,8 @@ const PrivacyPolicy = () => {
     });
   }
 
-  const templateText = useMemo(
-    () => getTemplateText(appConfig, i18n.resolvedLanguage),
-    [appConfig],
-  );
+  const lang = i18n.resolvedLanguage || 'en';
+  const templateText = appConfig?.intro?.translated_text[lang];
 
   return (
     <>
@@ -123,7 +109,7 @@ const PrivacyPolicy = () => {
       <Text>{'\n'}</Text>
 
       <Text style={styles.header}>{t('consent-text.opcode.header')}</Text>
-      {opCodeText}
+      <Text style={styles.text}>{opcodeText}</Text>
       <Text>{'\n'}</Text>
 
       <Text style={styles.header}>{t('consent-text.who-sees.header')}</Text>
@@ -177,7 +163,7 @@ const PrivacyPolicy = () => {
       <Text>{'\n'}</Text>
 
       <Text style={styles.header}>{t('consent-text.rights.header')}</Text>
-      {yourRightsText}
+      <Text style={styles.text}>{yourRightsText}</Text>
       <Text>{'\n'}</Text>
       <Text style={styles.text}>
         {t('consent-text.rights.destroy-data-pt1')}
