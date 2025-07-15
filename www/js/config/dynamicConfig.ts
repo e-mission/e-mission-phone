@@ -185,6 +185,7 @@ export function loadNewConfig(newToken: string, existingVersion?: number): Promi
 // exported wrapper around loadNewConfig that includes error handling
 export async function joinWithTokenOrUrl(tokenOrUrl: string) {
   try {
+    tokenOrUrl = tokenOrUrl.trim();
     const token = tokenOrUrl.includes('://') ? getTokenFromUrl(tokenOrUrl) : tokenOrUrl;
     try {
       return await loadNewConfig(token);

@@ -95,7 +95,7 @@ describe('dynamicConfig', () => {
 
   describe('joinWithTokenOrUrl', () => {
     // fake study (gotham-city-transit)
-    it('returns false if the study is nonexistent', async () => {
+    it('resolves to false and shows error if the study is nonexistent', async () => {
       const fakeBatmanToken = `nrelop_${fakeStudyName}_batman`;
       await expect(joinWithTokenOrUrl(fakeBatmanToken)).resolves.toBe(false);
       expect(windowAlert).toHaveBeenLastCalledWith(
@@ -104,7 +104,7 @@ describe('dynamicConfig', () => {
     });
 
     // real study without subgroups (nrel-commute)
-    it('returns false if the study exists but the token is invalid format', async () => {
+    it('resolves to false and shows error if the study exists but the token is invalid format', async () => {
       const badToken1 = `nrelop_${validStudyNrelCommute}`; // doesn't have enough _
       await expect(joinWithTokenOrUrl(badToken1)).resolves.toBe(false);
       expect(windowAlert).toHaveBeenLastCalledWith(
@@ -128,13 +128,22 @@ describe('dynamicConfig', () => {
       );
     });
 
-    it('returns true after successfully storing the config for a valid token', async () => {
+    it('resolves to true with a valid token', async () => {
       const validToken = `nrelop_${validStudyNrelCommute}_user2`;
       await expect(joinWithTokenOrUrl(validToken)).resolves.toBe(true);
     });
 
+    it('resolves to true with valid tokens that have extra whitespace', async () => {
+      const validToken = `  nrelop_${validStudyNrelCommute}_user2  `;
+      await expect(joinWithTokenOrUrl(validToken)).resolves.toBe(true);
+      const validToken2 = `\tnrelop_${validStudyNrelCommute}_user2\t`;
+      await expect(joinWithTokenOrUrl(validToken2)).resolves.toBe(true);
+      const validToken3 = `\n\t nrelop_${validStudyNrelCommute}_user2 \t\n`;
+      await expect(joinWithTokenOrUrl(validToken3)).resolves.toBe(true);
+    });
+
     // real study with subgroups (denver-casr)
-    it('returns false if the study uses subgroups but the token has no subgroup', async () => {
+    it('resolves to false if the study uses subgroups but the token has no subgroup', async () => {
       const tokenWithoutSubgroup = `nrelop_${validStudyDenverCasr}_user2`;
       await expect(joinWithTokenOrUrl(tokenWithoutSubgroup)).resolves.toBe(false);
       expect(windowAlert).toHaveBeenLastCalledWith(
@@ -143,7 +152,7 @@ describe('dynamicConfig', () => {
         ),
       );
     });
-    it('returns false if the study uses subgroups and the token is invalid format', async () => {
+    it('resolves to false and shows and error if the study uses subgroups and the token is invalid format', async () => {
       const badToken1 = `nrelop_${validStudyDenverCasr}_test_`; // doesn't have user code after last _
       await expect(joinWithTokenOrUrl(badToken1)).resolves.toBe(false);
       expect(windowAlert).toHaveBeenLastCalledWith(
@@ -152,7 +161,7 @@ describe('dynamicConfig', () => {
         ),
       );
     });
-    it('returns true after successfully storing the config for a valid token with subgroup', async () => {
+    it('resolves to true with a valid token with subgroup', async () => {
       const validToken = `nrelop_${validStudyDenverCasr}_test_user2`;
       await expect(joinWithTokenOrUrl(validToken)).resolves.toBe(true);
     });
