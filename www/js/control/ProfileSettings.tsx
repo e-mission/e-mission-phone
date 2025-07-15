@@ -18,11 +18,11 @@ import { uploadFile } from './uploadService';
 import ActionMenu from '../components/ActionMenu';
 import SensedPage from './SensedPage';
 import LogPage from './LogPage';
-import ControlSyncHelper, { ForceSyncRow } from './ControlSyncHelper';
-import ControlCollectionHelper, {
+import EditSyncConfigModal, { ForceSyncRow } from './EditSyncConfigModal';
+import EditTrackingConfigModal, {
   getState,
   forceTransition,
-} from './ControlCollectionHelper';
+} from './EditTrackingConfigModal';
 import {
   _cacheResourcesFetchPromise,
   loadNewConfig,
@@ -622,10 +622,10 @@ const ProfileSettings = () => {
       <SensedPage pageVis={showingSensed} setPageVis={setShowingSensed}></SensedPage>
       <LogPage pageVis={showingLog} setPageVis={setShowingLog}></LogPage>
 
-      <ControlSyncHelper editVis={editSyncVis} setEditVis={setEditSyncVis}></ControlSyncHelper>
-      <ControlCollectionHelper
+      <EditSyncConfigModal editVis={editSyncVis} setEditVis={setEditSyncVis} />
+      <EditTrackingConfigModal
         editVis={editCollectionVis}
-        setEditVis={setEditCollectionVis}></ControlCollectionHelper>
+        setEditVis={setEditCollectionVis} />
     </>
   );
 };

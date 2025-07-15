@@ -38,7 +38,7 @@ export async function forceTransition(transition) {
   }
 }
 
-const ControlCollectionHelper = ({ editVis, setEditVis }) => {
+const EditTrackingConfigModal = ({ editVis, setEditVis }) => {
   const appConfig = useAppConfig();
 
   const [localConfig, setLocalConfig] = useState<TrackingConfig>();
@@ -81,4 +81,4 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
   );
 };
 
-export default ControlCollectionHelper;
+export default EditTrackingConfigModal;

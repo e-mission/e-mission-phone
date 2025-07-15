@@ -149,7 +149,7 @@ export const ForceSyncRow = ({ getState }) => {
 };
 
 //UI for editing the sync config
-const ControlSyncHelper = ({ editVis, setEditVis }) => {
+const EditSyncConfigModal = ({ editVis, setEditVis }) => {
   const appConfig = useAppConfig();
   const [localConfig, setLocalConfig] = useState<SyncConfig>();
 
@@ -201,4 +201,4 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
   );
 };
 
-export default ControlSyncHelper;
+export default EditSyncConfigModal;
