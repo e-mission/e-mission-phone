@@ -93,14 +93,6 @@ cp setup/google-services.fake.for_ci.json google-services.json
 echo "Setting up all npm packages"
 npm install
 
-# We need to re-copy and re-run to avoid package-lock.json being overwritten
-# https://github.com/e-mission/e-mission-phone/pull/1198#issuecomment-2661629587
-echo "Copy over the package-lock.json but not the other files"
-cp package-lock.cordovabuild.json package-lock.json
-
-echo "Re-run npm install to install the locked packages"
-npm install
-
 # By default, node doesn't fail if any of the steps fail. This makes it hard to
 # use in a CI environment, and leads to people reporting the node error rather
 # than the underlying error. One solution is to pass in a command line argument to node

@@ -4,15 +4,18 @@ const fs = require('fs');
 
 var copyInlinedFiles = function(inlineString) {
     var selConfigXml = "config."+inlineString+".xml";
-    var selPkgJson = "package."+inlineString+".json";
-    var selPkgLockJson = "package-lock."+inlineString+".json";
     fs.copyFileSync(selConfigXml, "config.xml");
-    fs.copyFileSync(selPkgJson, "package.json");
-    fs.copyFileSync(selPkgLockJson, "package-lock.json");
+    console.log("Copied "+selConfigXml+" -> config.xml");
 
-    console.log("Copied "+selConfigXml+" -> config.xml and "+
-                selPkgJson + " -> package.json " +
-                selPkgLockJson + " -> package-lock.json");
+    var packageJson = fs.readFileSync("package.json", { encoding: 'utf-8' });
+    if (packageJson.indexOf(`"cordova-${inlineString}": {`) >= 0) {
+        var otherInlineString = inlineString == 'cordovabuild' ? 'serve' : 'cordovabuild';
+        packageJson = packageJson
+                        .replace(`"cordova": {`, `"cordova-${otherInlineString}": {`)
+                        .replace(`"cordova-${inlineString}": {`, `"cordova": {`);
+        fs.writeFileSync("package.json", packageJson);
+    }
+    console.log('Set up package.json for ' + inlineString);
 }
 
 if (process.argv.length != 3) {

@@ -12,3 +12,6 @@ echo "Setting up the variables to run nvm"
 
 echo "Installing the correct node version"
 nvm install $NODE_VERSION
+
+echo "Clearing platforms/ and plugins/ directories"
+rm -rf platforms/ plugins/

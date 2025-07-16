@@ -1,4 +1,4 @@
-import packageJsonBuild from '../../package.cordovabuild.json';
+import packageJson from '../../package.json';
 
 export let alerts: string[] = [];
 
@@ -16,7 +16,7 @@ export const mockLogger = () => {
 export const mockCordova = () => {
   window['cordova'] ||= {};
   window['cordova'].platformId ||= 'ios';
-  window['cordova'].platformVersion ||= packageJsonBuild.dependencies['cordova-ios'];
+  window['cordova'].platformVersion ||= packageJson.dependencies['cordova-ios'];
   window['cordova'].plugins ||= {};
 };
 
