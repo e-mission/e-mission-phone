@@ -17,6 +17,7 @@ import {
   sumMetricEntry,
   sumMetricEntries,
   getColorForModeLabel,
+  showMetricsTab,
 } from '../js/metrics/metricsHelper';
 import { DayOfMetricData } from '../js/metrics/metricsTypes';
 import initializedI18next from '../js/i18nextInit';
@@ -27,9 +28,32 @@ import {
   labelOptions,
 } from '../js/survey/multilabel/confirmHelper';
 import { base_modes } from 'e-mission-common';
+import DeploymentConfig from 'nrel-openpath-deploy-configs';
 window['i18next'] = initializedI18next;
 
 describe('metricsHelper', () => {
+  describe('showMetricsTab', () => {
+    const config = {
+      survey_info: { 'trip-labels': 'ENKETO' },
+    } as unknown as DeploymentConfig;
+
+    it('returns false if ENKETO and metrics.phone_dashboard_ui is not present', () => {
+      expect(showMetricsTab(config)).toBe(false);
+    });
+    it('returns true if MULTILABEL and metrics.phone_dashboard_ui is not present', () => {
+      config.survey_info!['trip-labels'] = 'MULTILABEL';
+      expect(showMetricsTab(config)).toBe(true);
+    });
+    it('returns false if metrics.phone_dashboard_ui has no sections', () => {
+      config.metrics = { phone_dashboard_ui: { sections: [] } } as any;
+      expect(showMetricsTab(config)).toBe(false);
+    });
+    it('returns true if metrics.phone_dashboard_ui has sections', () => {
+      config.metrics?.phone_dashboard_ui?.sections.push('footprint');
+      expect(showMetricsTab(config)).toBe(true);
+    });
+  });
+
   describe('getUniqueLabelsForDays', () => {
     const days1 = [
       { mode_confirm_a: 1, mode_confirm_b: 2 },
