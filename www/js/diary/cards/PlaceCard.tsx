@@ -14,7 +14,7 @@ import AddNoteButton from '../../survey/enketo/AddNoteButton';
 import AddedNotesList from '../../survey/enketo/AddedNotesList';
 import { getTheme } from '../../appTheme';
 import { DiaryCard, cardStyles } from './DiaryCard';
-import { useAddressNames } from '../addressNamesHelper';
+import useAddressNames from '../useAddressNames';
 import useDerivedProperties from '../useDerivedProperties';
 import StartEndLocations from '../components/StartEndLocations';
 import TimelineContext from '../../TimelineContext';

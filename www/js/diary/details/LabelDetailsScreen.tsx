@@ -18,7 +18,7 @@ import LeafletView from '../../components/LeafletView';
 import { useTranslation } from 'react-i18next';
 import MultilabelButtonGroup from '../../survey/multilabel/MultiLabelButtonGroup';
 import UserInputButton from '../../survey/enketo/UserInputButton';
-import { useAddressNames } from '../addressNamesHelper';
+import useAddressNames from '../useAddressNames';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useDerivedProperties from '../useDerivedProperties';
 import StartEndLocations from '../components/StartEndLocations';

@@ -17,7 +17,7 @@ import AddedNotesList from '../../survey/enketo/AddedNotesList';
 import { getTheme } from '../../appTheme';
 import { DiaryCard, cardStyles } from './DiaryCard';
 import { useNavigation } from '@react-navigation/native';
-import { useAddressNames } from '../addressNamesHelper';
+import useAddressNames from '../useAddressNames';
 import TimelineContext from '../../TimelineContext';
 import useDerivedProperties from '../useDerivedProperties';
 import StartEndLocations from '../components/StartEndLocations';

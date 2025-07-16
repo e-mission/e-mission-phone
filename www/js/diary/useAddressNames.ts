@@ -110,7 +110,7 @@ function usePlaceAddressName(place: ConfirmedPlace) {
   return [placeName];
 }
 
-export function useAddressNames(tlEntry: TimelineEntry): string[] {
+export default function useAddressNames(tlEntry: TimelineEntry): string[] {
   if (isTrip(tlEntry)) {
     return useTripAddressNames(tlEntry);
   } else {
