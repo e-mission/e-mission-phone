@@ -1,92 +1,22 @@
-/* This is a temporary solution; localstorage is not a good long-term option and we should
-  be looking to other key-value storage options in the React Native ecosystem. */
-
-import { useEffect, useState, useRef } from 'react';
-
-export type Listener<EventType> = (event: EventType) => void;
-
-export type ObserverReturnType<KeyType, EventType> = {
-  subscribe: (entryKey: KeyType, listener: Listener<EventType>) => () => void;
-  publish: (entryKey: KeyType, event: EventType) => void;
-};
-
-export default function createObserver<
-  KeyType extends string | number | symbol,
-  EventType,
->(): ObserverReturnType<KeyType, EventType> {
-  const listeners: Record<KeyType, Listener<EventType>[]> = {} as Record<
-    KeyType,
-    Listener<EventType>[]
-  >;
-
-  return {
-    subscribe: (entryKey: KeyType, listener: Listener<EventType>) => {
-      if (!listeners[entryKey]) listeners[entryKey] = [];
-      listeners[entryKey].push(listener);
-      return () => {
-        listeners[entryKey].splice(listeners[entryKey].indexOf(listener), 1);
-      };
-    },
-    publish: (entryKey: KeyType, event: EventType) => {
-      if (!listeners[entryKey]) listeners[entryKey] = [];
-      listeners[entryKey].forEach((listener: Listener<EventType>) => listener(event));
-    },
-  };
-}
-
-export const LocalStorageObserver = createObserver<string, string>();
-
-export const { subscribe, publish } = LocalStorageObserver;
-
-export function useLocalStorage<T>(key: string, initialValue: T) {
-  const [storedValue, setStoredValue] = useState<T | string>(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item || initialValue;
-    } catch (error) {
-      return initialValue;
-    }
-  });
-
-  const keyRef = useRef(key);
-  if (keyRef.current !== key) {
-    keyRef.current = key;
-    // force state update
-    const storedValue = window.localStorage.getItem(key);
-    if (storedValue) setStoredValue(storedValue);
-  }
-
-  LocalStorageObserver.subscribe(key, setStoredValue);
-
-  function setValue(value: T) {
-    try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      LocalStorageObserver.publish(key, valueToStore);
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
-      }
-    } catch (error) {
-      displayError(error);
-    }
-  }
-  return [storedValue, setValue];
-}
-
 import Bottleneck from 'bottleneck';
 import { displayError, logDebug } from '../plugin/logger';
-import { CompositeTrip } from '../types/diaryTypes';
+import {
+  CompositeTrip,
+  ConfirmedPlace,
+  isTrip,
+  TimelineEntry,
+  UnprocessedTrip,
+} from '../types/diaryTypes';
+import { Point } from 'geojson';
+import { useEffect, useState } from 'react';
+import { NominatimResponse } from '../types/apiTypes';
 
-let nominatimLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
-export const resetNominatimLimiter = () => {
-  const newLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
-  nominatimLimiter.stop();
-  nominatimLimiter = newLimiter;
-};
+const GEOCODING_API_URL = 'https://nominatim.openstreetmap.org';
+const nominatimLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 
 // accepts a nominatim response object and returns an address-like string
 // e.g. "Main St, San Francisco"
-function toAddressName(data) {
+function toAddressName(data?: NominatimResponse) {
   const address = data?.['address'];
   if (address) {
     /* Sometimes, the street name ('road') isn't found and is undefined.
@@ -101,22 +31,30 @@ function toAddressName(data) {
     const municipalityName = address['city'] || address['town'] || address['county'] || '';
     return `${placeName}, ${municipalityName}`;
   }
-  return '...';
 }
 
 let nominatimError: Error;
 // fetches nominatim data for a given location and stores it using the coordinates as the key
 // if the address name is already cached, it skips the fetch
-async function fetchNominatimLocName(loc_geojson) {
+async function getLocName(loc_geojson: Point): Promise<string | undefined> {
   const coordsStr = loc_geojson.coordinates.toString();
   const cachedResponse = localStorage.getItem(coordsStr);
   if (cachedResponse) {
     logDebug(`fetchNominatimLocName: found cached response for ${coordsStr}`);
-    return;
+    return toAddressName(JSON.parse(cachedResponse));
   }
   logDebug('Getting location name for ' + JSON.stringify(coordsStr));
+  const data = await nominatimLimiter.schedule(() => fetchNominatim(loc_geojson));
+  if (data) {
+    localStorage.setItem(coordsStr, JSON.stringify(data));
+    return toAddressName(data);
+  }
+}
+
+async function fetchNominatim(loc_geojson: Point): Promise<NominatimResponse | undefined> {
   const url =
-    'https://nominatim.openstreetmap.org/reverse?format=json&lat=' +
+    GEOCODING_API_URL +
+    '/reverse?format=json&lat=' +
     loc_geojson.coordinates[1] +
     '&lon=' +
     loc_geojson.coordinates[0];
@@ -126,8 +64,7 @@ async function fetchNominatimLocName(loc_geojson) {
     logDebug(`while reading data from nominatim, 
       status = ${response.status}; 
       data = ${JSON.stringify(data)}`);
-    localStorage.setItem(coordsStr, JSON.stringify(data));
-    publish(coordsStr, data);
+    return data;
   } catch (error) {
     if (!nominatimError) {
       nominatimError = error;
@@ -136,31 +73,47 @@ async function fetchNominatimLocName(loc_geojson) {
   }
 }
 
-// Schedules nominatim fetches for the start and end locations of a trip
-export function fillLocationNamesOfTrip(trip: CompositeTrip) {
-  nominatimLimiter.schedule(() => fetchNominatimLocName(trip.end_loc));
-  nominatimLimiter.schedule(() => fetchNominatimLocName(trip.start_loc));
-}
-
-// a React hook that takes a trip or place and returns an array of its address names
-export function useAddressNames(tlEntry) {
-  const [addressNames, setAddressNames] = useState(['', '']);
-  // if a place is passed in, it will need just one address name
-  const [locData] = useLocalStorage(tlEntry.location?.coordinates?.toString(), null);
-  // if a trip is passed in, it needs two address names (start and end locations)
-  const [startLocData] = useLocalStorage(tlEntry.start_loc?.coordinates?.toString(), null);
-  const [endLocData] = useLocalStorage(tlEntry.end_loc?.coordinates?.toString(), null);
+function useTripAddressNames(trip: CompositeTrip | UnprocessedTrip) {
+  const [startLocName, setStartLocName] = useState<string>('');
+  const [endLocName, setEndLocName] = useState<string>('');
 
   useEffect(() => {
-    if (locData) {
-      const loc = typeof locData === 'string' ? JSON.parse(locData) : locData;
-      setAddressNames([toAddressName(loc)]);
-    } else if (startLocData && endLocData) {
-      const startLoc = typeof startLocData === 'string' ? JSON.parse(startLocData) : startLocData;
-      const endLoc = typeof endLocData === 'string' ? JSON.parse(endLocData) : endLocData;
-      setAddressNames([toAddressName(startLoc), toAddressName(endLoc)]);
+    if (trip.key == 'analysis/composite_trip' && trip.start_confirmed_place?.display_name) {
+      setStartLocName(trip.start_confirmed_place.display_name);
+    } else if (trip.start_loc) {
+      getLocName(trip.start_loc).then((n) => setStartLocName(n || ''));
     }
-  }, [locData, startLocData, endLocData]);
+  }, [trip, startLocName]);
 
-  return addressNames;
+  useEffect(() => {
+    if (trip.key == 'analysis/composite_trip' && trip.end_confirmed_place?.display_name) {
+      setEndLocName(trip.end_confirmed_place.display_name);
+    } else if (trip.end_loc) {
+      getLocName(trip.end_loc).then((n) => setEndLocName(n || ''));
+    }
+  }, [trip, endLocName]);
+
+  return [startLocName, endLocName];
+}
+
+function usePlaceAddressName(place: ConfirmedPlace) {
+  const [placeName, setPlaceName] = useState<string>('');
+
+  useEffect(() => {
+    if (place.display_name) {
+      setPlaceName(place.display_name);
+    } else if (place.location) {
+      getLocName(place.location).then((n) => setPlaceName(n || ''));
+    }
+  }, [place]);
+
+  return [placeName];
+}
+
+export function useAddressNames(tlEntry: TimelineEntry): string[] {
+  if (isTrip(tlEntry)) {
+    return useTripAddressNames(tlEntry);
+  } else {
+    return usePlaceAddressName(tlEntry);
+  }
 }

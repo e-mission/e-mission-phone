@@ -130,8 +130,7 @@ export type TimelineEntry = ConfirmedPlace | CompositeTrip;
 
 /* Type guard to disambiguate timeline entries as either trips or places
   If it has a 'start_ts' and 'end_ts', it's a trip. Else, it's a place. */
-export const isTrip = (entry: TimelineEntry): entry is CompositeTrip =>
-  entry.hasOwnProperty('start_ts') && entry.hasOwnProperty('end_ts');
+export const isTrip = (entry: TimelineEntry): entry is CompositeTrip => entry.key.endsWith('trip');
 
 export type TimestampRange = { start_ts: number; end_ts: number };
 
