@@ -101,7 +101,7 @@
     "cordova-plugin-local-notification-12": "github:e-mission/cordova-plugin-local-notification-12#v0.1.5-remove-exact-alarms",
     "cordova-plugin-x-socialsharing": "6.0.4",
     "core-js": "^2.5.7",
-    "e-mission-common": "github:e-mission/e-mission-common#semver:0.6.2",
+    "e-mission-common": "github:e-mission/e-mission-common#semver:0.6.5",
     "enketo-core": "^6.1.7",
     "enketo-transformer": "^4.0.0",
     "fast-xml-parser": "^4.2.2",
