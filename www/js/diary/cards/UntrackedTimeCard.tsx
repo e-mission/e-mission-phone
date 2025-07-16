@@ -13,7 +13,7 @@ import { Text } from 'react-native-paper';
 import { getTheme } from '../../appTheme';
 import { useTranslation } from 'react-i18next';
 import { DiaryCard, cardStyles } from './DiaryCard';
-import { useAddressNames } from '../addressNamesHelper';
+import useAddressNames from '../useAddressNames';
 import useDerivedProperties from '../useDerivedProperties';
 import StartEndLocations from '../components/StartEndLocations';
 

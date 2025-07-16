@@ -11,7 +11,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LabelScreenDetails from './details/LabelDetailsScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { updateAllUnprocessedInputs } from './timelineHelper';
-import { fillLocationNamesOfTrip } from './addressNamesHelper';
 import { logDebug } from '../plugin/logger';
 import { configuredFilters as multilabelConfiguredFilters } from '../survey/multilabel/infinite_scroll_filters';
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
@@ -52,15 +51,6 @@ const LabelTab = () => {
       setFilterInputs(filtersWithState);
     }
   }, [appConfig]);
-
-  useEffect(() => {
-    if (!timelineMap) return;
-    const timelineEntries = Array.from(timelineMap.values());
-    if (!timelineEntries?.length) return;
-    timelineEntries.reverse().forEach((entry) => {
-      if (isTrip(entry)) fillLocationNamesOfTrip(entry);
-    });
-  }, [timelineMap]);
 
   useEffect(() => {
     if (!timelineMap || !timelineLabelMap || !filterInputs) return;
