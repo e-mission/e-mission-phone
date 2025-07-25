@@ -7,6 +7,11 @@ html {
   font-family: 'OpenSans', Arial, sans-serif;
 }
 
+// workaround for https://github.com/callstack/react-native-paper/issues/4771
+input:is([type='checkbox'], [type='radio']):checked:disabled {
+  background-color: transparent;
+}
+
 /* Scoped styles for Enketo */
 /* if we don't contain them here, they will leak into the rest of the app */
 .enketo-plugin {

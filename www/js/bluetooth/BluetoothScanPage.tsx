@@ -12,7 +12,7 @@ import {
   BluetoothClassicDevice,
   BLEDeviceList,
 } from '../types/bluetoothDevices';
-import { forceTransition } from '../control/ControlCollectionHelper';
+import { forceTransition } from '../control/EditTrackingConfigModal';
 
 /**
  * The implementation of this scanner page follows the design of

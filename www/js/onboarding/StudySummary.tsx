@@ -1,23 +1,15 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Icon, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import useAppConfig from '../useAppConfig';
-
-export function getTemplateText(configObject, lang) {
-  if (configObject && configObject.name) {
-    return configObject.intro.translated_text[lang];
-  }
-}
 
 const StudySummary = () => {
   const { i18n } = useTranslation();
   const appConfig = useAppConfig();
 
-  const templateText = useMemo(
-    () => getTemplateText(appConfig, i18n.resolvedLanguage),
-    [appConfig],
-  );
+  const lang = i18n.resolvedLanguage || 'en';
+  const templateText = appConfig?.intro?.translated_text[lang];
 
   return (
     <>
@@ -25,10 +17,19 @@ const StudySummary = () => {
       <Text style={styles.studyName}>
         {appConfig?.intro?.deployment_partner_name + ' ' + templateText?.deployment_name}
       </Text>
-      <View>
-        <Text style={styles.text}>{'✔️  ' + templateText?.summary_line_1} </Text>
-        <Text style={styles.text}>{'✔️  ' + templateText?.summary_line_2} </Text>
-        <Text style={styles.text}>{'✔️  ' + templateText?.summary_line_3} </Text>
+      <View style={{ display: 'flex', gap: 10 }}>
+        {[
+          templateText?.summary_line_1,
+          templateText?.summary_line_2,
+          templateText?.summary_line_3,
+        ].map((line, i) =>
+          line ? (
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <Icon source="check" size={24} />
+              <Text style={styles.text}>{line}</Text>
+            </View>
+          ) : null,
+        )}
       </View>
     </>
   );

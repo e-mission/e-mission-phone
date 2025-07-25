@@ -10,6 +10,10 @@ import { addStatReading } from '../plugin/clientStats';
 import { updateUser } from '../services/commHelper';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { DateTime } from 'luxon';
+import EditConfigModal from './EditConfigModal';
+import useAppConfig from '../useAppConfig';
+
+type SyncConfig = { sync_interval: number; ios_use_remote_push: boolean };
 
 /*
  * BEGIN: Simple read/write wrappers
@@ -17,21 +21,6 @@ import { DateTime } from 'luxon';
 export const forcePluginSync = () => window['cordova'].plugins.BEMServerSync.forceSync();
 const setConfig = (config) => window['cordova'].plugins.BEMServerSync.setConfig(config);
 const getConfig = () => window['cordova'].plugins.BEMServerSync.getConfig();
-
-function formatConfigForDisplay(configToFormat) {
-  const formatted: any[] = [];
-  for (let prop in configToFormat) {
-    formatted.push({ key: prop, val: configToFormat[prop] });
-  }
-  return formatted;
-}
-
-export async function getHelperSyncSettings() {
-  let tempConfig = await getConfig();
-  return formatConfigForDisplay(tempConfig);
-}
-
-type SyncConfig = { sync_interval: number; ios_use_remote_push: boolean };
 
 //forceSync and endForceSync SettingRows & their actions
 export const ForceSyncRow = ({ getState }) => {
@@ -160,39 +149,25 @@ export const ForceSyncRow = ({ getState }) => {
 };
 
 //UI for editing the sync config
-const ControlSyncHelper = ({ editVis, setEditVis }) => {
-  const { t } = useTranslation();
-  const { colors } = useTheme();
-
+const EditSyncConfigModal = ({ editVis, setEditVis }) => {
+  const appConfig = useAppConfig();
   const [localConfig, setLocalConfig] = useState<SyncConfig>();
-  const [intervalVis, setIntervalVis] = useState<boolean>(false);
-
-  /*
-   * Functions to read and format values for display
-   */
-  async function getSyncSettings() {
-    let tempConfig = await getConfig();
-    setLocalConfig(tempConfig);
-  }
 
   useEffect(() => {
-    getSyncSettings();
+    getConfig().then((config: SyncConfig) => setLocalConfig(config));
   }, [editVis]);
 
-  const syncIntervalActions = [
-    { text: '1 min', value: 60 },
-    { text: '10 min', value: 10 * 60 },
-    { text: '30 min', value: 30 * 60 },
-    { text: '1 hr', value: 60 * 60 },
-  ];
+  const syncIntervalOptions = {
+    '1 min': 1 * 60,
+    '10 min': 10 * 60,
+    '30 min': 30 * 60,
+    '1 hr': 60 * 60,
+  };
 
-  /*
-   * Functions to edit and save values
-   */
   async function saveAndReload() {
     logDebug('saveAndReload: new config = ' + JSON.stringify(localConfig));
     try {
-      let set = setConfig(localConfig);
+      setConfig(localConfig);
       //NOTE -- we need to make sure we update these settings in ProfileSettings :) -- getting rid of broadcast handling for migration!!
       updateUser({
         // TODO: worth thinking about where best to set this
@@ -207,75 +182,23 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
       displayError(err, 'Error while setting sync config');
     }
   }
-  function onChooseInterval(interval) {
-    let tempConfig = { ...localConfig } as SyncConfig;
-    tempConfig.sync_interval = interval.value;
-    setLocalConfig(tempConfig);
-  }
 
-  function onTogglePush() {
-    let tempConfig = { ...localConfig } as SyncConfig;
-    tempConfig.ios_use_remote_push = !(localConfig as SyncConfig).ios_use_remote_push;
-    setLocalConfig(tempConfig);
-  }
-
-  /*
-   * configure the UI
-   */
-  let toggle;
-  if (window['cordova'].platformId == 'ios') {
-    toggle = (
-      <View
-        style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text variant="labelMedium">Use Remote Push</Text>
-        <Switch value={localConfig?.ios_use_remote_push} onValueChange={onTogglePush}></Switch>
-      </View>
-    );
-  }
+  if (!localConfig) return null;
 
   return (
-    <>
-      {/* popup to show when we want to edit */}
-      <Modal visible={editVis} onDismiss={() => setEditVis(false)} transparent={true}>
-        <Dialog
-          visible={editVis}
-          onDismiss={() => setEditVis(false)}
-          style={settingStyles.dialog(colors.elevation.level3)}>
-          <Dialog.Title>Edit Sync Settings</Dialog.Title>
-          <Dialog.Content>
-            <View
-              style={{
-                paddingHorizontal: 15,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <Text variant="labelMedium">Sync Interval</Text>
-              <Button onPress={() => setIntervalVis(true)}>{localConfig?.sync_interval}</Button>
-            </View>
-            {toggle}
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              onPress={() => {
-                saveAndReload();
-                setEditVis(false);
-              }}>
-              Save
-            </Button>
-            <Button onPress={() => setEditVis(false)}>Cancel</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Modal>
-
-      <ActionMenu
-        vis={intervalVis}
-        setVis={setIntervalVis}
-        title={'Select sync interval'}
-        actionSet={syncIntervalActions}
-        onAction={onChooseInterval}
-        onExit={() => {}}></ActionMenu>
-    </>
+    <EditConfigModal
+      editVis={editVis}
+      setEditVis={setEditVis}
+      titleKey="control.edit-sync-config"
+      localConfig={localConfig}
+      setLocalConfig={setLocalConfig}
+      appConfigOverrides={appConfig?.sync}
+      saveAndReload={saveAndReload}
+      fieldsOptions={{
+        sync_interval: syncIntervalOptions,
+      }}
+    />
   );
 };
 
-export default ControlSyncHelper;
+export default EditSyncConfigModal;
