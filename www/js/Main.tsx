@@ -12,6 +12,7 @@ import MetricsTab from './metrics/MetricsTab';
 import ProfileSettings from './control/ProfileSettings';
 import TimelineContext, { useTimelineContext } from './TimelineContext';
 import { addStatReading } from './plugin/clientStats';
+import { showMetricsTab } from './metrics/metricsHelper';
 
 const defaultRoutes = (t) => [
   {
@@ -51,12 +52,13 @@ const Main = () => {
   const { appConfig } = useContext(AppContext);
   const timelineContext = useTimelineContext();
 
-  const routes = useMemo(() => {
-    const showMetrics =
-      appConfig?.metrics?.phone_dashboard_ui ||
-      appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL';
-    return showMetrics ? defaultRoutes(t) : defaultRoutes(t).filter((r) => r.key != 'metrics');
-  }, [appConfig, t]);
+  const routes = useMemo(
+    () =>
+      showMetricsTab(appConfig)
+        ? defaultRoutes(t)
+        : defaultRoutes(t).filter((r) => r.key != 'metrics'),
+    [appConfig, t],
+  );
 
   const onIndexChange = useCallback(
     (i: number) => {
