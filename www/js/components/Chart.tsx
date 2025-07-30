@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import { ChartData, Chart as ChartJS, ScriptableContext, registerables } from 'chart.js';
+import { Chart as ChartJS } from './chartjs-adapter-hack';
+import { ChartData, ScriptableContext, registerables } from 'chart.js';
 import { Chart as ChartJSChart } from 'react-chartjs-2';
 import Annotation, { AnnotationOptions, LabelPosition } from 'chartjs-plugin-annotation';
 import { getChartHeight } from './charting';

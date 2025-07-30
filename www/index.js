@@ -6,7 +6,6 @@ import mdiFont from '../node_modules/@react-native-vector-icons/material-design-
 export const MDI_FONT_FAMILY = 'MaterialDesignIcons';
 
 import './css/style.scss';
-import 'chartjs-adapter-luxon';
 
 import initializedI18next from './js/i18nextInit';
 window.i18next = initializedI18next;
@@ -40,6 +39,10 @@ deviceReady.then(() => {
         {`
           @font-face {
             font-family: ${MDI_FONT_FAMILY};
+            src: url(${mdiFont}) format('truetype');
+          }
+          @font-face {
+            font-family: MaterialCommunityIcons;
             src: url(${mdiFont}) format('truetype');
           }
         `}

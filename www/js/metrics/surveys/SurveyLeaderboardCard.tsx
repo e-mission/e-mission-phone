@@ -5,7 +5,8 @@ import { metricsStyles } from '../MetricsScreen';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../../components/BarChart';
 import { useAppTheme } from '../../appTheme';
-import { Chart as ChartJS, registerables } from 'chart.js';
+import { Chart as ChartJS } from '../../components/chartjs-adapter-hack';
+import { registerables } from 'chart.js';
 import Annotation from 'chartjs-plugin-annotation';
 
 ChartJS.register(...registerables, Annotation);
