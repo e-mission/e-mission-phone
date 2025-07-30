@@ -12,7 +12,7 @@ module.exports = {
     "^.+\\.(ts|tsx|js|jsx)$": "babel-jest"
   },
   transformIgnorePatterns: [
-    "node_modules/(?!((enketo-transformer/dist/enketo-transformer/web)|(jest-)?react-native(-.*)?|@react-native(-community)?|e-mission-common)/)"
+    "node_modules/(?!((enketo-transformer/dist/enketo-transformer/web)|enketo(-.*)?|(jest-)?react-native(-.*)?|@react-native(-.*)?|e-mission-common)/)"
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   moduleDirectories: ["node_modules", "src"],
