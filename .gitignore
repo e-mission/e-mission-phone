@@ -17,3 +17,5 @@ app-settings.json
 www/dist/
 config.xml
 coverage/
+google-services.json
+GoogleService-Info.plist
