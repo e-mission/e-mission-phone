@@ -45,7 +45,12 @@ async function computeUserMetrics(
     );
     logDebug('MetricsTab: computed userMetrics');
     console.debug('MetricsTab: computed userMetrics', result);
-    return result as MetricsData;
+    if (Array.isArray(result)) {
+      return metrics_summaries.munge_agg_metrics(result) as MetricsData;
+    } else {
+      // TODO old format, remove when no longer needed
+      return result as MetricsData;
+    }
   } catch (e) {
     displayError(e, 'Error computing user metrics');
   }
@@ -70,9 +75,14 @@ async function fetchAggMetrics(
     },
   };
   return getAggregateData('result/metrics/yyyy_mm_dd', query, appConfig.server)
-    .then((response) => {
-      console.debug('MetricsTab: received aggMetrics', response);
-      return response as MetricsData;
+    .then((result) => {
+      console.debug('MetricsTab: received aggMetrics', result);
+      if (Array.isArray(result)) {
+        return metrics_summaries.munge_agg_metrics(result) as MetricsData;
+      } else {
+        // TODO old format, remove when no longer needed
+        return result as MetricsData;
+      }
     })
     .catch((e) => {
       displayError(e, 'Error fetching aggregate metrics');
