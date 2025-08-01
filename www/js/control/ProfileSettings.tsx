@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { Modal, StyleSheet, ScrollView } from 'react-native';
-import { Dialog, Button, useTheme, Text, Appbar, TextInput } from 'react-native-paper';
+import { Modal, StyleSheet, ScrollView, View } from 'react-native';
+import { Dialog, Button, useTheme, Text, Appbar, TextInput, Divider } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import ExpansionSection from './ExpandMenu';
 import SettingRow from './SettingRow';
@@ -49,7 +49,7 @@ const ProfileSettings = () => {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
   const { colors } = useTheme();
-  const { setPermissionsPopupVis } = useContext(AppContext);
+  const { setPermissionsPopupVis, userProfile, updateUserProfile } = useContext(AppContext);
 
   //states and variables used to control/create the settings
   const [opCodeVis, setOpCodeVis] = useState(false);
@@ -126,6 +126,7 @@ const ProfileSettings = () => {
         isScheduling,
         setIsScheduling,
         scheduledPromise,
+        updateUserProfile,
       )
         .then(() => {
           logDebug('updated scheduled notifs');
@@ -168,7 +169,13 @@ const ProfileSettings = () => {
     if (uiConfig?.reminderSchemes) {
       let promiseList: Promise<any>[] = [];
       promiseList.push(
-        getReminderPrefs(uiConfig.reminderSchemes, isScheduling, setIsScheduling, scheduledPromise),
+        getReminderPrefs(
+          uiConfig.reminderSchemes,
+          isScheduling,
+          setIsScheduling,
+          scheduledPromise,
+          updateUserProfile,
+        ),
       );
       promiseList.push(getScheduledNotifs(isScheduling, scheduledPromise));
       let resultList = await Promise.all(promiseList);
@@ -235,6 +242,7 @@ const ProfileSettings = () => {
         isScheduling,
         setIsScheduling,
         scheduledPromise,
+        updateUserProfile,
       ).then(() => {
         refreshNotificationSettings();
       });
