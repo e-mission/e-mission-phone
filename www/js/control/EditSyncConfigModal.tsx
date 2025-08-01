@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Modal, View } from 'react-native';
 import { Dialog, Button, Switch, Text, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { DateTime } from 'luxon';
 import EditConfigModal from './EditConfigModal';
 import useAppConfig from '../useAppConfig';
+import { AppContext } from '../App';
 
 type SyncConfig = { sync_interval: number; ios_use_remote_push: boolean };
 
@@ -151,6 +152,8 @@ export const ForceSyncRow = ({ getState }) => {
 //UI for editing the sync config
 const EditSyncConfigModal = ({ editVis, setEditVis }) => {
   const appConfig = useAppConfig();
+
+  const { updateUserProfile } = useContext(AppContext);
   const [localConfig, setLocalConfig] = useState<SyncConfig>();
 
   useEffect(() => {
@@ -166,17 +169,11 @@ const EditSyncConfigModal = ({ editVis, setEditVis }) => {
 
   async function saveAndReload() {
     logDebug('saveAndReload: new config = ' + JSON.stringify(localConfig));
+    if (!localConfig) return;
     try {
-      setConfig(localConfig);
-      //NOTE -- we need to make sure we update these settings in ProfileSettings :) -- getting rid of broadcast handling for migration!!
-      updateUser({
-        // TODO: worth thinking about where best to set this
-        // Currently happens in native code. Now that we are switching
-        // away from parse, we can store this from javascript here.
-        // or continue to store from native
-        // this is easier for people to see, but means that calls to
-        // native, even through the javascript interface are not complete
-        curr_sync_interval: (localConfig as SyncConfig).sync_interval,
+      await setConfig(localConfig);
+      updateUserProfile({
+        curr_sync_interval: localConfig.sync_interval,
       });
     } catch (err) {
       displayError(err, 'Error while setting sync config');
