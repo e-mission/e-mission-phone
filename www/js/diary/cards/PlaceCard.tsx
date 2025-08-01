@@ -38,7 +38,7 @@ const PlaceCard = ({ place }: Props) => {
         accessibilityLabel={`Place from ${displayStartTime} to ${displayEndTime}`}>
         <View>
           {/*  date and distance */}
-          <Text style={{ fontSize: 14, textAlign: 'center' }}>
+          <Text style={{ fontSize: 14, margin: 'auto' }}>
             <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>
               {displayDate}
             </Text>
