@@ -1,5 +1,5 @@
 import Bottleneck from 'bottleneck';
-import { displayError, logDebug } from '../plugin/logger';
+import { logDebug, logWarn } from '../plugin/logger';
 import {
   CompositeTrip,
   ConfirmedPlace,
@@ -10,6 +10,7 @@ import {
 import { Point } from 'geojson';
 import { useEffect, useState } from 'react';
 import { NominatimResponse } from '../types/apiTypes';
+import { AlertManager } from '../components/AlertBar';
 
 const GEOCODING_API_URL = 'https://nominatim.openstreetmap.org';
 const nominatimLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
@@ -68,7 +69,9 @@ async function fetchNominatim(loc_geojson: Point): Promise<NominatimResponse | u
   } catch (error) {
     if (!nominatimError) {
       nominatimError = error;
-      displayError(error, 'while reading address data');
+      const msg = `Error fetching location name\n${nominatimError}`;
+      logWarn(msg);
+      AlertManager.addMessage({ text: msg });
     }
   }
 }
