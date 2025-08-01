@@ -139,6 +139,7 @@ export const useTimelineContext = (): ContextProps => {
   }, [timelineMap]);
 
   async function loadTimelineEntries() {
+    logDebug('Timeline: loadTimelineEntries called');
     try {
       const pipelineRange = await getPipelineRangeTs();
       await updateAllUnprocessedInputs(pipelineRange, appConfig);

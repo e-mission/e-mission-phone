@@ -170,6 +170,7 @@ export async function updateAllUnprocessedInputs(
   pipelineRange: TimestampRange,
   appConfig: DeploymentConfig,
 ) {
+  logDebug(`timelineHelper: updateAllUnprocessedInputs for ${JSON.stringify(pipelineRange)}`);
   const tq = getUnprocessedInputQuery(pipelineRange);
   const getMethod = window['cordova'].plugins.BEMUserCache.getMessagesForInterval;
   const labelsPromises = keysForLabelInputs(appConfig).map((key) =>
