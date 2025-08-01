@@ -1,106 +1,66 @@
-import { DateTime } from 'luxon';
-import { EVENTS, publish } from '../js/customEventHandler';
-import { INTRO_DONE_KEY, readIntroDone } from '../js/onboarding/onboardingHelper';
-import { storageSet } from '../js/plugin/storage';
-import { initPushNotify } from '../js/splash/pushNotifySettings';
-import { clearNotifMock, getOnList, getCalled } from '../__mocks__/pushNotificationMocks';
-
-global.fetch = (url: string) =>
-  new Promise((rs, rj) => {
-    setTimeout(() =>
-      rs({
-        json: () =>
-          new Promise((rs, rj) => {
-            let myJSON = {
-              emSensorDataCollectionProtocol: {
-                protocol_id: '2014-04-6267',
-                approval_date: '2016-07-14',
-              },
-            };
-            setTimeout(() => rs(myJSON), 100);
-          }),
-      }),
-    );
-  }) as any;
+import { initPushNotify, push } from '../js/splash/pushNotifySettings';
+import { clearNotifMock, getListenerList, mockPushEvent } from '../__mocks__/pushNotificationMocks';
+import { markConsented } from '../js/splash/startprefs';
+import { waitFor } from '@testing-library/react-native';
 
 afterEach(() => {
   clearNotifMock();
 });
 
-it('intro done does nothing if not registered', () => {
-  expect(getOnList()).toStrictEqual({});
-  publish(EVENTS.INTRO_DONE_EVENT, 'test data');
-  expect(getOnList()).toStrictEqual({});
-});
+describe('pushNotifySettings', () => {
+  describe('initPushNotify', () => {
+    it('does not set up listeners if consent not given', async () => {
+      expect(getListenerList()).toStrictEqual({});
+      await initPushNotify();
+      expect(getListenerList()).toStrictEqual({});
+    });
 
-it('intro done initializes the push notifications', () => {
-  expect(getOnList()).toStrictEqual({});
+    it('sets up listeners if consent given', async () => {
+      await markConsented();
+      await initPushNotify();
+      expect(getListenerList()).toStrictEqual(
+        expect.objectContaining({
+          notification: expect.any(Function),
+          error: expect.any(Function),
+          registration: expect.any(Function),
+        }),
+      );
+    });
 
-  initPushNotify();
-  publish(EVENTS.INTRO_DONE_EVENT, 'test data');
-  expect(getOnList()).toStrictEqual(
-    expect.objectContaining({
-      notification: expect.any(Function),
-      error: expect.any(Function),
-      registration: expect.any(Function),
-    }),
-  );
-});
+    it('handles visible notification', async () => {
+      const InAppBrowserOpenSpy = jest.spyOn(window['cordova'].InAppBrowser, 'open');
+      await initPushNotify();
+      mockPushEvent('notification', {
+        additionalData: {
+          payload: { alert_type: 'website', spec: { url: 'https://foo.bar' } },
+        },
+      });
+      expect(InAppBrowserOpenSpy).toHaveBeenCalledWith(
+        'https://foo.bar',
+        '_blank',
+        'location=yes,clearcache=no,toolbar=yes,hideurlbar=yes',
+      );
+    });
 
-it('cloud event does nothing if not registered', () => {
-  expect(window['cordova'].platformId).toEqual('ios');
-  publish(EVENTS.CLOUD_NOTIFICATION_EVENT, {
-    additionalData: { 'content-available': 1, payload: { notId: 3 } },
+    it('handles silent notification', async () => {
+      const BEMDataCollectionHandleSilentPushSpy = jest.spyOn(
+        window['cordova'].plugins.BEMDataCollection,
+        'handleSilentPush',
+      );
+      await initPushNotify();
+      const pushFinishSpy = jest.spyOn(push, 'finish');
+
+      const NOTIF_ID = 98765;
+      mockPushEvent('notification', {
+        additionalData: {
+          'content-available': 1,
+          payload: { notId: NOTIF_ID },
+        },
+      });
+      await waitFor(() => {
+        expect(pushFinishSpy).toHaveBeenCalledWith(expect.anything(), expect.anything(), NOTIF_ID);
+        expect(BEMDataCollectionHandleSilentPushSpy).toHaveBeenCalled();
+      });
+    });
   });
-  expect(getCalled()).toBeNull();
-});
-
-it('cloud event handles notification if registered', async () => {
-  expect(window['cordova'].platformId).toEqual('ios');
-  initPushNotify();
-  publish(EVENTS.INTRO_DONE_EVENT, 'intro done');
-  publish(EVENTS.CLOUD_NOTIFICATION_EVENT, {
-    additionalData: { 'content-available': 1, payload: { notId: 3 } },
-  });
-  await new Promise((r) => setTimeout(r, 1000));
-  expect(getCalled()).toEqual(3);
-});
-
-it('consent event does nothing if not registered', () => {
-  expect(getOnList()).toStrictEqual({});
-  publish(EVENTS.CONSENTED_EVENT, 'test data');
-  expect(getOnList()).toStrictEqual({});
-});
-
-it('consent event registers if intro done', async () => {
-  //make sure the mock is clear
-  expect(getOnList()).toStrictEqual({});
-
-  //initialize the pushNotify, to subscribe to events
-  initPushNotify();
-
-  //mark the intro as done
-  const currDateTime = DateTime.now().toISO();
-  let marked = await storageSet(INTRO_DONE_KEY, currDateTime);
-  let introDone = await readIntroDone();
-  expect(introDone).toBeTruthy();
-
-  //publish consent event and check results
-  publish(EVENTS.CONSENTED_EVENT, 'test data');
-  //have to wait a beat since event response is async
-  await new Promise((r) => setTimeout(r, 1000));
-  expect(getOnList()).toStrictEqual(
-    expect.objectContaining({
-      notification: expect.any(Function),
-      error: expect.any(Function),
-      registration: expect.any(Function),
-    }),
-  );
-});
-
-it('consent event does not register if intro not done', () => {
-  expect(getOnList()).toStrictEqual({});
-  initPushNotify();
-  publish(EVENTS.CONSENTED_EVENT, 'test data');
-  expect(getOnList()).toStrictEqual({}); //nothing, intro not done
 });

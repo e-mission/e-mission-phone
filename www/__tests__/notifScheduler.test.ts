@@ -265,7 +265,13 @@ describe('updateScheduledNotifs', () => {
         callback(arg);
       });
     // call the function
-    await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+    await updateScheduledNotifs(
+      reminderSchemes,
+      isScheduling,
+      setIsScheduling,
+      scheduledPromise,
+      updateUser,
+    );
     const scheduledNotifs = await getScheduledNotifs(isScheduling, scheduledPromise);
 
     expect(scheduledNotifs).toHaveLength(4);
@@ -295,7 +301,13 @@ describe('updateScheduledNotifs', () => {
       .spyOn(window['cordova'].plugins.notification.local, 'getScheduled')
       .mockImplementation((callback) => callback(mockNotifs));
     // call the function
-    await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+    await updateScheduledNotifs(
+      reminderSchemes,
+      isScheduling,
+      setIsScheduling,
+      scheduledPromise,
+      updateUser,
+    );
 
     expect(logDebug).toHaveBeenCalledWith('Already scheduled, not scheduling again');
   });
@@ -314,7 +326,13 @@ describe('updateScheduledNotifs', () => {
       .spyOn(window['cordova'].plugins.notification.local, 'getScheduled')
       .mockImplementation((callback) => callback(mockNotifs));
     // call the function
-    await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+    await updateScheduledNotifs(
+      reminderSchemes,
+      isScheduling,
+      setIsScheduling,
+      scheduledPromise,
+      updateUser,
+    );
 
     expect(logDebug).toHaveBeenCalledWith(
       'ERROR: Already scheduling notifications, not scheduling again',
@@ -329,7 +347,13 @@ describe('updateScheduledNotifs', () => {
     const setIsScheduling: Function = jest.fn((val: boolean) => (isScheduling = val));
     const scheduledPromise: Promise<any> = Promise.resolve();
     // call the function
-    await updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+    await updateScheduledNotifs(
+      reminderSchemes,
+      isScheduling,
+      setIsScheduling,
+      scheduledPromise,
+      updateUser,
+    );
 
     expect(logDebug).toHaveBeenCalledWith('Error: Reminder scheme not found');
   });
@@ -377,7 +401,13 @@ describe('getReminderPrefs', () => {
 
     // call the function
     const { reminder_assignment, reminder_join_date, reminder_time_of_day } =
-      await getReminderPrefs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+      await getReminderPrefs(
+        reminderSchemes,
+        isScheduling,
+        setIsScheduling,
+        scheduledPromise,
+        updateUser,
+      );
 
     expect(logDebug).toHaveBeenCalledWith('User just joined, Initializing reminder prefs');
     expect(logDebug).toHaveBeenCalledWith('Added reminder prefs to client stats');
@@ -411,7 +441,13 @@ describe('getReminderPrefs', () => {
 
     // call the function
     const { reminder_assignment, reminder_join_date, reminder_time_of_day } =
-      await getReminderPrefs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise);
+      await getReminderPrefs(
+        reminderSchemes,
+        isScheduling,
+        setIsScheduling,
+        scheduledPromise,
+        updateUser,
+      );
 
     expect(reminder_assignment).toEqual(expectedResult.reminder_assignment);
     expect(reminder_join_date).toEqual(expectedResult.reminder_join_date);
@@ -459,6 +495,7 @@ describe('setReminderPrefs', () => {
       isScheduling,
       setIsScheduling,
       scheduledPromise,
+      updateUser,
     ).then(() => {
       // in the implementation in ProfileSettings.jsx,
       // refresNotificationSettings();
