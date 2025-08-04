@@ -2,8 +2,7 @@ import { DateTime } from 'luxon';
 import { getConfig, resetDataAndRefresh } from '../config/dynamicConfig';
 import { storageGet, storageSet } from '../plugin/storage';
 import { logDebug } from '../plugin/logger';
-import { EVENTS, publish } from '../customEventHandler';
-import { readConsentState, isConsented } from '../splash/startprefs';
+import { readConsentState } from '../splash/startprefs';
 import { addStatReading } from '../plugin/clientStats';
 
 export const INTRO_DONE_KEY = 'intro_done';
@@ -40,7 +39,7 @@ export let registerUserDone = false;
 export const setRegisterUserDone = (b) => (registerUserDone = b);
 
 export function getPendingOnboardingState(): Promise<OnboardingState> {
-  return Promise.all([getConfig(), readConsented(), readIntroDone()]).then(
+  return Promise.all([getConfig(), readConsentState(), readIntroDone()]).then(
     ([config, isConsented, isIntroDone]) => {
       let route: OnboardingRoute;
 
@@ -79,19 +78,12 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
   );
 }
 
-export async function readConsented() {
-  return readConsentState().then(isConsented) as Promise<boolean>;
-}
-
 export async function readIntroDone() {
   return storageGet(INTRO_DONE_KEY).then((read_val) => Boolean(read_val)) as Promise<boolean>;
 }
 
 export async function markIntroDone() {
   const currDateTime = DateTime.now().toISO();
-  return storageSet(INTRO_DONE_KEY, currDateTime).then(() => {
-    //handle "on intro" events
-    logDebug('intro done, publishing event');
-    publish(EVENTS.INTRO_DONE_EVENT, currDateTime);
-  });
+  logDebug(`marking intro done at ${currDateTime}`);
+  return storageSet(INTRO_DONE_KEY, currDateTime);
 }

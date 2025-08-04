@@ -1,27 +1,38 @@
 let notifSettings;
-let onList: any = {};
-let called = null;
+let listenerList: any = {};
+let finishedNotId = null;
 
 export const mockPushNotification = () => {
   window['PushNotification'] = {
     init: (settings: Object) => {
       notifSettings = settings;
-      return {
+      const push = {
         on: (event: string, callback: Function) => {
-          onList[event] = callback;
+          listenerList[event] = callback;
         },
         finish: (content: any, errorFcn: Function, notID: any) => {
-          called = notID;
+          finishedNotId = notID;
         },
       };
+      setTimeout(() => {
+        mockPushEvent('registration', {
+          registrationId: 'foo123',
+          registrationType: 'barABC',
+        });
+      }, 100);
+      return push;
     },
   };
 };
 
+export const getNotifSettings = () => notifSettings;
+export const getListenerList = () => listenerList;
+export const getFinishedNotId = () => finishedNotId;
+
+export const mockPushEvent = (event: string, data: any) => listenerList[event]?.(data);
+
 export function clearNotifMock() {
   notifSettings = {};
-  onList = {};
-  called = null;
+  listenerList = {};
+  finishedNotId = null;
 }
-export const getOnList = () => onList;
-export const getCalled = () => called;

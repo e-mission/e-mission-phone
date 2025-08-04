@@ -169,12 +169,14 @@ export async function updateScheduledNotifs(
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,
+  updateUserProfile: Function,
 ): Promise<void> {
   const { reminder_assignment, reminder_join_date, reminder_time_of_day } = await getReminderPrefs(
     reminderSchemes,
     isScheduling,
     setIsScheduling,
     scheduledPromise,
+    updateUserProfile,
   );
   const scheme = reminderSchemes[reminder_assignment];
   if (scheme === undefined) {
@@ -243,6 +245,7 @@ export async function getReminderPrefs(
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,
+  updateUserProfile: Function,
 ): Promise<User> {
   const userPromise = getUser();
   const user = (await userPromise) as User;
@@ -260,6 +263,7 @@ export async function getReminderPrefs(
     isScheduling,
     setIsScheduling,
     scheduledPromise,
+    updateUserProfile,
   );
   return { ...user, ...initPrefs }; // user profile + the new prefs
 }
@@ -270,28 +274,37 @@ export async function setReminderPrefs(
   isScheduling: boolean,
   setIsScheduling: Function,
   scheduledPromise: Promise<any>,
+  updateUserProfile: Function,
 ): Promise<void> {
-  await updateUser(newPrefs);
+  await updateUserProfile(newPrefs);
   const updatePromise = new Promise<void>((resolve, reject) => {
     //enforcing update before moving on
-    updateScheduledNotifs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise).then(
-      () => {
-        resolve();
-      },
-    );
+    updateScheduledNotifs(
+      reminderSchemes,
+      isScheduling,
+      setIsScheduling,
+      scheduledPromise,
+      updateUserProfile,
+    ).then(() => {
+      resolve();
+    });
   });
   // record the new prefs in client stats
-  getReminderPrefs(reminderSchemes, isScheduling, setIsScheduling, scheduledPromise).then(
-    (prefs) => {
-      // extract only the relevant fields from the prefs,
-      // and add as a reading to client stats
-      const { reminder_assignment, reminder_join_date, reminder_time_of_day } = prefs;
-      addStatReading('set_reminder_prefs', {
-        reminder_assignment,
-        reminder_join_date,
-        reminder_time_of_day,
-      }).then(logDebug('Added reminder prefs to client stats'));
-    },
-  );
+  getReminderPrefs(
+    reminderSchemes,
+    isScheduling,
+    setIsScheduling,
+    scheduledPromise,
+    updateUserProfile,
+  ).then((prefs) => {
+    // extract only the relevant fields from the prefs,
+    // and add as a reading to client stats
+    const { reminder_assignment, reminder_join_date, reminder_time_of_day } = prefs;
+    addStatReading('set_reminder_prefs', {
+      reminder_assignment,
+      reminder_join_date,
+      reminder_time_of_day,
+    }).then(logDebug('Added reminder prefs to client stats'));
+  });
   return updatePromise;
 }
