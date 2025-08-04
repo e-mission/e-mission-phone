@@ -349,7 +349,7 @@ const usePermissionStatus = () => {
     setupLocChecks();
     setupFitnessChecks();
     if (DEVICE_PLATFORM == 'android') {
-      if (appConfig.tracking?.bluetooth_only) {
+      if (appConfig.tracking?.is_fleet) {
         setupAndroidBluetoothChecks();
       }
       setupAndroidBackgroundRestrictionChecks();
