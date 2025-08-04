@@ -3,7 +3,7 @@ import ExpansionSection from '../components/ExpandMenu';
 import BluetoothScanSettingRow from './bluetooth/BluetoothScanSettingRow';
 import SettingRow from '../components/SettingRow';
 import NukeDataModal from './NukeDataModal';
-import { Alerts } from '../../components/AlertBar';
+import { Alerts } from '../../components/AlertArea';
 import EditTrackingConfigModal, { forceTransition } from './EditTrackingConfigModal';
 import SensedPage from './SensedPage';
 import LogPage from './LogPage';

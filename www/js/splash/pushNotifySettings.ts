@@ -15,7 +15,7 @@
 
 import { logDebug, displayError, logWarn, displayErrorMsg } from '../plugin/logger';
 import { readConsentState } from './startprefs';
-import { Alerts } from '../components/AlertBar';
+import { Alerts } from '../components/AlertArea';
 import { addStatReading } from '../plugin/clientStats';
 
 export let push;

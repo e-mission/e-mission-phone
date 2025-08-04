@@ -6,7 +6,7 @@ import { AppContext } from '../App';
 import { DateTime } from 'luxon';
 import { setReminderPrefs } from '../splash/notifScheduler';
 
-const ReminderTime = () => {
+const ReminderTimeSettingRow = () => {
   const { appConfig, userProfile, updateUserProfile } = useContext(AppContext);
   const [pickTimeVis, setPickTimeVis] = useState(false);
 
@@ -45,4 +45,4 @@ const ReminderTime = () => {
   );
 };
 
-export default ReminderTime;
+export default ReminderTimeSettingRow;

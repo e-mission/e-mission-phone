@@ -9,7 +9,7 @@ import {
   getSubgroupFromToken,
   getTokenFromUrl,
 } from './opcode';
-import { Alerts } from '../components/AlertBar';
+import { Alerts } from '../components/AlertArea';
 
 export const CONFIG_PHONE_UI = 'config/app_ui_config';
 export const CONFIG_PHONE_UI_KVSTORE = 'CONFIG_PHONE_UI';

@@ -3,7 +3,7 @@ import { Modal, StyleSheet } from 'react-native';
 import { Button, Text, IconButton, Dialog, useTheme, ModalProps } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import QrCode from '../components/QrCode';
-import { Alerts } from '../components/AlertBar';
+import { Alerts } from '../components/AlertArea';
 import { settingStyles } from './ProfileSettings';
 
 function copyText(textToCopy) {

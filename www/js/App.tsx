@@ -12,7 +12,7 @@ import {
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './AppStatusModal';
 import usePermissionStatus from './usePermissionStatus';
-import AlertBar from './components/AlertBar';
+import AlertArea from './components/AlertArea';
 import Main from './Main';
 import { joinWithTokenOrUrl } from './config/dynamicConfig';
 import { addStatReading } from './plugin/clientStats';
@@ -136,7 +136,7 @@ const App = () => {
           {onboardingState && onboardingState.route > OnboardingRoute.PROTOCOL && (
             <AppStatusModal permitVis={permissionsPopupVis} setPermitVis={setPermissionsPopupVis} />
           )}
-          <AlertBar />
+          <AlertArea />
         </AppContext.Provider>
       </SafeAreaView>
     </PaperProvider>

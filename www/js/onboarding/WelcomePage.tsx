@@ -25,7 +25,7 @@ import color from 'color';
 import { AppContext } from '../App';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { onboardingStyles } from './OnboardingStack';
-import { Alerts } from '../components/AlertBar';
+import { Alerts } from '../components/AlertArea';
 import { addStatReading } from '../plugin/clientStats';
 
 let barcodeScannerIsOpen = false;

@@ -4,7 +4,7 @@ import { useTheme, Text, Appbar, IconButton, ModalProps } from 'react-native-pap
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { DateTime } from 'luxon';
-import { Alerts } from '../../components/AlertBar';
+import { Alerts } from '../../components/AlertArea';
 import { sendLocalDBFile } from '../../services/shareLocalDBFile';
 import { displayError, logDebug } from '../../plugin/logger';
 import NavBar from '../../components/NavBar';

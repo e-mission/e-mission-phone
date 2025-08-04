@@ -44,7 +44,7 @@ export const Alerts = {
   },
 };
 
-const AlertBar = () => {
+const AlertArea = () => {
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
 
@@ -121,4 +121,4 @@ const AlertBar = () => {
   }
 };
 
-export default AlertBar;
+export default AlertArea;

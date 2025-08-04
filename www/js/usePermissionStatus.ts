@@ -4,7 +4,7 @@ import useAppConfig from './useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { useAppTheme } from './appTheme';
 import { logDebug, logWarn } from './plugin/logger';
-import { Alerts } from './components/AlertBar';
+import { Alerts } from './components/AlertArea';
 import { readConsentState } from './splash/startprefs';
 
 let DEVICE_PLATFORM: 'android' | 'ios';

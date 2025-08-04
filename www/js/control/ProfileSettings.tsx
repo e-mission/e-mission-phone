@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AppContext } from '../App';
 import { displayError } from '../plugin/logger';
-import { Alerts } from '../components/AlertBar';
+import { Alerts } from '../components/AlertArea';
 import { shareQR } from '../components/QrCode';
 import NavBar, { NavBarButton } from '../components/NavBar';
 import { sendLocalDBFile } from '../services/shareLocalDBFile';
@@ -13,7 +13,7 @@ import { refreshConfig } from '../config/dynamicConfig';
 import SettingRow from './components/SettingRow';
 import JsonList from './components/JsonList';
 import DemographicsSettingRow from './DemographicsSettingRow';
-import ReminderTime from './ReminderTime';
+import ReminderTimeSettingRow from './ReminderTimeSettingRow';
 import PopOpCode from './PopOpCode';
 import DataDatePicker from './DataDatePicker';
 import PrivacyPolicyModal from './PrivacyPolicyModal';
@@ -80,7 +80,7 @@ const ProfileSettings = () => {
           iconName="eye"
           action={() => Alerts.showPopup(PrivacyPolicyModal)}
         />
-        {appConfig.reminderSchemes && <ReminderTime />}
+        {appConfig.reminderSchemes && <ReminderTimeSettingRow />}
         <SettingRow
           textKey="control.tracking"
           action={() =>
