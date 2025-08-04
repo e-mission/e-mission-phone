@@ -25,7 +25,7 @@ import color from 'color';
 import { AppContext } from '../App';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { onboardingStyles } from './OnboardingStack';
-import { AlertManager } from '../components/AlertBar';
+import { Alerts } from '../components/AlertBar';
 import { addStatReading } from '../plugin/clientStats';
 
 let barcodeScannerIsOpen = false;
@@ -49,14 +49,14 @@ const WelcomePage = () => {
         logDebug('scanCode: scanned ' + JSON.stringify(result));
         if (result.cancelled) return;
         if (!result?.text || result.format != 'QR_CODE') {
-          AlertManager.addMessage({ text: 'No QR code found in scan. Please try again.' });
+          Alerts.addMessage({ text: 'No QR code found in scan. Please try again.' });
           return;
         }
         handleTokenOrUrl(result.text, 'scan');
       },
       (error) => {
         barcodeScannerIsOpen = false;
-        AlertManager.addMessage({ text: 'Scanning failed: ' + error.message });
+        Alerts.addMessage({ text: 'Scanning failed: ' + error.message });
       },
     );
   }

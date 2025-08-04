@@ -53,7 +53,7 @@ export async function registerAndUpdateProfile(appConfig: DeploymentConfig): Pro
 
 export async function updateUserProfile(
   profileUpdate: Partial<UserProfile>,
-  currProfile: UserProfile | undefined,
+  currProfile: UserProfile | null,
 ) {
   if (!currProfile) {
     logDebug('App: updateUserProfile called without current profile, fetching from server');

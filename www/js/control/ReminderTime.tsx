@@ -1,70 +1,48 @@
-import React, { useState } from 'react';
-import { Modal, StyleSheet } from 'react-native';
-import { List, useTheme } from 'react-native-paper';
-import { useTranslation } from 'react-i18next';
+import React, { useContext, useState } from 'react';
+import { Modal } from 'react-native';
 import { TimePickerModal } from 'react-native-paper-dates';
-import { styles as rowStyles } from './SettingRow';
+import SettingRow from './components/SettingRow';
+import { AppContext } from '../App';
+import { DateTime } from 'luxon';
+import { setReminderPrefs } from '../splash/notifScheduler';
 
-const TimeSelect = ({ visible, setVisible, defaultTime, updateFunc }) => {
-  const onDismiss = React.useCallback(() => {
-    setVisible(false);
-  }, [setVisible]);
-
-  const onConfirm = React.useCallback(
-    ({ hours, minutes }) => {
-      setVisible(false);
-      const d = new Date();
-      d.setHours(hours, minutes);
-      updateFunc(true, d);
-    },
-    [setVisible, updateFunc],
-  );
-
-  return (
-    <Modal visible={visible} onDismiss={() => setVisible(false)} transparent={true}>
-      <TimePickerModal
-        visible={visible}
-        onDismiss={onDismiss}
-        onConfirm={onConfirm}
-        hours={defaultTime?.getHours()}
-        minutes={defaultTime?.getMinutes()}
-      />
-    </Modal>
-  );
-};
-
-const ReminderTime = ({ rowText, timeVar, defaultTime, updateFunc }) => {
-  const { t } = useTranslation();
-  const { colors } = useTheme();
+const ReminderTime = () => {
+  const { appConfig, userProfile, updateUserProfile } = useContext(AppContext);
   const [pickTimeVis, setPickTimeVis] = useState(false);
 
-  let rightComponent = <List.Icon icon={'clock'} />;
+  const reminderDt = DateTime.fromFormat(userProfile.reminder_time_of_day, 'HH:mm');
+  const reminderJsDate = reminderDt.toJSDate();
+
+  function onConfirm({ hours, minutes }) {
+    const d = new Date();
+    d.setHours(hours, minutes);
+    const dt = DateTime.fromJSDate(d);
+    setReminderPrefs(
+      { reminder_time_of_day: dt.toFormat('HH:mm') },
+      appConfig.reminderSchemes,
+      updateUserProfile,
+    );
+  }
 
   return (
     <>
-      <List.Item
-        style={styles.item(colors.surface)}
-        title={t(rowText, { time: timeVar })}
-        titleStyle={rowStyles.title}
-        onPress={(e) => setPickTimeVis(true)}
-        right={() => rightComponent}
+      <SettingRow
+        textKey="control.reminders-time-of-day"
+        desc={reminderDt.toFormat('t')}
+        iconName="clock"
+        action={() => setPickTimeVis(true)}
       />
-
-      <TimeSelect
-        visible={pickTimeVis}
-        setVisible={setPickTimeVis}
-        defaultTime={defaultTime}
-        updateFunc={updateFunc}></TimeSelect>
+      <Modal visible={pickTimeVis} onDismiss={() => setPickTimeVis(false)} transparent={true}>
+        <TimePickerModal
+          visible={pickTimeVis}
+          onDismiss={() => setPickTimeVis(false)}
+          onConfirm={onConfirm}
+          hours={reminderJsDate.getHours()}
+          minutes={reminderJsDate.getMinutes()}
+        />
+      </Modal>
     </>
   );
 };
-const styles = StyleSheet.create({
-  item: (surfaceColor) => ({
-    justifyContent: 'space-between',
-    alignContent: 'center',
-    backgroundColor: surfaceColor,
-    margin: 1,
-  }),
-});
 
 export default ReminderTime;

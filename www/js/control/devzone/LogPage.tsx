@@ -1,17 +1,17 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, StyleSheet, SafeAreaView, Modal } from 'react-native';
-import { useTheme, Text, Appbar, IconButton } from 'react-native-paper';
+import { useTheme, Text, Appbar, IconButton, ModalProps } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { DateTime } from 'luxon';
-import { AlertManager } from '../components/AlertBar';
-import { sendLocalDBFile } from '../services/shareLocalDBFile';
-import { displayError, logDebug } from '../plugin/logger';
-import NavBar from '../components/NavBar';
+import { Alerts } from '../../components/AlertBar';
+import { sendLocalDBFile } from '../../services/shareLocalDBFile';
+import { displayError, logDebug } from '../../plugin/logger';
+import NavBar from '../../components/NavBar';
 
 type LoadStats = { currentStart: number; gotMaxIndex: boolean; reachedEnd: boolean };
 
-const LogPage = ({ pageVis, setPageVis }) => {
+const LogPage = ({ ...props }: ModalProps) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -24,7 +24,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
   //when opening the modal, load the entries
   useEffect(() => {
     refreshEntries();
-  }, [pageVis]);
+  }, [props.visible]);
 
   async function refreshEntries() {
     try {
@@ -39,7 +39,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
     } catch (error) {
       let errorString = t('errors.while-max-index') + JSON.stringify(error, null, 2);
       displayError(error, errorString);
-      AlertManager.addMessage({ text: errorString });
+      Alerts.addMessage({ text: errorString });
     } finally {
       addEntries();
     }
@@ -69,7 +69,7 @@ const LogPage = ({ pageVis, setPageVis }) => {
     } catch (error) {
       let errStr = t('errors.while-log-messages') + JSON.stringify(error, null, 2);
       displayError(error, errStr);
-      AlertManager.addMessage({ text: errStr });
+      Alerts.addMessage({ text: errStr });
       setIsFetching(false);
     }
   }
@@ -109,14 +109,10 @@ const LogPage = ({ pageVis, setPageVis }) => {
   );
 
   return (
-    <Modal visible={pageVis} onDismiss={() => setPageVis(false)}>
+    <Modal {...props}>
       <SafeAreaView style={{ flex: 1 }}>
         <NavBar>
-          <Appbar.BackAction
-            onPress={() => {
-              setPageVis(false);
-            }}
-          />
+          <Appbar.BackAction onPress={props.onDismiss} />
           <Appbar.Content title={t('control.log-title')} />
         </NavBar>
 

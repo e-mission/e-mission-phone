@@ -1,5 +1,5 @@
-import { logDebug, displayError } from '../plugin/logger';
-import { BluetoothClassicDevice } from '../types/bluetoothDevices';
+import { logDebug, displayError } from '../../../plugin/logger';
+import { BluetoothClassicDevice } from '../../../types/bluetoothDevices';
 
 /**
  * gatherBluetoothData scans for viewable Bluetooth Classic Devices

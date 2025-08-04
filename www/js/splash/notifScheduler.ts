@@ -5,6 +5,9 @@ import { DateTime } from 'luxon';
 import i18next from 'i18next';
 import { ReminderSchemesConfig } from 'nrel-openpath-deploy-configs';
 
+let isScheduling = false;
+let scheduledPromise;
+
 // like python range()
 function range(start, stop, step) {
   let a = [start],
@@ -76,7 +79,7 @@ function debugGetScheduled(prefix) {
 }
 
 //new method to fetch notifications
-export function getScheduledNotifs(isScheduling: boolean, scheduledPromise: Promise<any>) {
+export function getScheduledNotifs() {
   return new Promise<ScheduledNotif[]>((resolve, reject) => {
     /* if the notifications are still in active scheduling it causes problems
         anywhere from 0-n of the scheduled notifs are displayed 
@@ -126,9 +129,9 @@ function getNotifs() {
 }
 
 // schedules the notifications using the cordova plugin
-function scheduleNotifs(scheme, notifTimes: DateTime[], setIsScheduling: Function) {
+function scheduleNotifs(scheme, notifTimes: DateTime[]) {
   return new Promise<void>((rs) => {
-    setIsScheduling(true);
+    isScheduling = true;
     const localeCode = i18next.resolvedLanguage || 'en';
     const nots = notifTimes.map((n) => {
       const nDate = n.toJSDate();
@@ -154,7 +157,7 @@ function scheduleNotifs(scheme, notifTimes: DateTime[], setIsScheduling: Functio
       debugGetScheduled('After cancelling');
       window['cordova'].plugins.notification.local.schedule(nots, () => {
         debugGetScheduled('After scheduling');
-        setIsScheduling(false);
+        isScheduling = false;
         rs(); //scheduling promise resolved here
       });
     });
@@ -166,16 +169,10 @@ const removeEmptyObjects = (list: any[]): any[] => list.filter((n) => Object.key
 // determines when notifications are needed, and schedules them if not already scheduled
 export async function updateScheduledNotifs(
   reminderSchemes: ReminderSchemesConfig,
-  isScheduling: boolean,
-  setIsScheduling: Function,
-  scheduledPromise: Promise<any>,
   updateUserProfile: Function,
 ): Promise<void> {
   const { reminder_assignment, reminder_join_date, reminder_time_of_day } = await getReminderPrefs(
     reminderSchemes,
-    isScheduling,
-    setIsScheduling,
-    scheduledPromise,
     updateUserProfile,
   );
   const scheme = reminderSchemes[reminder_assignment];
@@ -199,7 +196,7 @@ export async function updateScheduledNotifs(
             logDebug('ERROR: Already scheduling notifications, not scheduling again');
             resolve();
           } else {
-            scheduledPromise = scheduleNotifs(scheme, notifTimes, setIsScheduling);
+            scheduledPromise = scheduleNotifs(scheme, notifTimes);
             //enforcing end of scheduling to conisder update through
             scheduledPromise.then(() => {
               resolve();
@@ -242,9 +239,6 @@ interface User {
 
 export async function getReminderPrefs(
   reminderSchemes: ReminderSchemesConfig,
-  isScheduling: boolean,
-  setIsScheduling: Function,
-  scheduledPromise: Promise<any>,
   updateUserProfile: Function,
 ): Promise<User> {
   const userPromise = getUser();
@@ -257,46 +251,24 @@ export async function getReminderPrefs(
   logDebug('User just joined, Initializing reminder prefs');
   const initPrefs = initReminderPrefs(reminderSchemes);
   logDebug('Initialized reminder prefs: ' + JSON.stringify(initPrefs));
-  await setReminderPrefs(
-    initPrefs,
-    reminderSchemes,
-    isScheduling,
-    setIsScheduling,
-    scheduledPromise,
-    updateUserProfile,
-  );
+  await setReminderPrefs(initPrefs, reminderSchemes, updateUserProfile);
   return { ...user, ...initPrefs }; // user profile + the new prefs
 }
 
 export async function setReminderPrefs(
   newPrefs: object,
   reminderSchemes: ReminderSchemesConfig,
-  isScheduling: boolean,
-  setIsScheduling: Function,
-  scheduledPromise: Promise<any>,
   updateUserProfile: Function,
 ): Promise<void> {
   await updateUserProfile(newPrefs);
   const updatePromise = new Promise<void>((resolve, reject) => {
     //enforcing update before moving on
-    updateScheduledNotifs(
-      reminderSchemes,
-      isScheduling,
-      setIsScheduling,
-      scheduledPromise,
-      updateUserProfile,
-    ).then(() => {
+    updateScheduledNotifs(reminderSchemes, updateUserProfile).then(() => {
       resolve();
     });
   });
   // record the new prefs in client stats
-  getReminderPrefs(
-    reminderSchemes,
-    isScheduling,
-    setIsScheduling,
-    scheduledPromise,
-    updateUserProfile,
-  ).then((prefs) => {
+  getReminderPrefs(reminderSchemes, updateUserProfile).then((prefs) => {
     // extract only the relevant fields from the prefs,
     // and add as a reading to client stats
     const { reminder_assignment, reminder_join_date, reminder_time_of_day } = prefs;

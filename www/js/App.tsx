@@ -1,5 +1,7 @@
 import React, { useEffect, useState, createContext } from 'react';
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator, PaperProvider } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import i18next from 'i18next';
 import useAppConfig from './useAppConfig';
 import OnboardingStack from './onboarding/OnboardingStack';
 import {
@@ -8,7 +10,7 @@ import {
   getPendingOnboardingState,
 } from './onboarding/onboardingHelper';
 import { setServerConnSettings } from './config/serverConn';
-import AppStatusModal from './control/AppStatusModal';
+import AppStatusModal from './AppStatusModal';
 import usePermissionStatus from './usePermissionStatus';
 import AlertBar from './components/AlertBar';
 import Main from './Main';
@@ -17,13 +19,15 @@ import { addStatReading } from './plugin/clientStats';
 import useAppState from './useAppState';
 import { displayErrorMsg, logDebug } from './plugin/logger';
 import { registerAndUpdateProfile, updateUserProfile, UserProfile } from './splash/userProfile';
-import i18next from 'i18next';
+import { getTheme } from './appTheme';
 
 export const AppContext = createContext<any>({});
 type CustomLabelMap = {
   [k: string]: string[];
 };
 type OnboardingJoinMethod = 'scan' | 'paste' | 'textbox' | 'external';
+
+const theme = getTheme();
 
 const App = () => {
   // will remain null while the onboarding state is still being determined
@@ -123,18 +127,19 @@ const App = () => {
   }
 
   return (
-    <>
-      <AppContext.Provider value={appContextValue}>
-        {appContent}
-
-        {/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
+    <PaperProvider theme={theme}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.elevation.level2 }}>
+        <AppContext.Provider value={appContextValue}>
+          {appContent}
+          {/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
           This also includes if onboarding is DONE altogether (because "DONE" is > "PROTOCOL") */}
-        {onboardingState && onboardingState.route > OnboardingRoute.PROTOCOL && (
-          <AppStatusModal permitVis={permissionsPopupVis} setPermitVis={setPermissionsPopupVis} />
-        )}
-      </AppContext.Provider>
-      <AlertBar />
-    </>
+          {onboardingState && onboardingState.route > OnboardingRoute.PROTOCOL && (
+            <AppStatusModal permitVis={permissionsPopupVis} setPermitVis={setPermissionsPopupVis} />
+          )}
+          <AlertBar />
+        </AppContext.Provider>
+      </SafeAreaView>
+    </PaperProvider>
   );
 };
 
