@@ -1,9 +1,9 @@
 import React, { useContext, useEffect } from 'react';
 import { Modal, useWindowDimensions } from 'react-native';
 import { Dialog, useTheme } from 'react-native-paper';
-import PermissionsControls from '../appstatus/PermissionsControls';
-import { settingStyles } from './ProfileSettings';
-import { AppContext } from '../App';
+import PermissionsControls from './appstatus/PermissionsControls';
+import { settingStyles } from './control/ProfileSettings';
+import { AppContext } from './App';
 //TODO -- import settings styles for dialog
 
 const AppStatusModal = ({ permitVis, setPermitVis }) => {

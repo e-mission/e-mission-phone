@@ -1,7 +1,5 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Provider as PaperProvider } from 'react-native-paper';
-
 import mdiFont from '../node_modules/@react-native-vector-icons/material-design-icons/fonts/MaterialDesignIcons.ttf';
 export const MDI_FONT_FAMILY = 'MaterialDesignIcons';
 
@@ -11,8 +9,6 @@ import initializedI18next from './js/i18nextInit';
 window.i18next = initializedI18next;
 
 import App from './js/App';
-import { getTheme } from './js/appTheme';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { logDebug } from './js/plugin/logger';
 
 export const deviceReady = new Promise((resolve) => {
@@ -31,10 +27,8 @@ deviceReady.then(() => {
   const rootEl = document.getElementById('appRoot');
   const reactRoot = createRoot(rootEl);
 
-  const theme = getTheme();
-
   reactRoot.render(
-    <PaperProvider theme={theme}>
+    <>
       <style type="text/css">
         {`
           @font-face {
@@ -48,10 +42,8 @@ deviceReady.then(() => {
         `}
       </style>
       {/* The background color of this SafeAreaView effectively controls the status bar background color.
-      Set to theme.colors.elevation.level2 to match the background of the elevated AppBars present on each tab. */}
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.elevation.level2 }}>
-        <App />
-      </SafeAreaView>
-    </PaperProvider>,
+        Set to theme.colors.elevation.level2 to match the background of the elevated AppBars present on each tab. */}
+      <App />
+    </>,
   );
 });

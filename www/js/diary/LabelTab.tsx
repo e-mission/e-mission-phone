@@ -97,6 +97,13 @@ const LabelTab = () => {
     setDisplayedEntries(entriesToDisplay);
   }, [timelineMap, filterInputs, timelineLabelMap, filterRefreshTs]);
 
+  // once pipelineRange is set, update all unprocessed inputs
+  useEffect(() => {
+    if (pipelineRange && pipelineRange.end_ts) {
+      updateAllUnprocessedInputs(pipelineRange, appConfig);
+    }
+  }, [pipelineRange]);
+
   const Tab = createStackNavigator();
 
   const contextVals: LabelContextProps = {

@@ -4,15 +4,15 @@ import { Dialog, Button, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { settingStyles } from '../control/ProfileSettings';
 
-const ActionMenu = ({ vis, setVis, title, actionSet, onAction, onExit }) => {
+const ActionMenu = ({ visible, onDismiss, title, actionSet, onAction }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
   return (
-    <Modal visible={vis} onDismiss={() => setVis(false)} transparent={true}>
+    <Modal visible={visible} onDismiss={onDismiss} transparent={true}>
       <Dialog
-        visible={vis}
-        onDismiss={() => setVis(false)}
+        visible={visible}
+        onDismiss={onDismiss}
         style={settingStyles.dialog(colors.elevation.level3)}>
         <Dialog.Title>{title}</Dialog.Title>
         <Dialog.Content>
@@ -21,20 +21,14 @@ const ActionMenu = ({ vis, setVis, title, actionSet, onAction, onExit }) => {
               key={e.text}
               onPress={() => {
                 onAction(e);
-                setVis(false);
+                onDismiss();
               }}>
               {e.text}
             </Button>
           ))}
         </Dialog.Content>
         <Dialog.Actions>
-          <Button
-            onPress={() => {
-              setVis(false);
-              onExit();
-            }}>
-            {t('general-settings.cancel')}
-          </Button>
+          <Button onPress={onDismiss}>{t('general-settings.cancel')}</Button>
         </Dialog.Actions>
       </Dialog>
     </Modal>

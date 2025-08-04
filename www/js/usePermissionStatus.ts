@@ -4,7 +4,7 @@ import useAppConfig from './useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { useAppTheme } from './appTheme';
 import { logDebug, logWarn } from './plugin/logger';
-import { AlertManager } from './components/AlertBar';
+import { Alerts } from './components/AlertArea';
 import { readConsentState } from './splash/startprefs';
 
 let DEVICE_PLATFORM: 'android' | 'ios';
@@ -62,7 +62,7 @@ const usePermissionStatus = () => {
       return status;
     } catch (error) {
       if (showError) {
-        AlertManager.addMessage({ text: error });
+        Alerts.addMessage({ text: error });
       }
       newCheck.status = false;
       updateCheck(newCheck);
@@ -349,7 +349,7 @@ const usePermissionStatus = () => {
     setupLocChecks();
     setupFitnessChecks();
     if (DEVICE_PLATFORM == 'android') {
-      if (appConfig.tracking?.bluetooth_only) {
+      if (appConfig.tracking?.is_fleet) {
         setupAndroidBluetoothChecks();
       }
       setupAndroidBackgroundRestrictionChecks();

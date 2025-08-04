@@ -20,13 +20,7 @@ const SettingRow = ({ textKey, iconName, action, desc, switchValue, descStyle }:
   if (iconName) {
     rightComponent = <List.Icon icon={iconName} aria-hidden={true} />;
   } else {
-    rightComponent = (
-      <Switch
-        value={switchValue}
-        accessibilityLabel={t(textKey as any)}
-        accessibilityHint={switchValue ? t('Currently enabled') : t('Currently disabled')}
-      />
-    );
+    rightComponent = <Switch value={switchValue} accessibilityLabel={t(textKey as any)} />;
   }
 
   return (

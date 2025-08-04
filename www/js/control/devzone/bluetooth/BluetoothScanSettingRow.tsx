@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import SettingRow from './SettingRow';
-import BluetoothScanPage from '../bluetooth/BluetoothScanPage';
+import SettingRow from '../../components/SettingRow';
+import BluetoothScanPage from './BluetoothScanPage';
 
 const BluetoothScanSettingRow = ({}) => {
   const [bluePageVisible, setBluePageVisible] = useState<boolean>(false);

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { displayError, logDebug } from '../plugin/logger';
-import useAppConfig from '../useAppConfig';
+import { ModalProps } from 'react-native-paper';
+import { displayError, logDebug } from '../../plugin/logger';
+import useAppConfig from '../../useAppConfig';
 import EditConfigModal from './EditConfigModal';
 
 type TrackingConfig = {
@@ -19,15 +20,6 @@ type TrackingConfig = {
 
 type AccuracyOptions = { [option: string]: number };
 
-/*
- * Simple read/write wrappers
- */
-
-export const getState = () => window['cordova'].plugins.BEMDataCollection.getState();
-const setConfig = (config) => window['cordova'].plugins.BEMDataCollection.setConfig(config);
-const getConfig = () => window['cordova'].plugins.BEMDataCollection.getConfig();
-const getAccuracyOptions = () => window['cordova'].plugins.BEMDataCollection.getAccuracyOptions();
-
 export async function forceTransition(transition) {
   try {
     let result = await window['cordova'].plugins.BEMDataCollection.forceTransition(transition);
@@ -38,24 +30,31 @@ export async function forceTransition(transition) {
   }
 }
 
-const EditTrackingConfigModal = ({ editVis, setEditVis }) => {
+type Props = ModalProps & {
+  afterSave?: () => void;
+};
+const EditTrackingConfigModal = ({ afterSave, ...props }: Props) => {
   const appConfig = useAppConfig();
 
   const [localConfig, setLocalConfig] = useState<TrackingConfig>();
   const [accuracyOptions, setAccuracyOptions] = useState<AccuracyOptions>();
 
   useEffect(() => {
-    Promise.all([getConfig(), getAccuracyOptions()]).then(([cfg, opts]) => {
+    Promise.all([
+      window['cordova'].plugins.BEMDataCollection.getConfig(),
+      window['cordova'].plugins.BEMDataCollection.getAccuracyOptions(),
+    ]).then(([cfg, opts]) => {
       setLocalConfig(cfg);
       setAccuracyOptions(opts);
     });
-  }, [editVis]);
+  }, []);
 
   async function saveAndReload() {
     logDebug('new config = ' + JSON.stringify(localConfig));
     try {
-      await setConfig(localConfig);
-      setEditVis(false);
+      await window['cordova'].plugins.BEMDataCollection.setConfig(localConfig);
+      afterSave?.();
+      props.onDismiss?.();
     } catch (err) {
       displayError(err, 'Error while setting collection config');
     }
@@ -65,8 +64,6 @@ const EditTrackingConfigModal = ({ editVis, setEditVis }) => {
 
   return (
     <EditConfigModal
-      editVis={editVis}
-      setEditVis={setEditVis}
       titleKey="control.edit-tracking-config"
       localConfig={localConfig}
       setLocalConfig={setLocalConfig}
@@ -77,6 +74,7 @@ const EditTrackingConfigModal = ({ editVis, setEditVis }) => {
           accuracy: accuracyOptions,
         }
       }
+      {...props}
     />
   );
 };

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';
 import { StyleSheet, Modal, ScrollView, SafeAreaView, View, Text } from 'react-native';
 import { gatherBluetoothClassicData } from './bluetoothScanner';
-import { logWarn, displayError, displayErrorMsg, logDebug } from '../plugin/logger';
+import { logWarn, displayError, displayErrorMsg, logDebug } from '../../../plugin/logger';
 import BluetoothCard from './BluetoothCard';
 import { Appbar, useTheme, TextInput, Button } from 'react-native-paper';
 import {
@@ -11,8 +11,8 @@ import {
   BLEPluginCallback,
   BluetoothClassicDevice,
   BLEDeviceList,
-} from '../types/bluetoothDevices';
-import { forceTransition } from '../control/EditTrackingConfigModal';
+} from '../../../types/bluetoothDevices';
+import { forceTransition } from '../../ProfileSettings';
 
 /**
  * The implementation of this scanner page follows the design of

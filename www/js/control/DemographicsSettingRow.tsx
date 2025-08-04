@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import SettingRow from './SettingRow';
+import SettingRow from './components/SettingRow';
 import { loadPreviousResponseForSurvey } from '../survey/enketo/enketoHelper';
 import EnketoModal from '../survey/enketo/EnketoModal';
 

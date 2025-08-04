@@ -1,33 +1,30 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Modal, StyleSheet } from 'react-native';
-import { Button, Text, IconButton, Dialog, useTheme } from 'react-native-paper';
+import { Button, Text, IconButton, Dialog, useTheme, ModalProps } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import QrCode from '../components/QrCode';
-import { AlertManager } from '../components/AlertBar';
+import { Alerts } from '../components/AlertArea';
 import { settingStyles } from './ProfileSettings';
 
-const PopOpCode = ({ visibilityValue, token, action, setVis }) => {
+function copyText(textToCopy) {
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    Alerts.addMessage({ text: 'Copied to clipboard!' });
+  });
+}
+
+type Props = ModalProps & {
+  token: string;
+  onShare: () => void;
+};
+const PopOpCode = ({ token, onShare, ...props }: Props) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  function copyText(textToCopy) {
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      AlertManager.addMessage({ msgKey: 'Copied to clipboard!' });
-    });
-  }
-
-  let copyButton;
-  if (window['cordova'].platformId == 'ios') {
-    copyButton = (
-      <IconButton icon="content-copy" onPress={() => copyText(token)} style={styles.button} />
-    );
-  }
-
   return (
-    <Modal visible={visibilityValue} onDismiss={() => setVis(false)} transparent={true}>
+    <Modal transparent={true} {...props}>
       <Dialog
-        visible={visibilityValue}
-        onDismiss={() => setVis(false)}
+        visible={props.visible}
+        onDismiss={props.onDismiss}
         style={settingStyles.dialog(colors.elevation.level3)}>
         <Dialog.Title>{t('general-settings.qrcode')}</Dialog.Title>
         <Dialog.Content style={styles.content}>
@@ -36,9 +33,11 @@ const PopOpCode = ({ visibilityValue, token, action, setVis }) => {
           <Text style={styles.opcode}>{token}</Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <IconButton icon="share" onPress={() => action()} style={styles.button} />
-          {copyButton}
-          <Button onPress={() => setVis(false)} style={styles.button}>
+          <IconButton icon="share" onPress={() => onShare()} style={styles.button} />
+          {window['cordova'].platformId == 'ios' && (
+            <IconButton icon="content-copy" onPress={() => copyText(token)} style={styles.button} />
+          )}
+          <Button onPress={props.onDismiss} style={styles.button}>
             {t('general-settings.cancel')}
           </Button>
         </Dialog.Actions>
@@ -46,6 +45,7 @@ const PopOpCode = ({ visibilityValue, token, action, setVis }) => {
     </Modal>
   );
 };
+
 const styles = StyleSheet.create({
   title: {
     alignItems: 'center',

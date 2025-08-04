@@ -1,376 +1,61 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import { Modal, StyleSheet, ScrollView, View } from 'react-native';
-import { Dialog, Button, useTheme, Text, Appbar, TextInput, Divider } from 'react-native-paper';
+import React, { useState, useEffect, useContext } from 'react';
+import { StyleSheet, ScrollView } from 'react-native';
+import { Text, Appbar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import ExpansionSection from './ExpandMenu';
-import SettingRow from './SettingRow';
-import ControlDataTable from './ControlDataTable';
+
+import { AppContext } from '../App';
+import { displayError } from '../plugin/logger';
+import { Alerts } from '../components/AlertArea';
+import { shareQR } from '../components/QrCode';
+import NavBar, { NavBarButton } from '../components/NavBar';
+import { sendLocalDBFile } from '../services/shareLocalDBFile';
+import { refreshConfig } from '../config/dynamicConfig';
+import SettingRow from './components/SettingRow';
+import JsonList from './components/JsonList';
 import DemographicsSettingRow from './DemographicsSettingRow';
-import BluetoothScanSettingRow from './BluetoothScanSettingRow';
+import ReminderTimeSettingRow from './ReminderTimeSettingRow';
 import PopOpCode from './PopOpCode';
-import ReminderTime from './ReminderTime';
-import useAppConfig from '../useAppConfig';
-import { AlertManager } from '../components/AlertBar';
 import DataDatePicker from './DataDatePicker';
 import PrivacyPolicyModal from './PrivacyPolicyModal';
-import { sendLocalDBFile } from '../services/shareLocalDBFile';
-import { uploadFile } from './uploadService';
-import ActionMenu from '../components/ActionMenu';
-import SensedPage from './SensedPage';
-import LogPage from './LogPage';
-import EditSyncConfigModal, { ForceSyncRow } from './EditSyncConfigModal';
-import EditTrackingConfigModal, { getState, forceTransition } from './EditTrackingConfigModal';
-import {
-  _cacheResourcesFetchPromise,
-  loadNewConfig,
-  resetDataAndRefresh,
-} from '../config/dynamicConfig';
-import { AppContext } from '../App';
-import { shareQR } from '../components/QrCode';
-import { storageClear } from '../plugin/storage';
-import { getAppVersion } from '../plugin/clientStats';
-import { getConsentDocument } from '../splash/startprefs';
-import { displayError, displayErrorMsg, logDebug, logWarn } from '../plugin/logger';
 // import CustomLabelSettingRow from './CustomLabelSettingRow';
-import { fetchOPCode, getSettings } from '../services/controlHelper';
-import {
-  updateScheduledNotifs,
-  getScheduledNotifs,
-  getReminderPrefs,
-  setReminderPrefs,
-} from '../splash/notifScheduler';
-import { DateTime } from 'luxon';
-import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
-import NavBar, { NavBarButton } from '../components/NavBar';
+import LogoutModal from './LogoutModal';
+import UploadLogModal from './UploadLogModal';
+import DeveloperZone from './devzone/DeveloperZone';
+import { forceTransition } from './devzone/EditTrackingConfigModal';
 
-//any pure functions can go outside
 const ProfileSettings = () => {
-  // anything that mutates must go in --- depend on props or state...
   const { t } = useTranslation();
-  const appConfig = useAppConfig();
-  const { colors } = useTheme();
-  const { setPermissionsPopupVis, userProfile, updateUserProfile } = useContext(AppContext);
+  const { appConfig, setPermissionsPopupVis, userProfile } = useContext(AppContext);
 
-  //states and variables used to control/create the settings
-  const [opCodeVis, setOpCodeVis] = useState(false);
-  const [nukeSetVis, setNukeVis] = useState(false);
-  const [forceStateVis, setForceStateVis] = useState(false);
-  const [logoutVis, setLogoutVis] = useState(false);
-  const [noConsentVis, setNoConsentVis] = useState(false);
-  const [consentVis, setConsentVis] = useState(false);
-  const [dateDumpVis, setDateDumpVis] = useState(false);
-  const [privacyVis, setPrivacyVis] = useState(false);
-  const [uploadVis, setUploadVis] = useState(false);
-  const [showingSensed, setShowingSensed] = useState(false);
-  const [showingLog, setShowingLog] = useState(false);
-  const [editSyncVis, setEditSyncVis] = useState(false);
-  const [editCollectionVis, setEditCollectionVis] = useState(false);
+  const [collectionState, setCollectionState] = useState('');
+  const [opcode, setOpcode] = useState('');
+  const [appVersion, setAppVersion] = useState('');
 
-  const [collectSettings, setCollectSettings] = useState<any>({});
-  const [notificationSettings, setNotificationSettings] = useState<any>({});
-  const [authSettings, setAuthSettings] = useState<any>({});
-  const [connectSettings, setConnectSettings] = useState({});
-  const [uiConfig, setUiConfig] = useState<DeploymentConfig | undefined>(undefined);
-  const [consentDoc, setConsentDoc] = useState<any>({});
-  const [dumpDate, setDumpDate] = useState(new Date());
-  const [uploadReason, setUploadReason] = useState('');
-  const appVersion = useRef();
-
-  const stateActions = [
-    { text: 'Initialize', transition: 'INITIALIZE' },
-    { text: 'Start trip', transition: 'EXITED_GEOFENCE' },
-    { text: 'End trip', transition: 'STOPPED_MOVING' },
-    { text: 'Visit ended', transition: 'VISIT_ENDED' },
-    { text: 'Visit started', transition: 'VISIT_STARTED' },
-    { text: 'Remote push', transition: 'RECEIVED_SILENT_PUSH' },
-  ];
-
-  // used for scheduling notifs
-  let scheduledPromise = new Promise<void>((rs) => rs());
-  const [isScheduling, setIsScheduling] = useState(false);
+  const collectionTrackingOn =
+    collectionState != 'local.state.tracking_stopped' &&
+    collectionState != 'STATE_TRACKING_STOPPED';
 
   useEffect(() => {
-    if (appConfig && Object.keys(appConfig).length) {
-      whenReady(appConfig);
-    }
-  }, [appConfig]);
+    refreshState();
+  }, []);
 
-  function refreshScreen() {
-    refreshCollectSettings();
-    refreshNotificationSettings();
-    getOPCode();
-    getConnectURL();
-    getAppVersion().then((version) => {
-      appVersion.current = version;
+  function refreshState() {
+    window['cordova'].plugins.BEMDataCollection.getState().then((state) => {
+      setCollectionState(state);
     });
-  }
-
-  //previously not loaded on regular refresh, this ensures it stays caught up
-  useEffect(() => {
-    refreshNotificationSettings();
-  }, [uiConfig]);
-
-  function whenReady(newAppConfig: DeploymentConfig) {
-    const tempUiConfig = newAppConfig;
-
-    if (tempUiConfig.opcode == undefined) {
-      tempUiConfig.opcode = {
-        autogen: tempUiConfig.intro.program_or_study == 'study',
-      };
-    }
-
-    if (tempUiConfig.reminderSchemes) {
-      // Update the scheduled notifs
-      updateScheduledNotifs(
-        tempUiConfig.reminderSchemes,
-        isScheduling,
-        setIsScheduling,
-        scheduledPromise,
-        updateUserProfile,
-      )
-        .then(() => {
-          logDebug('updated scheduled notifs');
-        })
-        .catch((err) => {
-          displayErrorMsg('Error while updating scheduled notifs', err);
-        });
-    }
-
-    setUiConfig(tempUiConfig);
-    refreshScreen();
-  }
-
-  async function refreshCollectSettings() {
-    logDebug('refreshCollectSettings: collectSettings = ' + JSON.stringify(collectSettings));
-    const collectionPluginState = await getState();
-    setCollectSettings({
-      state: collectionPluginState,
-      trackingOn:
-        collectionPluginState != 'local.state.tracking_stopped' &&
-        collectionPluginState != 'STATE_TRACKING_STOPPED',
+    window['cordova'].plugins.OPCodeAuth.getOPCode().then((opcode) => {
+      setOpcode(opcode);
     });
-  }
-
-  //ensure ui table updated when editor closes
-  useEffect(() => {
-    if (editCollectionVis == false) {
-      setTimeout(() => {
-        logDebug('closed editor, time to refreshCollectSettings');
-        refreshCollectSettings();
-      }, 1000);
-    }
-  }, [editCollectionVis]);
-
-  async function refreshNotificationSettings() {
-    logDebug(`about to refreshNotificationSettings, 
-      notificationSettings = ${JSON.stringify(notificationSettings)}`);
-    const newNotificationSettings: any = {};
-
-    if (uiConfig?.reminderSchemes) {
-      let promiseList: Promise<any>[] = [];
-      promiseList.push(
-        getReminderPrefs(
-          uiConfig.reminderSchemes,
-          isScheduling,
-          setIsScheduling,
-          scheduledPromise,
-          updateUserProfile,
-        ),
-      );
-      promiseList.push(getScheduledNotifs(isScheduling, scheduledPromise));
-      let resultList = await Promise.all(promiseList);
-      const prefs = resultList[0];
-      const scheduledNotifs = resultList[1];
-      logDebug(`prefs - scheduled notifs: 
-        ${JSON.stringify(prefs)}\n - \n${JSON.stringify(scheduledNotifs)}`);
-
-      const m = DateTime.fromFormat(prefs.reminder_time_of_day, 'HH:mm');
-      newNotificationSettings.prefReminderTimeVal = m.toJSDate();
-      newNotificationSettings.prefReminderTime = m.toFormat('t');
-      newNotificationSettings.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
-      newNotificationSettings.scheduledNotifs = scheduledNotifs;
-    }
-
-    logDebug(`notification settings before - after: 
-      ${JSON.stringify(notificationSettings)} - ${JSON.stringify(newNotificationSettings)}`);
-    setNotificationSettings(newNotificationSettings);
-  }
-
-  async function getConnectURL() {
-    getSettings().then(
-      (response) => {
-        const newConnectSettings: any = {};
-        logDebug('getConnectURL: got response.connectUrl = ' + response.connectUrl);
-        newConnectSettings.url = response.connectUrl;
-        setConnectSettings(newConnectSettings);
-      },
-      (error) => {
-        displayError(error, 'While getting connect url');
-      },
-    );
-  }
-
-  async function getOPCode() {
-    const newAuthSettings: any = {};
-    const opcode = await fetchOPCode();
-    if (opcode == null) {
-      newAuthSettings.opcode = 'Not logged in';
-    } else {
-      newAuthSettings.opcode = opcode;
-    }
-    setAuthSettings(newAuthSettings);
-  }
-
-  //methods that control the settings
-  function uploadLog() {
-    if (uploadReason != '') {
-      let reason = uploadReason;
-      uploadFile('loggerDB', reason);
-      setUploadVis(false);
-    }
-  }
-
-  async function updatePrefReminderTime(storeNewVal = true, newTime) {
-    if (!uiConfig?.reminderSchemes)
-      return logWarn('In updatePrefReminderTime, no reminderSchemes yet, skipping');
-    if (storeNewVal) {
-      const dt = DateTime.fromJSDate(newTime);
-      // store in HH:mm
-      setReminderPrefs(
-        { reminder_time_of_day: dt.toFormat('HH:mm') },
-        uiConfig.reminderSchemes,
-        isScheduling,
-        setIsScheduling,
-        scheduledPromise,
-        updateUserProfile,
-      ).then(() => {
-        refreshNotificationSettings();
-      });
-    }
-  }
-
-  function dummyNotification() {
-    window['cordova'].plugins.notification.local.addActions('dummy-actions', [
-      { id: 'action', title: 'Yes' },
-      { id: 'cancel', title: 'No' },
-    ]);
-    window['cordova'].plugins.notification.local.schedule({
-      id: new Date().getTime(),
-      title: 'Dummy Title',
-      text: 'Dummy text',
-      actions: 'dummy-actions',
-      trigger: { at: new Date(new Date().getTime() + 5000) },
+    window['cordova']?.getAppVersion.getVersionNumber().then((version) => {
+      setAppVersion(version);
     });
-  }
-
-  async function userStartStopTracking() {
-    const transitionToForce = collectSettings.trackingOn ? 'STOP_TRACKING' : 'START_TRACKING';
-    await forceTransition(transitionToForce);
-    refreshCollectSettings();
-  }
-
-  async function refreshConfig() {
-    AlertManager.addMessage({ text: t('control.refreshing-app-config') });
-    const updated = await loadNewConfig(authSettings.opcode, appConfig?.version);
-    if (updated) {
-      // wait for resources to finish downloading before reloading
-      _cacheResourcesFetchPromise
-        .then(() => window.location.reload())
-        .catch((error) => displayError(error, 'Failed to download a resource'));
-    } else {
-      AlertManager.addMessage({ text: t('control.already-up-to-date') });
-    }
-  }
-
-  //Platform.OS returns "web" now, but could be used once it's fully a Native app
-  //for now, use window.cordova.platformId
-
-  function parseState(state) {
-    logDebug(`parseState: state = ${state}; 
-      platformId = ${window['cordova'].platformId}`);
-    if (state) {
-      if (window['cordova'].platformId == 'android') {
-        logDebug('platform ANDROID; parsed state will be ' + state.substring(12));
-        return state.substring(12);
-      } else if (window['cordova'].platformId == 'ios') {
-        logDebug('platform IOS; parsed state will be ' + state.substring(6));
-        return state.substring(6);
-      }
-    }
-  }
-
-  async function invalidateCache() {
-    window['cordova'].plugins.BEMUserCache.invalidateAllCache().then(
-      (result) => {
-        logDebug('invalidateCache: result = ' + JSON.stringify(result));
-        AlertManager.addMessage({ text: `success -> ${result}` });
-      },
-      (error) => {
-        displayError(error, 'while invalidating cache, error->');
-      },
-    );
-  }
-
-  //in ProfileSettings in DevZone (above two functions are helpers)
-  async function checkConsent() {
-    getConsentDocument().then(
-      (resultDoc) => {
-        setConsentDoc(resultDoc);
-        logDebug(`In profile settings, consent doc found = ${JSON.stringify(resultDoc)}`);
-        if (resultDoc == null) {
-          setNoConsentVis(true);
-        } else {
-          setConsentVis(true);
-        }
-      },
-      (error) => {
-        displayError(error, 'Error reading consent document from cache');
-      },
-    );
-  }
-
-  const onSelectState = (stateObject) => {
-    forceTransition(stateObject.transition);
-  };
-
-  //conditional creation of setting sections
-
-  let logUploadSection;
-  if (appConfig?.profile_controls?.support_upload) {
-    logUploadSection = (
-      <SettingRow
-        textKey="control.upload-log"
-        iconName="cloud"
-        action={() => setUploadVis(true)}></SettingRow>
-    );
-  }
-
-  let timePicker;
-  let notifSchedule;
-  if (appConfig?.reminderSchemes) {
-    timePicker = (
-      <ReminderTime
-        rowText={'control.reminders-time-of-day'}
-        timeVar={notificationSettings.prefReminderTime}
-        defaultTime={notificationSettings.prefReminderTimeVal}
-        updateFunc={updatePrefReminderTime}></ReminderTime>
-    );
-    notifSchedule = (
-      <>
-        <SettingRow
-          textKey="control.upcoming-notifications"
-          iconName="bell-check"
-          action={() => {}}></SettingRow>
-        <ControlDataTable controlData={notificationSettings.scheduledNotifs}></ControlDataTable>
-      </>
-    );
   }
 
   return (
     <>
       <NavBar elevated={true}>
         <Appbar.Content title={t('control.profile-tab')} />
-        <NavBarButton icon="logout" iconSize={24} onPress={() => setLogoutVis(true)}>
+        <NavBarButton icon="logout" iconSize={24} onPress={() => Alerts.showPopup(LogoutModal)}>
           <Text>{t('control.log-out')}</Text>
         </NavBarButton>
       </NavBar>
@@ -379,255 +64,77 @@ const ProfileSettings = () => {
         <SettingRow
           textKey="control.view-qrc"
           iconName="grid"
-          action={(e) => setOpCodeVis(true)}
-          desc={authSettings.opcode}
-          descStyle={settingStyles.monoDesc}></SettingRow>
-        <DemographicsSettingRow></DemographicsSettingRow>
+          action={() =>
+            Alerts.showPopup(PopOpCode, {
+              token: opcode,
+              onShare: () => shareQR(opcode),
+            })
+          }
+          desc={opcode}
+          descStyle={settingStyles.monoDesc}
+        />
+        <DemographicsSettingRow />
         {/* {appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL' && <CustomLabelSettingRow />} */}
         <SettingRow
           textKey="control.view-privacy"
           iconName="eye"
-          action={() => setPrivacyVis(true)}></SettingRow>
-        {timePicker}
+          action={() => Alerts.showPopup(PrivacyPolicyModal)}
+        />
+        {appConfig.reminderSchemes && <ReminderTimeSettingRow />}
         <SettingRow
           textKey="control.tracking"
-          action={userStartStopTracking}
-          switchValue={collectSettings.trackingOn}></SettingRow>
+          action={() =>
+            forceTransition(collectionTrackingOn ? 'STOP_TRACKING' : 'START_TRACKING').then(() => {
+              refreshState();
+            })
+          }
+          switchValue={collectionTrackingOn}
+        />
         <SettingRow
           textKey="control.app-status"
           iconName="check"
-          action={() => setPermissionsPopupVis(true)}></SettingRow>
+          action={() => setPermissionsPopupVis(true)}
+        />
         <SettingRow
           textKey="control.download-json-dump"
           iconName="calendar"
-          action={() => setDateDumpVis(true)}></SettingRow>
-        {logUploadSection}
+          action={() => Alerts.showPopup(DataDatePicker)}
+        />
+        {appConfig?.profile_controls?.support_upload && (
+          <SettingRow
+            textKey="control.upload-log"
+            iconName="cloud"
+            action={() => Alerts.showPopup(UploadLogModal)}
+          />
+        )}
         <SettingRow
           textKey="control.share-log"
           iconName="email"
-          action={() => sendLocalDBFile('loggerDB')}></SettingRow>
+          action={() => sendLocalDBFile('loggerDB')}
+        />
         <SettingRow
           textKey="control.refresh-app-config"
           desc={t('control.current-version', { version: appConfig?.version })}
           iconName="cog-refresh"
-          action={refreshConfig}></SettingRow>
-        <ExpansionSection sectionTitle="control.dev-zone">
-          <BluetoothScanSettingRow />
-          <SettingRow
-            textKey="control.refresh"
-            iconName="refresh"
-            action={refreshScreen}></SettingRow>
-          <SettingRow
-            textKey="control.check-consent"
-            iconName="check"
-            action={checkConsent}></SettingRow>
-          <ForceSyncRow getState={getState}></ForceSyncRow>
-          <SettingRow
-            textKey="control.dummy-notification"
-            iconName="bell"
-            action={dummyNotification}></SettingRow>
-          {notifSchedule}
-          <SettingRow
-            textKey="control.invalidate-cached-docs"
-            iconName="delete"
-            action={invalidateCache}></SettingRow>
-          <SettingRow
-            textKey="control.nuke-all"
-            iconName="delete-forever"
-            action={() => setNukeVis(true)}></SettingRow>
-          <SettingRow
-            textKey={parseState(collectSettings.state)}
-            iconName="pencil"
-            action={() => setForceStateVis(true)}></SettingRow>
-          <SettingRow
-            textKey="control.check-log"
-            iconName="arrow-expand-right"
-            action={() => setShowingLog(true)}></SettingRow>
-          <SettingRow
-            textKey="control.check-sensed-data"
-            iconName="arrow-expand-right"
-            action={() => setShowingSensed(true)}></SettingRow>
-          <SettingRow
-            textKey="control.edit-tracking-config"
-            iconName="pencil"
-            action={() => setEditCollectionVis(true)}
-          />
-          <SettingRow
-            textKey="control.edit-sync-config"
-            iconName="pencil"
-            action={() => setEditSyncVis(true)}
-          />
-        </ExpansionSection>
+          action={() => refreshConfig(opcode, appConfig.version)}
+        />
         <SettingRow
           textKey="control.app-version"
           iconName="application"
-          action={() => {}}
-          desc={appVersion.current}></SettingRow>
+          desc={appVersion}
+          action={() =>
+            Alerts.showPopup({
+              title: 'User Profile Information',
+              content: <JsonList data={userProfile} />,
+            })
+          }
+        />
+        <DeveloperZone collectionState={collectionState} refreshState={refreshState} />
       </ScrollView>
-
-      {/* menu for "nuke data" */}
-      <Modal visible={nukeSetVis} onDismiss={() => setNukeVis(false)} transparent={true}>
-        <Dialog
-          visible={nukeSetVis}
-          onDismiss={() => setNukeVis(false)}
-          style={settingStyles.dialog(colors.elevation.level3)}>
-          <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
-          <Dialog.Content>
-            <Button
-              onPress={() => {
-                storageClear({ local: true });
-                setNukeVis(false);
-              }}>
-              {t('general-settings.nuke-ui-state-only')}
-            </Button>
-            <Button
-              onPress={() => {
-                storageClear({ native: true });
-                setNukeVis(false);
-              }}>
-              {t('general-settings.nuke-native-cache-only')}
-            </Button>
-            <Button
-              onPress={() => {
-                storageClear({ local: true, native: true });
-                setNukeVis(false);
-              }}>
-              {t('general-settings.nuke-everything')}
-            </Button>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setNukeVis(false)}>{t('general-settings.cancel')}</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Modal>
-
-      {/* force state sheet */}
-      <ActionMenu
-        vis={forceStateVis}
-        setVis={setForceStateVis}
-        title={'Force State'}
-        actionSet={stateActions}
-        onAction={onSelectState}
-        onExit={() => {}}></ActionMenu>
-
-      {/* upload reason input */}
-      <Modal visible={uploadVis} onDismiss={() => setUploadVis(false)} transparent={true}>
-        <Dialog
-          visible={uploadVis}
-          onDismiss={() => setUploadVis(false)}
-          style={settingStyles.dialog(colors.elevation.level3)}>
-          <Dialog.Title>{t('upload-service.upload-database', { db: 'loggerDB' })}</Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              label="Reason"
-              value={uploadReason}
-              onChangeText={(uploadReason) => setUploadReason(uploadReason)}
-              placeholder={t('upload-service.please-fill-in-what-is-wrong')}></TextInput>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setUploadVis(false)}>{t('general-settings.cancel')}</Button>
-            <Button onPress={() => uploadLog()}>Upload</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Modal>
-
-      {/* opcode viewing popup */}
-      <PopOpCode
-        visibilityValue={opCodeVis}
-        setVis={setOpCodeVis}
-        token={authSettings.opcode}
-        action={() => shareQR(authSettings.opcode)}></PopOpCode>
-
-      {/* {view privacy} */}
-      <PrivacyPolicyModal
-        privacyVis={privacyVis}
-        setPrivacyVis={setPrivacyVis}></PrivacyPolicyModal>
-
-      {/* logout menu */}
-      <Modal visible={logoutVis} onDismiss={() => setLogoutVis(false)} transparent={true}>
-        <Dialog
-          visible={logoutVis}
-          onDismiss={() => setLogoutVis(false)}
-          style={settingStyles.dialog(colors.elevation.level3)}>
-          <Dialog.Title>{t('general-settings.are-you-sure')}</Dialog.Title>
-          <Dialog.Content>
-            <Text>{t('general-settings.log-out-warning')}</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setLogoutVis(false)}>{t('general-settings.cancel')}</Button>
-            <Button
-              onPress={() => {
-                resetDataAndRefresh();
-              }}>
-              {t('general-settings.confirm')}
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Modal>
-
-      {/* handle no consent */}
-      <Modal visible={noConsentVis} onDismiss={() => setNoConsentVis(false)} transparent={true}>
-        <Dialog
-          visible={noConsentVis}
-          onDismiss={() => setNoConsentVis(false)}
-          style={settingStyles.dialog(colors.elevation.level3)}>
-          <Dialog.Title>{t('general-settings.consent-not-found')}</Dialog.Title>
-          <Dialog.Content>
-            <Text>{t('general-settings.no-consent-logout')}</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              onPress={() => {
-                setNoConsentVis(false);
-              }}>
-              {t('general-settings.consented-ok')}
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Modal>
-
-      {/* handle consent */}
-      <Modal visible={consentVis} onDismiss={() => setConsentVis(false)} transparent={true}>
-        <Dialog
-          visible={consentVis}
-          onDismiss={() => setConsentVis(false)}
-          style={settingStyles.dialog(colors.elevation.level3)}>
-          <Dialog.Title>
-            {t('general-settings.consented-to', { approval_date: consentDoc.approval_date })}
-          </Dialog.Title>
-          <Dialog.Actions>
-            <Button
-              onPress={() => {
-                setConsentDoc({});
-                setConsentVis(false);
-              }}>
-              {t('general-settings.consented-ok')}
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Modal>
-
-      <DataDatePicker
-        date={dumpDate}
-        setDate={setDumpDate}
-        open={dateDumpVis}
-        setOpen={setDateDumpVis}
-        minDate={
-          new Date(
-            Number(appConfig?.intro?.start_year),
-            Number(appConfig?.intro?.start_month) - 1,
-            1,
-          )
-        }></DataDatePicker>
-
-      <SensedPage pageVis={showingSensed} setPageVis={setShowingSensed}></SensedPage>
-      <LogPage pageVis={showingLog} setPageVis={setShowingLog}></LogPage>
-
-      <EditSyncConfigModal editVis={editSyncVis} setEditVis={setEditSyncVis} />
-      <EditTrackingConfigModal editVis={editCollectionVis} setEditVis={setEditCollectionVis} />
     </>
   );
 };
+
 export const settingStyles = StyleSheet.create({
   dialog: (surfaceColor) => ({
     backgroundColor: surfaceColor,

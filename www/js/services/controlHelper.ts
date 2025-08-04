@@ -132,6 +132,3 @@ export async function getMyData(timeStamp: Date) {
       displayError(error, 'Error sharing JSON dump');
     });
 }
-
-export const fetchOPCode = () => window['cordova'].plugins.OPCodeAuth.getOPCode();
-export const getSettings = () => window['cordova'].plugins.BEMConnectionSettings.getSettings();

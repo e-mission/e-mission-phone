@@ -9,6 +9,7 @@ import {
   getSubgroupFromToken,
   getTokenFromUrl,
 } from './opcode';
+import { Alerts } from '../components/AlertArea';
 
 export const CONFIG_PHONE_UI = 'config/app_ui_config';
 export const CONFIG_PHONE_UI_KVSTORE = 'CONFIG_PHONE_UI';
@@ -55,7 +56,7 @@ function _fillSurveyInfo(config: Partial<DeploymentConfig>): DeploymentConfig {
 const _backwardsCompatFill = (config: Partial<DeploymentConfig>): DeploymentConfig =>
   _fillSurveyInfo(config);
 
-export let _cacheResourcesFetchPromise: Promise<(string | undefined)[]> = Promise.resolve([]);
+let _cacheResourcesFetchPromise: Promise<(string | undefined)[]> = Promise.resolve([]);
 /**
  * @description Fetch and cache any surveys resources that are referenced by URL in the config,
  *   as well as the label_options config if it is present.
@@ -228,4 +229,17 @@ export function getConfig(): Promise<DeploymentConfig | null> {
   });
   _promisedConfig = promise;
   return promise;
+}
+
+export async function refreshConfig(opcode: string, existingVersion?: number) {
+  Alerts.addMessage({ text: i18next.t('control.refreshing-app-config') });
+  const updated = await loadNewConfig(opcode, existingVersion);
+  if (updated) {
+    // wait for resources to finish downloading before reloading
+    _cacheResourcesFetchPromise
+      .then(() => window.location.reload())
+      .catch((error) => displayError(error, 'Failed to download a resource'));
+  } else {
+    Alerts.addMessage({ text: i18next.t('control.already-up-to-date') });
+  }
 }
