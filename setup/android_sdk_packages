@@ -2,15 +2,7 @@ build-tools;35.0.0
 emulator                                              
 extras;google;google_play_services                    
 platform-tools                                        
-platforms;android-34
-system-images;android-24;google_apis_playstore;x86    
-system-images;android-25;google_apis_playstore;x86    
-system-images;android-26;google_apis_playstore;x86    
-system-images;android-27;google_apis_playstore;x86    
-system-images;android-28;google_apis_playstore;x86_64 
-system-images;android-29;google_apis_playstore;x86_64 
-system-images;android-30;google_apis_playstore;x86_64 
-system-images;android-31;google_apis_playstore;x86_64 
+platforms;android-35
 system-images;android-32;google_apis_playstore;x86_64 
 system-images;android-32;google_apis_playstore;arm64-v8a
 system-images;android-33;google_apis_playstore;x86_64 
