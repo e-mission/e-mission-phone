@@ -1,28 +1,41 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-native';
 import { TimePickerModal } from 'react-native-paper-dates';
 import SettingRow from './components/SettingRow';
 import { AppContext } from '../App';
 import { DateTime } from 'luxon';
-import { setReminderPrefs } from '../splash/notifScheduler';
+import { initReminderPrefs, updateScheduledNotifs } from '../splash/notifScheduler';
+import { logDebug } from '../plugin/logger';
 
 const ReminderTimeSettingRow = () => {
   const { appConfig, userProfile, updateUserProfile } = useContext(AppContext);
   const [pickTimeVis, setPickTimeVis] = useState(false);
 
-  const reminderDt = DateTime.fromFormat(userProfile.reminder_time_of_day, 'HH:mm');
-  const reminderJsDate = reminderDt.toJSDate();
+  useEffect(() => {
+    if (!userProfile) return;
+    if (!userProfile?.reminder_assignment) {
+      logDebug('No reminder_assignment in profile, initializing reminder prefs');
+      const prefs = initReminderPrefs(appConfig.reminderSchemes);
+      updateUserProfile(prefs);
+      return;
+    }
+    const scheme = appConfig.reminderSchemes[userProfile.reminder_assignment];
+    if (!scheme) {
+      logDebug('No reminder scheme found for assignment: ' + userProfile.reminder_assignment);
+      return;
+    }
+    updateScheduledNotifs(scheme, userProfile);
+  }, [userProfile]);
 
   function onConfirm({ hours, minutes }) {
     const d = new Date();
     d.setHours(hours, minutes);
     const dt = DateTime.fromJSDate(d);
-    setReminderPrefs(
-      { reminder_time_of_day: dt.toFormat('HH:mm') },
-      appConfig.reminderSchemes,
-      updateUserProfile,
-    );
+    updateUserProfile({ reminder_time_of_day: dt.toFormat('HH:mm') });
   }
+
+  const reminderDt = DateTime.fromFormat(userProfile.reminder_time_of_day, 'HH:mm');
+  const reminderJsDate = reminderDt.toJSDate();
 
   return (
     <>

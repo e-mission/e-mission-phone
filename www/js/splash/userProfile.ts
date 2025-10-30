@@ -3,27 +3,32 @@ import { getUser, updateUser } from '../services/commHelper';
 import { initPushNotify } from './pushNotifySettings';
 import { getDeviceSettings } from './storeDeviceSettings';
 import { logDebug } from '../plugin/logger';
+import { addStatReading } from '../plugin/clientStats';
 
-export type UserProfile = {
-  // config version
-  config_version: DeploymentConfig['version'];
+export type ReminderPrefs = {
+  reminder_assignment: string; // e.g., 'weekly', 'passive
+  reminder_join_date: string; // e.g., '2023-05-09'
+  reminder_time_of_day: string; // e.g., '21:00'
+};
 
-  // device settings
-  phone_lang: string;
-  curr_platform: string;
-  manufacturer: string;
-  client_os_version: string;
-  client_app_version: string;
+export type DeviceInfo = {
+  phone_lang: string; // e.g., 'en'
+  curr_platform: string; // e.g., 'ios'
+  manufacturer: string; // e.g., 'Apple'
+  client_os_version: string; // e.g., '14.4'
+  client_app_version: string; // e.g., '3.2.1'
+};
 
-  // push notification settings
+export type PushNotifySettings = {
   device_token: string;
   curr_sync_interval: number;
-
-  // reminder settings (if using local reminder schemes)
-  reminder_assignment?: string;
-  reminder_join_date?: string;
-  reminder_time_of_day?: string;
 };
+
+export type UserProfile = {
+  config_version: DeploymentConfig['version'];
+} & PushNotifySettings &
+  DeviceInfo &
+  Partial<ReminderPrefs>;
 
 /**
  * Registers the user for push notifications and updates the user profile with
@@ -39,14 +44,14 @@ export async function registerAndUpdateProfile(appConfig: DeploymentConfig): Pro
   ]);
   let [currUserProfile, pushNotifySettings, deviceSettings] = promiseResults.map((r) =>
     r.status == 'fulfilled' ? r.value : undefined,
-  );
+  ) as [UserProfile | undefined, PushNotifySettings | undefined, DeviceInfo | undefined];
   logDebug(`App: registerAndUpdateProfile: currUserProfile = ${JSON.stringify(currUserProfile)}
     pushNotifySettings = ${JSON.stringify(pushNotifySettings)}
     deviceSettings = ${JSON.stringify(deviceSettings)}`);
   const userProfileUpdate = {
+    config_version: appConfig.version,
     ...pushNotifySettings,
     ...deviceSettings,
-    config_version: appConfig.version,
   };
   return updateUserProfile(userProfileUpdate, currUserProfile as UserProfile);
 }
@@ -64,6 +69,7 @@ export async function updateUserProfile(
   if (JSON.stringify(currProfile) != JSON.stringify(updatedProfile)) {
     logDebug('App: updating user profile with new settings');
     await updateUser(profileUpdate);
+    addStatReading('update_user_profile', profileUpdate);
   }
   return updatedProfile;
 }

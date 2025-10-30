@@ -17,6 +17,7 @@ import { logDebug, displayError, logWarn, displayErrorMsg } from '../plugin/logg
 import { readConsentState } from './startprefs';
 import { Alerts } from '../components/AlertArea';
 import { addStatReading } from '../plugin/clientStats';
+import { PushNotifySettings } from './userProfile';
 
 export let push;
 
@@ -68,7 +69,7 @@ function register() {
  * @returns Promise that resolves with an object of fields that should be
  * updated in the user profile (undefined if registration failed)
  */
-async function registerPush() {
+async function registerPush(): Promise<PushNotifySettings | undefined> {
   logDebug('PushNotify: registering push');
   let token: string;
   try {

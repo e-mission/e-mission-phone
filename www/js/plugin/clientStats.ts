@@ -8,6 +8,7 @@ type StatKey =
   | 'app_state_change'
   | 'nav_tab_change'
   | 'open_notification'
+  | 'update_user_profile'
   // onboarding interaction stats
   | 'onboard' // { configUpdated (true if success, onboarding began), joinMethod (scan if in-app QR scan, paste if in-app paste, textbox if manually entered, external if launched from browser or external QR scanner)}
   | 'onboarding_state' // { route (current OnoardingRoute enum value), opcode}
