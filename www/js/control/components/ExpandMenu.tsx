@@ -16,7 +16,6 @@ const ExpansionSection = (props) => {
       style={styles.section(colors.surface)}
       title={t(props.sectionTitle)}
       titleStyle={rowStyles.title}
-      accessible={true}
       accessibilityLabel={t(props.sectionTitle) + ' spinbutton'}
       expanded={expanded}
       onPress={handlePress}>

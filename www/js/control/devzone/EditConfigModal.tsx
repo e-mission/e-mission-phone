@@ -1,7 +1,16 @@
 import React from 'react';
 import { Modal, ScrollView, useWindowDimensions, View } from 'react-native';
-import { Dialog, Button, Switch, Text, useTheme, TextInput, RadioButton } from 'react-native-paper';
-import { settingStyles } from './ProfileSettings';
+import {
+  Dialog,
+  Button,
+  Switch,
+  Text,
+  useTheme,
+  TextInput,
+  RadioButton,
+  ModalProps,
+} from 'react-native-paper';
+import { settingStyles } from '../ProfileSettings';
 import { ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
@@ -10,9 +19,7 @@ type Config = {
 };
 type Options = { [option: string]: number };
 
-type Props = {
-  editVis: boolean;
-  setEditVis: (vis: boolean) => void;
+type Props = ModalProps & {
   titleKey: ParseKeys;
   localConfig: Config;
   setLocalConfig: (config) => void;
@@ -21,14 +28,13 @@ type Props = {
   fieldsOptions?: { [field: string]: Options };
 };
 const EditConfigModal = ({
-  editVis,
-  setEditVis,
   titleKey,
   localConfig,
   setLocalConfig,
   appConfigOverrides,
   saveAndReload,
   fieldsOptions,
+  ...props
 }: Props) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -47,10 +53,10 @@ const EditConfigModal = ({
   }
 
   return (
-    <Modal visible={editVis} onDismiss={() => setEditVis(false)} transparent={true}>
+    <Modal transparent={true} {...props}>
       <Dialog
-        visible={editVis}
-        onDismiss={() => setEditVis(false)}
+        visible={props.visible}
+        onDismiss={props.onDismiss}
         style={settingStyles.dialog(colors.elevation.level3)}>
         <Dialog.Title>{t(titleKey)}</Dialog.Title>
         <ScrollView>
@@ -110,7 +116,7 @@ const EditConfigModal = ({
         </ScrollView>
         <Dialog.Actions>
           <Button onPress={() => saveAndReload()}>Save</Button>
-          <Button onPress={() => setEditVis(false)}>Cancel</Button>
+          <Button onPress={props.onDismiss}>Cancel</Button>
         </Dialog.Actions>
       </Dialog>
     </Modal>

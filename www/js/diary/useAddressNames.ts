@@ -10,7 +10,7 @@ import {
 import { Point } from 'geojson';
 import { useEffect, useState } from 'react';
 import { NominatimResponse } from '../types/apiTypes';
-import { AlertManager } from '../components/AlertBar';
+import { Alerts } from '../components/AlertArea';
 
 const GEOCODING_API_URL = 'https://nominatim.openstreetmap.org';
 const nominatimLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
@@ -71,7 +71,7 @@ async function fetchNominatim(loc_geojson: Point): Promise<NominatimResponse | u
       nominatimError = error;
       const msg = `Error fetching location name\n${nominatimError}`;
       logWarn(msg);
-      AlertManager.addMessage({ text: msg });
+      Alerts.addMessage({ text: msg });
     }
   }
 }

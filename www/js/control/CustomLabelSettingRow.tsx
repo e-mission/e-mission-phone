@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import SettingRow from './SettingRow';
+import SettingRow from './components/SettingRow';
 import {
   Modal,
   View,

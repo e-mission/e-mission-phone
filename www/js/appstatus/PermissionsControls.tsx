@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import PermissionItem from './PermissionItem';
 import { refreshAllChecks } from '../usePermissionStatus';
 import ExplainPermissions from './ExplainPermissions';
-import { AlertManager } from '../components/AlertBar';
 import { AppContext } from '../App';
 
 const PermissionsControls = ({ onAccept }) => {

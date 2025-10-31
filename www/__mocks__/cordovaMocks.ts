@@ -21,13 +21,30 @@ export const mockCordova = () => {
 };
 
 export const mockReminders = () => {
+  let notifications: any[] = [];
   window['cordova'] ||= {};
   window['cordova'].plugins ||= {};
   window['cordova'].plugins.notification ||= {};
-  window['cordova'].plugins.notification.local ||= {};
-  window['cordova'].plugins.notification.local.getScheduled ||= () => [];
-  window['cordova'].plugins.notification.local.cancelAll ||= () => {};
-  window['cordova'].plugins.notification.local.schedule ||= () => {};
+  window['cordova'].plugins.notification.local ||= {
+    getScheduled: (callback) => {
+      setTimeout(() => {
+        console.debug('getScheduled resolved');
+        callback(notifications);
+      }, 100);
+    },
+    cancelAll: (callback) => {
+      setTimeout(() => {
+        notifications = [];
+        callback();
+      }, 100);
+    },
+    schedule: (nots, callback) => {
+      setTimeout(() => {
+        notifications.push(...nots);
+        callback();
+      }, 100);
+    },
+  };
 };
 
 export const mockDevice = () => {

@@ -15,8 +15,9 @@
 
 import { logDebug, displayError, logWarn, displayErrorMsg } from '../plugin/logger';
 import { readConsentState } from './startprefs';
-import { AlertManager } from '../components/AlertBar';
+import { Alerts } from '../components/AlertArea';
 import { addStatReading } from '../plugin/clientStats';
+import { PushNotifySettings } from './userProfile';
 
 export let push;
 
@@ -68,7 +69,7 @@ function register() {
  * @returns Promise that resolves with an object of fields that should be
  * updated in the user profile (undefined if registration failed)
  */
-async function registerPush() {
+async function registerPush(): Promise<PushNotifySettings | undefined> {
   logDebug('PushNotify: registering push');
   let token: string;
   try {
@@ -77,7 +78,7 @@ async function registerPush() {
   } catch (error) {
     const msg = `Registering for push notifications failed: ${error}`;
     logWarn(msg);
-    AlertManager.addMessage({ text: msg });
+    Alerts.addMessage({ text: msg });
     return;
   }
 
@@ -220,6 +221,20 @@ function showDebugLocalNotification(message) {
         category: 'SIGN_IN_TO_CLASS',
       });
     }
+  });
+}
+
+export function scheduleDebugLocalNotification(millis = 5000) {
+  window['cordova'].plugins.notification.local.addActions('debug-actions', [
+    { id: 'action', title: 'Yes' },
+    { id: 'cancel', title: 'No' },
+  ]);
+  window['cordova'].plugins.notification.local.schedule({
+    id: new Date().getTime(),
+    title: 'Debug Title',
+    text: 'Debug text',
+    actions: 'debug-actions',
+    trigger: { at: new Date(new Date().getTime() + millis) },
   });
 }
 

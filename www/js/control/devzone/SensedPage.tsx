@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, SafeAreaView, Modal } from 'react-native';
-import { useTheme, Appbar, IconButton, Text } from 'react-native-paper';
+import { useTheme, Appbar, IconButton, Text, ModalProps } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { DateTime } from 'luxon';
-import { sendLocalDBFile } from '../services/shareLocalDBFile';
-import NavBar from '../components/NavBar';
+import { sendLocalDBFile } from '../../services/shareLocalDBFile';
+import NavBar from '../../components/NavBar';
 
-const SensedPage = ({ pageVis, setPageVis }) => {
+const SensedPage = (props: ModalProps) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -35,7 +35,7 @@ const SensedPage = ({ pageVis, setPageVis }) => {
 
   useEffect(() => {
     updateEntries();
-  }, [pageVis]);
+  }, [props.visible]);
 
   const separator = () => <View style={{ height: 8 }} />;
   const cacheItem = ({ item: cacheItem }) => (
@@ -50,10 +50,10 @@ const SensedPage = ({ pageVis, setPageVis }) => {
   );
 
   return (
-    <Modal visible={pageVis} onDismiss={() => setPageVis(false)}>
+    <Modal {...props}>
       <SafeAreaView style={{ flex: 1 }}>
         <NavBar elevated={true}>
-          <Appbar.BackAction onPress={() => setPageVis(false)} />
+          <Appbar.BackAction onPress={props.onDismiss} />
           <Appbar.Content title={t('control.sensed-title')} />
         </NavBar>
 

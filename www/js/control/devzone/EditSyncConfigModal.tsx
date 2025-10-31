@@ -1,18 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Modal, View } from 'react-native';
-import { Dialog, Button, Switch, Text, useTheme } from 'react-native-paper';
+import { Modal } from 'react-native';
+import { Dialog, Button, useTheme, ModalProps } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { settingStyles } from './ProfileSettings';
-import ActionMenu from '../components/ActionMenu';
-import SettingRow from './SettingRow';
-import { AlertManager } from '../components/AlertBar';
-import { addStatReading } from '../plugin/clientStats';
-import { updateUser } from '../services/commHelper';
-import { displayError, logDebug, logWarn } from '../plugin/logger';
+import { settingStyles } from '../ProfileSettings';
+import SettingRow from '../components/SettingRow';
+import { addStatReading } from '../../plugin/clientStats';
+import { displayError, logDebug, logWarn } from '../../plugin/logger';
 import { DateTime } from 'luxon';
 import EditConfigModal from './EditConfigModal';
-import useAppConfig from '../useAppConfig';
-import { AppContext } from '../App';
+import useAppConfig from '../../useAppConfig';
+import { AppContext } from '../../App';
+import { Alerts } from '../../components/AlertArea';
 
 type SyncConfig = { sync_interval: number; ios_use_remote_push: boolean };
 
@@ -24,7 +22,7 @@ const setConfig = (config) => window['cordova'].plugins.BEMServerSync.setConfig(
 const getConfig = () => window['cordova'].plugins.BEMServerSync.getConfig();
 
 //forceSync and endForceSync SettingRows & their actions
-export const ForceSyncRow = ({ getState }) => {
+export const ForceSyncRow = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -58,7 +56,7 @@ export const ForceSyncRow = ({ getState }) => {
         logDebug('data is pending, showing confirm dialog');
         setDataPendingVis(true); //consent handling in modal
       } else {
-        AlertManager.addMessage({ text: 'all data pushed!' });
+        Alerts.addMessage({ text: 'all data pushed!' });
       }
     } catch (error) {
       displayError(error, 'Error while forcing sync');
@@ -91,7 +89,7 @@ export const ForceSyncRow = ({ getState }) => {
 
   async function getTransition(transKey) {
     const entry_data = {};
-    const curr_state = await getState();
+    const curr_state = await window['cordova'].plugins.BEMDataCollection.getState();
     entry_data['curr_state'] = curr_state;
     if (transKey == getEndTransitionKey()) {
       entry_data['curr_state'] = getOngoingTransitionState();
@@ -126,7 +124,7 @@ export const ForceSyncRow = ({ getState }) => {
           visible={dataPendingVis}
           onDismiss={() => setDataPendingVis(false)}
           style={settingStyles.dialog(colors.elevation.level3)}>
-          <Dialog.Title>{t('data pending for push')}</Dialog.Title>
+          <Dialog.Title>{'data pending for push'}</Dialog.Title>
           <Dialog.Actions>
             <Button
               onPress={() => {
@@ -149,8 +147,10 @@ export const ForceSyncRow = ({ getState }) => {
   );
 };
 
-//UI for editing the sync config
-const EditSyncConfigModal = ({ editVis, setEditVis }) => {
+type Props = ModalProps & {
+  afterSave?: () => void;
+};
+const EditSyncConfigModal = ({ afterSave, ...props }: Props) => {
   const appConfig = useAppConfig();
 
   const { updateUserProfile } = useContext(AppContext);
@@ -158,7 +158,7 @@ const EditSyncConfigModal = ({ editVis, setEditVis }) => {
 
   useEffect(() => {
     getConfig().then((config: SyncConfig) => setLocalConfig(config));
-  }, [editVis]);
+  }, []);
 
   const syncIntervalOptions = {
     '1 min': 1 * 60,
@@ -175,6 +175,7 @@ const EditSyncConfigModal = ({ editVis, setEditVis }) => {
       updateUserProfile({
         curr_sync_interval: localConfig.sync_interval,
       });
+      afterSave?.();
     } catch (err) {
       displayError(err, 'Error while setting sync config');
     }
@@ -184,8 +185,6 @@ const EditSyncConfigModal = ({ editVis, setEditVis }) => {
 
   return (
     <EditConfigModal
-      editVis={editVis}
-      setEditVis={setEditVis}
       titleKey="control.edit-sync-config"
       localConfig={localConfig}
       setLocalConfig={setLocalConfig}
@@ -194,6 +193,7 @@ const EditSyncConfigModal = ({ editVis, setEditVis }) => {
       fieldsOptions={{
         sync_interval: syncIntervalOptions,
       }}
+      {...props}
     />
   );
 };
