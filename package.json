@@ -104,7 +104,7 @@
     "e-mission-common": "github:e-mission/e-mission-common#semver:0.6.5",
     "enketo-core": "^6.1.7",
     "enketo-transformer": "^4.0.0",
-    "fast-xml-parser": "^4.2.2",
+    "fast-xml-parser": "^5.3.4",
     "fs-extra": "^9.0.1",
     "humanize-duration": "^3.31.0",
     "i18next": "^23.7.6",
