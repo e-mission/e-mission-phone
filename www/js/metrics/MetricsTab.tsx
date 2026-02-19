@@ -7,7 +7,7 @@ import { MetricsData } from './metricsTypes';
 import { getAggregateData } from '../services/commHelper';
 import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
-import { DeploymentConfig, MetricList } from 'nrel-openpath-deploy-configs';
+import { DeploymentConfig, MetricList } from 'op-deployment-configs';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext, { TimelineLabelMap, TimelineMap } from '../TimelineContext';
 import { metrics_summaries } from 'e-mission-common';

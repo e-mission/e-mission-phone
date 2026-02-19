@@ -81,9 +81,9 @@ A lot of the visualizations that we display in the phone client come from the se
 
 are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
 
-The dynamic config (see https://github.com/e-mission/nrel-openpath-deploy-configs) controls the server endpoint that the phone app will connect to. If you are running the app in an emulator on the same machine as your local server (i.e. they share a `localhost`), you can use one of the `dev-emulator-*` configs (these configs have no `server` specified so `localhost` is assumed).
+The dynamic config (see https://github.com/e-mission/op-deployment-configs) controls the server endpoint that the phone app will connect to. If you are running the app in an emulator on the same machine as your local server (i.e. they share a `localhost`), you can use one of the `dev-emulator-*` configs (these configs have no `server` specified so `localhost` is assumed).
 
-If you wish to connect to a different server, create your own config file according to https://github.com/e-mission/nrel-openpath-deploy-configs and specify the `server` field accordingly. The [deploy-configs](https://github.com/e-mission/nrel-openpath-deploy-configs/#testing-configs) repo has more information on this. 
+If you wish to connect to a different server, create your own config file according to https://github.com/e-mission/op-deployment-configs and specify the `server` field accordingly. The [deploy-configs](https://github.com/e-mission/op-deployment-configs/#testing-configs) repo has more information on this. 
 
 Updating the e-mission-\* plugins or adding new plugins
 ---

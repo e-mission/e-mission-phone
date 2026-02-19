@@ -1,5 +1,5 @@
 import React from 'react';
-import { GroupingField } from 'nrel-openpath-deploy-configs';
+import { GroupingField } from 'op-deployment-configs';
 import MetricsCard from './MetricsCard';
 import { t } from 'i18next';
 

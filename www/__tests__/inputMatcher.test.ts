@@ -12,7 +12,7 @@ import {
   getUniqueEntries,
   mapInputsToTimelineEntries,
 } from '../js/survey/inputMatcher';
-import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
+import { DeploymentConfig } from 'op-deployment-configs';
 import { CompositeTrip, TimelineEntry, UserInputEntry } from '../js/types/diaryTypes';
 
 describe('input-matcher', () => {

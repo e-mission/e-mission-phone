@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { configChanged, getConfig, setConfigChanged } from './config/dynamicConfig';
 import { logDebug } from './plugin/logger';
-import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
+import { DeploymentConfig } from 'op-deployment-configs';
 
 /* For Cordova, 'deviceready' means that Cordova plugins are loaded and ready to access.
     https://cordova.apache.org/docs/en/5.0.0/cordova/events/events.deviceready.html

@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import { getFootprintGoals } from '../js/metrics/footprint/footprintHelper';
-import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
+import { DeploymentConfig } from 'op-deployment-configs';
 
 describe('footprintHelper', () => {
   const fakeAppConfig1 = {

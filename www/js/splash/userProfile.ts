@@ -1,4 +1,4 @@
-import DeploymentConfig from 'nrel-openpath-deploy-configs';
+import DeploymentConfig from 'op-deployment-configs';
 import { getUser, updateUser } from '../services/commHelper';
 import { initPushNotify } from './pushNotifySettings';
 import { getDeviceSettings } from './storeDeviceSettings';

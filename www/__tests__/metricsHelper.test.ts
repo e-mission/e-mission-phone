@@ -28,7 +28,7 @@ import {
   labelOptions,
 } from '../js/survey/multilabel/confirmHelper';
 import { base_modes } from 'e-mission-common';
-import DeploymentConfig from 'nrel-openpath-deploy-configs';
+import DeploymentConfig from 'op-deployment-configs';
 window['i18next'] = initializedI18next;
 
 describe('metricsHelper', () => {

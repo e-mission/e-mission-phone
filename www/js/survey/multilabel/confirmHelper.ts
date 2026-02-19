@@ -5,7 +5,7 @@ import { LabelOption, LabelOptions, MultilabelKey, InputDetails } from '../../ty
 import { CompositeTrip, InferredLabels, TimelineEntry } from '../../types/diaryTypes';
 import { UserInputMap } from '../../TimelineContext';
 import DEFAULT_LABEL_OPTIONS from 'e-mission-common/src/emcommon/resources/label-options.default.json';
-import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
+import { DeploymentConfig } from 'op-deployment-configs';
 
 let appConfig: DeploymentConfig;
 export let labelOptions: LabelOptions;

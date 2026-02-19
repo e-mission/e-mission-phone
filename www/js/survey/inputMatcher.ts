@@ -21,7 +21,7 @@ import {
 import { TimelineLabelMap, TimelineNotesMap, UserInputMap } from '../TimelineContext';
 import { MultilabelKey } from '../types/labelTypes';
 import { EnketoUserInputEntry } from './enketo/enketoHelper';
-import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
+import { DeploymentConfig } from 'op-deployment-configs';
 import { BEMData } from '../types/serverData';
 
 const EPOCH_MAXIMUM = 2 ** 31 - 1;

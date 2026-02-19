@@ -1,5 +1,5 @@
 import { displayError } from '../../plugin/logger';
-import { SurveyButtonConfig } from 'nrel-openpath-deploy-configs';
+import { SurveyButtonConfig } from 'op-deployment-configs';
 import { DerivedProperties, TimelineEntry } from '../../types/diaryTypes';
 import { Position } from 'geojson';
 

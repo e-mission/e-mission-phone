@@ -8,11 +8,7 @@ import { getConfig } from '../../config/dynamicConfig';
 import { DateTime } from 'luxon';
 import { fetchUrlCached } from '../../services/commHelper';
 import { getUnifiedDataForInterval } from '../../services/unifiedDataLoader';
-import {
-  DeploymentConfig,
-  EnketoSurveyConfig,
-  SurveyButtonConfig,
-} from 'nrel-openpath-deploy-configs';
+import { DeploymentConfig, EnketoSurveyConfig, SurveyButtonConfig } from 'op-deployment-configs';
 import {
   CompositeTrip,
   ConfirmedPlace,

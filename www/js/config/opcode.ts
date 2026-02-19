@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import { logDebug } from '../plugin/logger';
-import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
+import { DeploymentConfig } from 'op-deployment-configs';
 import { opcode } from 'e-mission-common';
 
 /*

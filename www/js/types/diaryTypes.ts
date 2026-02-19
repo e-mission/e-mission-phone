@@ -4,7 +4,7 @@
 
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
 import useDerivedProperties from '../diary/useDerivedProperties';
-import { VehicleIdentity } from 'nrel-openpath-deploy-configs';
+import { VehicleIdentity } from 'op-deployment-configs';
 import { MultilabelKey } from './labelTypes';
 import { LocalDt } from './serverData';
 import { FeatureCollection, Feature, Geometry, Point, Position } from 'geojson';

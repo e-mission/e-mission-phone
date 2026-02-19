@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { fetchUrlCached } from '../services/commHelper';
 import { storageClear, storageGet, storageSet } from '../plugin/storage';
-import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
+import { DeploymentConfig } from 'op-deployment-configs';
 import {
   getStudyNameFromToken,
   getStudyNameFromUrl,
@@ -112,7 +112,7 @@ async function readConfigFromServer(studyLabel: string) {
  */
 async function fetchConfig(studyLabel: string, alreadyTriedLocal?: boolean) {
   logDebug('Received request to join ' + studyLabel);
-  let downloadURL = `https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/${studyLabel}.nrel-op.json`;
+  let downloadURL = `https://raw.githubusercontent.com/e-mission/op-deployment-configs/main/configs/${studyLabel}.nrel-op.json`;
   if (!__DEV__ || alreadyTriedLocal) {
     logDebug('Fetching config from github');
     const r = await fetch(downloadURL, { cache: 'reload' });

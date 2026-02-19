@@ -47,7 +47,7 @@ const PrivacyPolicy = () => {
       <Text style={styles.text}>{t('consent-text.introduction.what-is-openpath')}</Text>
       <Text>{'\n'}</Text>
       <Text style={styles.text}>
-        {t('consent-text.introduction.what-is-NREL', {
+        {t('consent-text.introduction.what-is-lab', {
           program_or_study: appConfig?.intro?.program_or_study,
         })}
       </Text>
@@ -123,7 +123,7 @@ const PrivacyPolicy = () => {
           raw_data_use: templateText?.raw_data_use,
         })}
       </Text>
-      <Text style={styles.text}>{t('consent-text.who-sees.nrel-devs')}</Text>
+      <Text style={styles.text}>{t('consent-text.who-sees.developers')}</Text>
       <Text>{'\n'}</Text>
       <Text style={styles.text}>
         {t('consent-text.who-sees.TSDC-info')}
@@ -131,7 +131,7 @@ const PrivacyPolicy = () => {
           style={styles.hyperlinkStyle(colors.primary)}
           onPress={() => {
             window['cordova'].InAppBrowser.open(
-              'https://www.nrel.gov/transportation/secure-transportation-data/',
+              'https://www.nlr.gov/transportation/secure-transportation-data/',
               '_system',
             );
           }}>
@@ -153,7 +153,7 @@ const PrivacyPolicy = () => {
           style={styles.hyperlinkStyle(colors.primary)}
           onPress={() => {
             window['cordova'].InAppBrowser.open(
-              'https://www.nrel.gov/docs/fy18osti/70723.pdf',
+              'https://docs.nlr.gov/docs/fy19osti/73086.pdf',
               '_system',
             );
           }}>
@@ -167,7 +167,6 @@ const PrivacyPolicy = () => {
       <Text>{'\n'}</Text>
       <Text style={styles.text}>
         {t('consent-text.rights.destroy-data-pt1')}
-        <Text>{'(k.shankari@nrel.gov)'}</Text>
         {t('consent-text.rights.destroy-data-pt2')}
       </Text>
       <Text>{'\n'}</Text>
