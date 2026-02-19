@@ -1,7 +1,7 @@
 import { displayErrorMsg, logDebug } from '../plugin/logger';
 import { DateTime } from 'luxon';
 import i18next from 'i18next';
-import { ReminderScheme } from 'nrel-openpath-deploy-configs';
+import { ReminderScheme } from 'op-deployment-configs';
 import { ReminderPrefs } from './userProfile';
 
 let isScheduling = false;

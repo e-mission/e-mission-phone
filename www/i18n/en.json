@@ -260,7 +260,7 @@
   },
 
   "shareFile-service": {
-    "send-to": "Please send this file to openpath@nrel.gov, or another OpenPATH team member.",
+    "send-to": "Please send this file to openpath@nlr.gov, or another OpenPATH team member.",
     "send-log": {
       "subject-logs": "emission logs",
       "body-please-fill-in-what-is-wrong": "please fill in what is wrong"
@@ -362,7 +362,7 @@
   },
   "login": {
     "make-sure-save-your-opcode": "Make sure to save your OPcode!",
-    "cannot-retrieve": "NREL cannot retrieve it for you later!",
+    "cannot-retrieve": "NLR cannot retrieve it for you later!",
     "save": "Save",
     "continue": "Continue",
     "enter-existing-token": "Enter the existing token that you have",
@@ -388,7 +388,7 @@
   },
   "join": {
     "welcome-to-app": "Welcome to <b>{{appName}}!</b>",
-    "app-name": "NREL OpenPATH",
+    "app-name": "NLR OpenPATH",
     "to-proceed-further": "To proceed further, please scan or paste an access code that has been provided by your program administrator through a website, email, text message, or printout.",
     "code-hint": "The code begins with ‘nrelop’ and may be in barcode or text format.",
     "scan-code": "Scan code",
@@ -397,7 +397,7 @@
     "paste-hint": "Or, paste the code as text",
     "more-info": "More Info",
     "about-app-title": "About {{appName}}",
-    "about-app-para-1": "The National Renewable Energy Laboratory’s Open Platform for Agile Trip Heuristics (NREL OpenPATH) enables people to track their travel modes—car, bus, bike, walking, etc.—and measure their associated energy use and carbon footprint.",
+    "about-app-para-1": "The National Laboratory of the Rockies' Open Platform for Agile Trip Heuristics (NLR OpenPATH) enables people to track their travel modes—car, bus, bike, walking, etc.—and measure their associated energy use and carbon footprint.",
     "about-app-para-2": "The app empowers communities to understand their travel mode choices and patterns, experiment with options to make them more sustainable, and evaluate the results. Such results can inform effective transportation policy and planning and be used to build more sustainable and accessible cities.",
     "about-app-para-3": "It does so by building an automatic diary of all your trips, across all transportation modes. It reads multiple sensors, including location, in the background, and turns GPS tracking on and off automatically for minimal power consumption. The choice of the travel pattern information and the carbon footprint display style are study-specific.",
     "tips-title": "Tip(s) for correct operation:",
@@ -438,11 +438,11 @@
     "while-scanning-bluetooth": "While scanning for Bluetooth Devices: "
   },
   "consent-text": {
-    "title": "NREL OPENPATH PRIVACY POLICY/TERMS OF USE",
+    "title": "NLR OPENPATH PRIVACY POLICY/TERMS OF USE",
     "introduction": {
       "header": "Introduction and Purpose",
-      "what-is-openpath": "This data is being collected through OpenPATH, an NREL open-sourced platform. The smart phone application, NREL OpenPATH (“App”), combines data from smartphone sensors, semantic user labels and a short demographic survey.",
-      "what-is-NREL": "NREL is a national laboratory of the U.S. Department of Energy, Office of Energy Efficiency and Renewable Energy, operated by Alliance for Sustainable Energy, LLC under Prime Contract No. DE-AC36-08GO28308. This Privacy Policy applies to the App provided by Alliance for Sustainable Energy, LLC. This App is provided solely for the purposes of collecting travel behavior data for the {{program_or_study}} and for research to inform public policy. None of the data collected by the App will never be sold or used for any commercial purposes, including advertising.",
+      "what-is-openpath": "This data is being collected through OpenPATH, an NLR open-sourced platform. The smart phone application, NLR OpenPATH (“App”), combines data from smartphone sensors, semantic user labels and a short demographic survey.",
+      "what-is-lab": "NLR is a national laboratory of the U.S. Department of Energy, Office of Critical Minerals and Energy Innovation, operated by Alliance for Energy Innovation, LLC under Prime Contract No. DE-AC36-08GO28308. This Privacy Policy applies to the App provided by Alliance for Energy Innovation, LLC. This App is provided solely for the purposes of collecting travel behavior data for the {{program_or_study}} and for research to inform public policy. None of the data collected by the App will be sold or used for any commercial purposes, including advertising.",
       "if-disagree": "IF YOU DO NOT AGREE WITH THE TERMS OF THIS PRIVACY POLICY, PLEASE DELETE THE APP"
     },
     "why": {
@@ -454,40 +454,38 @@
       "phone-sensor": "It collects phone sensor data pertaining to your location (including background location), accelerometer, device-generated activity and mode recognition, App usage time, and battery usage. The App will create a “travel diary” based on your background location data to determine your travel patterns and location history.",
       "labeling": "It will also ask you to periodically annotate these sensed trips with semantic labels, such as the trip mode, purpose, and replaced mode.",
       "demographics": "It will also request sociodemographic information such as your approximate age, gender, and household type. The sociodemographic factors can be used to understand the influence of lifestyle on travel behavior, as well as generalize the results to a broader population.",
-      "open-source-data": "For the greatest transparency, the App is based on an open source platform, NREL’s OpenPATH. you can inspect the data that OpenPATH collects in the background at",
+      "open-source-data": "For the greatest transparency, the App is based on an open source platform, NLR's OpenPATH. you can inspect the data that OpenPATH collects in the background at",
       "open-source-analysis": "the analysis pipeline at",
-      "open-source-dashboard": "and the dashboard metrics at",
-      "on-nrel-site": "For the greatest transparency, the App is based on an open source platform, NREL’s OpenPATH. you can inspect the data that OpenPATH collects in the background, the analysis pipeline, and the dashboard metrics through links on the NREL OpenPATH website."
+      "open-source-dashboard": "and the dashboard metrics at"
     },
     "opcode": {
       "header": "How we associate information with you",
-      "not-autogen": "Program administrators will provide you with a 'opcode' that you will use to log in to the system. This long random string will be used for all further communication with the server. If you forget or lose your opcode, you may request it by providing your name and/or email address to the program administrator. Please do not contact NREL staff with opcode retrieval requests since we do not have access to the connection between your name/email and your opcode. The data that NREL automatically collects (phone sensor data, semidemographic data, etc.) will only be associated with your 'opcode'",
-      "autogen": "You are logging in with a randomly generated 'opcode' that has been generated by the platform. This long random string will used for all further communication with the server. Only you know the opcode that is associated with you. There is no “Forgot password” option, and NREL staff cannot retrieve your opcode, even if you provide your name or email address. This means that, unless you store your opcode in a safe place, you will not have access to your prior data if you switch phones or uninstall and reinstall the App."
+      "not-autogen": "Program administrators will provide you with a 'opcode' that you will use to log in to the system. This long random string will be used for all further communication with the server. If you forget or lose your opcode, you may request it by providing your name and/or email address to the program administrator. Please do not contact NLR staff with opcode retrieval requests since we do not have access to the connection between your name/email and your opcode. The data that NLR automatically collects (phone sensor data, semidemographic data, etc.) will only be associated with your 'opcode'",
+      "autogen": "You are logging in with a randomly generated 'opcode' that has been generated by the platform. This long random string will used for all further communication with the server. Only you know the opcode that is associated with you. There is no “Forgot password” option, and NLR staff cannot retrieve your opcode, even if you provide your name or email address. This means that, unless you store your opcode in a safe place, you will not have access to your prior data if you switch phones or uninstall and reinstall the App."
     },
     "who-sees": {
       "header": "Who gets to see the information",
       "public-dash": "Aggregate metrics derived from the travel patterns will be made available on a public dashboard to provide transparency into the impact of the program. These metrics will focus on information summaries such as counts, distances and durations, and will not display individual travel locations or times.",
       "individual-info": "Individual labeling rates and trip level information will only be made available to:",
       "program-admins": "Program administrators from {{deployment_partner_name}} to {{raw_data_use}}, and",
-      "nrel-devs": "NREL OpenPATH developers for debugging",
-      "TSDC-info": "The data will also be periodically archived in NREL’s Transportation Secure Data Center (TSDC) after a delay of 3 to 6 months. It will then be made available for legitimate research through existing, privacy-preserving TSDC operating procedures. Further information on the procedures is available",
+      "developers": "NLR OpenPATH developers for debugging",
+      "TSDC-info": "The data will also be periodically archived in NLR's Transportation Secure Data Center (TSDC) after a delay of 3 to 6 months. It will then be made available for legitimate research through existing, privacy-preserving TSDC operating procedures. Further information on the procedures is available",
       "on-website": " on the website ",
       "and-in": "and in",
       "this-pub": " this publication ",
       "and": "and",
-      "fact-sheet": " fact sheet",
-      "on-nrel-site": " through links on the NREL OpenPATH website."
+      "fact-sheet": " fact sheet"
     },
     "rights": {
       "header": "Your rights",
       "app-required": "You are required to track your travel patterns using the App as a condition of participation in the Program. If you wish to withdraw from the Program, you should contact the program administrator, {{program_admin_contact}}  to discuss termination options. If you  wish to stay in the program but not use the app, please contact your program administrator to negotiate an alternative data collection procedure before uninstalling the app. If you uninstall the app without approval from the program administrator, you may not have access to the benefits provided by the program.",
-      "app-not-required": "Participation in the {{program_or_study}} is completely voluntary. You have the right to decline to participate or to withdraw at any point in the Study without providing notice to NREL or the point of contact. If you do not wish to participate in the Study or to discontinue your participation in the Study, please delete the App.",
-      "destroy-data-pt1": "If you would like to have your data destroyed, please contact K. Shankari ",
+      "app-not-required": "Participation in the {{program_or_study}} is completely voluntary. You have the right to decline to participate or to withdraw at any point in the Study without providing notice to NLR or the point of contact. If you do not wish to participate in the Study or to discontinue your participation in the Study, please delete the App.",
+      "destroy-data-pt1": "If you would like to have your data destroyed, please contact the OpenPATH team (openpath@nlr.gov)",
       "destroy-data-pt2": " requesting deletion. You must include your token in the request for deletion. Because we do not connect your identity with your token, we cannot delete your information without obtaining the token as part of the deletion request. We will then destroy all data associated with that deletion request, both in the online and archived datasets."
     },
     "questions": {
       "header": "Questions",
-      "for-questions": "If you have any questions about the data collection goals and results, please contact the primary point of contact for the study, {{program_admin_contact}}. If you have any technical questions about app operation, please contact NREL’s K. Shankari (k.shankari@nrel.gov)."
+      "for-questions": "If you have any questions about the data collection goals and results, please contact the primary point of contact for the study, {{program_admin_contact}}. If you have any technical questions about app operation, please contact the OpenPATH team (openpath@nlr.gov)."
     },
     "consent": {
       "header": "Consent",

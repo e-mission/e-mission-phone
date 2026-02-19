@@ -13,7 +13,7 @@ import fakeConfig from '../__mocks__/fakeConfig.json';
 
 import initializedI18next from '../js/i18nextInit';
 import { CompositeTrip } from '../js/types/diaryTypes';
-import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
+import { DeploymentConfig } from 'op-deployment-configs';
 window['i18next'] = initializedI18next;
 
 mockBEMUserCache(fakeConfig);
@@ -33,7 +33,7 @@ it('gets the survey config', async () => {
     TimeUseSurvey: {
       compatibleWith: 1,
       formPath:
-        'https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
+        'https://raw.githubusercontent.com/sebastianbarry/op-deployment-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
       labelTemplate: {
         en: '{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }',
         es: '{ erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }}',
@@ -140,7 +140,7 @@ it('resolves the label, if no template, returns "Answered"', async () => {
         TimeUseSurvey: {
           compatibleWith: 1,
           formPath:
-            'https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
+            'https://raw.githubusercontent.com/sebastianbarry/op-deployment-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
           labelVars: {
             da: {
               key: 'Domestic_activities',
@@ -176,7 +176,7 @@ it('resolves the label, if no labelVars, returns template', async () => {
         TimeUseSurvey: {
           compatibleWith: 1,
           formPath:
-            'https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
+            'https://raw.githubusercontent.com/sebastianbarry/op-deployment-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
           labelTemplate: {
             en: '{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }',
             es: '{ erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }}',
@@ -223,7 +223,7 @@ it('gets the saved result or throws an error', async () => {
         TimeUseSurvey: {
           compatibleWith: 1,
           formPath:
-            'https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
+            'https://raw.githubusercontent.com/sebastianbarry/op-deployment-configs/surveys-info-and-surveys-data/survey-resources/data-json/time-use-survey-form-v9.json',
           labelTemplate: {
             en: '{ erea, plural, =0 {} other {# Employment/Education, } }{ da, plural, =0 {} other {# Domestic, } }',
             es: '{ erea, plural, =0 {} other {# Empleo/Educación, } }{ da, plural, =0 {} other {# Actividades domesticas, }}',

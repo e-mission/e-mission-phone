@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { displayError, logDebug } from '../plugin/logger';
-import { ServerConnConfig } from 'nrel-openpath-deploy-configs';
+import { ServerConnConfig } from 'op-deployment-configs';
 import { TimestampRange } from '../types/diaryTypes';
 import { ServerResponse } from '../types/serverData';
 

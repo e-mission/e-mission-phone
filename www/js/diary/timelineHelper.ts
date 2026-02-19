@@ -25,7 +25,7 @@ import {
   filterByNameAndVersion,
   resolveSurveyButtonConfig,
 } from '../survey/enketo/enketoHelper';
-import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
+import { DeploymentConfig } from 'op-deployment-configs';
 import { Point, Feature } from 'geojson';
 import { ble_matching, base_modes } from 'e-mission-common';
 

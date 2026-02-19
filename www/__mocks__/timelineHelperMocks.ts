@@ -7,7 +7,7 @@ import {
   UnprocessedTrip,
 } from '../js/types/diaryTypes';
 import { LabelOptions } from '../js/types/labelTypes';
-import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
+import { DeploymentConfig } from 'op-deployment-configs';
 
 const mockMetaData: MetaData = {
   write_ts: 1,

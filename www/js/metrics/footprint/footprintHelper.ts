@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import color from 'color';
 import { colors } from '../../appTheme';
-import { DeploymentConfig } from 'nrel-openpath-deploy-configs';
+import { DeploymentConfig } from 'op-deployment-configs';
 
 const lang = i18next.resolvedLanguage || 'en';
 const darkWarn = color(colors.warn).darken(0.65).saturate(0.5).rgb().toString();

@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import color from 'color';
 import { DayOfMetricData, MetricEntry, MetricValue } from './metricsTypes';
 import { logDebug } from '../plugin/logger';
-import DeploymentConfig, { MetricName, GroupingField } from 'nrel-openpath-deploy-configs';
+import DeploymentConfig, { MetricName, GroupingField } from 'op-deployment-configs';
 import { ImperialConfig } from '../config/useImperialConfig';
 import i18next from 'i18next';
 import { base_modes, metrics_summaries } from 'e-mission-common';
