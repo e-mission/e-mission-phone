@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import useAppConfig from '../useAppConfig';
 import { useTheme } from 'react-native-paper';
 
+const launchUrl = (url: string) => window['cordova'].InAppBrowser.open(url, '_system');
+
 const PrivacyPolicy = () => {
   const { t, i18n } = useTranslation();
   const appConfig = useAppConfig();
@@ -72,36 +74,21 @@ const PrivacyPolicy = () => {
         {t('consent-text.what.open-source-data')}
         <Text
           style={styles.hyperlinkStyle(colors.primary)}
-          onPress={() => {
-            window['cordova'].InAppBrowser.open(
-              'https://github.com/e-mission/e-mission-data-collection.git',
-              '_system',
-            );
-          }}>
+          onPress={() => launchUrl('https://github.com/e-mission/e-mission-data-collection.git')}>
           {' '}
           https://github.com/e-mission/e-mission-data-collection.git{' '}
         </Text>
         {t('consent-text.what.open-source-analysis')}
         <Text
           style={styles.hyperlinkStyle(colors.primary)}
-          onPress={() => {
-            window['cordova'].InAppBrowser.open(
-              'https://github.com/e-mission/e-mission-server.git',
-              '_system',
-            );
-          }}>
+          onPress={() => launchUrl('https://github.com/e-mission/e-mission-server.git')}>
           {' '}
           https://github.com/e-mission/e-mission-server.git{' '}
         </Text>
         {t('consent-text.what.open-source-dashboard')}
         <Text
           style={styles.hyperlinkStyle(colors.primary)}
-          onPress={() => {
-            window['cordova'].InAppBrowser.open(
-              'https://github.com/e-mission/em-public-dashboard.git',
-              '_system',
-            );
-          }}>
+          onPress={() => launchUrl('https://github.com/e-mission/em-public-dashboard.git')}>
           {' '}
           https://github.com/e-mission/em-public-dashboard.git.{' '}
         </Text>
@@ -129,34 +116,23 @@ const PrivacyPolicy = () => {
         {t('consent-text.who-sees.TSDC-info')}
         <Text
           style={styles.hyperlinkStyle(colors.primary)}
-          onPress={() => {
-            window['cordova'].InAppBrowser.open(
-              'https://www.nlr.gov/transportation/secure-transportation-data/',
-              '_system',
-            );
-          }}>
+          onPress={() =>
+            launchUrl('https://www.nlr.gov/transportation/secure-transportation-data/')
+          }>
           {t('consent-text.who-sees.on-website')}
         </Text>
         {t('consent-text.who-sees.and-in')}
         <Text
           style={styles.hyperlinkStyle(colors.primary)}
-          onPress={() => {
-            window['cordova'].InAppBrowser.open(
-              'https://www.sciencedirect.com/science/article/pii/S2352146515002999',
-              '_system',
-            );
-          }}>
+          onPress={() =>
+            launchUrl('https://www.sciencedirect.com/science/article/pii/S2352146515002999')
+          }>
           {t('consent-text.who-sees.this-pub')}
         </Text>
         {t('consent-text.who-sees.and')}
         <Text
           style={styles.hyperlinkStyle(colors.primary)}
-          onPress={() => {
-            window['cordova'].InAppBrowser.open(
-              'https://docs.nlr.gov/docs/fy19osti/73086.pdf',
-              '_system',
-            );
-          }}>
+          onPress={() => launchUrl('https://docs.nlr.gov/docs/fy19osti/73086.pdf')}>
           {t('consent-text.who-sees.fact-sheet') + '.'}
         </Text>
       </Text>
