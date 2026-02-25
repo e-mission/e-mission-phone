@@ -4,7 +4,6 @@ import { Text, Appbar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
 import { AppContext } from '../App';
-import { displayError } from '../plugin/logger';
 import { Alerts } from '../components/AlertArea';
 import { shareQR } from '../components/QrCode';
 import NavBar, { NavBarButton } from '../components/NavBar';
@@ -15,7 +14,6 @@ import JsonList from './components/JsonList';
 import DemographicsSettingRow from './DemographicsSettingRow';
 import ReminderTimeSettingRow from './ReminderTimeSettingRow';
 import PopOpCode from './PopOpCode';
-import DataDatePicker from './DataDatePicker';
 import PrivacyPolicyModal from './PrivacyPolicyModal';
 // import CustomLabelSettingRow from './CustomLabelSettingRow';
 import LogoutModal from './LogoutModal';
@@ -80,7 +78,7 @@ const ProfileSettings = () => {
           iconName="eye"
           action={() => Alerts.showPopup(PrivacyPolicyModal)}
         />
-        {appConfig.reminderSchemes && <ReminderTimeSettingRow />}
+        {appConfig?.reminderSchemes && <ReminderTimeSettingRow />}
         <SettingRow
           textKey="control.tracking"
           action={() =>
@@ -111,7 +109,7 @@ const ProfileSettings = () => {
           textKey="control.refresh-app-config"
           desc={t('control.current-version', { version: appConfig?.version })}
           iconName="cog-refresh"
-          action={() => refreshConfig(opcode, appConfig.version)}
+          action={() => refreshConfig(opcode, appConfig?.version)}
         />
         <SettingRow
           textKey="control.app-version"

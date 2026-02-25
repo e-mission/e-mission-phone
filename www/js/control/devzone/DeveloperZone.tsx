@@ -74,7 +74,7 @@ const DeveloperZone = ({ collectionState, refreshState }) => {
         iconName="bell"
         action={scheduleDebugLocalNotification}
       />
-      {appConfig.reminderSchemes && (
+      {appConfig?.reminderSchemes && (
         <SettingRow
           textKey="control.upcoming-notifications"
           iconName="bell-check"

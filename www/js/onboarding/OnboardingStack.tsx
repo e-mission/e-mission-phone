@@ -12,23 +12,23 @@ import { displayErrorMsg } from '../plugin/logger';
 const OnboardingStack = () => {
   const { onboardingState } = useContext(AppContext);
 
-  if (onboardingState.route == OnboardingRoute.WELCOME) {
+  if (onboardingState?.route == OnboardingRoute.WELCOME) {
     // This page needs 'light content' status bar (white text) due to blue header at the top
     // window['StatusBar']?.styleLightContent();
     return <WelcomePage />;
   }
   // All other pages go back to 'default' (black text)
   // window['StatusBar']?.styleDefault();
-  if (onboardingState.route == OnboardingRoute.SUMMARY) {
+  if (onboardingState?.route == OnboardingRoute.SUMMARY) {
     return <SummaryPage />;
-  } else if (onboardingState.route == OnboardingRoute.PROTOCOL) {
+  } else if (onboardingState?.route == OnboardingRoute.PROTOCOL) {
     return <ProtocolPage />;
-  } else if (onboardingState.route == OnboardingRoute.SAVE_QR) {
+  } else if (onboardingState?.route == OnboardingRoute.SAVE_QR) {
     return <SaveQrPage />;
-  } else if (onboardingState.route == OnboardingRoute.SURVEY) {
+  } else if (onboardingState?.route == OnboardingRoute.SURVEY) {
     return <SurveyPage />;
   } else {
-    displayErrorMsg('OnboardingStack: unknown route', onboardingState.route);
+    displayErrorMsg('OnboardingStack: unknown route', `${onboardingState?.route}`);
     return <></>;
   }
 };
