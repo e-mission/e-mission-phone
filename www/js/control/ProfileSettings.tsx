@@ -95,11 +95,6 @@ const ProfileSettings = () => {
           iconName="check"
           action={() => setPermissionsPopupVis(true)}
         />
-        <SettingRow
-          textKey="control.download-json-dump"
-          iconName="calendar"
-          action={() => Alerts.showPopup(DataDatePicker)}
-        />
         {appConfig?.profile_controls?.support_upload && (
           <SettingRow
             textKey="control.upload-log"

@@ -16,6 +16,7 @@ import ActionMenu from '../../components/ActionMenu';
 import { AppContext } from '../../App';
 import { getScheduledNotifs } from '../../splash/notifScheduler';
 import JsonList from '../components/JsonList';
+import DataDatePicker from './DataDatePicker';
 
 function parseState(state) {
   logDebug(`parseState: state = ${state}; 
@@ -114,6 +115,11 @@ const DeveloperZone = ({ collectionState, refreshState }) => {
             onAction: (a) => forceTransition(a.transition),
           })
         }
+      />
+      <SettingRow
+        textKey="control.download-json-dump"
+        iconName="calendar"
+        action={() => Alerts.showPopup(DataDatePicker)}
       />
       <SettingRow
         textKey="control.check-log"
