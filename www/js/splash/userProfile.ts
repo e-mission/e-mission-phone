@@ -15,6 +15,7 @@ export type DeviceInfo = {
   phone_lang: string; // e.g., 'en'
   curr_platform: string; // e.g., 'ios'
   manufacturer: string; // e.g., 'Apple'
+  model: string; // e.g., 'iPhone18,3'
   client_os_version: string; // e.g., '14.4'
   client_app_version: string; // e.g., '3.2.1'
 };
