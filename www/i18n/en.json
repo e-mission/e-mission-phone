@@ -70,10 +70,10 @@
       "leave-review-ios": "Would you like to leave a rating on the App Store?",
       "leave-review-android": "Would you like to leave a rating on the Play Store?",
       "leave-feedback": "We'd love to know how we can improve. Would you like to send us feedback or report an issue by email?",
-      "feedback-for-devs": "I have feedback for the NLR OpenPATH app developers",
-      "feedback-for-admin": "I have feedback for my program administrator ({{adminEmail}})",
+      "feedback-for-devs": "I have feedback about the app for the NLR OpenPATH developers",
+      "feedback-for-admin": "I have feedback for the administrators of {{deploymentName}}",
       "sure": "Sure!",
-      "send-email": "Send email",
+      "compose-email": "Compose email",
       "no-thanks": "No thanks",
       "feedback-email-subject": "OpenPATH Feedback [{{deploymentId}}]",
       "feedback-email-body": "OpenPATH team,\n\n[Describe your feedback or issue here. Thank you for helping us improve OpenPATH!]\n\nDiagnostic info:\n{{diagnosticInfo}}\n"

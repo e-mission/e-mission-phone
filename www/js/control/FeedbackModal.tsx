@@ -79,11 +79,7 @@ function launchReview() {
 
 // END
 
-async function launchFeedbackEmail(
-  appConfig: DeploymentConfig,
-  sendToDev: boolean,
-  sendToAdmin: boolean,
-) {
+async function launchFeedbackEmail(appConfig: DeploymentConfig, recipients: string[]) {
   const deploymentId = appConfig.url_abbreviation || getStudyNameFromToken(appConfig.joined.opcode);
   const subject = t('control.feedback-modal.feedback-email-subject', { deploymentId });
 
@@ -97,14 +93,6 @@ async function launchFeedbackEmail(
   }
   let body = t('control.feedback-modal.feedback-email-body', { diagnosticInfo });
 
-  const recipients: string[] = [];
-  if (sendToDev) {
-    recipients.push('openpath@nlr.gov');
-  }
-  if (sendToAdmin) {
-    recipients.push(appConfig.intro.program_admin_email);
-  }
-
   const mailtoLink =
     `mailto:${recipients.join(',')}` +
     `?subject=${encodeURIComponent(subject)}` +
@@ -115,12 +103,21 @@ async function launchFeedbackEmail(
 
 const FeedbackModal = ({ ...props }: ModalProps) => {
   const { height: windowHeight } = useWindowDimensions();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const appConfig = useAppConfig();
   const [userAffect, setUserAffect] = useState<null | 'positive' | 'negative'>(null);
   const [feedbackForDev, setFeedbackForDev] = useState(false);
   const [feedbackForAdmins, setFeedbackForAdmins] = useState(false);
+
+  const lang = i18n.resolvedLanguage || 'en';
+  const emailRecipients: string[] = [];
+  if (feedbackForDev) {
+    emailRecipients.push('openpath@nlr.gov');
+  }
+  if (feedbackForAdmins && appConfig?.intro.program_admin_email) {
+    emailRecipients.push(appConfig.intro.program_admin_email);
+  }
 
   function dismissModal() {
     setUserAffect(null);
@@ -152,7 +149,7 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
             <Dialog.Content>
               <Text>{modalContent}</Text>
               {userAffect == 'negative' && (
-                <View style={{ marginTop: 16, marginBottom: 8 }}>
+                <View style={{ marginTop: 16, marginBottom: 8, gap: 8 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Checkbox
                       status={feedbackForDev ? 'checked' : 'unchecked'}
@@ -168,9 +165,27 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
                       />
                       <Text>
                         {t('control.feedback-modal.feedback-for-admin', {
-                          adminEmail: appConfig.intro.program_admin_email,
+                          deploymentName: appConfig.intro.translated_text[lang].deployment_name,
                         })}
                       </Text>
+                    </View>
+                  )}
+                  {emailRecipients.length > 0 && (
+                    <View
+                      style={{
+                        backgroundColor: colors.background,
+                        borderRadius: 4,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginTop: 8,
+                      }}>
+                      <IconButton
+                        icon="email-edit-outline"
+                        size={18}
+                        iconColor={color(colors.onSurface).alpha(0.7).rgb().string()}
+                        style={{ margin: 0 }}
+                      />
+                      <Text variant="bodySmall">{emailRecipients.join(', ')}</Text>
                     </View>
                   )}
                 </View>
@@ -206,8 +221,8 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
               <Button onPress={dismissModal}>{t('control.feedback-modal.no-thanks')}</Button>
               <Button
                 disabled={!feedbackForDev && !feedbackForAdmins}
-                onPress={() => launchFeedbackEmail(appConfig, feedbackForDev, feedbackForAdmins)}>
-                {t('control.feedback-modal.send-email')}
+                onPress={() => launchFeedbackEmail(appConfig, emailRecipients)}>
+                {t('control.feedback-modal.compose-email')}
               </Button>
             </>
           )}
