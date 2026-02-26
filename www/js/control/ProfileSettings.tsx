@@ -20,6 +20,7 @@ import LogoutModal from './LogoutModal';
 import UploadLogModal from './UploadLogModal';
 import DeveloperZone from './devzone/DeveloperZone';
 import { forceTransition } from './devzone/EditTrackingConfigModal';
+import FeedbackModal from './FeedbackModal';
 
 const ProfileSettings = () => {
   const { t } = useTranslation();
@@ -100,6 +101,11 @@ const ProfileSettings = () => {
             action={() => Alerts.showPopup(UploadLogModal)}
           />
         )}
+        <SettingRow
+          textKey="control.give-feedback"
+          iconName="message-text"
+          action={() => Alerts.showPopup(FeedbackModal)}
+        />
         <SettingRow
           textKey="control.share-log"
           iconName="email"

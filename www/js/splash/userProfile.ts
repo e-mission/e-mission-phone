@@ -24,11 +24,33 @@ export type PushNotifySettings = {
   curr_sync_interval: number;
 };
 
+// from emission.analysis.result.user_stat
+export type ServerUserStats = {
+  // last call timestamps
+  last_call_ts: number;
+  last_sync_ts: number;
+  last_put_ts: number;
+  last_diary_fetch_ts: number;
+
+  // timestamps of the most recently collected phone data
+  last_location_ts: number;
+  last_phone_data_ts: number;
+
+  // "pipeline dependent user stats"
+  pipeline_range: {
+    start_ts: number;
+    end_ts: number;
+  };
+  total_trips: number;
+  labeled_trips: number;
+};
+
 export type UserProfile = {
   config_version: DeploymentConfig['version'];
 } & PushNotifySettings &
   DeviceInfo &
-  Partial<ReminderPrefs>;
+  Partial<ReminderPrefs> &
+  Partial<ServerUserStats>;
 
 /**
  * Registers the user for push notifications and updates the user profile with

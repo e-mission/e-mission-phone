@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View } from 'react-native';
 import { Appbar, useTheme } from 'react-native-paper';
 import DateSelect from './DateSelect';
@@ -9,12 +9,46 @@ import TimelineContext from '../../TimelineContext';
 import { LabelTabContext } from '../LabelTab';
 import { DateTime } from 'luxon';
 import { displayErrorMsg } from '../../plugin/logger';
+import { Alerts } from '../../components/AlertArea';
+import FeedbackModal from '../../control/FeedbackModal';
+import { AppContext } from '../../App';
+import { isTrip } from '../../types/diaryTypes';
 
 const LabelListScreen = () => {
+  const { onboardingState, userProfile } = useContext(AppContext);
   const { filterInputs, setFilterInputs, displayedEntries } = useContext(LabelTabContext);
-  const { timelineMap, loadDateRange, timelineIsLoading, refreshTimeline, shouldUpdateTimeline } =
-    useContext(TimelineContext);
+  const {
+    timelineMap,
+    timelineLabelMap,
+    loadDateRange,
+    timelineIsLoading,
+    refreshTimeline,
+    shouldUpdateTimeline,
+  } = useContext(TimelineContext);
   const { colors } = useTheme();
+
+  // One time only: when the user finishes labeling all their trips
+  // and they have previously labeled at least 50 trips,
+  // we trigger the FeedbackModal
+  useEffect(() => {
+    // for now, this is for test users only
+    if (!onboardingState?.opcode.includes('_test_')) {
+      return;
+    }
+
+    if (
+      // we haven't already shown the modal
+      !localStorage.getItem('FEEDBACK_MODAL_SHOWN') &&
+      // and the user already has at least 50 processed labeled trips
+      userProfile?.labeled_trips &&
+      userProfile.labeled_trips >= 50 &&
+      // and there are no trips being displayed that haven't been labeled
+      !displayedEntries?.some((e) => isTrip(e) && !timelineLabelMap?.[e._id.$oid])
+    ) {
+      localStorage.setItem('FEEDBACK_MODAL_SHOWN', 'true');
+      Alerts.showPopup(FeedbackModal);
+    }
+  }, [onboardingState, userProfile, timelineMap, timelineLabelMap, displayedEntries]);
 
   return (
     <>
