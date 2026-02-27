@@ -5,6 +5,13 @@
   "weekdays-all": "All",
   "weekdays-select": "Select day of the week",
 
+  "general": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No"
+  },
+
   "trip-confirm": {
     "services-please-fill-in": "Please fill in the {{text}} not listed.",
     "services-cancel": "Cancel",
@@ -56,7 +63,21 @@
     "current-version": "Current version: {{version}}",
     "refreshing-app-config": "Refreshing app configuration, please wait...",
     "already-up-to-date": "Already up to date!",
-    "manage-custom-labels": "Manage Custom Labels"
+    "manage-custom-labels": "Manage Custom Labels",
+    "give-feedback": "Give feedback",
+    "feedback-modal": {
+      "experience-question": "How has your experience with OpenPATH been so far?",
+      "leave-review-ios": "Would you like to leave a rating on the App Store?",
+      "leave-review-android": "Would you like to leave a rating on the Play Store?",
+      "leave-feedback": "We'd love to know how we can improve. Would you like to send us feedback or report an issue by email?",
+      "feedback-for-devs": "I have feedback about the app for the NLR OpenPATH developers",
+      "feedback-for-admin": "I have feedback for the administrators of {{deploymentName}}",
+      "sure": "Sure!",
+      "compose-email": "Compose email",
+      "no-thanks": "No thanks",
+      "feedback-email-subject": "OpenPATH Feedback [{{deploymentId}}]",
+      "feedback-email-body": "OpenPATH team,\n\n[Describe your feedback or issue here. Thank you for helping us improve OpenPATH!]\n\nDiagnostic info:\n{{diagnosticInfo}}\n"
+    }
   },
 
   "general-settings": {

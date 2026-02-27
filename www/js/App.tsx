@@ -2,6 +2,7 @@ import React, { useEffect, useState, createContext } from 'react';
 import { ActivityIndicator, PaperProvider } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import i18next from 'i18next';
+import packageJson from '../../package.json';
 import useAppConfig from './useAppConfig';
 import OnboardingStack from './onboarding/OnboardingStack';
 import {
@@ -21,6 +22,8 @@ import { displayErrorMsg, logDebug } from './plugin/logger';
 import { registerAndUpdateProfile, updateUserProfile, UserProfile } from './splash/userProfile';
 import { getTheme } from './appTheme';
 import DeploymentConfig from 'op-deployment-configs';
+
+const URL_SCHEME = packageJson.cordova.plugins['cordova-plugin-customurlscheme'].URL_SCHEME;
 
 type AppContextProps = {
   appConfig: DeploymentConfig | null;
@@ -69,7 +72,7 @@ const App = () => {
     logDebug(`handleTokenOrUrl: onboardingState = ${JSON.stringify(onboardingState)}`);
     if (onboardingState.route > OnboardingRoute.WELCOME) {
       displayErrorMsg(i18next.t('join.already-logged-in', { token: onboardingState.opcode }));
-      return;
+      return false;
     }
     const configUpdated = await joinWithTokenOrUrl(tokenOrUrl);
     addStatReading('onboard', { configUpdated, joinMethod });
@@ -78,9 +81,16 @@ const App = () => {
     }
     return configUpdated;
   }
+
   // handleOpenURL function must be provided globally for cordova-plugin-customurlscheme
   // https://www.npmjs.com/package/cordova-plugin-customurlscheme
-  window['handleOpenURL'] = (url: string) => handleTokenOrUrl(url, 'external');
+  window['handleOpenURL'] = (url: string) => {
+    if (url?.startsWith(URL_SCHEME + '://')) {
+      handleTokenOrUrl(url, 'external');
+    } else {
+      logDebug(`handleOpenURL: Ignoring ${url} - does not start with ${URL_SCHEME}://`);
+    }
+  };
 
   useEffect(() => {
     if (!appConfig) return;

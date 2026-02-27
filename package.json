@@ -38,6 +38,7 @@
     "babel-plugin-optional-require": "^0.3.1",
     "concurrently": "^8.0.1",
     "cordova": "12.0.0",
+    "cordova-launch-review": "^4.1.3",
     "css-loader": "^6.7.4",
     "exports-loader": "^4.0.0",
     "expose-loader": "^4.1.0",
@@ -190,7 +191,8 @@
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       },
       "cordova-plugin-bluetooth-classic-serial-port": {},
-      "cordova-custom-config": {}
+      "cordova-custom-config": {},
+      "cordova-launch-review": {}
     }
   },
   "cordova-serve": {
