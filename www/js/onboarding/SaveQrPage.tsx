@@ -20,7 +20,7 @@ const SaveQrPage = ({}) => {
   const { overallStatus } = permissionStatus;
 
   useEffect(() => {
-    if (overallStatus == true && !registerUserDone) {
+    if (onboardingState && overallStatus == true && !registerUserDone) {
       logDebug('permissions done, going to log in');
       markConsented().then(
         login(onboardingState.opcode).then((response) => {
@@ -72,11 +72,11 @@ const SaveQrPage = ({}) => {
         </Text>
       </View>
       <View style={[onboardingStyles.pageSection, { paddingHorizontal: 20 }]}>
-        <QrCode value={onboardingState.opcode} style={{ marginHorizontal: 8 }} />
-        <Text style={s.opcodeText}>{onboardingState.opcode}</Text>
+        <QrCode value={onboardingState?.opcode} style={{ marginHorizontal: 8 }} />
+        <Text style={s.opcodeText}>{onboardingState?.opcode}</Text>
       </View>
       <View style={onboardingStyles.buttonRow}>
-        <Button mode="contained" icon="share" onPress={() => shareQR(onboardingState.opcode)}>
+        <Button mode="contained" icon="share" onPress={() => shareQR(onboardingState?.opcode)}>
           {t('login.save')}
         </Button>
         <Button mode="outlined" icon="chevron-right" onPress={onFinish}>

@@ -54,7 +54,7 @@ const Main = () => {
 
   const routes = useMemo(
     () =>
-      showMetricsTab(appConfig)
+      appConfig && showMetricsTab(appConfig)
         ? defaultRoutes(t)
         : defaultRoutes(t).filter((r) => r.key != 'metrics'),
     [appConfig, t],

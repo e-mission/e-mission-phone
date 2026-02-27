@@ -19,7 +19,6 @@ module.exports = function (context) {
     languagesFolders.forEach(function (language) {
         console.log(LOG_NAME + 'I found ' + language + ", I will now copy the files.")
         var platformRes = path.join(context.opts.projectRoot, 'platforms/android/app/src/main/res');
-        var wwwi18n = path.join(context.opts.projectRoot, 'www/i18n/');
         var languageFolder = localesFolder + "/" + language;
 
         var values = "/values-" + language;
@@ -37,15 +36,6 @@ module.exports = function (context) {
             console.log(LOG_NAME + valuesFolder + "copied...")
         } else {
             console.log(LOG_NAME + valuesFolder + " not found, I will continue.")
-        }
-
-        var languagei18n = path.join(languageFolder, "/i18n/");
-        if (fs.existsSync(languagei18n)) {
-            console.log(LOG_NAME + "Copying " + languagei18n + " to " + wwwi18n);
-            fs.copySync(languagei18n, wwwi18n);
-            console.log(LOG_NAME + languagei18n + "copied...")
-        } else {
-            console.log(LOG_NAME + languagei18n + " not found, I will continue.")
         }
     });
 }

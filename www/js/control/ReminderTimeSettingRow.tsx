@@ -6,13 +6,14 @@ import { AppContext } from '../App';
 import { DateTime } from 'luxon';
 import { initReminderPrefs, updateScheduledNotifs } from '../splash/notifScheduler';
 import { logDebug } from '../plugin/logger';
+import { ReminderPrefs } from '../splash/userProfile';
 
 const ReminderTimeSettingRow = () => {
   const { appConfig, userProfile, updateUserProfile } = useContext(AppContext);
   const [pickTimeVis, setPickTimeVis] = useState(false);
 
   useEffect(() => {
-    if (!userProfile) return;
+    if (!userProfile || !appConfig?.reminderSchemes) return;
     if (!userProfile?.reminder_assignment) {
       logDebug('No reminder_assignment in profile, initializing reminder prefs');
       const prefs = initReminderPrefs(appConfig.reminderSchemes);
@@ -24,7 +25,7 @@ const ReminderTimeSettingRow = () => {
       logDebug('No reminder scheme found for assignment: ' + userProfile.reminder_assignment);
       return;
     }
-    updateScheduledNotifs(scheme, userProfile);
+    updateScheduledNotifs(scheme, userProfile as ReminderPrefs);
   }, [userProfile]);
 
   function onConfirm({ hours, minutes }) {
@@ -33,6 +34,8 @@ const ReminderTimeSettingRow = () => {
     const dt = DateTime.fromJSDate(d);
     updateUserProfile({ reminder_time_of_day: dt.toFormat('HH:mm') });
   }
+
+  if (!userProfile?.reminder_time_of_day) return null;
 
   const reminderDt = DateTime.fromFormat(userProfile.reminder_time_of_day, 'HH:mm');
   const reminderJsDate = reminderDt.toJSDate();

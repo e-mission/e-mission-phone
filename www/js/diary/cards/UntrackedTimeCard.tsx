@@ -16,12 +16,15 @@ import { DiaryCard, cardStyles } from './DiaryCard';
 import useAddressNames from '../useAddressNames';
 import useDerivedProperties from '../useDerivedProperties';
 import StartEndLocations from '../components/StartEndLocations';
+import { TimelineEntry } from '../../types/diaryTypes';
 
-type Props = { triplike: { [key: string]: any } };
+type Props = { triplike: TimelineEntry };
 const UntrackedTimeCard = ({ triplike }: Props) => {
   const { t } = useTranslation();
   const { displayStartTime, displayEndTime, displayDate } = useDerivedProperties(triplike);
-  const [triplikeStartDisplayName, triplikeEndDisplayName] = useAddressNames(triplike);
+  const [triplikeStartDisplayName, triplikeEndDisplayName] = useAddressNames(
+    triplike as TimelineEntry,
+  );
 
   const flavoredTheme = getTheme('untracked');
 

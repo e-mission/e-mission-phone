@@ -5,8 +5,8 @@ import React, { useState } from 'react';
 import { ModalProps } from 'react-native';
 import { DatePickerModal } from 'react-native-paper-dates';
 import { useTranslation } from 'react-i18next';
-import { getMyData } from '../services/controlHelper';
-import useAppConfig from '../useAppConfig';
+import { getMyData } from '../../services/controlHelper';
+import useAppConfig from '../../useAppConfig';
 
 const DataDatePicker = (props: ModalProps) => {
   const appConfig = useAppConfig();

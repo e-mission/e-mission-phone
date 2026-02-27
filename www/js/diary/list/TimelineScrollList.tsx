@@ -9,16 +9,17 @@ import { useTranslation } from 'react-i18next';
 import TimelineContext from '../../TimelineContext';
 import { isoDateRangeToTsRange, isoDateWithOffset } from '../../datetimeUtil';
 import { DateTime } from 'luxon';
+import { isTrip, isPlace, TimelineEntry } from '../../types/diaryTypes';
 
-function renderCard({ item: listEntry, index }) {
-  if (listEntry.origin_key.includes('trip')) {
-    return <TripCard trip={listEntry} isFirstInList={index == 0} />;
-  } else if (listEntry.origin_key.includes('place')) {
-    return <PlaceCard place={listEntry} />;
-  } else if (listEntry.origin_key.includes('untracked')) {
-    return <UntrackedTimeCard triplike={listEntry} />;
+function renderCard({ item, index }: { item: TimelineEntry; index: number }) {
+  if (isTrip(item) && item.origin_key.endsWith('trip')) {
+    return <TripCard trip={item} isFirstInList={index == 0} />;
+  } else if (isTrip(item) && item.origin_key.includes('untracked')) {
+    return <UntrackedTimeCard triplike={item} />;
+  } else if (isPlace(item) && item.origin_key.includes('place')) {
+    return <PlaceCard place={item} />;
   } else {
-    throw new Error(`Unknown listEntry type: ${JSON.stringify(listEntry)}`);
+    throw new Error(`Unknown listEntry type: ${JSON.stringify(item)}`);
   }
 }
 
@@ -27,7 +28,7 @@ const bigSpinner = <ActivityIndicator size="large" style={{ margin: 15 }} />;
 const smallSpinner = <ActivityIndicator size="small" style={{ margin: 5 }} />;
 
 type Props = {
-  listEntries: any[] | null;
+  listEntries: TimelineEntry[] | null;
 };
 const TimelineScrollList = ({ listEntries }: Props) => {
   const { t } = useTranslation();
