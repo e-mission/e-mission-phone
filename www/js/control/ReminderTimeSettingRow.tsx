@@ -35,9 +35,14 @@ const ReminderTimeSettingRow = () => {
     updateUserProfile({ reminder_time_of_day: dt.toFormat('HH:mm') });
   }
 
-  if (!userProfile?.reminder_time_of_day) return null;
+  if (!userProfile?.reminder_assignment) return null;
 
-  const reminderDt = DateTime.fromFormat(userProfile.reminder_time_of_day, 'HH:mm');
+  const reminderDt = DateTime.fromFormat(userProfile.reminder_time_of_day || '', 'HH:mm');
+  if (!reminderDt.isValid) {
+    logDebug(`Invalid reminder_time_of_day in profile: ${userProfile.reminder_time_of_day},
+      resetting to 12:00`);
+    updateUserProfile({ reminder_time_of_day: '12:00' });
+  }
   const reminderJsDate = reminderDt.toJSDate();
 
   return (

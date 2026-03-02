@@ -33,7 +33,8 @@ function calcNotifTimes(scheme: ReminderScheme, prefs: ReminderPrefs): DateTime[
         notifTimes.push(notifTime);
       } else {
         displayErrorMsg(
-          'Cannot schedule notifs with invalid time of day: ' + prefs.reminder_time_of_day,
+          `Cannot schedule notifs with invalid notifTime: ${notifTime.toString()}; ` +
+            `date: ${date}; reminder_time_of_day: ${prefs.reminder_time_of_day}`,
         );
       }
     }
