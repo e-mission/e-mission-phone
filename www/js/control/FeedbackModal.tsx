@@ -68,7 +68,7 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
   const [feedbackForAdmins, setFeedbackForAdmins] = useState(false);
 
   const lang = i18n.resolvedLanguage || 'en';
-  const deploymentName = appConfig.intro.translated_text[lang].deployment_name;
+  const deploymentName = appConfig?.intro.translated_text[lang].deployment_name;
 
   const emailRecipients: string[] = [];
   if (feedbackForDev) {
@@ -76,9 +76,9 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
   }
   if (feedbackForAdmins) {
     let adminEmail: string | undefined =
-      appConfig.intro.program_admin_email ||
+      appConfig?.intro.program_admin_email ||
       // TODO: can remove this after config auto-update has been on prod for awhile
-      appConfig.intro.program_admin_contact.match(
+      appConfig?.intro.program_admin_contact.match(
         /([a-zA-Z0-9._+-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi,
       )?.[0];
 
@@ -100,8 +100,10 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
   } else if (userAffect == 'positive') {
     modalContent =
       window['cordova']?.platformId == 'ios'
-        ? t('control.feedback-modal.leave-review-ios', { deploymentName })
-        : t('control.feedback-modal.leave-review-android', { deploymentName });
+        ? t('control.feedback-modal.leave-review-ios', { deploymentPartnerName: deploymentName })
+        : t('control.feedback-modal.leave-review-android', {
+            deploymentPartnerName: deploymentName,
+          });
   } else if (userAffect == 'negative') {
     modalContent = t('control.feedback-modal.leave-feedback');
   }
