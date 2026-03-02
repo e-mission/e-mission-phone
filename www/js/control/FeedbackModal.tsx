@@ -17,67 +17,24 @@ import DeploymentConfig from 'op-deployment-configs';
 import { t } from 'i18next';
 import { getDeviceSettings } from '../splash/storeDeviceSettings';
 import { getStudyNameFromToken } from '../config/opcode';
+import { logDebug } from '../plugin/logger';
+import { Alerts } from '../components/AlertArea';
 
 const launchUrl = (url: string) => window['cordova'].InAppBrowser.open(url, '_system');
 
-// BEGIN: code adapted from https://github.com/dpa99c/cordova-launch-review README
-//max time to wait for rating dialog to display on iOS
-const MAX_DIALOG_WAIT_TIME_IOS = 5 * 1000;
-
-//max time to wait for rating dialog to display on Android and be submitted by user
-const MAX_DIALOG_WAIT_TIME_ANDROID = 60 * 1000;
-
-let ratingTimerId;
-
-function ratingDialogNotShown() {
-  let msg;
-  if (window['cordova'].platformId === 'android') {
-    msg = 'Rating dialog outcome not received (after ' + MAX_DIALOG_WAIT_TIME_ANDROID + 'ms)';
-  } else if (window['cordova'].platformId === 'ios') {
-    msg = 'Rating dialog was not shown (after ' + MAX_DIALOG_WAIT_TIME_IOS + 'ms)';
-  }
-  console.warn(msg);
-}
-
-function rating() {
-  if (window['cordova'].platformId === 'android') {
-    ratingTimerId = setTimeout(ratingDialogNotShown, MAX_DIALOG_WAIT_TIME_ANDROID);
-  }
-
-  window['LaunchReview'].rating(
-    function (status) {
-      if (status === 'requested') {
-        if (window['cordova'].platformId === 'android') {
-          console.log('Displayed rating dialog');
-          clearTimeout(ratingTimerId);
-        } else if (window['cordova'].platformId === 'ios') {
-          console.log('Requested rating dialog');
-          ratingTimerId = setTimeout(ratingDialogNotShown, MAX_DIALOG_WAIT_TIME_IOS);
-        }
-      } else if (status === 'shown') {
-        console.log('Rating dialog displayed');
-        clearTimeout(ratingTimerId);
-      } else if (status === 'dismissed') {
-        console.log('Rating dialog dismissed');
-        clearTimeout(ratingTimerId);
-      }
+// adapted from https://github.com/dpa99c/cordova-launch-review?tab=readme-ov-file#advanced-usage
+function launchReview() {
+  window['LaunchReview'].launch(
+    () => {
+      logDebug('LaunchReview.launch success');
     },
-    function (err) {
-      console.error('Error launching rating dialog: ' + err);
-      clearTimeout(ratingTimerId);
+    (e) => {
+      Alerts.addMessage({
+        text: "Couldn't open the store to leave a review. Please try again later.",
+      });
     },
   );
 }
-
-function launchReview() {
-  if (window['LaunchReview'].isRatingSupported()) {
-    rating();
-  } else {
-    window['LaunchReview'].launch();
-  }
-}
-
-// END
 
 async function launchFeedbackEmail(appConfig: DeploymentConfig, recipients: string[]) {
   const deploymentId = appConfig.url_abbreviation || getStudyNameFromToken(appConfig.joined.opcode);
@@ -111,12 +68,23 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
   const [feedbackForAdmins, setFeedbackForAdmins] = useState(false);
 
   const lang = i18n.resolvedLanguage || 'en';
+  const deploymentName = appConfig.intro.translated_text[lang].deployment_name;
+
   const emailRecipients: string[] = [];
   if (feedbackForDev) {
     emailRecipients.push('openpath@nlr.gov');
   }
-  if (feedbackForAdmins && appConfig?.intro.program_admin_email) {
-    emailRecipients.push(appConfig.intro.program_admin_email);
+  if (feedbackForAdmins) {
+    let adminEmail: string | undefined =
+      appConfig.intro.program_admin_email ||
+      // TODO: can remove this after config auto-update has been on prod for awhile
+      appConfig.intro.program_admin_contact.match(
+        /([a-zA-Z0-9._+-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi,
+      )?.[0];
+
+    if (adminEmail) {
+      emailRecipients.push(adminEmail);
+    }
   }
 
   function dismissModal() {
@@ -132,8 +100,8 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
   } else if (userAffect == 'positive') {
     modalContent =
       window['cordova']?.platformId == 'ios'
-        ? t('control.feedback-modal.leave-review-ios')
-        : t('control.feedback-modal.leave-review-android');
+        ? t('control.feedback-modal.leave-review-ios', { deploymentName })
+        : t('control.feedback-modal.leave-review-android', { deploymentName });
   } else if (userAffect == 'negative') {
     modalContent = t('control.feedback-modal.leave-feedback');
   }
@@ -157,19 +125,15 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
                     />
                     <Text>{t('control.feedback-modal.feedback-for-devs')}</Text>
                   </View>
-                  {appConfig?.intro?.program_admin_contact && (
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Checkbox
-                        status={feedbackForAdmins ? 'checked' : 'unchecked'}
-                        onPress={() => setFeedbackForAdmins(!feedbackForAdmins)}
-                      />
-                      <Text>
-                        {t('control.feedback-modal.feedback-for-admin', {
-                          deploymentName: appConfig.intro.translated_text[lang].deployment_name,
-                        })}
-                      </Text>
-                    </View>
-                  )}
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Checkbox
+                      status={feedbackForAdmins ? 'checked' : 'unchecked'}
+                      onPress={() => setFeedbackForAdmins(!feedbackForAdmins)}
+                    />
+                    <Text>
+                      {t('control.feedback-modal.feedback-for-admin', { deploymentName })}
+                    </Text>
+                  </View>
                   {emailRecipients.length > 0 && (
                     <View
                       style={{
