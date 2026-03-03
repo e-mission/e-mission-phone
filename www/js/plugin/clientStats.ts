@@ -9,6 +9,7 @@ type StatKey =
   | 'nav_tab_change'
   | 'open_notification'
   | 'update_user_profile'
+  | 'user_feedback' // { affect?: 'positive' | 'negative', method?: 'email' | 'launch_review' }
   // onboarding interaction stats
   | 'onboard' // { configUpdated (true if success, onboarding began), joinMethod (scan if in-app QR scan, paste if in-app paste, textbox if manually entered, external if launched from browser or external QR scanner)}
   | 'onboarding_state' // { route (current OnoardingRoute enum value), opcode}

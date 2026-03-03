@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, useWindowDimensions, ScrollView, View } from 'react-native';
 import {
   Dialog,
@@ -19,6 +19,7 @@ import { getDeviceSettings } from '../splash/storeDeviceSettings';
 import { getStudyNameFromToken } from '../config/opcode';
 import { logDebug } from '../plugin/logger';
 import { Alerts } from '../components/AlertArea';
+import { addStatReading } from '../plugin/clientStats';
 
 const launchUrl = (url: string) => window['cordova'].InAppBrowser.open(url, '_system');
 
@@ -27,6 +28,7 @@ function launchReview() {
   window['LaunchReview'].launch(
     () => {
       logDebug('LaunchReview.launch success');
+      addStatReading('user_feedback', { method: 'launch_review' });
     },
     (e) => {
       Alerts.addMessage({
@@ -55,6 +57,7 @@ async function launchFeedbackEmail(appConfig: DeploymentConfig, recipients: stri
     `?subject=${encodeURIComponent(subject)}` +
     `&body=${encodeURIComponent(body)}`;
 
+  addStatReading('user_feedback', { method: 'email' });
   launchUrl(mailtoLink);
 }
 
@@ -86,6 +89,13 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
       emailRecipients.push(adminEmail);
     }
   }
+
+  useEffect(() => {
+    if (userAffect) {
+      logDebug(`User indicated ${userAffect} experience`);
+      addStatReading('user_feedback', { affect: userAffect });
+    }
+  }, [userAffect]);
 
   function dismissModal() {
     setUserAffect(null);
