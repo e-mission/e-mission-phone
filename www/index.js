@@ -8,7 +8,7 @@ import './css/style.scss';
 import initializedI18next from './js/i18nextInit';
 window.i18next = initializedI18next;
 
-import App from './js/App';
+import AppRoot from './js/AppRoot';
 import { logDebug } from './js/plugin/logger';
 
 export const deviceReady = new Promise((resolve) => {
@@ -43,7 +43,7 @@ deviceReady.then(() => {
       </style>
       {/* The background color of this SafeAreaView effectively controls the status bar background color.
         Set to theme.colors.elevation.level2 to match the background of the elevated AppBars present on each tab. */}
-      <App />
+      <AppRoot />
     </>,
   );
 });
