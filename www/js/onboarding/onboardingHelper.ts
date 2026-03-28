@@ -4,6 +4,7 @@ import { storageGet, storageSet } from '../plugin/storage';
 import { logDebug } from '../plugin/logger';
 import { readConsentState } from '../splash/startprefs';
 import { addStatReading } from '../plugin/clientStats';
+import { getSubgroupFromToken } from '../config/opcode';
 
 export const INTRO_DONE_KEY = 'intro_done';
 
@@ -23,6 +24,7 @@ export enum OnboardingRoute {
 }
 export type OnboardingState = {
   opcode: string;
+  subgroup: string | undefined;
   route: OnboardingRoute;
 };
 
@@ -38,9 +40,15 @@ export const setSaveQrDone = (b) => (saveQrDone = b);
 export let registerUserDone = false;
 export const setRegisterUserDone = (b) => (registerUserDone = b);
 
+export let pendingOpcode: string | undefined;
+export const setPendingOpcode = (opcode: string) => (pendingOpcode = opcode);
+const getOPCode = () =>
+  (window['cordova'].plugins.OPCodeAuth.getOPCode() as Promise<string>) ||
+  Promise.resolve(pendingOpcode);
+
 export function getPendingOnboardingState(): Promise<OnboardingState> {
-  return Promise.all([getConfig(), readConsentState(), readIntroDone()]).then(
-    ([config, isConsented, isIntroDone]) => {
+  return Promise.all([getOPCode(), getConfig(), readConsentState(), readIntroDone()]).then(
+    ([opcode, config, isConsented, isIntroDone]) => {
       let route: OnboardingRoute;
 
       // backwards compat - prev. versions might have config cleared but still have intro_done set
@@ -50,7 +58,7 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
 
       if (isIntroDone) {
         route = OnboardingRoute.DONE;
-      } else if (!config) {
+      } else if (!config || !opcode) {
         route = OnboardingRoute.WELCOME;
       } else if (!protocolDone && !summaryDone) {
         route = OnboardingRoute.SUMMARY;
@@ -62,8 +70,6 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
         route = OnboardingRoute.SURVEY;
       }
 
-      const opcode = config?.joined?.opcode;
-
       logDebug(`pending onboarding state is ${route}; 
         isIntroDone = ${isIntroDone}; 
         config = ${config}; 
@@ -71,9 +77,9 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
         saveQrDone = ${saveQrDone}; 
         opcode = ${opcode}`);
 
-      addStatReading('onboarding_state', { route, opcode });
-
-      return { route, opcode };
+      const subgroup = config ? getSubgroupFromToken(opcode, config) : undefined;
+      addStatReading('onboarding_state', { route, opcode, subgroup });
+      return { route, opcode, subgroup };
     },
   );
 }
