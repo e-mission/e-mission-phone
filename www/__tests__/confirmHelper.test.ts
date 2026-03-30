@@ -94,6 +94,8 @@ describe('confirmHelper', () => {
     expect(mode2).toEqual(`my_niece's_tricycle_.`); // apostrophe and period are preserved
     const purpose1 = readableLabelToKey(`Going to the store to buy 12 eggs.`);
     expect(purpose1).toEqual('going_to_the_store_to_buy_12_eggs.'); // numbers are preserved
+    const purpose2 = readableLabelToKey(`Looking  for treasure`);
+    expect(purpose2).toEqual('looking_for_treasure'); // extra spaces replaced with single underscore
   });
 
   it(`converts keys to readable labels`, () => {
@@ -103,6 +105,8 @@ describe('confirmHelper', () => {
     expect(mode2).toEqual(`My Niece's Tricycle .`);
     const purpose1 = labelKeyToReadable(`going_to_the_store_to_buy_12_eggs.`);
     expect(purpose1).toEqual(`Going To The Store To Buy 12 Eggs.`);
+    const purpose2 = labelKeyToReadable(`looking__for_treasure`);
+    expect(purpose2).toEqual(`Looking  For Treasure`);
   });
 
   it('looks up a rich mode from a label key, or humanizes the label key if there is no rich mode', () => {

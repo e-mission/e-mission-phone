@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Modal, useWindowDimensions, ScrollView, View } from 'react-native';
 import {
   Dialog,
@@ -12,7 +12,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import color from 'color';
 import { settingStyles } from './ProfileSettings';
-import useAppConfig from '../useAppConfig';
 import DeploymentConfig from 'op-deployment-configs';
 import { t } from 'i18next';
 import { getDeviceSettings } from '../splash/storeDeviceSettings';
@@ -20,6 +19,7 @@ import { getStudyNameFromToken } from '../config/opcode';
 import { logDebug } from '../plugin/logger';
 import { Alerts } from '../components/AlertArea';
 import { addStatReading } from '../plugin/clientStats';
+import { AppContext } from '../App';
 
 const launchUrl = (url: string) => window['cordova'].InAppBrowser.open(url, '_system');
 
@@ -38,8 +38,12 @@ function launchReview() {
   );
 }
 
-async function launchFeedbackEmail(appConfig: DeploymentConfig, recipients: string[]) {
-  const deploymentId = appConfig.url_abbreviation || getStudyNameFromToken(appConfig.joined.opcode);
+async function launchFeedbackEmail(
+  appConfig: DeploymentConfig,
+  opcode: string,
+  recipients: string[],
+) {
+  const deploymentId = appConfig.url_abbreviation || getStudyNameFromToken(opcode);
   const subject = t('control.feedback-modal.feedback-email-subject', { deploymentId });
 
   const deviceSettings = await getDeviceSettings();
@@ -65,13 +69,15 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
   const { height: windowHeight } = useWindowDimensions();
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
-  const appConfig = useAppConfig();
+  const { appConfig, onboardingState } = useContext(AppContext);
   const [userAffect, setUserAffect] = useState<null | 'positive' | 'negative'>(null);
   const [feedbackForDev, setFeedbackForDev] = useState(false);
   const [feedbackForAdmins, setFeedbackForAdmins] = useState(false);
 
+  if (!appConfig || !onboardingState) return null;
+
   const lang = i18n.resolvedLanguage || 'en';
-  const deploymentName = appConfig?.intro.translated_text[lang].deployment_name;
+  const deploymentName = appConfig.intro.translated_text[lang].deployment_name;
 
   const emailRecipients: string[] = [];
   if (feedbackForDev) {
@@ -79,9 +85,9 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
   }
   if (feedbackForAdmins) {
     let adminEmail: string | undefined =
-      appConfig?.intro.program_admin_email ||
+      appConfig.intro.program_admin_email ||
       // TODO: can remove this after config auto-update has been on prod for awhile
-      appConfig?.intro.program_admin_contact.match(
+      appConfig.intro.program_admin_contact.match(
         /([a-zA-Z0-9._+-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi,
       )?.[0];
 
@@ -197,7 +203,9 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
               <Button onPress={dismissModal}>{t('control.feedback-modal.no-thanks')}</Button>
               <Button
                 disabled={!feedbackForDev && !feedbackForAdmins}
-                onPress={() => launchFeedbackEmail(appConfig, emailRecipients)}>
+                onPress={() =>
+                  launchFeedbackEmail(appConfig, onboardingState.opcode, emailRecipients)
+                }>
                 {t('control.feedback-modal.compose-email')}
               </Button>
             </>
