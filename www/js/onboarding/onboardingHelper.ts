@@ -42,9 +42,11 @@ export const setRegisterUserDone = (b) => (registerUserDone = b);
 
 export let pendingOpcode: string | undefined;
 export const setPendingOpcode = (opcode: string) => (pendingOpcode = opcode);
-const getOPCode = () =>
-  (window['cordova'].plugins.OPCodeAuth.getOPCode() as Promise<string>) ||
-  Promise.resolve(pendingOpcode);
+
+async function getOPCode() {
+  const storedOpcode = await window['cordova'].plugins.OPCodeAuth.getOPCode();
+  return storedOpcode || pendingOpcode;
+}
 
 export function getPendingOnboardingState(): Promise<OnboardingState> {
   return Promise.all([getOPCode(), getConfig(), readConsentState(), readIntroDone()]).then(
