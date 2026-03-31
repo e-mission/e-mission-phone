@@ -9,38 +9,44 @@ import { addStatReading } from './plugin/clientStats';
 import { logDebug } from './plugin/logger';
 
 type Props = {
-  onNotActive?: () => void;
-  onResume?: (msNotActive: number) => void;
+  onActive?: (msNotActive: number) => void;
+  onNotActive?: (msActive: number) => void;
   onChange?: (nextAppState: string) => void;
 };
-const useAppState = ({ onNotActive, onResume, onChange }: Props = {}) => {
+const useAppState = ({ onNotActive, onActive, onChange }: Props = {}) => {
   const [appState, setAppState] = useState(AppState.currentState);
-  const [lastNonActiveChangeMs, setLastNonActiveChangeMs] = useState<number>(0);
+  const [lastActiveMs, setLastActiveMs] = useState<number>(0);
+  const [lastNotActiveMs, setLastNotActiveMs] = useState<number>(0);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       addStatReading('app_state_change', nextAppState);
+      const now = Date.now();
+      logDebug(`AppState: ${nextAppState} at ${now}`);
+      if (nextAppState == 'active') {
+        setLastActiveMs(now);
+      } else {
+        setLastNotActiveMs(now);
+      }
       onChange?.(nextAppState);
-      if (appState == 'active' && nextAppState != 'active') {
-        const now = Date.now();
-        setLastNonActiveChangeMs(now);
-        logDebug(`App moved from active to ${nextAppState} at ${now}`);
-        onNotActive?.();
-      }
-      if (appState != 'active' && nextAppState == 'active') {
-        logDebug(
-          `App moved from ${appState} to active after ` +
-            `${Date.now() - lastNonActiveChangeMs!} ms not active`,
-        );
-        onResume?.(Date.now() - lastNonActiveChangeMs!);
-      }
-
       setAppState(nextAppState);
     });
     return () => subscription.remove();
   }, []);
 
-  return { appState, lastNonActiveChangeMs };
+  useEffect(() => {
+    const msNotActive = lastActiveMs - lastNotActiveMs;
+    logDebug(`AppState: active after ${msNotActive} ms not active`);
+    onActive?.(msNotActive);
+  }, [lastActiveMs]);
+
+  useEffect(() => {
+    const msActive = lastNotActiveMs - lastActiveMs;
+    logDebug(`AppState: not active after ${msActive} ms active`);
+    onNotActive?.(msActive);
+  }, [lastNotActiveMs]);
+
+  return { appState, lastActiveMs, lastNotActiveMs };
 };
 
 export default useAppState;

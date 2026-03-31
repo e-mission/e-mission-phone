@@ -22,8 +22,8 @@ const BACKGROUND_TIMEOUT_MS = 5 * 60 * 1000;
 const AppRoot = () => {
   const [currMs, setCurrMs] = React.useState(Date.now());
   const [reloadMs, setReloadMs] = React.useState(Date.now());
-  const { appState, lastNonActiveChangeMs } = useAppState({
-    onResume: (msNotActive) => {
+  const { appState, lastNotActiveMs } = useAppState({
+    onActive: (msNotActive) => {
       if (msNotActive >= BACKGROUND_TIMEOUT_MS) {
         logDebug(`App resumed after ${msNotActive} ms, reloading app`);
         setReloadMs(Date.now());
@@ -38,16 +38,9 @@ const AppRoot = () => {
     return () => clearInterval(interval);
   }, []);
 
-  console.debug(
-    `appState = ${appState}, lastNonActiveChangeMs = ${lastNonActiveChangeMs}, ${
-      currMs - lastNonActiveChangeMs
-    } ms since non-active`,
-  );
-  if (appState == 'active' || currMs - lastNonActiveChangeMs < BACKGROUND_TIMEOUT_MS) {
-    console.log(`showing app`);
-    return <App key={reloadMs} />;
+  if (appState == 'active' || currMs - lastNotActiveMs < BACKGROUND_TIMEOUT_MS) {
+    return <App key={reloadMs} appState={appState} />;
   } else {
-    console.log(`showing blank screen`);
     return null;
   }
 };

@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import useAppState from './useAppState';
+import { AppStateStatus } from 'react-native';
 import useAppConfig from './useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { useAppTheme } from './appTheme';
@@ -29,7 +29,7 @@ type Check = {
   wasRequested?: boolean;
 };
 
-const usePermissionStatus = () => {
+const usePermissionStatus = (appState: AppStateStatus) => {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
 
@@ -358,12 +358,12 @@ const usePermissionStatus = () => {
     refreshAllChecks(checkList);
   }
 
-  useAppState({
-    onResume: () => {
-      logDebug('PERMISSION CHECK: app has resumed, should refresh');
+  useEffect(() => {
+    if (appState == 'active') {
+      logDebug('usePermissionStatus: App state is active, refreshing checks');
       refreshAllChecks(checkList);
-    },
-  });
+    }
+  }, [appState]);
 
   //load when ready
   useEffect(() => {
