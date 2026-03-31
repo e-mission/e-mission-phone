@@ -55,7 +55,7 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [customLabelMap, setCustomLabelMap] = useState<CustomLabelMap>({});
   const appConfig = useAppConfig();
-  const permissionStatus = usePermissionStatus(appState);
+  const permissionStatus = usePermissionStatus(appState, appConfig);
 
   const refreshOnboardingState = () =>
     getPendingOnboardingState().then((state) => {
@@ -145,7 +145,7 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
           {/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
           This also includes if onboarding is DONE altogether (because "DONE" is > "PROTOCOL") */}
           {onboardingState && onboardingState.route > OnboardingRoute.PROTOCOL && (
-            <AppStatusModal permitVis={permissionsPopupVis} setPermitVis={setPermissionsPopupVis} />
+            <AppStatusModal />
           )}
           <AlertArea />
         </AppContext.Provider>

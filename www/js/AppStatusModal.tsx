@@ -4,37 +4,39 @@ import { Dialog, useTheme } from 'react-native-paper';
 import PermissionsControls from './appstatus/PermissionsControls';
 import { settingStyles } from './control/ProfileSettings';
 import { AppContext } from './App';
-//TODO -- import settings styles for dialog
 
-const AppStatusModal = ({ permitVis, setPermitVis }) => {
+const AppStatusModal = () => {
   const { height: windowHeight } = useWindowDimensions();
-  const { permissionStatus } = useContext(AppContext);
-  const { overallStatus, checkList } = permissionStatus;
+  const { permissionStatus, permissionsPopupVis, setPermissionsPopupVis } = useContext(AppContext);
+  const { overallStatus, checkList, refreshAllChecks } = permissionStatus;
   const { colors } = useTheme();
 
   /* Listen for permissions status changes to determine if we should show the modal. */
   useEffect(() => {
     if (overallStatus === false) {
-      setPermitVis(true);
+      setPermissionsPopupVis(true);
     }
   }, [overallStatus, checkList]);
 
   return (
     <Modal
-      visible={permitVis}
+      visible={permissionsPopupVis}
       onRequestClose={() => {
         if (overallStatus) {
-          setPermitVis(false);
+          setPermissionsPopupVis(false);
         }
       }}
       transparent={true}>
       <Dialog
-        visible={permitVis}
+        visible={permissionsPopupVis}
         dismissable={overallStatus}
-        onDismiss={() => setPermitVis(false)}
+        onDismiss={() => setPermissionsPopupVis(false)}
         style={settingStyles.dialog(colors.elevation.level3)}>
         <Dialog.Content style={{ maxHeight: windowHeight / 1.5, paddingBottom: 0 }}>
-          <PermissionsControls onAccept={() => setPermitVis(false)}></PermissionsControls>
+          <PermissionsControls
+            onAccept={() => setPermissionsPopupVis(false)}
+            refreshAllChecks={refreshAllChecks}
+          />
         </Dialog.Content>
       </Dialog>
     </Modal>

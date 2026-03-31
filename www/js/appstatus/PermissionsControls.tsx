@@ -4,11 +4,10 @@ import { StyleSheet, ScrollView, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import PermissionItem from './PermissionItem';
-import { refreshAllChecks } from '../usePermissionStatus';
 import ExplainPermissions from './ExplainPermissions';
 import { AppContext } from '../App';
 
-const PermissionsControls = ({ onAccept }) => {
+const PermissionsControls = ({ onAccept, refreshAllChecks }) => {
   const { t } = useTranslation();
   const [explainVis, setExplainVis] = useState<boolean>(false);
   const { permissionStatus } = useContext(AppContext);
