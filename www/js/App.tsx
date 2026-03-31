@@ -1,4 +1,5 @@
 import React, { useEffect, useState, createContext } from 'react';
+import { AppStateStatus } from 'react-native';
 import { ActivityIndicator, PaperProvider } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import i18next from 'i18next';
@@ -47,14 +48,14 @@ type OnboardingJoinMethod = 'scan' | 'paste' | 'textbox' | 'external';
 
 const theme = getTheme();
 
-const App = () => {
+const App = ({ appState }: { appState: AppStateStatus }) => {
   // will remain null while the onboarding state is still being determined
   const [onboardingState, setOnboardingState] = useState<OnboardingState | null>(null);
   const [permissionsPopupVis, setPermissionsPopupVis] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [customLabelMap, setCustomLabelMap] = useState<CustomLabelMap>({});
   const appConfig = useAppConfig();
-  const permissionStatus = usePermissionStatus();
+  const permissionStatus = usePermissionStatus(appState, appConfig);
 
   const refreshOnboardingState = () =>
     getPendingOnboardingState().then((state) => {
@@ -144,7 +145,7 @@ const App = () => {
           {/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
           This also includes if onboarding is DONE altogether (because "DONE" is > "PROTOCOL") */}
           {onboardingState && onboardingState.route > OnboardingRoute.PROTOCOL && (
-            <AppStatusModal permitVis={permissionsPopupVis} setPermitVis={setPermissionsPopupVis} />
+            <AppStatusModal />
           )}
           <AlertArea />
         </AppContext.Provider>
