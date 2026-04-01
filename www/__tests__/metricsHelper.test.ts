@@ -21,14 +21,13 @@ import {
 } from '../js/metrics/metricsHelper';
 import { DayOfMetricData } from '../js/metrics/metricsTypes';
 import initializedI18next from '../js/i18nextInit';
-import { LabelOptions } from '../js/types/labelTypes';
 import {
   getLabelOptions,
   labelKeyToText,
-  labelOptions,
+  _labelOptions,
 } from '../js/survey/multilabel/confirmHelper';
 import { base_modes } from 'e-mission-common';
-import DeploymentConfig from 'op-deployment-configs';
+import { DeploymentConfig, LabelOptionsConfig } from 'op-deployment-configs';
 window['i18next'] = initializedI18next;
 
 describe('metricsHelper', () => {
@@ -148,7 +147,7 @@ describe('metricsHelper', () => {
         { value: 'bus', base_mode: 'BUS' },
         { value: 'myskateboard', met: { ZOOMING: { mets: 5 } } },
       ],
-    } as LabelOptions;
+    } as LabelOptionsConfig;
     it('should return active modes', () => {
       expect(getActiveModes(fakeLabelOptions)).toEqual(['walk', 'bike', 'ebike', 'myskateboard']);
     });
@@ -301,10 +300,12 @@ describe('metricsHelper', () => {
   });
 
   describe('getColorForModeLabel', () => {
-    // initialize label options (blank appconfig so the default label options will be used)
-    getLabelOptions({});
-    // access the text for each mode option to initialize the color map
-    labelOptions.MODE.forEach((mode) => labelKeyToText(mode.value));
+    beforeAll(async () => {
+      // initialize label options (blank appconfig so the default label options will be used)
+      const lo = await getLabelOptions({} as DeploymentConfig);
+      // access the text for each mode option to initialize the color map
+      lo.MODE.forEach((mode) => labelKeyToText(mode.value));
+    });
 
     it('returns semi-transparent grey if the label starts with "Unlabeled"', () => {
       expect(getColorForModeLabel('Unlabeledzzzzz')).toBe('rgba(85, 85, 85, 0.12)');

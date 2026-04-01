@@ -14,6 +14,7 @@ import {
   TextInput,
   Divider,
 } from 'react-native-paper';
+import { MultilabelKey } from 'op-deployment-configs';
 import DiaryButton from '../../components/DiaryButton';
 import { useTranslation } from 'react-i18next';
 import TimelineContext, { UserInputMap } from '../../TimelineContext';
@@ -29,7 +30,6 @@ import {
   verifiabilityForTrip,
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
-import { MultilabelKey } from '../../types/labelTypes';
 // import { updateUserCustomLabel } from '../../services/commHelper';
 import { AppContext } from '../../App';
 import { addStatReading } from '../../plugin/clientStats';

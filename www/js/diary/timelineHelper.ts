@@ -19,13 +19,12 @@ import {
   SectionSummary,
 } from '../types/diaryTypes';
 import { getLabelInputDetails, getLabelInputs } from '../survey/multilabel/confirmHelper';
-import { RichMode } from '../types/labelTypes';
 import {
   EnketoUserInputEntry,
   filterByNameAndVersion,
   resolveSurveyButtonConfig,
 } from '../survey/enketo/enketoHelper';
-import { DeploymentConfig } from 'op-deployment-configs';
+import { DeploymentConfig, RichMode } from 'op-deployment-configs';
 import { Point, Feature } from 'geojson';
 import { ble_matching, base_modes } from 'e-mission-common';
 

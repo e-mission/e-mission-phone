@@ -6,8 +6,7 @@ import {
   TripTransition,
   UnprocessedTrip,
 } from '../js/types/diaryTypes';
-import { LabelOptions } from '../js/types/labelTypes';
-import { DeploymentConfig } from 'op-deployment-configs';
+import { DeploymentConfig, LabelOptionsConfig } from 'op-deployment-configs';
 
 const mockMetaData: MetaData = {
   write_ts: 1,
@@ -19,12 +18,12 @@ const mockMetaData: MetaData = {
   origin_key: '1',
 };
 
-export const mockLabelOptions: LabelOptions = {
+export const mockLabelOptions: LabelOptionsConfig = {
   MODE: null,
   PURPOSE: null,
   REPLACED_MODE: null,
   translations: null,
-} as unknown as LabelOptions;
+} as unknown as LabelOptionsConfig;
 
 const mockConfirmedPlaceData = {
   source: 'DwellSegmentationTimeFilter',

@@ -4,8 +4,7 @@
 
 import { BaseModeKey, MotionTypeKey } from '../diary/diaryHelper';
 import useDerivedProperties from '../diary/useDerivedProperties';
-import { VehicleIdentity } from 'op-deployment-configs';
-import { MultilabelKey } from './labelTypes';
+import { VehicleIdentity, MultilabelKey } from 'op-deployment-configs';
 import { LocalDt } from './serverData';
 import { FeatureCollection, Feature, Geometry, Point, Position } from 'geojson';
 import { NominatimResponse } from './apiTypes';
