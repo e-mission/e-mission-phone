@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 import { CompositeTrip, TimelineEntry, TimestampRange, UserInputEntry } from './types/diaryTypes';
 import useAppConfig from './useAppConfig';
-import { LabelOption, LabelOptions, MultilabelKey, RichMode } from './types/labelTypes';
+import { LabelOptionsConfig, LabelOption, MultilabelKey, RichMode } from 'op-deployment-configs';
 import { getLabelOptions, labelOptionByValue } from './survey/multilabel/confirmHelper';
 import { displayError, displayErrorMsg, logDebug, logWarn } from './plugin/logger';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +32,7 @@ const getPastWeekDateRange = (): [string, string] => {
 };
 
 type ContextProps = {
-  labelOptions: LabelOptions | null;
+  labelOptions: LabelOptionsConfig | null;
   timelineMap: TimelineMap | null;
   timelineLabelMap: TimelineLabelMap | null;
   userInputFor: (tlEntry: TimelineEntry) => UserInputMap | undefined;
@@ -55,7 +55,7 @@ export const useTimelineContext = (): ContextProps => {
   const { t } = useTranslation();
   const appConfig = useAppConfig();
 
-  const [labelOptions, setLabelOptions] = useState<LabelOptions | null>(null);
+  const [labelOptions, setLabelOptions] = useState<LabelOptionsConfig | null>(null);
   // timestamp range that has been processed by the pipeline on the server
   const [pipelineRange, setPipelineRange] = useState<TimestampRange | null>(null);
   // date range (inclusive) that has been loaded into the UI [YYYY-MM-DD, YYYY-MM-DD]

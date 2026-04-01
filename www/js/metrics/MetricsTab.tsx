@@ -7,12 +7,11 @@ import { MetricsData } from './metricsTypes';
 import { getAggregateData } from '../services/commHelper';
 import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
 import useAppConfig from '../useAppConfig';
-import { DeploymentConfig, MetricList } from 'op-deployment-configs';
+import { DeploymentConfig, MetricList, LabelOptionsConfig } from 'op-deployment-configs';
 import DateSelect from '../diary/list/DateSelect';
 import TimelineContext, { TimelineLabelMap, TimelineMap } from '../TimelineContext';
 import { metrics_summaries } from 'e-mission-common';
 import MetricsScreen from './MetricsScreen';
-import { LabelOptions } from '../types/labelTypes';
 import { useAppTheme } from '../appTheme';
 import { isoDatesDifference } from '../datetimeUtil';
 
@@ -29,7 +28,7 @@ async function computeUserMetrics(
   timelineMap: TimelineMap,
   appConfig: DeploymentConfig,
   timelineLabelMap: TimelineLabelMap | null,
-  labelOptions: LabelOptions,
+  labelOptions: LabelOptionsConfig,
 ) {
   try {
     const timelineValues = [...timelineMap.values()];
@@ -60,7 +59,7 @@ async function fetchAggMetrics(
   metricList: MetricList,
   dateRange: [string, string],
   appConfig: DeploymentConfig,
-  labelOptions: LabelOptions,
+  labelOptions: LabelOptionsConfig,
 ) {
   logDebug('MetricsTab: fetching agg metrics from server for dateRange ' + dateRange);
   const query = {

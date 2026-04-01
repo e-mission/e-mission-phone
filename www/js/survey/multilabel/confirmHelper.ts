@@ -1,14 +1,27 @@
 import { fetchUrlCached } from '../../services/commHelper';
 import i18next from 'i18next';
 import { logDebug } from '../../plugin/logger';
-import { LabelOption, LabelOptions, MultilabelKey, InputDetails } from '../../types/labelTypes';
 import { CompositeTrip, InferredLabels, TimelineEntry } from '../../types/diaryTypes';
 import { UserInputMap } from '../../TimelineContext';
 import DEFAULT_LABEL_OPTIONS from 'e-mission-common/src/emcommon/resources/label-options.default.json';
-import { DeploymentConfig } from 'op-deployment-configs';
+import {
+  DeploymentConfig,
+  LabelOptionsConfig,
+  LabelOption,
+  MultilabelKey,
+} from 'op-deployment-configs';
+
+type InputDetails<T extends string> = {
+  [k in T]?: {
+    name: string;
+    labeltext: string;
+    choosetext: string;
+    key: string;
+  };
+};
 
 let appConfig: DeploymentConfig;
-export let labelOptions: LabelOptions;
+export let labelOptions: LabelOptionsConfig;
 export let inputDetails: InputDetails<MultilabelKey>;
 
 export async function getLabelOptions(appConfigParam?) {

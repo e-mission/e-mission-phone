@@ -1,6 +1,5 @@
 import { DateTime } from 'luxon';
 import { CompositeTrip } from '../types/diaryTypes';
-import { LabelOptions } from '../types/labelTypes';
 import { LocalDt } from '../types/serverData';
 import { ImperialConfig } from '../config/useImperialConfig';
 import { base_modes } from 'e-mission-common';

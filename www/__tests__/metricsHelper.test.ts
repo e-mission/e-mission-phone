@@ -21,14 +21,13 @@ import {
 } from '../js/metrics/metricsHelper';
 import { DayOfMetricData } from '../js/metrics/metricsTypes';
 import initializedI18next from '../js/i18nextInit';
-import { LabelOptions } from '../js/types/labelTypes';
 import {
   getLabelOptions,
   labelKeyToText,
   labelOptions,
 } from '../js/survey/multilabel/confirmHelper';
 import { base_modes } from 'e-mission-common';
-import DeploymentConfig from 'op-deployment-configs';
+import { DeploymentConfig, LabelOptionsConfig } from 'op-deployment-configs';
 window['i18next'] = initializedI18next;
 
 describe('metricsHelper', () => {
@@ -148,7 +147,7 @@ describe('metricsHelper', () => {
         { value: 'bus', base_mode: 'BUS' },
         { value: 'myskateboard', met: { ZOOMING: { mets: 5 } } },
       ],
-    } as LabelOptions;
+    } as LabelOptionsConfig;
     it('should return active modes', () => {
       expect(getActiveModes(fakeLabelOptions)).toEqual(['walk', 'bike', 'ebike', 'myskateboard']);
     });

@@ -2,7 +2,13 @@ import { DateTime } from 'luxon';
 import color from 'color';
 import { DayOfMetricData, MetricEntry, MetricValue } from './metricsTypes';
 import { logDebug } from '../plugin/logger';
-import DeploymentConfig, { MetricName, GroupingField } from 'op-deployment-configs';
+import {
+  DeploymentConfig,
+  MetricName,
+  GroupingField,
+  LabelOptionsConfig,
+  RichMode,
+} from 'op-deployment-configs';
 import { ImperialConfig } from '../config/useImperialConfig';
 import i18next from 'i18next';
 import { base_modes, metrics_summaries } from 'e-mission-common';
@@ -12,7 +18,6 @@ import {
   isoDatesDifference,
   isoDateWithOffset,
 } from '../datetimeUtil';
-import { LabelOptions, RichMode } from '../types/labelTypes';
 import { labelOptions, textToLabelKey } from '../survey/multilabel/confirmHelper';
 import { UNCERTAIN_OPACITY } from '../components/charting';
 
@@ -97,7 +102,7 @@ export function formatDateRangeOfDays(days: DayOfMetricData[]) {
   return formatIsoNoYear(startIsoDate, endIsoDate);
 }
 
-export function getActiveModes(labelOptions: LabelOptions) {
+export function getActiveModes(labelOptions: LabelOptionsConfig) {
   return labelOptions.MODE.filter((mode) => {
     const richMode = base_modes.get_rich_mode(mode) as RichMode;
     return richMode.met && Object.values(richMode.met).some((met) => met?.mets || -1 > 0);
