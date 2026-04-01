@@ -28,13 +28,18 @@ export async function getLabelOptions(appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;
   if (labelOptions) return labelOptions;
   if (appConfig.label_options) {
-    const labelOptionsJson = await fetchUrlCached(appConfig.label_options);
-    if (labelOptionsJson) {
-      logDebug(`label_options found in config, using dynamic label options 
-        at ${appConfig.label_options}`);
-      labelOptions = JSON.parse(labelOptionsJson) as LabelOptions;
+    if (typeof appConfig.label_options == 'string') {
+      const labelOptionsJson = await fetchUrlCached(appConfig.label_options);
+      if (labelOptionsJson) {
+        logDebug(`label_options found in config, using dynamic label options 
+          at ${appConfig.label_options}`);
+        labelOptions = JSON.parse(labelOptionsJson) as LabelOptionsConfig;
+      } else {
+        throw new Error('Label options were falsy from ' + appConfig.label_options);
+      }
     } else {
-      throw new Error('Label options were falsy from ' + appConfig.label_options);
+      logDebug('label_options found in config, using static label options');
+      labelOptions = appConfig.label_options as LabelOptionsConfig;
     }
   } else {
     labelOptions = DEFAULT_LABEL_OPTIONS;

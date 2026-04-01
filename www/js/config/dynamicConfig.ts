@@ -73,7 +73,7 @@ function cacheResourcesFromConfig(config: DeploymentConfig) {
       fetchPromises.push(fetchUrlCached(survey['formPath'], { cache: 'reload' }));
     });
   }
-  if (config.label_options) {
+  if (config.label_options && typeof config.label_options == 'string') {
     fetchPromises.push(fetchUrlCached(config.label_options, { cache: 'reload' }));
   }
   _cacheResourcesFetchPromise = Promise.all(fetchPromises);
