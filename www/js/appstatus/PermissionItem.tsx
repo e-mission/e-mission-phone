@@ -9,13 +9,13 @@ function iconAndColorForCheck(check) {
   return [check.wasRequested ? 'minus-circle-off' : 'minus-circle-off-outline', colors.warn];
 }
 
-const PermissionItem = ({ check }) => {
+const PermissionItem = ({ check, checkList, refreshAllChecks }) => {
   const { t } = useTranslation();
   const [icon, color] = iconAndColorForCheck(check);
 
   return (
     <List.Item
-      onPress={() => check.fix()}
+      onPress={() => check.fix().then(() => refreshAllChecks(checkList))}
       title={t(check.name)}
       description={!check.status ? t(check.desc) : null}
       descriptionNumberOfLines={5}

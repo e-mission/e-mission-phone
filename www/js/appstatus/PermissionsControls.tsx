@@ -24,8 +24,16 @@ const PermissionsControls = ({ onAccept, refreshAllChecks }) => {
         <ExplainPermissions
           explanationList={explanationList}
           visible={explainVis}
-          setVisible={setExplainVis}></ExplainPermissions>
-        {checkList?.map((lc) => <PermissionItem key={lc.name} check={lc}></PermissionItem>)}
+          setVisible={setExplainVis}
+        />
+        {checkList?.map((lc) => (
+          <PermissionItem
+            key={lc.name}
+            check={lc}
+            checkList={checkList}
+            refreshAllChecks={refreshAllChecks}
+          />
+        ))}
       </ScrollView>
       <View style={styles.buttonBox}>
         <Button onPress={() => refreshAllChecks(checkList)}>{t('intro.appstatus.refresh')}</Button>
