@@ -20,35 +20,44 @@ type InputDetails<T extends string> = {
   };
 };
 
-let appConfig: DeploymentConfig;
-export let labelOptions: LabelOptionsConfig;
+let _appConfig: DeploymentConfig;
+export function _resetAppConfigForTest() {
+  _appConfig = undefined!;
+}
+export let _labelOptions: LabelOptionsConfig;
+export function _resetLabelOptionsForTest() {
+  _labelOptions = undefined!;
+}
 export let inputDetails: InputDetails<MultilabelKey>;
+export function _resetInputDetailsForTest() {
+  inputDetails = undefined!;
+}
 
-export async function getLabelOptions(appConfigParam?) {
-  if (appConfigParam) appConfig = appConfigParam;
-  if (labelOptions) return labelOptions;
-  if (appConfig.label_options) {
-    if (typeof appConfig.label_options == 'string') {
-      const labelOptionsJson = await fetchUrlCached(appConfig.label_options);
+export async function getLabelOptions(appConfigParam?: DeploymentConfig) {
+  if (appConfigParam) _appConfig = appConfigParam;
+  if (_labelOptions) return _labelOptions;
+  if (_appConfig.label_options) {
+    if (typeof _appConfig.label_options == 'string') {
+      const labelOptionsJson = await fetchUrlCached(_appConfig.label_options);
       if (labelOptionsJson) {
         logDebug(`label_options found in config, using dynamic label options 
-          at ${appConfig.label_options}`);
-        labelOptions = JSON.parse(labelOptionsJson) as LabelOptionsConfig;
+          at ${_appConfig.label_options}`);
+        _labelOptions = JSON.parse(labelOptionsJson) as LabelOptionsConfig;
       } else {
-        throw new Error('Label options were falsy from ' + appConfig.label_options);
+        throw new Error('Label options were falsy from ' + _appConfig.label_options);
       }
     } else {
       logDebug('label_options found in config, using static label options');
-      labelOptions = appConfig.label_options as LabelOptionsConfig;
+      _labelOptions = _appConfig.label_options as LabelOptionsConfig;
     }
   } else {
-    labelOptions = DEFAULT_LABEL_OPTIONS;
+    _labelOptions = DEFAULT_LABEL_OPTIONS;
   }
-  return labelOptions;
+  return _labelOptions;
 }
 
 export const labelOptionByValue = (value: string, labelType: string): LabelOption | undefined =>
-  labelOptions[labelType]?.find((o) => o.value == value) || getFakeEntry(value);
+  _labelOptions[labelType]?.find((o) => o.value == value) || getFakeEntry(value);
 
 export const baseLabelInputDetails = {
   MODE: {
@@ -65,11 +74,11 @@ export const baseLabelInputDetails = {
   },
 };
 
-export function getLabelInputDetails(appConfigParam?) {
-  if (appConfigParam) appConfig = appConfigParam;
+export function getLabelInputDetails(appConfigParam?: DeploymentConfig) {
+  if (appConfigParam) _appConfig = appConfigParam;
   if (inputDetails) return inputDetails;
 
-  if (!appConfig.intro.mode_studied) {
+  if (!_appConfig.intro.mode_studied) {
     /* If there are no modes of interest, we don't need REPLACED_MODE.
       So just return the base input details. */
     return baseLabelInputDetails;
@@ -87,13 +96,13 @@ export function getLabelInputDetails(appConfigParam?) {
   return inputDetails;
 }
 
-export function labelInputDetailsForTrip(userInputForTrip, appConfigParam?) {
-  if (appConfigParam) appConfig = appConfigParam;
-  if (appConfig.intro.mode_studied) {
+export function labelInputDetailsForTrip(userInputForTrip, appConfigParam?: DeploymentConfig) {
+  if (appConfigParam) _appConfig = appConfigParam;
+  if (_appConfig.intro.mode_studied) {
     const modesStudied =
-      typeof appConfig.intro.mode_studied == 'string'
-        ? [appConfig.intro.mode_studied]
-        : appConfig.intro.mode_studied;
+      typeof _appConfig.intro.mode_studied == 'string'
+        ? [_appConfig.intro.mode_studied]
+        : _appConfig.intro.mode_studied;
     if (modesStudied.includes(userInputForTrip?.['MODE']?.data?.label)) {
       logDebug(`Found trip labeled with ${userInputForTrip?.['MODE']?.data?.label}; 
         modesStudied = ${modesStudied}. Needs REPLACED_MODE`);
@@ -136,8 +145,8 @@ export let labelTextToKeyMap: { [key: string]: string } = {};
 export const labelKeyToText = (labelKey: string) => {
   const lang = i18next.resolvedLanguage || 'en';
   const text =
-    labelOptions?.translations?.[lang]?.[labelKey] ||
-    labelOptions?.translations?.[lang]?.[labelKey] ||
+    _labelOptions?.translations?.[lang]?.[labelKey] ||
+    _labelOptions?.translations?.[lang]?.[labelKey] ||
     labelKeyToReadable(labelKey);
   labelTextToKeyMap[text] = labelKey;
   return text;

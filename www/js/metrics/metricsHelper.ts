@@ -18,7 +18,7 @@ import {
   isoDatesDifference,
   isoDateWithOffset,
 } from '../datetimeUtil';
-import { labelOptions, textToLabelKey } from '../survey/multilabel/confirmHelper';
+import { _labelOptions, textToLabelKey } from '../survey/multilabel/confirmHelper';
 import { UNCERTAIN_OPACITY } from '../components/charting';
 
 const GROUPING_FIELDS: GroupingField[] = [
@@ -212,5 +212,5 @@ export function getColorForModeLabel(label: string) {
     const unknownModeColor = base_modes.get_base_mode_by_key('UNKNOWN').color;
     return color(unknownModeColor).alpha(UNCERTAIN_OPACITY).rgb().string();
   }
-  return base_modes.get_rich_mode_for_value(textToLabelKey(label), labelOptions).color;
+  return base_modes.get_rich_mode_for_value(textToLabelKey(label), _labelOptions).color;
 }
