@@ -16,6 +16,7 @@ import React, { useEffect } from 'react';
 import App from './App';
 import useAppState from './useAppState';
 import { logDebug } from './plugin/logger';
+import { resetPromisedConfig } from './config/dynamicConfig';
 
 const BACKGROUND_TIMEOUT_MS = 5 * 60 * 1000;
 
@@ -26,6 +27,11 @@ const AppRoot = () => {
     onActive: (msNotActive) => {
       if (msNotActive >= BACKGROUND_TIMEOUT_MS) {
         logDebug(`App resumed after ${msNotActive} ms, reloading app`);
+        // reset the cached dynamic config to ensure we retrieve the config on resume,
+        // which could have been updated in the background by the native code
+        // TODO a better long-term strategy is to not cache the config at the module level,
+        // only keep it in React state
+        resetPromisedConfig();
         setReloadMs(Date.now());
       }
     },
