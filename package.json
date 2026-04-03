@@ -88,7 +88,7 @@
     "cordova-plugin-bluetooth-classic-serial-port": "git+https://github.com/e-mission/cordova-plugin-bluetooth-classic-serial-port.git",
     "cordova-plugin-customurlscheme": "5.0.2",
     "cordova-plugin-device": "3.0.0",
-    "cordova-plugin-em-datacollection": "github:e-mission/e-mission-data-collection#v1.9.9",
+    "cordova-plugin-em-datacollection": "github:e-mission/e-mission-data-collection#v2.0.0",
     "cordova-plugin-em-opcodeauth": "git+https://github.com/e-mission/cordova-jwt-auth.git#v1.7.2",
     "cordova-plugin-em-server-communication": "git+https://github.com/e-mission/cordova-server-communication.git#v1.2.7",
     "cordova-plugin-em-serversync": "git+https://github.com/e-mission/cordova-server-sync.git#v1.3.4",
