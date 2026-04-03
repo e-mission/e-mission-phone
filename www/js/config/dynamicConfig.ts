@@ -19,8 +19,7 @@ export let _promisedConfig: Promise<DeploymentConfig | null> | undefined;
 export let configChanged = false;
 export const setConfigChanged = (b) => (configChanged = b);
 
-// used to test multiple configs, not used outside of test
-export const _test_resetPromisedConfig = () => {
+export const resetPromisedConfig = () => {
   _promisedConfig = undefined;
 };
 
