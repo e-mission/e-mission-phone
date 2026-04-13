@@ -149,12 +149,6 @@ Run the setup script
 bash setup/setup__native.sh
 ```
 
-### Activation (after install, and in every new shell)
-
-```
-source setup/activate_native.sh
-```
-
 <details><summary> Expected Output </summary>
 
 ``` 
