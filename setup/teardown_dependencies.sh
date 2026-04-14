@@ -1,4 +1,6 @@
-source setup/export_shared_dep_versions.sh
+set -a
+source setup/dependencies.env
+set +a
 
 echo "Removing .nvm since we installed it"
 rm -rf ~/.nvm/$NODE_VERSION

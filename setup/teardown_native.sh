@@ -1,7 +1,7 @@
 echo "Ensure we exit on error"
 set -e
 
-source setup/teardown_shared.sh
+source setup/teardown_node.sh
 
 # echo "Uninstalling cocoapods version $COCOAPODS_VERSION"
 # gem uninstall cocoapods -v $COCOAPODS_VERSION -x

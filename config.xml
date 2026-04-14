@@ -9,7 +9,7 @@
   </author>
     <content src="index.html" />
     <access origin="*" />
-    <hook src="hooks/before_prepare/download_translation.js" type="before_prepare" />
+    <hook src="hooks/after_prepare/sync_locales.js" type="after_prepare" />
     <preference name="InspectableWebview" value="true" />
     <preference name="webviewbounce" value="false" />
     <preference name="UIWebViewBounce" value="false" />
@@ -39,7 +39,6 @@
     <platform name="ios">
         <preference name="deployment-target" value="13.0"/>
         <hook src="hooks/before_compile/ios/ios_change_deployment.js" type="before_compile" />
-        <hook src="hooks/after_platform_add/ios/ios_copy_locales.js" type="after_platform_add" />
         <hook src="hooks/after_prepare/ios/ios_fix_deployment_target.js" type="after_prepare" />
         <resource-file src="GoogleService-Info.plist" />
         <preference name="WKWebViewOnly" value="true" />
@@ -50,7 +49,6 @@
         </config-file>
     </platform>
     <platform name="android">
-        <hook src="hooks/before_build/android/android_copy_locales.js" type="before_build" />
         <preference name="AndroidLaunchMode" value="singleInstance"/>
         <preference name="AndroidXEnabled" value="true" />
         <resource-file src="google-services.json" target="app/google-services.json" />

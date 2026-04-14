@@ -8,11 +8,9 @@ on:
   push:
     branches:
         - master
-        - maint_upgrade_**
   pull_request:
     branches:
         - master
-        - maint_upgrade_**
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '5 4 * * 0'
@@ -64,7 +62,6 @@ jobs:
         shell: bash -l {0}
         run: |
           export JAVA_HOME=$JAVA_HOME_17_arm64
-          source setup/activate_native.sh
           echo "cordova version"
           npx cordova -version
           echo "ionic version"
@@ -80,9 +77,12 @@ jobs:
           which gradle
           gradle -version
           echo "Let's rerun the activation"
-          source setup/activate_native.sh
           export JAVA_HOME=$JAVA_HOME_17_arm64
           echo $PATH
           which gradle
           gradle --version
-          npx cordova build android
+          npm run build-dev-android
+
+      - name: Cleanup the cordova environment
+        shell: bash -l {0}
+        run: bash setup/teardown_native.sh
