@@ -16,7 +16,6 @@ import {
   mockReminders,
 } from './cordovaMocks';
 import { mockFileSystem } from './fileSystemMocks';
-import { mockPushNotification } from './pushNotificationMocks';
 
 // init i18next so phone_lang is set correctly during tests
 import initializedI18next from '../js/i18nextInit';
@@ -32,5 +31,9 @@ mockBEMServerCom();
 mockFile();
 mockFileSystem();
 mockInAppBrowser();
-mockPushNotification();
 mockReminders();
+
+// empty mocks to prevent "missing asset" in test environment
+// https://github.com/expo/expo/issues/21434
+jest.mock('expo-font');
+jest.mock('expo-asset');

@@ -214,10 +214,8 @@ jest.mock('../js/services/commHelper', () => ({
   getRawEntries: jest.fn((key, startTs, endTs, valTwo) => {
     if (startTs === mockTLH.fakeStartTsOne) return mockTLH.mockCompData;
     if (startTs == mockTLH.fakeStartTsTwo) return mockTLH.mockCompDataTwo;
-    // the original implementation of `getRawEntries` for all other inputs
-    return jest
-      .requireActual('../js/services/commHelper')
-      .getRawEntries(key, startTs, endTs, valTwo);
+    // mock empty response for any other timestamps
+    return Promise.resolve({ phone_data: [] });
   }),
 }));
 

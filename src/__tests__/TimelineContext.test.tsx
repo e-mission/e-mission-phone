@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text } from 'react-native';
-import { act, render, screen, waitFor } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 import { useTimelineContext } from '../js/TimelineContext';
 
 jest.mock('../js/services/commHelper', () => ({
@@ -37,11 +37,7 @@ jest.mock('../js/useAppConfig', () => {
 });
 
 const TimelineContextTestComponent = () => {
-  const { timelineMap, setDateRange } = useTimelineContext();
-
-  useEffect(() => {
-    // setDateRange(['2021-01-01', '2021-01-07']);
-  }, []);
+  const { timelineMap } = useTimelineContext();
 
   if (!timelineMap) return null;
 
@@ -58,12 +54,13 @@ const TimelineContextTestComponent = () => {
 
 describe('TimelineContext', () => {
   it('renders correctly', async () => {
-    render(<TimelineContextTestComponent />);
+    const { toJSON } = render(<TimelineContextTestComponent />);
     await waitFor(() => {
-      // make sure timeline entries are rendered
-      expect(screen.getByTestId('timeline-entries')).toBeTruthy();
-      // make sure number of Text components matches number of timeline entries
-      expect(screen.getAllByText(/entry ID:/).length).toBe(3);
+      const tree = toJSON();
+      expect(tree).toBeTruthy();
+      expect(JSON.stringify(tree)).toContain('entry ID: trip1');
+      expect(JSON.stringify(tree)).toContain('entry ID: trip2');
+      expect(JSON.stringify(tree)).toContain('entry ID: trip3');
     });
   });
 });

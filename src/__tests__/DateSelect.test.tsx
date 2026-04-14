@@ -11,9 +11,8 @@ jest.spyOn(React, 'useEffect').mockImplementation((effect: () => void) => effect
 describe('DateSelect', () => {
   it('renders correctly', () => {
     const onChooseMock = jest.fn();
-    const { getByText } = render(<DateSelect mode="range" onChoose={onChooseMock} />);
+    render(<DateSelect mode="range" onChoose={onChooseMock} />);
 
-    expect(screen.getByTestId('button-container')).toBeTruthy();
-    expect(screen.getByTestId('button')).toBeTruthy();
+    expect(screen.getByLabelText(/Date range:/)).toBeTruthy();
   });
 });

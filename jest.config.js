@@ -1,5 +1,6 @@
 module.exports = {
-  testEnvironment: 'jsdom',
+  preset: 'jest-expo/web',
+  testEnvironment: "jsdom",
   testPathIgnorePatterns: [
     "/node_modules/",
     "/dist/",
@@ -7,12 +8,15 @@ module.exports = {
     "/plugins/",
     "/lib/",
   ],
-  preset: 'react-native',
-  transform: {
-    "^.+\\.(ts|tsx|js|jsx)$": "babel-jest"
-  },
+  modulePathIgnorePatterns: [
+    "/platforms/",
+    "/plugins/",
+  ],
+  // Extend jest-expo/web's transformIgnorePatterns to handle additional ESM packages:
+  // enketo, e-mission-common, and color-*.
   transformIgnorePatterns: [
-    "node_modules/(?!((enketo-transformer/dist/enketo-transformer/web)|enketo(-.*)?|(jest-)?react-native(-.*)?|@react-native(-.*)?|e-mission-common)/)"
+    "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg|enketo(-.*)?|(enketo-transformer/dist/enketo-transformer/web)|e-mission-common|color(-.*)?)",
+    "/node_modules/react-native-reanimated/plugin/"
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   moduleDirectories: ["node_modules", "src"],
