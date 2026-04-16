@@ -63,7 +63,9 @@ const FilterSelect = ({ filters, setFilters, numListDisplayed, numListTotal }: P
           {/* <Dialog.Title>{t('diary.filter-travel')}</Dialog.Title> */}
           <Dialog.Content>
             <RadioButton.Group onValueChange={(k) => chooseFilter(k)} value={selectedFilter}>
-              {filters?.map((f) => <RadioButton.Item key={f.key} label={f.text} value={f.key} />)}
+              {filters?.map((f) => (
+                <RadioButton.Item key={f.key} label={f.text} value={f.key} />
+              ))}
               <RadioButton.Item
                 label={t('diary.show-all') + ' (' + numListTotal + ')'}
                 value="show-all"
