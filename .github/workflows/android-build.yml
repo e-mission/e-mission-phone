@@ -24,65 +24,65 @@ jobs:
     # The type of runner that the job will run on
     runs-on: macos-14
 
-    - name: upgrade bash
-      run: |
-        brew install bash
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+      - name: upgrade bash
+        run: |
+          brew install bash
+      
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      # Runs a single command using the runners shell
+      - name: Prints related environment variables so that we can know what to set 
+        run: env | egrep "JAVA|PATH|ANDROID"
 
-    # Runs a single command using the runners shell
-    - name: Prints related environment variables so that we can know what to set 
-      run: env | egrep "JAVA|PATH|ANDROID"
+      # Runs a single command using the runners shell
+      - name: Print the java and gradle versions
+        run: |
+          echo "Default java version"
+          java -version
+          echo "Setting to Java 11 instead"
+          export JAVA_HOME=$JAVA_HOME_17_arm64
+          java -version
+          echo "Checking gradle"
+          which gradle
+          gradle -version
 
-    # Runs a single command using the runners shell
-    - name: Print the java and gradle versions
-      run: |
-        echo "Default java version"
-        java -version
-        echo "Setting to Java 11 instead"
-        export JAVA_HOME=$JAVA_HOME_17_arm64
-        java -version
-        echo "Checking gradle"
-        which gradle
-        gradle -version
+      - name: Tries to figure out where android is installed
+        run: |
+          echo "Android listed at $ANDROID_SDK_ROOT"
+          ls -al /opt/
 
-    - name: Tries to figure out where android is installed
-      run: |
-        echo "Android listed at $ANDROID_SDK_ROOT"
-        ls -al /opt/
+      - name: Setup the cordova environment
+        shell: bash -l {0}
+        run: |
+          export JAVA_HOME=$JAVA_HOME_17_arm64
+          bash setup/setup_native.sh
 
-    - name: Setup the cordova environment
-      shell: bash -l {0}
-      run: |
-        export JAVA_HOME=$JAVA_HOME_17_arm64
-        bash setup/setup_native.sh
+      - name: Check tool versions
+        shell: bash -l {0}
+        run: |
+          export JAVA_HOME=$JAVA_HOME_17_arm64
+          source setup/activate_native.sh
+          echo "cordova version"
+          npx cordova -version
+          echo "ionic version"
+          npx ionic --version
+          which gradle
+          echo "gradle version"
+          gradle -version
 
-    - name: Check tool versions
-      shell: bash -l {0}
-      run: |
-        export JAVA_HOME=$JAVA_HOME_17_arm64
-        source setup/activate_native.sh
-        echo "cordova version"
-        npx cordova -version
-        echo "ionic version"
-        npx ionic --version
-        which gradle
-        echo "gradle version"
-        gradle -version
-
-    - name: Build android
-      shell: bash -l {0}
-      run: |
-        echo $PATH
-        which gradle
-        gradle -version
-        echo "Let's rerun the activation"
-        source setup/activate_native.sh
-        export JAVA_HOME=$JAVA_HOME_17_arm64
-        echo $PATH
-        which gradle
-        gradle --version
-        npx cordova build android
+      - name: Build android
+        shell: bash -l {0}
+        run: |
+          echo $PATH
+          which gradle
+          gradle -version
+          echo "Let's rerun the activation"
+          source setup/activate_native.sh
+          export JAVA_HOME=$JAVA_HOME_17_arm64
+          echo $PATH
+          which gradle
+          gradle --version
+          npx cordova build android
