@@ -101,6 +101,9 @@ cp setup/google-services.fake.for_ci.json google-services.json
 echo "hack to make the local cordova fail on error"
 sed -i -e "s|/usr/bin/env node|/usr/bin/env node --unhandled-rejections=strict|" node_modules/cordova/bin/cordova
 
+# Ensure www/ exists (if it doesn't, cordova prepare will fail)
+mkdir -p www/
+
 npx cordova prepare$PLATFORMS
 
 EXPECTED_COUNT=25
