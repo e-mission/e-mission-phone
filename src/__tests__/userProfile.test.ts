@@ -1,3 +1,4 @@
+import packageJson from '../../package.json';
 import * as commHelper from '../js/services/commHelper';
 import { registerAndUpdateProfile, updateUserProfile, UserProfile } from '../js/splash/userProfile';
 
@@ -8,10 +9,10 @@ describe('userProfile', () => {
   const currProfile = {
     config_version: 2,
     phone_lang: 'en',
-    curr_platform: 'ios',
-    manufacturer: 'Apple',
-    client_os_version: '14.0.0',
-    client_app_version: '1.2.3',
+    curr_platform: 'web',
+    manufacturer: 'UNKNOWN',
+    client_os_version: '0.0.0',
+    client_app_version: packageJson.version,
     device_token: 'abc123',
     curr_sync_interval: 60,
   } as UserProfile;
@@ -51,7 +52,7 @@ describe('userProfile', () => {
         phone_lang: 'es',
       };
 
-      const result = await updateUserProfile(profileUpdate, undefined);
+      const result = await updateUserProfile(profileUpdate, null);
       expect(getUserSpy).toHaveBeenCalled();
       expect(updateUserSpy).toHaveBeenCalled();
       expect(result).toMatchObject({

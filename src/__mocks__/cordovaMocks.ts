@@ -17,17 +17,16 @@ export const mockLogger = () => {
     console.log(msg);
   };
 };
-import { getConfig } from '../js/config/dynamicConfig';
 import { displayErrorMsg } from '../js/plugin/logger';
 
 export const mockCordova = () => {
   window['cordova'] ||= {};
-  window['cordova'].platformId ||= 'ios';
-  window['cordova'].platformVersion ||= packageJson.dependencies['cordova-ios'];
+  window['cordova'].platformId ||= 'web';
+  window['cordova'].platformVersion ||= '0.0.0';
   window['cordova'].plugins ||= {};
 };
 
-export const mockReminders = () => {
+export const mockLocalNotification = () => {
   let notifications: any[] = [];
   window['cordova'] ||= {};
   window['cordova'].plugins ||= {};
@@ -56,22 +55,22 @@ export const mockReminders = () => {
 
 export const mockDevice = () => {
   window['device'] ||= {};
-  window['device'].cordova ||= packageJson.dependencies['cordova-ios'];
-  window['device'].model ||= 'iPhone 12';
-  window['device'].platform ||= 'ios';
-  window['device'].uuid ||= '123456';
-  window['device'].version ||= '14.0.0';
-  window['device'].manufacturer ||= 'Apple';
+  window['device'].cordova ||= '0.0.0';
+  window['device'].model ||= 'UNKNOWN';
+  window['device'].platform ||= 'web';
+  window['device'].uuid ||= '00000000';
+  window['device'].version ||= '0.0.0';
+  window['device'].manufacturer ||= 'UNKNOWN';
   window['device'].isVirtual ||= false;
-  window['device'].serial ||= 'ABC1234567890';
+  window['device'].serial ||= '00000000';
 };
 
 export const mockGetAppVersion = () => {
   const mockGetAppVersion = {
-    getAppName: () => new Promise((rs, rj) => setTimeout(() => rs('Mock App'))),
-    getPackageName: () => new Promise((rs, rj) => setTimeout(() => rs('com.example.mockapp'))),
-    getVersionCode: () => new Promise((rs, rj) => setTimeout(() => rs('123'))),
-    getVersionNumber: () => new Promise((rs, rj) => setTimeout(() => rs('1.2.3'))),
+    getAppName: () => new Promise((rs, rj) => setTimeout(() => rs(packageJson.displayName))),
+    getPackageName: () => new Promise((rs, rj) => setTimeout(() => rs(packageJson.name))),
+    getVersionCode: () => new Promise((rs, rj) => setTimeout(() => rs(packageJson.version))),
+    getVersionNumber: () => new Promise((rs, rj) => setTimeout(() => rs(packageJson.version))),
   };
   window['cordova'] ||= {};
   window['cordova'].getAppVersion = mockGetAppVersion;
@@ -267,6 +266,13 @@ export const mockBEMDataCollection = () => {
         }),
       );
     },
+    getState: () => {
+      return new Promise<any>((rs, rj) => {
+        setTimeout(() => {
+          rs(undefined);
+        });
+      });
+    },
   };
   window['cordova'] ||= {};
   window['cordova'].plugins ||= {};
@@ -363,21 +369,85 @@ export const mockOPCodeAuth = () => {
   window['cordova'].plugins.OPCodeAuth = mockOPCodeAuth;
 };
 
-let _url_stash = '';
+export const mockFileSystem = () => {
+  const mockFileSystem = (parentDir, handleFS) => {
+    const fs = {
+      filesystem: {
+        root: {
+          getFile: (path, options, onSuccess) => {
+            let fileEntry = {
+              file: (handleFile) => {
+                let file = new File(['this is a mock'], 'loggerDB');
+                handleFile(file);
+              },
+              nativeURL: 'file:///Users/Jest/test/URL/',
+              isFile: true,
+            };
+            onSuccess(fileEntry);
+          },
+        },
+      },
+    };
+    console.log('in mock, fs is ', fs, ' get File is ', fs.filesystem.root.getFile);
+    handleFS(fs);
+  };
+  window['resolveLocalFileSystemURL'] ||= mockFileSystem;
+};
 
 export const mockInAppBrowser = () => {
   const mockInAppBrowser = {
     open: (url: string, mode: string, options: {}) => {
-      _url_stash = url;
+      console.log(`Mock InAppBrowser: open ${url} with mode: ${mode} and options:`, options);
     },
   };
   window['cordova'].InAppBrowser = mockInAppBrowser;
 };
 
-export const getURL = () => {
-  return _url_stash;
-};
+export const mockCordovaHttp = () => {
+  const mockHttp = {
+    sendRequest: async (
+      url: string,
+      options: any,
+      successCallback: (response: { status: number; data: any }) => void,
+      errorCallback: (error: any) => void,
+    ) => {
+      try {
+        const response = await fetch(url, {
+          method: options?.method || 'get',
+          headers: options?.headers,
+          body:
+            options?.data === undefined
+              ? undefined
+              : typeof options.data === 'string'
+                ? options.data
+                : JSON.stringify(options.data),
+        } as RequestInit);
 
-export const clearURL = () => {
-  _url_stash = '';
+        let data: any;
+        if (options?.responseType === 'json') {
+          if (typeof response.json === 'function') {
+            data = await response.json();
+          } else if (typeof response.text === 'function') {
+            data = JSON.parse(await response.text());
+          } else {
+            data = response as any;
+          }
+        } else if (typeof response.text === 'function') {
+          data = await response.text();
+        } else {
+          data = response as any;
+        }
+
+        successCallback({
+          status: (response as any)?.status ?? 200,
+          data,
+        });
+      } catch (error) {
+        errorCallback(error);
+      }
+    },
+  };
+
+  window['cordova'].plugin ||= {};
+  window['cordova'].plugin.http ||= mockHttp;
 };

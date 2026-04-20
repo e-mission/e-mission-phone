@@ -1,10 +1,11 @@
+import packageJson from '../../package.json';
 import { addStatError, addStatReading, getAppVersion } from '../js/plugin/clientStats';
 
 const db = window['cordova']?.plugins?.BEMUserCache;
 
 it('gets the app version', async () => {
   const ver = await getAppVersion();
-  expect(ver).toEqual('1.2.3');
+  expect(ver).toEqual(packageJson.version);
 });
 
 it('stores a client stats reading', async () => {
@@ -15,8 +16,8 @@ it('stores a client stats reading', async () => {
     name: 'set_reminder_prefs',
     ts: expect.any(Number),
     reading,
-    client_app_version: '1.2.3',
-    client_os_version: '14.0.0',
+    client_app_version: packageJson.version,
+    client_os_version: '0.0.0',
   });
 });
 
@@ -27,8 +28,8 @@ it('stores a client stats event', async () => {
     name: 'force_sync',
     ts: expect.any(Number),
     reading: null,
-    client_app_version: '1.2.3',
-    client_os_version: '14.0.0',
+    client_app_version: packageJson.version,
+    client_os_version: '0.0.0',
   });
 });
 
@@ -44,7 +45,7 @@ it('stores a client stats error', async () => {
     name: 'ui_error',
     ts: expect.any(Number),
     reading: errorStr,
-    client_app_version: '1.2.3',
-    client_os_version: '14.0.0',
+    client_app_version: packageJson.version,
+    client_os_version: '0.0.0',
   });
 });

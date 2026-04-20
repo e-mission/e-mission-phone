@@ -4,7 +4,7 @@ import {
   updateScheduledNotifs,
   initReminderPrefs,
 } from '../js/splash/notifScheduler';
-import { mockReminders } from '../__mocks__/cordovaMocks';
+import { mockLocalNotification } from '../__mocks__/cordovaMocks';
 
 const weeklyScheme = {
   weekly: {
@@ -61,7 +61,7 @@ const passiveScheme = {
 describe('notifScheduler', () => {
   describe('initReminderPrefs', () => {
     beforeEach(() => {
-      mockReminders();
+      mockLocalNotification();
       jest.mock('../js/services/commHelper', () => {
         const _commHelperUser = {};
         return {

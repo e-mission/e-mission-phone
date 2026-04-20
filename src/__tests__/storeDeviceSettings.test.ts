@@ -1,3 +1,4 @@
+import packageJson from '../../package.json';
 import { getDeviceSettings } from '../js/splash/storeDeviceSettings';
 
 describe('storeDeviceSettings', () => {
@@ -6,10 +7,10 @@ describe('storeDeviceSettings', () => {
       const deviceSettings = await getDeviceSettings();
       expect(deviceSettings).toMatchObject({
         phone_lang: 'en',
-        curr_platform: 'ios',
-        manufacturer: 'Apple',
-        client_os_version: '14.0.0',
-        client_app_version: '1.2.3',
+        curr_platform: 'web',
+        manufacturer: 'UNKNOWN',
+        client_os_version: '0.0.0',
+        client_app_version: packageJson.version,
       });
     });
   });

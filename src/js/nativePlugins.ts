@@ -1,13 +1,18 @@
 import { Platform } from 'react-native';
-import { DOMParser } from 'react-native-html-parser';
 import {
   mockLogger,
-  mockBEMDataCollection,
-  mockBEMServerCom,
-  mockBEMUserCache,
+  mockCordova,
+  mockLocalNotification,
   mockDevice,
   mockGetAppVersion,
+  mockFile,
+  mockBEMUserCache,
+  mockBEMDataCollection,
+  mockBEMServerCom,
   mockOPCodeAuth,
+  mockFileSystem,
+  mockInAppBrowser,
+  mockCordovaHttp,
 } from '../__mocks__/cordovaMocks';
 
 // If true, we are running in a Cordova app; plugins will be available
@@ -19,18 +24,20 @@ export const IS_CORDOVA = window['cordova'] != undefined;
 // For standalone web we are running Expo web in a browser
 export const IS_WEB = Platform.OS == 'web';
 
-function mockNativeForWeb() {
-  // fill in a few browser APIs that are missing in the Expo environment
-  global.DOMParser = DOMParser;
-
-  // now we need to handle the cordova plugins
+export function mockNativeForWeb() {
   mockLogger();
+  mockCordova();
+  mockLocalNotification();
   mockDevice();
   mockGetAppVersion();
+  mockFile();
   mockBEMUserCache();
-  mockBEMServerCom();
   mockBEMDataCollection();
+  mockBEMServerCom();
   mockOPCodeAuth();
+  mockFileSystem();
+  mockInAppBrowser();
+  mockCordovaHttp();
 }
 
 /* For Cordova, 'deviceready' means that Cordova plugins are loaded and ready to access.
