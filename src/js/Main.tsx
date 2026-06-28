@@ -10,6 +10,7 @@ import { withErrorBoundary } from './plugin/ErrorBoundary';
 import LabelTab from './diary/LabelTab';
 import MetricsTab from './metrics/MetricsTab';
 import ProfileSettings from './control/ProfileSettings';
+import LibraryTab from './library/LibraryTab';
 import TimelineContext, { useTimelineContext } from './TimelineContext';
 import { addStatReading } from './plugin/clientStats';
 import { showMetricsTab } from './metrics/metricsHelper';
@@ -36,12 +37,20 @@ const defaultRoutes = (t) => [
     unfocusedIcon: 'account-outline',
     accessibilityLabel: t('control.profile-tab'),
   },
+  {
+    key: 'library',
+    title: 'library',
+    focusedIcon: 'book-open-page-variant',
+    unfocusedIcon: 'book-open-outline',
+    accessibilityLabel: 'library',
+  },
 ];
 
 const scenes = {
   label: withErrorBoundary(LabelTab),
   metrics: withErrorBoundary(MetricsTab),
   control: withErrorBoundary(ProfileSettings),
+  library: withErrorBoundary(LibraryTab),
 };
 const renderScene = BottomNavigation.SceneMap(scenes);
 
