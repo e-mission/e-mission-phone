@@ -7,29 +7,36 @@ const targets = [
 ];
 
 function ensurePrefix(filePath, prefix) {
-  if (!fs.existsSync(filePath)) {
-    console.log(`Skipping missing file ${filePath}`);
-    return;
+  try {
+    if (!fs.existsSync(filePath)) {
+      console.log(`Skipping missing file ${filePath}`);
+      return;
+    }
+    const content = fs.readFileSync(filePath, { encoding: 'utf-8' });
+    if (content.includes(prefix)) {
+      console.log(`No changes needed for ${filePath}`);
+      return;
+    }
+    fs.writeFileSync(filePath, `${prefix}${content}`);
+    console.log(`Patched imports in ${filePath}`);
+  } catch (e) {
+    const message = e?.message ?? String(e);
+    throw new Error(`Failed to patch ${filePath}: ${message}`, { cause: e });
   }
-  const content = fs.readFileSync(filePath, { encoding: 'utf-8' });
-  if (content.includes(prefix.trim())) {
-    console.log(`No changes needed for ${filePath}`);
-    return;
-  }
-  fs.writeFileSync(filePath, `${prefix}${content}`);
-  console.log(`Patched imports in ${filePath}`);
 }
 
-console.log('Hook to patch cordova-launch-review iOS imports for Xcode module builds');
+module.exports = function () {
+  console.log('Hook to patch cordova-launch-review iOS imports for Xcode module builds');
 
-ensurePrefix(
-  targets[0],
-  '#import <Foundation/Foundation.h>\n#import <UIKit/UIKit.h>\n\n'
-);
+  ensurePrefix(
+    targets[0],
+    '#import <Foundation/Foundation.h>\n#import <UIKit/UIKit.h>\n\n'
+  );
 
-ensurePrefix(
-  targets[1],
-  '#import <dispatch/dispatch.h>\n'
-);
+  ensurePrefix(
+    targets[1],
+    '#import <dispatch/dispatch.h>\n'
+  );
 
-console.log('Done patching cordova-launch-review imports');
+  console.log('Done patching cordova-launch-review imports');
+};
