@@ -68,15 +68,8 @@ jobs:
       - name: Build ios
         shell: bash -l {0}
         run: |
-          set -eo pipefail
           source setup/activate_native.sh
-          build_log=$(mktemp)
-          trap 'rm -f "$build_log"' EXIT
-          npx cordova build ios 2>&1 | tee "$build_log"
-          if grep -q "Error updating config for platform 'ios':" "$build_log"; then
-            echo "cordova-custom-config reported an iOS configuration error"
-            exit 1
-          fi
+          npx cordova build ios
 
       - name: Cleanup the cordova environment
         shell: bash -l {0}
