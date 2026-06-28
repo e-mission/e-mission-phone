@@ -42,6 +42,7 @@
         <hook src="hooks/before_compile/ios/ios_change_deployment.js" type="before_compile" />
         <hook src="hooks/after_platform_add/ios/ios_copy_locales.js" type="after_platform_add" />
         <hook src="hooks/after_prepare/ios/ios_fix_deployment_target.js" type="after_prepare" />
+        <hook src="hooks/after_prepare/ios/ios_fix_launch_review_imports.js" type="after_prepare" />
         <resource-file src="GoogleService-Info.plist" />
         <preference name="WKWebViewOnly" value="true" />
         <preference name="WKSuspendInBackground" value="false" />
