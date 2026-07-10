@@ -4,7 +4,7 @@ export NODE_VERSION=24.3.0
 # so that https://github.com/postmodern/ruby-versions
 # ideally, this would be the same version as the CI
 # Looks like brew supports only major and minor, not patch version
-export RUBY_VERSION=3.3
+export RUBY_VERSION=3.4
 export COCOAPODS_VERSION=1.16.2
 export GRADLE_VERSION=8.10
 export OSX_EXP_VERSION=12

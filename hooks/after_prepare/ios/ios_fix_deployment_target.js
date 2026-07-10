@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const MIN_TARGET_VERSION = '12.0';
+const MIN_TARGET_VERSION = '13.0';
 
 console.log(`Hook to set IPHONEOS_DEPLOYMENT_TARGET to ${MIN_TARGET_VERSION} in all project.pbxproj and Pods.xcodeproj files`);
 
