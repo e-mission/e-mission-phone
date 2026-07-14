@@ -4,10 +4,13 @@ import { Appbar, Button, Text } from 'react-native-paper';
 import NavBar from '../components/NavBar';
 import { displayErrorMsg } from '../plugin/logger';
 import {
+  PaymentIntent,
   CheckoutSession,
   CheckoutSessionStatus,
   PaymentIntentStatus,
+  captureStripeHoldPaymentIntent,
   createStripeCheckoutSession,
+  createStripeHoldPaymentIntent,
   createStripePaymentIntent,
   createStripeRefund,
   isDirectStripeModeEnabled,
@@ -132,6 +135,45 @@ const LibraryTab = () => {
     }
   };
 
+  const onPlaceHoldPress = async () => {
+    try {
+      setPaymentInProgress(true);
+      const holdIntent = await createStripeHoldPaymentIntent(20000);
+      if (holdIntent.status !== 'requires_capture') {
+        displayErrorMsg(
+          `Hold status is '${holdIntent.status || 'unknown'}'.`,
+          'Stripe hold not authorized',
+        );
+      }
+    } catch (e) {
+      displayErrorMsg(String(e), 'Stripe hold failed');
+    } finally {
+      if (isMounted.current) {
+        setPaymentInProgress(false);
+      }
+    }
+  };
+
+  const onCaptureHoldPress = async () => {
+    try {
+      setPaymentInProgress(true);
+      const capturedIntent: PaymentIntent = await captureStripeHoldPaymentIntent(5000);
+      const status = capturedIntent.status || (await pollForPaymentIntentStatus(capturedIntent.id));
+      if (status !== 'succeeded') {
+        displayErrorMsg(
+          `Capture status is '${status || 'unknown'}'.`,
+          'Stripe capture not complete',
+        );
+      }
+    } catch (e) {
+      displayErrorMsg(String(e), 'Stripe capture failed');
+    } finally {
+      if (isMounted.current) {
+        setPaymentInProgress(false);
+      }
+    }
+  };
+
   return (
     <>
       <NavBar elevated={true}>
@@ -170,6 +212,18 @@ const LibraryTab = () => {
           disabled={!setupComplete || setupInProgress || paymentInProgress}
           onPress={() => onCheckoutPress(5000)}>
           checkout ($50.00)
+        </Button>
+        <Button
+          mode="contained"
+          disabled={!setupComplete || setupInProgress || paymentInProgress}
+          onPress={onPlaceHoldPress}>
+          hold ($200.00)
+        </Button>
+        <Button
+          mode="contained"
+          disabled={!setupComplete || setupInProgress || paymentInProgress}
+          onPress={onCaptureHoldPress}>
+          payment($50.00)
         </Button>
       </View>
     </>

@@ -179,6 +179,41 @@ async function getMostRecentCompletedSetupCheckoutSession(): Promise<CheckoutSes
   return latestSetupSession;
 }
 
+async function getReusablePaymentMethodFromSetupCheckout(
+  setupCheckoutSessionId?: string,
+): Promise<{ paymentMethodId: string; customerId: string; resolvedSetupCheckoutSessionId: string }> {
+  const resolvedSetupCheckoutSessionId =
+    setupCheckoutSessionId || (await getMostRecentCompletedSetupCheckoutSession()).id;
+
+  const expandedSession = await directStripeRequest(
+    `/checkout/sessions/${resolvedSetupCheckoutSessionId}`,
+    'GET',
+    { 'expand[]': 'setup_intent' },
+  );
+
+  const setupIntentObject = expandedSession?.setup_intent;
+  const paymentMethodId =
+    typeof setupIntentObject?.payment_method === 'string'
+      ? setupIntentObject.payment_method
+      : setupIntentObject?.payment_method?.id;
+  const customerId = setupIntentObject?.customer || expandedSession?.customer || '';
+
+  if (!setupIntentObject) {
+    throw new Error('Checkout Session has no setup_intent; run setup checkout again');
+  }
+  if (!paymentMethodId) {
+    throw new Error('Previous setup checkout session does not have a reusable payment method yet.');
+  }
+
+  const attachedCustomerId = await ensureCustomerForPaymentMethod(paymentMethodId, customerId);
+
+  return {
+    paymentMethodId,
+    customerId: attachedCustomerId,
+    resolvedSetupCheckoutSessionId,
+  };
+}
+
 export async function createStripeCheckoutSession(mode: 'setup' | 'payment' | 'subscription') {
   console.log(`SUCCESS_URL_ENV=${STRIPE_SUCCESS_URL_ENV}, CANCEL_URL_ENV=${STRIPE_CANCEL_URL_ENV}`);
   const result = await directStripeRequest('/checkout/sessions', 'POST', {
@@ -221,38 +256,11 @@ export async function createStripePaymentIntent(
     );
   }
 
-  const resolvedSetupCheckoutSessionId =
-    setupCheckoutSessionId || (await getMostRecentCompletedSetupCheckoutSession()).id;
-
-  const expandedSession = await directStripeRequest(
-    `/checkout/sessions/${resolvedSetupCheckoutSessionId}`,
-    'GET',
-    { 'expand[]': 'setup_intent' },
-  );
-
-  const setupIntentObject = expandedSession?.setup_intent;
-  const paymentMethodId =
-    typeof setupIntentObject?.payment_method === 'string'
-      ? setupIntentObject.payment_method
-      : setupIntentObject?.payment_method?.id;
-  const customerId = setupIntentObject?.customer || expandedSession?.customer || '';
-
-  if (!setupIntentObject) {
-    throw new Error('Checkout Session has no setup_intent; run setup checkout again');
-  }
-
-  console.log(
-    `createStripePaymentIntent: resolvedSetupCheckoutSessionId=${resolvedSetupCheckoutSessionId}, setupIntent.id=${setupIntentObject?.id}, paymentMethodId=${paymentMethodId}, customerId=${customerId}`,
-  );
-
-  if (!paymentMethodId) {
-    throw new Error(
-      'Previous setup checkout session does not have a reusable payment method yet.',
-    );
-  }
-
-  const attachedCustomerId = await ensureCustomerForPaymentMethod(paymentMethodId, customerId);
-  console.log(`createStripePaymentIntent: attachedCustomerId=${attachedCustomerId}`);
+  const {
+    paymentMethodId,
+    customerId: attachedCustomerId,
+    resolvedSetupCheckoutSessionId,
+  } = await getReusablePaymentMethodFromSetupCheckout(setupCheckoutSessionId);
 
   const result = await directStripeRequest('/payment_intents', 'POST', {
     amount: amountCents,
@@ -268,6 +276,41 @@ export async function createStripePaymentIntent(
   const paymentIntent = normalizePaymentIntent(result);
   if (!paymentIntent?.id) {
     throw new Error('Invalid direct Stripe PaymentIntent response: missing id');
+  }
+  return paymentIntent;
+}
+
+export async function createStripeHoldPaymentIntent(
+  amountCents: number,
+  setupCheckoutSessionId?: string,
+): Promise<PaymentIntent> {
+  if (!Number.isInteger(amountCents) || amountCents < 1) {
+    throw new Error(
+      `Invalid hold amount '${amountCents}'. Hold amount must be a positive integer in cents.`,
+    );
+  }
+
+  const {
+    paymentMethodId,
+    customerId: attachedCustomerId,
+    resolvedSetupCheckoutSessionId,
+  } = await getReusablePaymentMethodFromSetupCheckout(setupCheckoutSessionId);
+
+  const result = await directStripeRequest('/payment_intents', 'POST', {
+    amount: amountCents,
+    currency: 'usd',
+    payment_method: paymentMethodId,
+    confirm: true,
+    capture_method: 'manual',
+    'automatic_payment_methods[enabled]': true,
+    'automatic_payment_methods[allow_redirects]': 'never',
+    customer: attachedCustomerId,
+    'metadata[kind]': 'hold',
+    'metadata[setup_checkout_session_id]': resolvedSetupCheckoutSessionId,
+  });
+  const paymentIntent = normalizePaymentIntent(result);
+  if (!paymentIntent?.id) {
+    throw new Error('Invalid direct Stripe hold PaymentIntent response: missing id');
   }
   return paymentIntent;
 }
@@ -291,6 +334,37 @@ async function getMostRecentSuccessfulDebitPaymentIntentId(): Promise<string> {
     throw new Error('No successful debit PaymentIntent found to refund. Run checkout first.');
   }
   return latestDebit.id;
+}
+
+async function getMostRecentAuthorizedHoldPaymentIntentId(): Promise<string> {
+  const result = await directStripeRequest('/payment_intents', 'GET', { limit: 25 });
+  const intents = Array.isArray(result?.data) ? result.data.map(normalizePaymentIntent) : [];
+  const latestAuthorizedHold = intents.find(
+    (intent: PaymentIntent) =>
+      intent.status === 'requires_capture' && intent.metadata?.kind === 'hold',
+  );
+  if (!latestAuthorizedHold?.id) {
+    throw new Error('No authorized hold PaymentIntent found to capture. Place hold first.');
+  }
+  return latestAuthorizedHold.id;
+}
+
+export async function captureStripeHoldPaymentIntent(amountCents: number): Promise<PaymentIntent> {
+  if (!Number.isInteger(amountCents) || amountCents < 1) {
+    throw new Error(
+      `Invalid capture amount '${amountCents}'. Capture amount must be a positive integer in cents.`,
+    );
+  }
+
+  const paymentIntentId = await getMostRecentAuthorizedHoldPaymentIntentId();
+  const result = await directStripeRequest(`/payment_intents/${paymentIntentId}/capture`, 'POST', {
+    amount_to_capture: amountCents,
+  });
+  const paymentIntent = normalizePaymentIntent(result);
+  if (!paymentIntent?.id) {
+    throw new Error('Invalid direct Stripe capture response: missing id');
+  }
+  return paymentIntent;
 }
 
 export async function createStripeRefund(amountCents: number): Promise<Refund> {
