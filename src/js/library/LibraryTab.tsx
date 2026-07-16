@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Appbar, Button, Text } from 'react-native-paper';
+import { Appbar, Button, Checkbox, Text } from 'react-native-paper';
 import type { ModalProps } from 'react-native';
 import NavBar from '../components/NavBar';
 import { Alerts } from '../components/AlertArea';
 import BikeDockEntryModal from './components/BikeDockEntryModal';
 import CheckoutControlModal from './components/CheckoutControlModal';
+import { humanizeDurationHoursFull } from '../datetimeUtil';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
 import {
   PaymentIntent,
@@ -86,10 +87,19 @@ function computeFee(rentalHours: number) {
   }
 }
 
+function formatRentalDuration(rentalHours: number | null) {
+  if (rentalHours === null) {
+    return '---';
+  }
+
+  return humanizeDurationHoursFull(rentalHours);
+}
+
 const LibraryTab = () => {
   const [setupComplete, setSetupComplete] = useState(false);
   const [setupInProgress, setSetupInProgress] = useState(false);
   const [paymentInProgress, setPaymentInProgress] = useState(false);
+  const [isSimulationMode, setIsSimulationMode] = useState(false);
   const [rentalStartTs, setRentalStartTs] = useState<number | null>(null);
   const [rentalBikeId, setRentalBikeId] = useState<string | null>(null);
   const [rentalNowTs, setRentalNowTs] = useState(Date.now());
@@ -98,7 +108,7 @@ const LibraryTab = () => {
   const rentalHours = rentalStartTs
     ? Math.max(rentalNowTs - rentalStartTs, 0) / (60 * 60 * 1000)
     : null;
-  const rentalStatusText = rentalHours === null ? '---' : `${rentalHours.toFixed(1)} h`;
+  const rentalStatusText = formatRentalDuration(rentalHours);
   const currentFee = rentalHours === null ? 0 : computeFee(rentalHours);
 
   useEffect(() => {
@@ -117,15 +127,17 @@ const LibraryTab = () => {
       return;
     }
 
-    setRentalNowTs(Date.now());
+    if (!isSimulationMode) {
+      setRentalNowTs(Date.now());
+    }
     const intervalId = setInterval(() => {
-      if (isMounted.current) {
+      if (isMounted.current && !isSimulationMode) {
         setRentalNowTs(Date.now());
       }
     }, 60 * 1000);
 
     return () => clearInterval(intervalId);
-  }, [rentalStartTs]);
+  }, [rentalStartTs, isSimulationMode]);
 
   const onSetupCheckoutPress = async () => {
     try {
@@ -262,7 +274,7 @@ const LibraryTab = () => {
       <CheckoutControlModal
         {...props}
         onConfirm={(wantAccessories: boolean) => {
-          const holdAmount = wantAccessories ? 25000 : 20000;
+          const holdAmount = wantAccessories ? 45000 : 40000;
           void confirmCheckout(holdAmount, wantAccessories);
         }}
       />
@@ -321,13 +333,38 @@ const LibraryTab = () => {
             <Text style={styles.warningBody}>
               This screen is connected to a sandbox for testing direct calls from the app.
             </Text>
+            <Checkbox.Item
+              label="Simulation mode"
+              status={isSimulationMode ? 'checked' : 'unchecked'}
+              onPress={() => setIsSimulationMode((prev) => !prev)}
+            />
+            <View style={styles.simulationButtonsRow}>
+              <Button
+                mode="outlined"
+                style={styles.simulationButton}
+                disabled={!isSimulationMode || !rentalBikeId}
+                onPress={() => {
+                  setRentalNowTs((prevTs) => prevTs + 60 * 60 * 1000);
+                }}>
+                +1 hour
+              </Button>
+              <Button
+                mode="outlined"
+                style={styles.simulationButton}
+                disabled={!isSimulationMode || !rentalBikeId}
+                onPress={() => {
+                  setRentalNowTs((prevTs) => prevTs + 24 * 60 * 60 * 1000);
+                }}>
+                +1 day
+              </Button>
+            </View>
           </View>
         )}
+        <View style={styles.rentalDurationRow}>
+          <Text style={styles.statusLabel}>Current rental</Text>
+          <Text style={styles.statusValue}>{rentalStatusText}</Text>
+        </View>
         <View style={styles.statusRow}>
-          <View style={styles.statusBox}>
-            <Text style={styles.statusLabel}>Current rental</Text>
-            <Text style={styles.statusValue}>{rentalStatusText}</Text>
-          </View>
           <View style={styles.statusBox}>
             <Text style={styles.statusLabel}>Current fee</Text>
             <Text style={styles.statusValue}>${currentFee.toFixed(2)}</Text>
@@ -381,6 +418,21 @@ const styles = StyleSheet.create({
   statusValue: {
     fontSize: 20,
     fontWeight: '700',
+  },
+  rentalDurationRow: {
+    borderWidth: 1,
+    borderColor: '#c7c7c7',
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: '#f7f7f7',
+    gap: 4,
+  },
+  simulationButtonsRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  simulationButton: {
+    flex: 1,
   },
   warningBanner: {
     borderWidth: 2,
