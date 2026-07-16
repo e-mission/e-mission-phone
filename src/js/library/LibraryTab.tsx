@@ -1,8 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Appbar, Button, Text } from 'react-native-paper';
+import type { ModalProps } from 'react-native';
 import NavBar from '../components/NavBar';
-import { displayErrorMsg } from '../plugin/logger';
+import { Alerts } from '../components/AlertArea';
+import BikeDockEntryModal from './components/BikeDockEntryModal';
+import CheckoutControlModal from './components/CheckoutControlModal';
+import { displayErrorMsg, logDebug } from '../plugin/logger';
 import {
   PaymentIntent,
   CheckoutSession,
@@ -17,9 +21,12 @@ import {
   listStripeCheckoutSessions,
   retrieveStripePaymentIntent,
 } from '../services/stripeCheckout';
+import { addStatReading } from '../plugin/clientStats';
 
 const SESSION_POLL_INTERVAL_MS = 3000;
 const PAYMENT_INTENT_POLL_TIMEOUT_MS = 2 * 60 * 1000;
+
+let barcodeScannerIsOpen = false;
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -63,18 +70,62 @@ async function pollForPaymentIntentStatus(
   return lastStatus;
 }
 
+function computeFee(rentalHours: number) {
+  if (0 <= rentalHours && rentalHours <= 5) {
+    return 5;
+  } else if (5 < rentalHours && rentalHours <= 24) {
+    return 35;
+  } else if (24 < rentalHours && rentalHours <= 72) {
+    return 100;
+  } else if (72 < rentalHours && rentalHours <= 144) {
+    return 200;
+  } else if (144 < rentalHours && rentalHours <= 336) {
+    return 380;
+  } else {
+    return 380;
+  }
+}
+
 const LibraryTab = () => {
   const [setupComplete, setSetupComplete] = useState(false);
   const [setupInProgress, setSetupInProgress] = useState(false);
   const [paymentInProgress, setPaymentInProgress] = useState(false);
+  const [rentalStartTs, setRentalStartTs] = useState<number | null>(null);
+  const [rentalBikeId, setRentalBikeId] = useState<string | null>(null);
+  const [rentalNowTs, setRentalNowTs] = useState(Date.now());
   const isMounted = useRef(true);
   const directStripeMode = isDirectStripeModeEnabled();
+  const rentalHours = rentalStartTs
+    ? Math.max(rentalNowTs - rentalStartTs, 0) / (60 * 60 * 1000)
+    : null;
+  const rentalStatusText = rentalHours === null ? '---' : `${rentalHours.toFixed(1)} h`;
+  const currentFee = rentalHours === null ? 0 : computeFee(rentalHours);
 
   useEffect(() => {
     return () => {
+      /*
+      Jack, do we use this in other components? Should we?
+      isMounted is a guard to prevent state updates after the component has unmounted.
+      Used with async calls; prevents trying to update React state after navigation away/unmount.
+      */
       isMounted.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (rentalStartTs === null) {
+      return;
+    }
+
+    setRentalNowTs(Date.now());
+    const intervalId = setInterval(() => {
+      if (isMounted.current) {
+        setRentalNowTs(Date.now());
+      }
+    }, 60 * 1000);
+
+    return () => clearInterval(intervalId);
+  }, [rentalStartTs]);
 
   const onSetupCheckoutPress = async () => {
     try {
@@ -96,18 +147,108 @@ const LibraryTab = () => {
     }
   };
 
-  const onCheckoutPress = async (amount: number) => {
+  const runQrScan = async (callback: (resultText: string) => void) => {
+    if (barcodeScannerIsOpen) return;
+
+    if (!(window as any)?.cordova?.plugins?.barcodeScanner) {
+      Alerts.addMessage({ text: 'QR scanner is not available on this device.' });
+      return;
+    }
+
+    barcodeScannerIsOpen = true;
+    addStatReading('open_qr_scanner');
+    (window as any).cordova.plugins.barcodeScanner.scan(
+      (result: { cancelled?: boolean; text?: string; format?: string }) => {
+        barcodeScannerIsOpen = false;
+        logDebug('scanCode: scanned ' + JSON.stringify(result));
+        if (result.cancelled) return;
+        if (!result?.text || result.format != 'QR_CODE') {
+          Alerts.addMessage({ text: 'No QR code found in scan. Please try again.' });
+          return;
+        }
+        callback(result.text);
+      },
+      (error: { message?: string }) => {
+        barcodeScannerIsOpen = false;
+        Alerts.addMessage({ text: 'Scanning failed: ' + (error.message || 'Unknown error') });
+        callback(error.message || 'Unknown error');
+      },
+    );
+  };
+
+  const scanCode = async (callback: (resultText: string) => void) => {
+    Alerts.showPopup((props: Omit<ModalProps, 'children'>) => (
+      <BikeDockEntryModal
+        {...props}
+        onScan={() => {
+          void runQrScan(callback);
+        }}
+        onManualSubmit={(manualId: string) => {
+          callback(manualId);
+        }}
+      />
+    ));
+  };
+
+  const mapBikeToDock = (bike_id: string) => {
+    // Should we validate the bike_id before we try to map it?
+    if (bike_id.startsWith('emission://')) {
+      return "the_one_dock";
+    }
+    return null;
+  };
+
+  const mapDockToBike = (dock_id: string, bike_id: string) => {
+    // Should we validate the dock_id before we try to map it?
+    if (dock_id.startsWith('emission://')) {
+      console.log(`Mapping ${dock_id} to ${bike_id}`);
+    }
+  };
+
+  const unlockDock = (dock_id: string) => {
+    // TODO: add validation to the bike_id here
+    Alerts.addMessage({ text: `Unlocking dock ${dock_id}!` });
+  };
+
+  const lockDock = (dock_id: string) => {
+    Alerts.addMessage({ text: `Locking dock ${dock_id}!` });
+  };
+
+  const confirmCheckout = async (holdAmount: number, wantAccessories: boolean) => {
+    const holdDisplay = (holdAmount / 100).toFixed(2);
+
     try {
       setPaymentInProgress(true);
-      const paymentIntent = await createStripePaymentIntent(amount);
-      const status = await pollForPaymentIntentStatus(paymentIntent.id);
-      if (status !== 'succeeded') {
+      addStatReading('checkout_initiated', { holdAmount, wantAccessories });
+      // We need to figure out the order of operations; place hold first and then allow them to scan
+      // or scan first and then place the hold
+      const holdIntent = await createStripeHoldPaymentIntent(holdAmount);
+      if (holdIntent.status !== 'requires_capture') {
         displayErrorMsg(
-          `PaymentIntent status is '${status || 'unknown'}'.`,
-          'Stripe checkout not complete',
+          `Hold status is '${holdIntent.status || 'unknown'}'.`,
+          'Stripe hold not authorized',
         );
+        addStatReading('checkout_aborted', { holdAmount, wantAccessories });
+        return;
       }
+
+      addStatReading('checkout_confirmed', { holdAmount, wantAccessories });
+      Alerts.addMessage({ text: `Hold of $${holdDisplay} placed successfully.` });
+      scanCode((bike_id: string) => {
+        const dock_id = mapBikeToDock(bike_id);
+        if (dock_id == null) {
+          // TODO: Do we want to distinguish between the two error cases?
+          displayErrorMsg(`Invalid bike_id '${bike_id}' or no dock found for dock_id`);
+          return;
+        }
+        unlockDock(dock_id);
+        setRentalBikeId(bike_id);
+        const now = Date.now();
+        setRentalStartTs(now);
+        setRentalNowTs(now);
+      });
     } catch (e) {
+      addStatReading('checkout_aborted', { holdAmount, wantAccessories, error: String(e) });
       displayErrorMsg(String(e), 'Stripe checkout failed');
     } finally {
       if (isMounted.current) {
@@ -116,57 +257,50 @@ const LibraryTab = () => {
     }
   };
 
-  const onReturnPress = async () => {
-    try {
-      setPaymentInProgress(true);
-      const refund = await createStripeRefund(15000);
-      if (refund.status && !['succeeded', 'pending'].includes(refund.status)) {
-        displayErrorMsg(
-          `Refund status is '${refund.status || 'unknown'}'.`,
-          'Stripe return not complete',
-        );
-      }
-    } catch (e) {
-      displayErrorMsg(String(e), 'Stripe return failed');
-    } finally {
-      if (isMounted.current) {
-        setPaymentInProgress(false);
-      }
-    }
+  const checkout = () => {
+    Alerts.showPopup((props: Omit<ModalProps, 'children'>) => (
+      <CheckoutControlModal
+        {...props}
+        onConfirm={(wantAccessories: boolean) => {
+          const holdAmount = wantAccessories ? 25000 : 20000;
+          void confirmCheckout(holdAmount, wantAccessories);
+        }}
+      />
+    ));
   };
 
-  const onPlaceHoldPress = async () => {
-    try {
-      setPaymentInProgress(true);
-      const holdIntent = await createStripeHoldPaymentIntent(20000);
-      if (holdIntent.status !== 'requires_capture') {
-        displayErrorMsg(
-          `Hold status is '${holdIntent.status || 'unknown'}'.`,
-          'Stripe hold not authorized',
-        );
-      }
-    } catch (e) {
-      displayErrorMsg(String(e), 'Stripe hold failed');
-    } finally {
-      if (isMounted.current) {
-        setPaymentInProgress(false);
-      }
+  const returnBike = async () => {
+    if (rentalHours === null) {
+      displayErrorMsg('No active rental to return.');
+      return;
     }
-  };
 
-  const onCaptureHoldPress = async () => {
     try {
       setPaymentInProgress(true);
-      const capturedIntent: PaymentIntent = await captureStripeHoldPaymentIntent(5000);
+      scanCode((dock_id: string) => {
+        if (!rentalBikeId) {
+          displayErrorMsg('No active bike ID found for this rental.');
+          return;
+        }
+        lockDock(dock_id);
+        mapDockToBike(dock_id, rentalBikeId);
+      });
+      const capturedIntent: PaymentIntent = await captureStripeHoldPaymentIntent(currentFee * 100);
       const status = capturedIntent.status || (await pollForPaymentIntentStatus(capturedIntent.id));
       if (status !== 'succeeded') {
         displayErrorMsg(
           `Capture status is '${status || 'unknown'}'.`,
-          'Stripe capture not complete',
+          'Stripe return not complete',
         );
+        return;
+      }
+
+      if (isMounted.current) {
+        setRentalStartTs(null);
+        setRentalBikeId(null);
       }
     } catch (e) {
-      displayErrorMsg(String(e), 'Stripe capture failed');
+      displayErrorMsg(String(e), 'Stripe return failed');
     } finally {
       if (isMounted.current) {
         setPaymentInProgress(false);
@@ -189,6 +323,16 @@ const LibraryTab = () => {
             </Text>
           </View>
         )}
+        <View style={styles.statusRow}>
+          <View style={styles.statusBox}>
+            <Text style={styles.statusLabel}>Current rental</Text>
+            <Text style={styles.statusValue}>{rentalStatusText}</Text>
+          </View>
+          <View style={styles.statusBox}>
+            <Text style={styles.statusLabel}>Current fee</Text>
+            <Text style={styles.statusValue}>${currentFee.toFixed(2)}</Text>
+          </View>
+        </View>
         <Button
           mode="contained"
           disabled={setupComplete || setupInProgress || paymentInProgress}
@@ -197,33 +341,15 @@ const LibraryTab = () => {
         </Button>
         <Button
           mode="contained"
-          disabled={!setupComplete || setupInProgress || paymentInProgress}
-          onPress={() => onCheckoutPress(20000)}>
-          checkout ($200.00)
+          disabled={!setupComplete || setupInProgress || paymentInProgress || rentalStartTs !== null}
+          onPress={checkout}>
+          checkout
         </Button>
         <Button
           mode="contained"
-          disabled={!setupComplete || setupInProgress || paymentInProgress}
-          onPress={onReturnPress}>
-          return (-$150.00)
-        </Button>
-        <Button
-          mode="contained"
-          disabled={!setupComplete || setupInProgress || paymentInProgress}
-          onPress={() => onCheckoutPress(5000)}>
-          checkout ($50.00)
-        </Button>
-        <Button
-          mode="contained"
-          disabled={!setupComplete || setupInProgress || paymentInProgress}
-          onPress={onPlaceHoldPress}>
-          hold ($200.00)
-        </Button>
-        <Button
-          mode="contained"
-          disabled={!setupComplete || setupInProgress || paymentInProgress}
-          onPress={onCaptureHoldPress}>
-          payment($50.00)
+          disabled={!setupComplete || setupInProgress || paymentInProgress || rentalStartTs === null}
+          onPress={returnBike}>
+          return
         </Button>
       </View>
     </>
@@ -235,6 +361,26 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     gap: 12,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  statusBox: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#c7c7c7',
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: '#f7f7f7',
+    gap: 4,
+  },
+  statusLabel: {
+    color: '#555555',
+  },
+  statusValue: {
+    fontSize: 20,
+    fontWeight: '700',
   },
   warningBanner: {
     borderWidth: 2,
