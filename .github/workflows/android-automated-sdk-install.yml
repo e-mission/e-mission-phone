@@ -32,6 +32,8 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: upgrade bash
       run: |
+        brew untap aws/tap || true
+        brew trust azure/bicep
         brew install bash
     - uses: actions/checkout@v2
 

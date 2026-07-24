@@ -10,6 +10,7 @@
     <content src="index.html" />
     <access origin="*" />
     <hook src="hooks/after_prepare/sync_locales.js" type="after_prepare" />
+    <preference name="cordova-custom-config-stoponerror" value="true" />
     <preference name="InspectableWebview" value="true" />
     <preference name="webviewbounce" value="false" />
     <preference name="UIWebViewBounce" value="false" />
@@ -40,6 +41,7 @@
         <preference name="deployment-target" value="13.0"/>
         <hook src="hooks/before_compile/ios/ios_change_deployment.js" type="before_compile" />
         <hook src="hooks/after_prepare/ios/ios_fix_deployment_target.js" type="after_prepare" />
+        <hook src="hooks/after_prepare/ios/ios_fix_advanced_http.js" type="after_prepare" />
         <resource-file src="GoogleService-Info.plist" />
         <preference name="WKWebViewOnly" value="true" />
         <preference name="WKSuspendInBackground" value="false" />

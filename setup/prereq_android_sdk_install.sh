@@ -1,4 +1,4 @@
-TOOLS_VERSION=10406996
+TOOLS_VERSION=14742923
 TOOLS_ZIP_FILENAME=commandlinetools-mac-${TOOLS_VERSION}_latest.zip
 
 echo "Installing command line tools from $TOOLS_ZIP_FILENAME"
