@@ -273,8 +273,7 @@ const LibraryTab = () => {
     Alerts.showPopup((props: Omit<ModalProps, 'children'>) => (
       <CheckoutControlModal
         {...props}
-        onConfirm={(wantAccessories: boolean) => {
-          const holdAmount = wantAccessories ? 45000 : 40000;
+        onConfirm={(wantAccessories: boolean, holdAmount: number) => {
           void confirmCheckout(holdAmount, wantAccessories);
         }}
       />

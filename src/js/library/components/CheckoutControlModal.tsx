@@ -3,12 +3,12 @@ import { Modal, ModalProps } from 'react-native';
 import { Button, Checkbox, Dialog, Text } from 'react-native-paper';
 
 type Props = Omit<ModalProps, 'children'> & {
-  onConfirm?: (wantAccessories: boolean) => void;
+  onConfirm?: (wantAccessories: boolean, holdAmount: number) => void;
 };
 
 const CheckoutControlModal = ({ onConfirm, ...props }: Props) => {
   const [wantAccessories, setWantAccessories] = useState(false);
-  const holdAmount = wantAccessories ? 25000 : 20000;
+  const holdAmount = wantAccessories ? 38000 : 38000;
   const holdDisplay = (holdAmount / 100).toFixed(2);
   const confirmText = wantAccessories
     ? `We will place a hold of $${holdDisplay} on your account for the bike and accessories. Please confirm.`
@@ -32,7 +32,7 @@ const CheckoutControlModal = ({ onConfirm, ...props }: Props) => {
             mode="contained"
             onPress={() => {
               props.onDismiss?.();
-              onConfirm?.(wantAccessories);
+              onConfirm?.(wantAccessories, holdAmount);
             }}>
             Confirm
           </Button>

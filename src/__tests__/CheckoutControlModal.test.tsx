@@ -14,7 +14,7 @@ describe('CheckoutControlModal', () => {
     fireEvent.press(getByText('Confirm'));
 
     expect(onDismiss).toHaveBeenCalledTimes(1);
-    expect(onConfirm).toHaveBeenCalledWith(false);
+    expect(onConfirm).toHaveBeenCalledWith(false, 38000);
   });
 
   it('toggles accessories and confirms true', () => {
@@ -28,7 +28,7 @@ describe('CheckoutControlModal', () => {
     fireEvent.press(getByText('Include accessories in the rental'));
     fireEvent.press(getByText('Confirm'));
 
-    expect(onConfirm).toHaveBeenCalledWith(true);
+    expect(onConfirm).toHaveBeenCalledWith(true, 38000);
   });
 
   it('does not hang when shown twice in quick succession', () => {
@@ -51,7 +51,7 @@ describe('CheckoutControlModal', () => {
     fireEvent.press(getByText('Confirm'));
 
     expect(onDismiss).toHaveBeenCalledTimes(2);
-    expect(onConfirm).toHaveBeenNthCalledWith(1, true);
-    expect(onConfirm).toHaveBeenNthCalledWith(2, expect.any(Boolean));
+    expect(onConfirm).toHaveBeenNthCalledWith(1, true, 38000);
+    expect(onConfirm).toHaveBeenNthCalledWith(2, expect.any(Boolean), 38000);
   });
 });
