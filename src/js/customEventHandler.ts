@@ -20,6 +20,13 @@ export const EVENTS = {
   CLOUD_NOTIFICATION_EVENT: 'cloud:push:notification',
   CONSENTED_EVENT: 'data_collection_consented',
   INTRO_DONE_EVENT: 'intro_done',
+  TOKEN_OR_URL_EVENT: 'app:token_or_url',
+};
+
+export type TokenOrUrlEventData = {
+  tokenOrUrl: string;
+  joinMethod: string;
+  registerHandler: (handlerResult: Promise<boolean> | boolean) => void;
 };
 
 /**

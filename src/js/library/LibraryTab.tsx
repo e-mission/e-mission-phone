@@ -6,12 +6,13 @@ import NavBar from '../components/NavBar';
 import { Alerts } from '../components/AlertArea';
 import BikeDockEntryModal from './components/BikeDockEntryModal';
 import CheckoutControlModal from './components/CheckoutControlModal';
+import { EVENTS, subscribe, TokenOrUrlEventData, unsubscribe } from '../customEventHandler';
 import { humanizeDurationHoursFull } from '../datetimeUtil';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
 import {
+  finalizeStripeCheckoutSession,
+  getLibrarySetupStatus,
   PaymentIntent,
-  CheckoutSession,
-  CheckoutSessionStatus,
   PaymentIntentStatus,
   captureStripeHoldPaymentIntent,
   createStripeCheckoutSession,
@@ -19,10 +20,10 @@ import {
   createStripePaymentIntent,
   createStripeRefund,
   isDirectStripeModeEnabled,
-  listStripeCheckoutSessions,
   retrieveStripePaymentIntent,
 } from '../services/stripeCheckout';
 import { addStatReading } from '../plugin/clientStats';
+import useAppState from '../useAppState';
 
 const SESSION_POLL_INTERVAL_MS = 3000;
 const PAYMENT_INTENT_POLL_TIMEOUT_MS = 2 * 60 * 1000;
@@ -30,26 +31,6 @@ const PAYMENT_INTENT_POLL_TIMEOUT_MS = 2 * 60 * 1000;
 let barcodeScannerIsOpen = false;
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-async function pollForCheckoutSessionStatus(
-  sessionId: string,
-  expiresAt?: number,
-): Promise<CheckoutSessionStatus> {
-  while (true) {
-    const sessions = await listStripeCheckoutSessions({ limit: 25 });
-    const session = sessions.find((s: CheckoutSession) => s.id === sessionId);
-
-    if (session?.status === 'complete' || session?.status === 'expired') {
-      return session.status;
-    }
-
-    if (expiresAt && Date.now() / 1000 >= expiresAt) {
-      return 'expired';
-    }
-
-    await wait(SESSION_POLL_INTERVAL_MS);
-  }
-}
 
 async function pollForPaymentIntentStatus(
   paymentIntentId: string,
@@ -110,6 +91,41 @@ const LibraryTab = () => {
     : null;
   const rentalStatusText = formatRentalDuration(rentalHours);
   const currentFee = rentalHours === null ? 0 : computeFee(rentalHours);
+  const hasSeenInitialActive = useRef(false);
+
+  const refreshSetupStatus = async () => {
+    if (!isMounted.current) {
+      return;
+    }
+
+    try {
+      setSetupInProgress(true);
+      const session = await getLibrarySetupStatus();
+      console.log(`refreshSetupStatus: session = ` + session);
+      if (isMounted.current) {
+        setSetupComplete(session.status === 'completed');
+      }
+    } catch (e) {
+      if (isMounted.current) {
+        displayErrorMsg(String(e), 'Unable to refresh Stripe setup status');
+      }
+    } finally {
+      if (isMounted.current) {
+        setSetupInProgress(false);
+      }
+    }
+  };
+
+  useAppState({
+    onActive: () => {
+      if (!hasSeenInitialActive.current) {
+        hasSeenInitialActive.current = true;
+        return;
+      }
+
+      void refreshSetupStatus();
+    },
+  });
 
   useEffect(() => {
     return () => {
@@ -120,6 +136,65 @@ const LibraryTab = () => {
       */
       isMounted.current = false;
     };
+  }, []);
+
+  // TODO: think through error cases and error reporting more carefully.
+  useEffect(() => {
+    const handleTokenOrUrlEvent = (event: Event) => {
+      const { tokenOrUrl, registerHandler } = (event as CustomEvent<TokenOrUrlEventData>).detail;
+
+      registerHandler(
+        (async () => {
+          let callbackPath: string;
+          try {
+            const parsedUrl = new URL(tokenOrUrl);
+            callbackPath = `${parsedUrl.hostname ? `/${parsedUrl.hostname}` : ''}${parsedUrl.pathname}`;
+          } catch {
+            return false;
+          }
+
+          if (!callbackPath.startsWith('/library')) {
+            return false;
+          }
+
+          if (isMounted.current) {
+            setSetupInProgress(true);
+          }
+
+          try {
+            const callback = await finalizeStripeCheckoutSession(callbackPath);
+            console.log(`handleTokenOrUrl: callback = ` + callback);
+            if (!isMounted.current) {
+              return true;
+            }
+
+            if (callback.callback_status === 'success') {
+              setSetupComplete(true);
+            } else {
+              setSetupComplete(false);
+              Alerts.addMessage({
+                text: `Stripe setup ${callback.callback_status || 'did not complete'}.`,
+              });
+            }
+
+            return true;
+          } catch (e) {
+            if (isMounted.current) {
+              setSetupComplete(false);
+              displayErrorMsg(String(e), 'Stripe setup finalization failed');
+            }
+            return true;
+          } finally {
+            if (isMounted.current) {
+              setSetupInProgress(false);
+            }
+          }
+        })(),
+      );
+    };
+
+    subscribe(EVENTS.TOKEN_OR_URL_EVENT, handleTokenOrUrlEvent);
+    return () => unsubscribe(EVENTS.TOKEN_OR_URL_EVENT, handleTokenOrUrlEvent);
   }, []);
 
   useEffect(() => {
@@ -145,17 +220,11 @@ const LibraryTab = () => {
       const session = await createStripeCheckoutSession('setup');
 
       (window as any).cordova.InAppBrowser.open(session.url as string, '_system');
-
-      const status = await pollForCheckoutSessionStatus(session.id, session.expires_at);
-      if (status === 'complete' && isMounted.current) {
-        setSetupComplete(true);
-      }
     } catch (e) {
-      displayErrorMsg(String(e), 'Stripe setup failed');
-    } finally {
       if (isMounted.current) {
         setSetupInProgress(false);
       }
+      displayErrorMsg(String(e), 'Stripe setup failed');
     }
   };
 

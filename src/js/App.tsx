@@ -22,6 +22,7 @@ import initializedI18next from '../js/i18nextInit';
 window['i18next'] = initializedI18next;
 
 import { joinWithTokenOrUrl } from './config/dynamicConfig';
+import { EVENTS, publish, TokenOrUrlEventData } from './customEventHandler';
 import { addStatReading } from './plugin/clientStats';
 import { displayErrorMsg, logDebug } from './plugin/logger';
 import { registerAndUpdateProfile, updateUserProfile, UserProfile } from './splash/userProfile';
@@ -73,6 +74,25 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
   }, []);
 
   async function handleTokenOrUrl(tokenOrUrl: string, joinMethod: OnboardingJoinMethod) {
+    const tokenOrUrlHandlerResults: Array<Promise<boolean>> = [];
+    const tokenOrUrlEvent: TokenOrUrlEventData = {
+      tokenOrUrl,
+      joinMethod,
+      registerHandler: (handlerResult) => {
+        tokenOrUrlHandlerResults.push(Promise.resolve(handlerResult));
+      },
+    };
+    publish(EVENTS.TOKEN_OR_URL_EVENT, tokenOrUrlEvent);
+
+    if (tokenOrUrlHandlerResults.length > 0) {
+      const handlerResults = await Promise.all(tokenOrUrlHandlerResults);
+      // TODO: should this be "some" or "every"?
+      // Don't want to swallow events that are actually meaningful for onboarding
+      if (handlerResults.some(Boolean)) {
+        return true;
+      }
+    }
+
     const onboardingState = await refreshOnboardingState();
     logDebug(`handleTokenOrUrl: onboardingState = ${JSON.stringify(onboardingState)}`);
     if (onboardingState.route > OnboardingRoute.WELCOME) {
@@ -89,7 +109,7 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
 
   // handleOpenURL function must be provided globally for cordova-plugin-customurlscheme
   // https://www.npmjs.com/package/cordova-plugin-customurlscheme
-  window['handleOpenURL'] = (url: string) => {
+  (window as any).handleOpenURL = (url: string) => {
     if (url?.startsWith(URL_SCHEME + '://')) {
       handleTokenOrUrl(url, 'external');
     } else {
@@ -125,7 +145,7 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
     permissionsPopupVis,
     setPermissionsPopupVis,
     userProfile,
-    updateUserProfile: (p) => updateUserProfile(p, userProfile).then(setUserProfile),
+    updateUserProfile: (p: Partial<UserProfile>) => updateUserProfile(p, userProfile).then(setUserProfile),
     customLabelMap,
     setCustomLabelMap,
   };

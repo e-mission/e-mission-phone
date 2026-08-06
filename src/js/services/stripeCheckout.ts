@@ -1,4 +1,6 @@
-export type CheckoutSessionStatus = 'open' | 'complete' | 'expired';
+import { displayError } from "../plugin/logger";
+
+export type CheckoutSessionStatus = 'open' | 'complete' | 'completed' | 'expired';
 
 export type CheckoutSession = {
   id: string;
@@ -36,6 +38,11 @@ export type Refund = {
   amount?: number;
   currency?: string;
   payment_intent?: string;
+};
+
+export type LibrarySetupCallback = {
+  callback_status: string;
+  result: any;
 };
 
 type PaymentMethod = {
@@ -106,6 +113,15 @@ function toFormBody(data: Record<string, any>) {
     body.append(k, String(v));
   });
   return body;
+}
+
+function callLibraryServer(path: string, body: Record<string, any>) {
+  // TODO: better error handling for the reject case, right now, it just 
+  // hangs with no error
+  return new Promise<any>((resolve, reject) => {
+    const msgFiller = (message: Record<string, any>) => Object.assign(message, body);
+    (window as any).cordova.plugins.BEMServerComm.pushGetJSON(path, msgFiller, resolve, reject);
+  });
 }
 
 async function directStripeRequest(
@@ -215,19 +231,45 @@ async function getReusablePaymentMethodFromSetupCheckout(
 }
 
 export async function createStripeCheckoutSession(mode: 'setup' | 'payment' | 'subscription') {
-  console.log(`SUCCESS_URL_ENV=${STRIPE_SUCCESS_URL_ENV}, CANCEL_URL_ENV=${STRIPE_CANCEL_URL_ENV}`);
-  const result = await directStripeRequest('/checkout/sessions', 'POST', {
-    mode,
-    success_url: STRIPE_SUCCESS_URL_ENV,
-    currency: 'USD',
-    ...(STRIPE_CANCEL_URL_ENV ? { cancel_url: STRIPE_CANCEL_URL_ENV } : {}),
-  });
+  const result = await callLibraryServer('/library/setup/create', {});
   const session = normalizeSession(result);
   if (!session?.id || !session?.url) {
-    throw new Error('Invalid direct Stripe create response: missing id or url');
+    displayError(result, 'Invalid direct Stripe Checkout Session create response: missing id or url');
   }
   return session;
 }
+
+export async function finalizeStripeCheckoutSession(
+  callback_path: string,
+): Promise<LibrarySetupCallback> {
+  const callback_path_parts = callback_path.replace(/^\/+/, '').split('/');
+  const callback_module = callback_path_parts[0];
+  if (callback_module !== 'library') {
+    throw new Error(`Invalid callback path ${callback_path}: must start with /library`);
+  }
+  const callback_status = callback_path_parts[callback_path_parts.length - 1];
+  if (!callback_status || callback_status === 'library') {
+    throw new Error(`Invalid callback path ${callback_path}: missing callback status`);
+  }
+  console.log(`finalizeStripeCheckoutSession: callback_status = ${callback_status}`);
+  const result = await callLibraryServer('/library/setup/finalize', { callback_status });
+  return { callback_status, result };
+}
+
+export async function getLibrarySetupStatus(): Promise<CheckoutSession> {
+  const result = await callLibraryServer('/library/setup/status', {});
+
+  const session = normalizeSession(
+    result?.session || result?.checkout_session || result?.stripe_checkout_session || result,
+  );
+
+  if (session?.id) {
+    return session;
+  }
+
+  throw new Error(`Invalid library/setup/status response: ${JSON.stringify(result)}`);
+}
+
 
 export async function listStripeCheckoutSessions(
   params: Record<string, any> = {},
