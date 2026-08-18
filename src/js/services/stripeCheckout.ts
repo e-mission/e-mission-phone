@@ -239,7 +239,7 @@ export async function createStripeCheckoutSession(mode: 'setup' | 'payment' | 's
   return session;
 }
 
-export async function finalizeStripeCheckoutSession(
+export async function checkAndGetStripeCheckoutSessionStatus(
   callback_path: string,
 ): Promise<LibrarySetupCallback> {
   const callback_path_parts = callback_path.replace(/^\/+/, '').split('/');
@@ -252,7 +252,7 @@ export async function finalizeStripeCheckoutSession(
     throw new Error(`Invalid callback path ${callback_path}: missing callback status`);
   }
   console.log(`finalizeStripeCheckoutSession: callback_status = ${callback_status}`);
-  const result = await callLibraryServer('/library/setup/finalize', { callback_status });
+  const result = await callLibraryServer('/library/setup/check_and_get_status', { callback_status });
   return { callback_status, result };
 }
 

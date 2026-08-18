@@ -37,8 +37,7 @@ jest.mock('../js/plugin/clientStats', () => ({
 
 jest.mock('../js/services/stripeCheckout', () => ({
   __esModule: true,
-  finalizeStripeCheckoutSession: jest.fn(),
-  getLibrarySetupStatus: jest.fn(),
+  checkAndGetStripeCheckoutSessionStatus: jest.fn(),
   captureStripeHoldPaymentIntent: jest.fn(),
   createStripeCheckoutSession: jest.fn(),
   createStripeHoldPaymentIntent: jest.fn(),

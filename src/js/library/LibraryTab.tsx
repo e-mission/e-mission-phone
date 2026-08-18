@@ -10,7 +10,7 @@ import { EVENTS, subscribe, TokenOrUrlEventData, unsubscribe } from '../customEv
 import { humanizeDurationHoursFull } from '../datetimeUtil';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
 import {
-  finalizeStripeCheckoutSession,
+  checkAndGetStripeCheckoutSessionStatus,
   getLibrarySetupStatus,
   PaymentIntent,
   PaymentIntentStatus,
@@ -100,11 +100,16 @@ const LibraryTab = () => {
     }
 
     try {
+      // TODO: get (lightweight call) the server status before checking
+      // This call goes to the server and then to the stripe server
+      // caching it on the server and the client will improve performance
+      // since the common case will be that the setup will be complete
       console.log('refreshSetupStatus: fetching library setup status');
-      const session = await getLibrarySetupStatus();
-      console.log(`refreshSetupStatus: session = ` + session);
+      callback_path = '/payment/setup/refresh';
+      const session = await checkAndGetStripeCheckoutSessionStatus(callback_path);
+      console.log(`refreshSetupStatus: response = ` + JSON.stringify(session));
       if (isMounted.current) {
-        setSetupComplete(session.status === 'completed');
+        setSetupComplete(session.payment_setup_status !== "WAITING_FOR_USER_INPUT");
       }
     } catch (e) {
       if (isMounted.current) {
@@ -115,9 +120,7 @@ const LibraryTab = () => {
 
   useAppState({
     onActive: () => {
-      if (setupInProgress) {
-        void refreshSetupStatus();
-      }
+      void refreshSetupStatus();
     },
   });
 
@@ -156,7 +159,7 @@ const LibraryTab = () => {
           }
 
           try {
-            const callback = await finalizeStripeCheckoutSession(callbackPath);
+            const callback = await checkAndGetStripeCheckoutSessionStatus(callbackPath);
             console.log(`handleTokenOrUrl: callback = ` + callback);
             if (!isMounted.current) {
               return true;
