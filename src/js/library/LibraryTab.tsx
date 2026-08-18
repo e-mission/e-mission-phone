@@ -91,15 +91,16 @@ const LibraryTab = () => {
     : null;
   const rentalStatusText = formatRentalDuration(rentalHours);
   const currentFee = rentalHours === null ? 0 : computeFee(rentalHours);
-  const hasSeenInitialActive = useRef(false);
 
   const refreshSetupStatus = async () => {
+    console.log('refreshSetupStatus: called');
     if (!isMounted.current) {
+      console.log('refreshSetupStatus: component is not mounted, aborting');
       return;
     }
 
     try {
-      setSetupInProgress(true);
+      console.log('refreshSetupStatus: fetching library setup status');
       const session = await getLibrarySetupStatus();
       console.log(`refreshSetupStatus: session = ` + session);
       if (isMounted.current) {
@@ -109,21 +110,14 @@ const LibraryTab = () => {
       if (isMounted.current) {
         displayErrorMsg(String(e), 'Unable to refresh Stripe setup status');
       }
-    } finally {
-      if (isMounted.current) {
-        setSetupInProgress(false);
-      }
     }
   };
 
   useAppState({
     onActive: () => {
-      if (!hasSeenInitialActive.current) {
-        hasSeenInitialActive.current = true;
-        return;
+      if (setupInProgress) {
+        void refreshSetupStatus();
       }
-
-      void refreshSetupStatus();
     },
   });
 
@@ -153,7 +147,7 @@ const LibraryTab = () => {
             return false;
           }
 
-          if (!callbackPath.startsWith('/library')) {
+          if (!callbackPath.startsWith('/payment')) {
             return false;
           }
 
@@ -221,6 +215,7 @@ const LibraryTab = () => {
 
       (window as any).cordova.InAppBrowser.open(session.url as string, '_system');
     } catch (e) {
+      console.error('onSetupCheckoutPress: error = ' + e);
       if (isMounted.current) {
         setSetupInProgress(false);
       }

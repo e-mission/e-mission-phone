@@ -244,11 +244,11 @@ export async function finalizeStripeCheckoutSession(
 ): Promise<LibrarySetupCallback> {
   const callback_path_parts = callback_path.replace(/^\/+/, '').split('/');
   const callback_module = callback_path_parts[0];
-  if (callback_module !== 'library') {
-    throw new Error(`Invalid callback path ${callback_path}: must start with /library`);
+  if (callback_module !== 'payment') {
+    throw new Error(`Invalid callback path ${callback_path}: must start with /payment`);
   }
   const callback_status = callback_path_parts[callback_path_parts.length - 1];
-  if (!callback_status || callback_status === 'library') {
+  if (!callback_status) {
     throw new Error(`Invalid callback path ${callback_path}: missing callback status`);
   }
   console.log(`finalizeStripeCheckoutSession: callback_status = ${callback_status}`);
