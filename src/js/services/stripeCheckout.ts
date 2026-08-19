@@ -182,19 +182,6 @@ async function ensureCustomerForPaymentMethod(
   return resolvedCustomerId;
 }
 
-async function getMostRecentCompletedSetupCheckoutSession(): Promise<CheckoutSession> {
-  const sessions = await listStripeCheckoutSessions({ status: 'complete', limit: 25 });
-  const latestSetupSession = sessions.find(
-    (session: CheckoutSession) => session.mode === 'setup' && Boolean(session.setup_intent),
-  );
-  if (!latestSetupSession) {
-    throw new Error(
-      'No completed setup checkout session found. Run setup checkout first to save payment details.',
-    );
-  }
-  return latestSetupSession;
-}
-
 async function getReusablePaymentMethodFromSetupCheckout(
   setupCheckoutSessionId?: string,
 ): Promise<{ paymentMethodId: string; customerId: string; resolvedSetupCheckoutSessionId: string }> {
@@ -268,24 +255,6 @@ export async function getLibrarySetupStatus(): Promise<CheckoutSession> {
   }
 
   throw new Error(`Invalid library/setup/status response: ${JSON.stringify(result)}`);
-}
-
-
-export async function listStripeCheckoutSessions(
-  params: Record<string, any> = {},
-): Promise<CheckoutSession[]> {
-  const result = await directStripeRequest('/checkout/sessions', 'GET', params);
-  const data = Array.isArray(result?.data) ? result.data : [];
-  return data.map(normalizeSession).filter((s: CheckoutSession) => Boolean(s.id));
-}
-
-export async function retrieveStripeCheckoutSession(sessionId: string): Promise<CheckoutSession> {
-  const result = await directStripeRequest(`/checkout/sessions/${sessionId}`, 'GET', {});
-  const session = normalizeSession(result);
-  if (!session?.id) {
-    throw new Error('Invalid direct Stripe Checkout Session retrieve response: missing id');
-  }
-  return session;
 }
 
 export async function createStripePaymentIntent(
