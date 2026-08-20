@@ -1,15 +1,6 @@
-import { displayError } from "../plugin/logger";
-
-export type CheckoutSessionStatus = 'open' | 'complete' | 'completed' | 'expired';
-
 export type CheckoutSession = {
   id: string;
-  url?: string;
-  status?: CheckoutSessionStatus;
-  expires_at?: number;
-  mode?: 'setup' | 'payment' | 'subscription';
-  setup_intent?: string;
-  customer?: string;
+  url: string;
 };
 
 export type PaymentIntentStatus =
@@ -42,7 +33,55 @@ export type Refund = {
 
 export type LibrarySetupCallback = {
   callback_status: string;
-  result: any;
+  result: LibrarySetupStatus;
+};
+
+export type LibrarySetupStatusValue =
+  | 'NOT_STARTED'
+  | 'WAITING_FOR_USER'
+  | 'EXPIRED'
+  | 'SUCCEEDED'
+  | 'FAILED';
+
+export type LibrarySetupStatus = {
+  payment_setup_status: LibrarySetupStatusValue;
+};
+
+export type LibraryCheckoutResultValue = 'checked_out' | 'checked_in';
+
+export type LibraryCheckoutResult = {
+  result: LibraryCheckoutResultValue;
+  vehicle_id: string;
+  dock_id?: string;
+};
+
+export type LibraryStation = Record<string, any>;
+
+export type LibraryStationsResponse = {
+  stations: LibraryStation[];
+};
+
+export type LibraryRentalStatus = 'active' | 'completed';
+
+export type LibraryPaymentHoldInfo = {
+  id?: string;
+  status?: PaymentIntentStatus | string;
+  amount?: number;
+  currency?: string;
+  metadata?: Record<string, any>;
+};
+
+export type LibraryRental = {
+  vehicle_id: string;
+  vehicle_name?: string;
+  payment_hold_info?: LibraryPaymentHoldInfo;
+  start_ts: number;
+  end_ts: number | null;
+  rental_status: LibraryRentalStatus;
+};
+
+export type LibraryRentalHistory = {
+  rentals: LibraryRental[];
 };
 
 type PaymentMethod = {
@@ -68,17 +107,13 @@ function getDirectStripeSecretKey() {
 }
 
 function normalizeSession(sessionLike: any): CheckoutSession {
+  if (typeof sessionLike?.id !== 'string' || typeof sessionLike?.url !== 'string') {
+    throw new Error(`Invalid checkout session response: ${JSON.stringify(sessionLike)}`);
+  }
+
   return {
-    id: sessionLike?.id,
-    url: sessionLike?.url,
-    status: sessionLike?.status,
-    expires_at: sessionLike?.expires_at,
-    mode: sessionLike?.mode,
-    setup_intent:
-      typeof sessionLike?.setup_intent === 'string'
-        ? sessionLike?.setup_intent
-        : sessionLike?.setup_intent?.id,
-    customer: sessionLike?.customer,
+    id: sessionLike.id,
+    url: sessionLike.url,
   };
 }
 
@@ -122,6 +157,67 @@ function callLibraryServer(path: string, body: Record<string, any>) {
     const msgFiller = (message: Record<string, any>) => Object.assign(message, body);
     (window as any).cordova.plugins.BEMServerComm.pushGetJSON(path, msgFiller, resolve, reject);
   });
+}
+
+export async function getLibraryStations(): Promise<LibraryStationsResponse> {
+  const result = await callLibraryServer('/library/stations', {});
+  if (result?.stations) {
+    return result as LibraryStationsResponse;
+  }
+  throw new Error(`Invalid /library/stations response: ${JSON.stringify(result)}`);
+}
+
+export async function createLibrarySetupSession(): Promise<CheckoutSession> {
+  const result = await callLibraryServer('/library/setup/create', {});
+  const session = normalizeSession(result);
+  return session;
+}
+
+export async function getLibrarySetupStatus(): Promise<LibrarySetupStatus> {
+  const result = await callLibraryServer('/library/setup/get_status', {});
+  if (result?.payment_setup_status) {
+    return result as LibrarySetupStatus;
+  }
+  throw new Error(`Invalid /library/setup/get_status response: ${JSON.stringify(result)}`);
+}
+
+export async function checkAndGetLibrarySetupStatus(
+  callback_status: string,
+): Promise<LibrarySetupStatus> {
+  const result = await callLibraryServer('/library/setup/check_and_get_status', { callback_status });
+  if (result?.payment_setup_status) {
+    return result as LibrarySetupStatus;
+  }
+  throw new Error(
+    `Invalid /library/setup/check_and_get_status response: ${JSON.stringify(result)}`,
+  );
+}
+
+export async function checkoutLibraryVehicle(
+  vehicle_id: string,
+  hold_amount_cents: number,
+): Promise<LibraryCheckoutResult> {
+  const result = await callLibraryServer('/library/checkout', { vehicle_id, hold_amount_cents });
+  if (result?.result && result?.vehicle_id) {
+    return result as LibraryCheckoutResult;
+  }
+  throw new Error(`Invalid /library/checkout response: ${JSON.stringify(result)}`);
+}
+
+export async function checkinLibraryVehicle(dock_id: string): Promise<LibraryCheckoutResult> {
+  const result = await callLibraryServer('/library/checkin', { dock_id });
+  if (result?.result && result?.vehicle_id && result?.dock_id) {
+    return result as LibraryCheckoutResult;
+  }
+  throw new Error(`Invalid /library/checkin response: ${JSON.stringify(result)}`);
+}
+
+export async function getLibraryRentalHistory(): Promise<LibraryRentalHistory> {
+  const result = await callLibraryServer('/library/rental_history', {});
+  if (result?.rental_history) {
+    return result as LibraryRentalHistory;
+  }
+  throw new Error(`Invalid /library/rental_history response: ${JSON.stringify(result)}`);
 }
 
 async function directStripeRequest(
@@ -218,12 +314,7 @@ async function getReusablePaymentMethodFromSetupCheckout(
 }
 
 export async function createStripeCheckoutSession(mode: 'setup' | 'payment' | 'subscription') {
-  const result = await callLibraryServer('/library/setup/create', {});
-  const session = normalizeSession(result);
-  if (!session?.id || !session?.url) {
-    displayError(result, 'Invalid direct Stripe Checkout Session create response: missing id or url');
-  }
-  return session;
+  return createLibrarySetupSession();
 }
 
 export async function checkAndGetStripeCheckoutSessionStatus(
@@ -239,22 +330,8 @@ export async function checkAndGetStripeCheckoutSessionStatus(
     throw new Error(`Invalid callback path ${callback_path}: missing callback status`);
   }
   console.log(`finalizeStripeCheckoutSession: callback_status = ${callback_status}`);
-  const result = await callLibraryServer('/library/setup/check_and_get_status', { callback_status });
+  const result = await checkAndGetLibrarySetupStatus(callback_status);
   return { callback_status, result };
-}
-
-export async function getLibrarySetupStatus(): Promise<CheckoutSession> {
-  const result = await callLibraryServer('/library/setup/status', {});
-
-  const session = normalizeSession(
-    result?.session || result?.checkout_session || result?.stripe_checkout_session || result,
-  );
-
-  if (session?.id) {
-    return session;
-  }
-
-  throw new Error(`Invalid library/setup/status response: ${JSON.stringify(result)}`);
 }
 
 export async function createStripePaymentIntent(
