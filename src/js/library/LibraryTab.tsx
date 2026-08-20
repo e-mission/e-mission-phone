@@ -21,7 +21,7 @@ import {
   createStripeRefund,
   isDirectStripeModeEnabled,
   retrieveStripePaymentIntent,
-} from '../services/stripeCheckout';
+} from '../library/serverComm.ts';
 import { addStatReading } from '../plugin/clientStats';
 import useAppState from '../useAppState';
 
@@ -117,8 +117,10 @@ const LibraryTab = () => {
       }
     }
   };
-
+  
   useAppState({
+    // TODO: This is only called when we navigate to the tab, not when the app is launched.
+    // Think about whether this is a problem and needs to be fixed.
     onActive: () => {
       void refreshSetupStatus();
     },

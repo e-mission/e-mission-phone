@@ -3,7 +3,7 @@ import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Button as PaperButton } from 'react-native-paper';
 import LibraryTab from '../js/library/LibraryTab';
 import { displayErrorMsg } from '../js/plugin/logger';
-import { createStripeCheckoutSession } from '../js/services/stripeCheckout';
+import { createStripeCheckoutSession } from '../js/library/serverComm';
 
 jest.mock('../js/components/NavBar', () => ({
   __esModule: true,
@@ -35,7 +35,7 @@ jest.mock('../js/plugin/clientStats', () => ({
   addStatReading: jest.fn(),
 }));
 
-jest.mock('../js/services/stripeCheckout', () => ({
+jest.mock('../js/library/serverComm', () => ({
   __esModule: true,
   checkAndGetStripeCheckoutSessionStatus: jest.fn(),
   captureStripeHoldPaymentIntent: jest.fn(),
