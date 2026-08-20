@@ -3,7 +3,7 @@ import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Button as PaperButton } from 'react-native-paper';
 import LibraryTab from '../js/library/LibraryTab';
 import { displayErrorMsg } from '../js/plugin/logger';
-import { createStripeCheckoutSession } from '../js/library/serverComm';
+import { createLibrarySetupSession } from '../js/library/serverComm';
 
 jest.mock('../js/components/NavBar', () => ({
   __esModule: true,
@@ -37,14 +37,12 @@ jest.mock('../js/plugin/clientStats', () => ({
 
 jest.mock('../js/library/serverComm', () => ({
   __esModule: true,
-  checkAndGetStripeCheckoutSessionStatus: jest.fn(),
-  captureStripeHoldPaymentIntent: jest.fn(),
-  createStripeCheckoutSession: jest.fn(),
-  createStripeHoldPaymentIntent: jest.fn(),
-  createStripePaymentIntent: jest.fn(),
-  createStripeRefund: jest.fn(),
-  isDirectStripeModeEnabled: jest.fn(() => false),
-  retrieveStripePaymentIntent: jest.fn(),
+  checkAndGetLibrarySetupStatus: jest.fn(),
+  checkinLibraryVehicle: jest.fn(),
+  checkoutLibraryVehicle: jest.fn(),
+  createLibrarySetupSession: jest.fn(),
+  getLibraryRentalHistory: jest.fn(() => Promise.resolve({ rental_history: [] })),
+  getLibrarySetupStatus: jest.fn(() => Promise.resolve({ payment_setup_status: 'NOT_STARTED' })),
 }));
 
 describe('LibraryTab', () => {
@@ -63,7 +61,7 @@ describe('LibraryTab', () => {
 
   it('rejects setup checkout flow if displayErrorMsg throws', async () => {
     let rejectRequest: (reason?: unknown) => void = () => {};
-    (createStripeCheckoutSession as jest.Mock)
+    (createLibrarySetupSession as jest.Mock)
       .mockImplementationOnce(
         () =>
           new Promise((resolve, reject) => {
@@ -96,7 +94,7 @@ describe('LibraryTab', () => {
     const rejectionAssertion = expect(pressPromise).rejects.toThrow(
       'mocked displayErrorMsg failure',
     );
-    expect(createStripeCheckoutSession).toHaveBeenCalledTimes(1);
+    expect(createLibrarySetupSession).toHaveBeenCalledTimes(1);
 
     await waitFor(() => {
       expect(getSetupCheckoutButton(tree).props.disabled).toBe(true);
@@ -106,7 +104,7 @@ describe('LibraryTab', () => {
 
     // While request is in flight, the button should be disabled and ignore additional presses.
     fireEvent.press(tree.getByText('setup checkout'));
-    expect(createStripeCheckoutSession).toHaveBeenCalledTimes(1);
+    expect(createLibrarySetupSession).toHaveBeenCalledTimes(1);
 
     await act(async () => {
       rejectRequest(new Error('mocked 500'));

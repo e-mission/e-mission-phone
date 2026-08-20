@@ -10,47 +10,18 @@ import { EVENTS, subscribe, TokenOrUrlEventData, unsubscribe } from '../customEv
 import { humanizeDurationHoursFull } from '../datetimeUtil';
 import { displayErrorMsg, logDebug } from '../plugin/logger';
 import {
-  checkAndGetStripeCheckoutSessionStatus,
+  checkAndGetLibrarySetupStatus,
+  checkinLibraryVehicle,
+  checkoutLibraryVehicle,
+  createLibrarySetupSession,
+  getLibraryRentalHistory,
   getLibrarySetupStatus,
-  PaymentIntent,
-  PaymentIntentStatus,
-  captureStripeHoldPaymentIntent,
-  createStripeCheckoutSession,
-  createStripeHoldPaymentIntent,
-  createStripePaymentIntent,
-  createStripeRefund,
-  isDirectStripeModeEnabled,
-  retrieveStripePaymentIntent,
+  LibraryRental,
 } from '../library/serverComm.ts';
 import { addStatReading } from '../plugin/clientStats';
 import useAppState from '../useAppState';
 
-const SESSION_POLL_INTERVAL_MS = 3000;
-const PAYMENT_INTENT_POLL_TIMEOUT_MS = 2 * 60 * 1000;
-
 let barcodeScannerIsOpen = false;
-
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-async function pollForPaymentIntentStatus(
-  paymentIntentId: string,
-): Promise<PaymentIntentStatus | undefined> {
-  const startTs = Date.now();
-  let lastStatus: PaymentIntentStatus | undefined;
-
-  while (Date.now() - startTs < PAYMENT_INTENT_POLL_TIMEOUT_MS) {
-    const paymentIntent = await retrieveStripePaymentIntent(paymentIntentId);
-    lastStatus = paymentIntent.status;
-
-    if (lastStatus === 'succeeded' || lastStatus === 'canceled') {
-      return lastStatus;
-    }
-
-    await wait(SESSION_POLL_INTERVAL_MS);
-  }
-
-  return lastStatus;
-}
 
 function computeFee(rentalHours: number) {
   if (0 <= rentalHours && rentalHours <= 5) {
@@ -76,6 +47,8 @@ function formatRentalDuration(rentalHours: number | null) {
   return humanizeDurationHoursFull(rentalHours);
 }
 
+type RentalHistoryEntry = LibraryRental;
+
 const LibraryTab = () => {
   const [setupComplete, setSetupComplete] = useState(false);
   const [setupInProgress, setSetupInProgress] = useState(false);
@@ -84,13 +57,19 @@ const LibraryTab = () => {
   const [rentalStartTs, setRentalStartTs] = useState<number | null>(null);
   const [rentalBikeId, setRentalBikeId] = useState<string | null>(null);
   const [rentalNowTs, setRentalNowTs] = useState(Date.now());
+  const [rentalHistory, setRentalHistory] = useState<RentalHistoryEntry[]>([]);
   const isMounted = useRef(true);
-  const directStripeMode = isDirectStripeModeEnabled();
+  const directStripeMode = true;
   const rentalHours = rentalStartTs
     ? Math.max(rentalNowTs - rentalStartTs, 0) / (60 * 60 * 1000)
     : null;
   const rentalStatusText = formatRentalDuration(rentalHours);
   const currentFee = rentalHours === null ? 0 : computeFee(rentalHours);
+
+  const getRentalHistory = async (): Promise<RentalHistoryEntry[]> => {
+    const history = await getLibraryRentalHistory();
+    return history.rental_history;
+  };
 
   const refreshSetupStatus = async () => {
     console.log('refreshSetupStatus: called');
@@ -100,20 +79,35 @@ const LibraryTab = () => {
     }
 
     try {
-      // TODO: get (lightweight call) the server status before checking
-      // This call goes to the server and then to the stripe server
-      // caching it on the server and the client will improve performance
-      // since the common case will be that the setup will be complete
       console.log('refreshSetupStatus: fetching library setup status');
-      callback_path = '/payment/setup/refresh';
-      const session = await checkAndGetStripeCheckoutSessionStatus(callback_path);
+      const callback_path = '/payment/setup/refresh';
+      const session = await checkAndGetLibrarySetupStatus(callback_path);
       console.log(`refreshSetupStatus: response = ` + JSON.stringify(session));
       if (isMounted.current) {
-        setSetupComplete(session.payment_setup_status !== "WAITING_FOR_USER_INPUT");
+        setSetupComplete(session.payment_setup_status === 'SUCCEEDED');
       }
     } catch (e) {
       if (isMounted.current) {
         displayErrorMsg(String(e), 'Unable to refresh Stripe setup status');
+      }
+    }
+  };
+  const refreshRentalHistory = async () => {
+    console.log('refreshRentalHistory: called');
+    if (!isMounted.current) {
+      console.log('refreshRentalHistory: component is not mounted, aborting');
+      return;
+    }
+
+    try {
+      console.log('refreshRentalHistory: fetching rental history');
+      const history = await getRentalHistory();
+      if (isMounted.current) {
+        setRentalHistory(history);
+      }
+    } catch (e) {
+      if (isMounted.current) {
+        displayErrorMsg(String(e), 'Unable to refresh rental history');
       }
     }
   };
@@ -123,6 +117,7 @@ const LibraryTab = () => {
     // Think about whether this is a problem and needs to be fixed.
     onActive: () => {
       void refreshSetupStatus();
+      void refreshRentalHistory();
     },
   });
 
@@ -161,18 +156,18 @@ const LibraryTab = () => {
           }
 
           try {
-            const callback = await checkAndGetStripeCheckoutSessionStatus(callbackPath);
+            const callback = await checkAndGetLibrarySetupStatus(callbackPath);
             console.log(`handleTokenOrUrl: callback = ` + callback);
             if (!isMounted.current) {
               return true;
             }
 
-            if (callback.callback_status === 'success') {
+            if (callback.payment_setup_status === 'SUCCEEDED') {
               setSetupComplete(true);
             } else {
               setSetupComplete(false);
               Alerts.addMessage({
-                text: `Stripe setup ${callback.callback_status || 'did not complete'}.`,
+                text: `Stripe setup ${callback.payment_setup_status || 'did not complete'}.`,
               });
             }
 
@@ -216,7 +211,7 @@ const LibraryTab = () => {
   const onSetupCheckoutPress = async () => {
     try {
       setSetupInProgress(true);
-      const session = await createStripeCheckoutSession('setup');
+      const session = await createLibrarySetupSession();
 
       (window as any).cordova.InAppBrowser.open(session.url as string, '_system');
     } catch (e) {
@@ -271,71 +266,27 @@ const LibraryTab = () => {
     ));
   };
 
-  const mapBikeToDock = (bike_id: string) => {
-    // Should we validate the bike_id before we try to map it?
-    if (bike_id.startsWith('emission://')) {
-      return "the_one_dock";
-    }
-    return null;
-  };
-
-  const mapDockToBike = (dock_id: string, bike_id: string) => {
-    // Should we validate the dock_id before we try to map it?
-    if (dock_id.startsWith('emission://')) {
-      console.log(`Mapping ${dock_id} to ${bike_id}`);
-    }
-  };
-
-  const unlockDock = (dock_id: string) => {
-    // TODO: add validation to the bike_id here
-    Alerts.addMessage({ text: `Unlocking dock ${dock_id}!` });
-  };
-
-  const lockDock = (dock_id: string) => {
-    Alerts.addMessage({ text: `Locking dock ${dock_id}!` });
-  };
-
   const confirmCheckout = async (holdAmount: number, wantAccessories: boolean) => {
-    const holdDisplay = (holdAmount / 100).toFixed(2);
-
-    try {
-      setPaymentInProgress(true);
-      addStatReading('checkout_initiated', { holdAmount, wantAccessories });
-      // We need to figure out the order of operations; place hold first and then allow them to scan
-      // or scan first and then place the hold
-      const holdIntent = await createStripeHoldPaymentIntent(holdAmount);
-      if (holdIntent.status !== 'requires_capture') {
-        displayErrorMsg(
-          `Hold status is '${holdIntent.status || 'unknown'}'.`,
-          'Stripe hold not authorized',
-        );
-        addStatReading('checkout_aborted', { holdAmount, wantAccessories });
-        return;
-      }
-
-      addStatReading('checkout_confirmed', { holdAmount, wantAccessories });
-      Alerts.addMessage({ text: `Hold of $${holdDisplay} placed successfully.` });
-      scanCode((bike_id: string) => {
-        const dock_id = mapBikeToDock(bike_id);
-        if (dock_id == null) {
-          // TODO: Do we want to distinguish between the two error cases?
-          displayErrorMsg(`Invalid bike_id '${bike_id}' or no dock found for dock_id`);
-          return;
+    setPaymentInProgress(true);
+    addStatReading('checkout_initiated', { holdAmount, wantAccessories });
+    scanCode((bike_id: string) => {
+      void (async () => {
+        try {
+          await checkoutLibraryVehicle(bike_id, holdAmount);
+          addStatReading('checkout_confirmed', { holdAmount, wantAccessories });
+          Alerts.addMessage({ text: 'Checkout completed successfully.' });
+          setRentalBikeId(bike_id);
+          const now = Date.now();
+          setRentalStartTs(now);
+          setRentalNowTs(now);
+        } catch (e) {
+          addStatReading('checkout_aborted', { holdAmount, wantAccessories, error: String(e) });
+          displayErrorMsg(String(e), 'Stripe checkout failed');
+        } finally {
+          setPaymentInProgress(false);
         }
-        unlockDock(dock_id);
-        setRentalBikeId(bike_id);
-        const now = Date.now();
-        setRentalStartTs(now);
-        setRentalNowTs(now);
-      });
-    } catch (e) {
-      addStatReading('checkout_aborted', { holdAmount, wantAccessories, error: String(e) });
-      displayErrorMsg(String(e), 'Stripe checkout failed');
-    } finally {
-      if (isMounted.current) {
-        setPaymentInProgress(false);
-      }
-    }
+      })();
+    });
   };
 
   const checkout = () => {
@@ -355,37 +306,22 @@ const LibraryTab = () => {
       return;
     }
 
-    try {
-      setPaymentInProgress(true);
-      scanCode((dock_id: string) => {
-        if (!rentalBikeId) {
-          displayErrorMsg('No active bike ID found for this rental.');
-          return;
+    setPaymentInProgress(true);
+    scanCode((dock_id: string) => {
+      void (async () => {
+        try {
+          await checkinLibraryVehicle(dock_id);
+          if (isMounted.current) {
+            setRentalStartTs(null);
+            setRentalBikeId(null);
+          }
+        } catch (e) {
+          displayErrorMsg(String(e), 'Stripe return failed');
+        } finally {
+          setPaymentInProgress(false);
         }
-        lockDock(dock_id);
-        mapDockToBike(dock_id, rentalBikeId);
-      });
-      const capturedIntent: PaymentIntent = await captureStripeHoldPaymentIntent(currentFee * 100);
-      const status = capturedIntent.status || (await pollForPaymentIntentStatus(capturedIntent.id));
-      if (status !== 'succeeded') {
-        displayErrorMsg(
-          `Capture status is '${status || 'unknown'}'.`,
-          'Stripe return not complete',
-        );
-        return;
-      }
-
-      if (isMounted.current) {
-        setRentalStartTs(null);
-        setRentalBikeId(null);
-      }
-    } catch (e) {
-      displayErrorMsg(String(e), 'Stripe return failed');
-    } finally {
-      if (isMounted.current) {
-        setPaymentInProgress(false);
-      }
-    }
+      })();
+    });
   };
 
   return (
