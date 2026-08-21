@@ -355,7 +355,7 @@ const LibraryTab = () => {
         />
       </NavBar>
 
-      <View style={styles.container}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.containerContent}>
         {directStripeMode && (
           <View style={styles.warningBanner}>
             <Text style={styles.warningTitle}>DEV MODE: Connecting to sandbox</Text>
@@ -421,7 +421,7 @@ const LibraryTab = () => {
           show stations
         </Button>
         {stations !== null && (
-          <ScrollView style={styles.stationList}>
+          <View style={styles.stationList}>
             {stations.length === 0 ? (
               <Text>No stations found.</Text>
             ) : (
@@ -432,10 +432,10 @@ const LibraryTab = () => {
                 </View>
               ))
             )}
-          </ScrollView>
+          </View>
         )}
         <Text style={styles.sectionHeader}>Rental history</Text>
-        <ScrollView style={styles.stationList}>
+        <View style={styles.stationList}>
           {rentalHistory.length === 0 ? (
             <Text style={styles.stationDetail}>No rentals yet.</Text>
           ) : (
@@ -451,8 +451,8 @@ const LibraryTab = () => {
               </View>
             ))
           )}
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
     </>
   );
 };
@@ -460,6 +460,8 @@ const LibraryTab = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  containerContent: {
     padding: 16,
     gap: 12,
   },
@@ -514,7 +516,6 @@ const styles = StyleSheet.create({
     color: '#6b0012',
   },
   stationList: {
-    maxHeight: 200,
     borderWidth: 1,
     borderColor: '#c7c7c7',
     borderRadius: 8,
