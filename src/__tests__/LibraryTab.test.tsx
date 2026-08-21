@@ -4,7 +4,7 @@ import { Button as PaperButton } from 'react-native-paper';
 import LibraryTab from '../js/library/LibraryTab';
 import { Alerts } from '../js/components/AlertArea';
 import { displayErrorMsg } from '../js/plugin/logger';
-import { checkoutLibraryVehicle, createLibrarySetupSession } from '../js/library/serverComm';
+import { checkoutLibraryVehicle, createLibrarySetupSession, getLibraryRentalHistory, getLibraryStations } from '../js/library/serverComm';
 
 jest.mock('../js/components/NavBar', () => ({
   __esModule: true,
@@ -53,6 +53,7 @@ jest.mock('../js/library/serverComm', () => ({
   createLibrarySetupSession: jest.fn(),
   getLibraryRentalHistory: jest.fn(() => Promise.resolve({ rental_history: [] })),
   getLibrarySetupStatus: jest.fn(() => Promise.resolve({ payment_setup_status: 'NOT_STARTED' })),
+  getLibraryStations: jest.fn(() => Promise.resolve({ stations: [] })),
 }));
 
 describe('LibraryTab', () => {
@@ -132,6 +133,88 @@ describe('LibraryTab', () => {
 
     await rejectionAssertion;
     expect(displayErrorMsg).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows rental history entries returned by getLibraryRentalHistory', async () => {
+    const useAppState = require('../js/useAppState').default as jest.Mock;
+    useAppState.mockImplementationOnce(({ onActive }: { onActive: () => void }) => {
+      onActive();
+    });
+    (getLibraryRentalHistory as jest.Mock).mockResolvedValueOnce({
+      rental_history: [
+        {
+          vehicle_id: 'bike-1',
+          vehicle_name: 'Blue Bike',
+          start_ts: 1700000000,
+          end_ts: 1700003600,
+          rental_status: 'completed',
+        },
+        {
+          vehicle_id: 'bike-2',
+          vehicle_name: null,
+          start_ts: 1700010000,
+          end_ts: null,
+          rental_status: 'active',
+        },
+      ],
+    });
+
+    const tree = render(<LibraryTab />);
+
+    await waitFor(() => {
+      expect(tree.getByText(/Blue Bike.*completed/)).toBeTruthy();
+      expect(tree.getByText(/bike-2.*active/)).toBeTruthy();
+      expect(tree.getByText(/ongoing/)).toBeTruthy();
+    });
+  });
+
+  it('shows "No rentals yet." when rental history is empty', async () => {
+    const useAppState = require('../js/useAppState').default as jest.Mock;
+    useAppState.mockImplementationOnce(({ onActive }: { onActive: () => void }) => {
+      onActive();
+    });
+    (getLibraryRentalHistory as jest.Mock).mockResolvedValueOnce({ rental_history: [] });
+
+    const tree = render(<LibraryTab />);
+
+    await waitFor(() => {
+      expect(tree.getByText('No rentals yet.')).toBeTruthy();
+    });
+  });
+
+  it('shows station entries after pressing "show stations"', async () => {
+    (getLibraryStations as jest.Mock).mockResolvedValueOnce({
+      stations: [
+        { station_id: 'st-1', name: 'Main St Station' },
+        { station_id: 'st-2', name: 'Park Ave Station' },
+      ],
+    });
+
+    const tree = render(<LibraryTab />);
+
+    await act(async () => {
+      fireEvent.press(tree.getByText('show stations'));
+    });
+
+    await waitFor(() => {
+      expect(getLibraryStations).toHaveBeenCalledTimes(1);
+      expect(tree.getByText('Main St Station')).toBeTruthy();
+      expect(tree.getByText('Park Ave Station')).toBeTruthy();
+    });
+  });
+
+  it('shows "No stations found." when stations list is empty', async () => {
+    (getLibraryStations as jest.Mock).mockResolvedValueOnce({ stations: [] });
+
+    const tree = render(<LibraryTab />);
+
+    await act(async () => {
+      fireEvent.press(tree.getByText('show stations'));
+    });
+
+    await waitFor(() => {
+      expect(tree.getByText('No stations found.')).toBeTruthy();
+    });
   });
 
   it('re-enables actions after confirmCheckout server error', async () => {

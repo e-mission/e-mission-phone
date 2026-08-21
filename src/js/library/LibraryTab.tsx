@@ -425,6 +425,24 @@ const LibraryTab = () => {
             )}
           </ScrollView>
         )}
+        <Text style={styles.sectionHeader}>Rental history</Text>
+        <ScrollView style={styles.stationList}>
+          {rentalHistory.length === 0 ? (
+            <Text style={styles.stationDetail}>No rentals yet.</Text>
+          ) : (
+            rentalHistory.map((r, i) => (
+              <View key={i} style={styles.stationItem}>
+                <Text style={styles.stationName}>
+                  {r.vehicle_name ?? r.vehicle_id} — {r.rental_status}
+                </Text>
+                <Text style={styles.stationDetail}>
+                  {new Date(r.start_ts * 1000).toLocaleString()} →{' '}
+                  {r.end_ts ? new Date(r.end_ts * 1000).toLocaleString() : 'ongoing'}
+                </Text>
+              </View>
+            ))
+          )}
+        </ScrollView>
       </View>
     </>
   );
@@ -503,6 +521,10 @@ const styles = StyleSheet.create({
   stationDetail: {
     color: '#555555',
     fontSize: 12,
+  },
+  sectionHeader: {
+    fontWeight: '700',
+    fontSize: 15,
   },
 });
 
