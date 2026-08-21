@@ -2,12 +2,22 @@ import React from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Button as PaperButton } from 'react-native-paper';
 import LibraryTab from '../js/library/LibraryTab';
+import { Alerts } from '../js/components/AlertArea';
 import { displayErrorMsg } from '../js/plugin/logger';
-import { createLibrarySetupSession } from '../js/library/serverComm';
+import { checkoutLibraryVehicle, createLibrarySetupSession } from '../js/library/serverComm';
 
 jest.mock('../js/components/NavBar', () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+jest.mock('../js/components/AlertArea', () => ({
+  __esModule: true,
+  Alerts: {
+    addMessage: jest.fn(),
+    showPopup: jest.fn(),
+  },
+  default: () => null,
 }));
 
 jest.mock('../js/useAppState', () => ({
@@ -57,6 +67,15 @@ describe('LibraryTab', () => {
       throw new Error('setup checkout button not found');
     }
     return setupButton;
+  };
+
+  const getCheckoutButton = (tree: ReturnType<typeof render>) => {
+    const allButtons = tree.UNSAFE_getAllByType(PaperButton);
+    const checkoutButton = allButtons.find((button) => button.props.children === 'checkout');
+    if (!checkoutButton) {
+      throw new Error('checkout button not found');
+    }
+    return checkoutButton;
   };
 
   it('rejects setup checkout flow if displayErrorMsg throws', async () => {
@@ -113,5 +132,40 @@ describe('LibraryTab', () => {
 
     await rejectionAssertion;
     expect(displayErrorMsg).toHaveBeenCalledTimes(1);
+  });
+
+  it('re-enables actions after confirmCheckout server error', async () => {
+    (checkoutLibraryVehicle as jest.Mock).mockRejectedValueOnce(new Error('mocked checkout failure'));
+    (Alerts.showPopup as jest.Mock).mockImplementation((popup: unknown) => {
+      if (typeof popup !== 'function') {
+        return;
+      }
+
+      const element = popup({ visible: true, onDismiss: jest.fn() });
+      if (element?.props?.onConfirm) {
+        element.props.onConfirm(false, 38000);
+      }
+      if (element?.props?.onManualSubmit) {
+        element.props.onManualSubmit('bike-123');
+      }
+    });
+
+    const tree = render(<LibraryTab />);
+
+    expect(getSetupCheckoutButton(tree).props.disabled).toBe(false);
+
+    await act(async () => {
+      getCheckoutButton(tree).props.onPress();
+      await Promise.resolve();
+    });
+
+    await waitFor(() => {
+      expect(checkoutLibraryVehicle).toHaveBeenCalledWith('bike-123', 38000);
+      expect(displayErrorMsg).toHaveBeenCalledWith(
+        'Error: mocked checkout failure',
+        'Stripe checkout failed',
+      );
+      expect(getSetupCheckoutButton(tree).props.disabled).toBe(false);
+    });
   });
 });

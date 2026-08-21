@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Button, Checkbox, Text } from 'react-native-paper';
 import type { ModalProps } from 'react-native';
 import NavBar from '../components/NavBar';
@@ -16,7 +16,9 @@ import {
   createLibrarySetupSession,
   getLibraryRentalHistory,
   getLibrarySetupStatus,
+  getLibraryStations,
   LibraryRental,
+  LibraryStation,
 } from '../library/serverComm.ts';
 import { addStatReading } from '../plugin/clientStats';
 import useAppState from '../useAppState';
@@ -58,6 +60,8 @@ const LibraryTab = () => {
   const [rentalBikeId, setRentalBikeId] = useState<string | null>(null);
   const [rentalNowTs, setRentalNowTs] = useState(Date.now());
   const [rentalHistory, setRentalHistory] = useState<RentalHistoryEntry[]>([]);
+  const [stations, setStations] = useState<LibraryStation[] | null>(null);
+  const [stationsLoading, setStationsLoading] = useState(false);
   const isMounted = useRef(true);
   const directStripeMode = true;
   const rentalHours = rentalStartTs
@@ -300,6 +304,18 @@ const LibraryTab = () => {
     ));
   };
 
+  const loadStations = async () => {
+    setStationsLoading(true);
+    try {
+      const response = await getLibraryStations();
+      setStations(response.stations);
+    } catch (e) {
+      displayErrorMsg(String(e), 'Failed to load stations');
+    } finally {
+      setStationsLoading(false);
+    }
+  };
+
   const returnBike = async () => {
     if (rentalHours === null) {
       displayErrorMsg('No active rental to return.');
@@ -392,6 +408,23 @@ const LibraryTab = () => {
           onPress={returnBike}>
           return
         </Button>
+        <Button mode="outlined" loading={stationsLoading} onPress={loadStations}>
+          show stations
+        </Button>
+        {stations !== null && (
+          <ScrollView style={styles.stationList}>
+            {stations.length === 0 ? (
+              <Text>No stations found.</Text>
+            ) : (
+              stations.map((s, i) => (
+                <View key={s['station_id'] ?? i} style={styles.stationItem}>
+                  <Text style={styles.stationName}>{s['name'] ?? s['station_id'] ?? `Station ${i + 1}`}</Text>
+                  <Text style={styles.stationDetail}>{JSON.stringify(s)}</Text>
+                </View>
+              ))
+            )}
+          </ScrollView>
+        )}
       </View>
     </>
   );
@@ -452,6 +485,24 @@ const styles = StyleSheet.create({
   },
   warningBody: {
     color: '#6b0012',
+  },
+  stationList: {
+    maxHeight: 200,
+    borderWidth: 1,
+    borderColor: '#c7c7c7',
+    borderRadius: 8,
+  },
+  stationItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  stationName: {
+    fontWeight: '600',
+  },
+  stationDetail: {
+    color: '#555555',
+    fontSize: 12,
   },
 });
 
