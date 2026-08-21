@@ -344,6 +344,15 @@ const LibraryTab = () => {
     <>
       <NavBar elevated={true}>
         <Appbar.Content title="library" />
+        <Appbar.Action
+          icon="refresh"
+          size={32}
+          onPress={() => {
+            void refreshSetupStatus();
+            void refreshRentalHistory();
+          }}
+          style={{ margin: 0, marginLeft: 'auto' }}
+        />
       </NavBar>
 
       <View style={styles.container}>

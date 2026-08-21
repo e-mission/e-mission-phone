@@ -1,10 +1,10 @@
 import React from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
-import { Button as PaperButton } from 'react-native-paper';
+import { Button as PaperButton, Appbar } from 'react-native-paper';
 import LibraryTab from '../js/library/LibraryTab';
 import { Alerts } from '../js/components/AlertArea';
 import { displayErrorMsg } from '../js/plugin/logger';
-import { checkoutLibraryVehicle, createLibrarySetupSession, getLibraryRentalHistory, getLibraryStations } from '../js/library/serverComm';
+import { checkoutLibraryVehicle, checkAndGetLibrarySetupStatus, createLibrarySetupSession, getLibraryRentalHistory, getLibraryStations } from '../js/library/serverComm';
 
 jest.mock('../js/components/NavBar', () => ({
   __esModule: true,
@@ -214,6 +214,28 @@ describe('LibraryTab', () => {
 
     await waitFor(() => {
       expect(tree.getByText('No stations found.')).toBeTruthy();
+    });
+  });
+
+  it('refresh button calls refreshSetupStatus and refreshRentalHistory', async () => {
+    (checkAndGetLibrarySetupStatus as jest.Mock).mockResolvedValueOnce({
+      payment_setup_status: 'NOT_STARTED',
+    });
+    (getLibraryRentalHistory as jest.Mock).mockResolvedValueOnce({ rental_history: [] });
+
+    const tree = render(<LibraryTab />);
+    const refreshButton = tree.UNSAFE_getAllByType(Appbar.Action).find(
+      (b) => b.props.icon === 'refresh',
+    );
+    expect(refreshButton).toBeTruthy();
+
+    await act(async () => {
+      refreshButton!.props.onPress();
+    });
+
+    await waitFor(() => {
+      expect(checkAndGetLibrarySetupStatus).toHaveBeenCalledTimes(1);
+      expect(getLibraryRentalHistory).toHaveBeenCalledTimes(1);
     });
   });
 
