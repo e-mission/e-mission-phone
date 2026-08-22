@@ -311,6 +311,9 @@ describe('LibraryTab', () => {
       result: 'checked_out',
       vehicle_id: 'bike-123',
     });
+    (checkAndGetLibrarySetupStatus as jest.Mock).mockResolvedValueOnce({
+      payment_setup_status: 'SUCCEEDED',
+    });
     // first call returns empty (initial load), second returns the new active rental
     (getLibraryRentalHistory as jest.Mock)
       .mockResolvedValueOnce({ rental_history: [] })
@@ -389,6 +392,9 @@ describe('LibraryTab', () => {
     useAppStateMock.mockImplementationOnce(({ onActive }: { onActive: () => void }) => {
       onActive();
     });
+    (checkAndGetLibrarySetupStatus as jest.Mock).mockResolvedValueOnce({
+      payment_setup_status: 'SUCCEEDED',
+    });
     (getLibraryRentalHistory as jest.Mock).mockResolvedValueOnce({
       rental_history: [
         {
@@ -412,6 +418,9 @@ describe('LibraryTab', () => {
     const useAppStateMock = require('../js/useAppState').default as jest.Mock;
     useAppStateMock.mockImplementationOnce(({ onActive }: { onActive: () => void }) => {
       onActive();
+    });
+    (checkAndGetLibrarySetupStatus as jest.Mock).mockResolvedValueOnce({
+      payment_setup_status: 'SUCCEEDED',
     });
     (getLibraryRentalHistory as jest.Mock).mockResolvedValueOnce({
       rental_history: [
@@ -456,6 +465,9 @@ describe('LibraryTab', () => {
     const useAppStateMock = require('../js/useAppState').default as jest.Mock;
     useAppStateMock.mockImplementationOnce(({ onActive }: { onActive: () => void }) => {
       onActive();
+    });
+    (checkAndGetLibrarySetupStatus as jest.Mock).mockResolvedValueOnce({
+      payment_setup_status: 'SUCCEEDED',
     });
     // first call on mount returns active rental; second after checkin returns completed
     (getLibraryRentalHistory as jest.Mock)
