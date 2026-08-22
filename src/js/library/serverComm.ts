@@ -48,7 +48,13 @@ export type LibraryRental = {
   vehicle_name?: string;
   payment_hold_info?: LibraryPaymentHoldInfo;
   start_ts: number;
+  start_local_dt?: Record<string, any>;
+  start_fmt_time?: string;
   end_ts: number | null;
+  end_local_dt?: Record<string, any>;
+  end_fmt_time?: string;
+  start_dock_id?: string;
+  end_dock_id?: string;
   rental_status: LibraryRentalStatus;
 };
 

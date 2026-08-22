@@ -444,8 +444,11 @@ const LibraryTab = () => {
                   {r.vehicle_name ?? r.vehicle_id} — {r.rental_status}
                 </Text>
                 <Text style={styles.stationDetail}>
-                  {new Date(r.start_ts * 1000).toLocaleString()} →{' '}
-                  {r.end_ts ? new Date(r.end_ts * 1000).toLocaleString() : 'ongoing'}
+                  {r.start_fmt_time ?? new Date(r.start_ts * 1000).toLocaleString()}
+                  {r.start_dock_id ? ` (${r.start_dock_id})` : ''} →{' '}
+                  {r.end_fmt_time
+                    ? `${r.end_fmt_time}${r.end_dock_id ? ` (${r.end_dock_id})` : ''}`
+                    : 'ongoing'}
                 </Text>
               </View>
             ))
