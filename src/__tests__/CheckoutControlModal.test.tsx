@@ -2,6 +2,20 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import CheckoutControlModal from '../js/library/components/CheckoutControlModal';
 
+jest.mock('react-native-paper', () => {
+  const actual = jest.requireActual('react-native-paper');
+  const Dialog = Object.assign(
+    ({ visible, children }: { visible?: boolean; children?: React.ReactNode }) =>
+      visible ? children : null,
+    {
+      Title: ({ children }: { children?: React.ReactNode }) => children,
+      Content: ({ children }: { children?: React.ReactNode }) => children,
+      Actions: ({ children }: { children?: React.ReactNode }) => children,
+    },
+  );
+  return { ...actual, Dialog };
+});
+
 describe('CheckoutControlModal', () => {
   it('confirms with default (no accessories) and dismisses', () => {
     const onConfirm = jest.fn();

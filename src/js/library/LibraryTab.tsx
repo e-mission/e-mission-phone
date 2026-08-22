@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar, Button, Checkbox, Text } from 'react-native-paper';
-import type { ModalProps } from 'react-native';
 import NavBar from '../components/NavBar';
 import { Alerts } from '../components/AlertArea';
 import BikeDockEntryModal from './components/BikeDockEntryModal';
@@ -261,7 +260,7 @@ const LibraryTab = () => {
   };
 
   const scanCode = async (callback: (resultText: string) => void) => {
-    Alerts.showPopup((props: Omit<ModalProps, 'children'>) => (
+    Alerts.showPopup((props: { visible?: boolean; onDismiss?: () => void }) => (
       <BikeDockEntryModal
         {...props}
         onScan={() => {
@@ -296,7 +295,7 @@ const LibraryTab = () => {
   };
 
   const checkout = () => {
-    Alerts.showPopup((props: Omit<ModalProps, 'children'>) => (
+    Alerts.showPopup((props: { visible?: boolean; onDismiss?: () => void }) => (
       <CheckoutControlModal
         {...props}
         onConfirm={(wantAccessories: boolean, holdAmount: number) => {

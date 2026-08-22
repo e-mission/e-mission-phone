@@ -3,6 +3,21 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { TextInput as PaperTextInput } from 'react-native-paper';
 import BikeDockEntryModal from '../js/library/components/BikeDockEntryModal';
 
+jest.mock('react-native-paper', () => {
+  const actual = jest.requireActual('react-native-paper');
+  const { TextInput: RNTextInput } = require('react-native');
+  const Dialog = Object.assign(
+    ({ visible, children }: { visible?: boolean; children?: React.ReactNode }) =>
+      visible ? children : null,
+    {
+      Title: ({ children }: { children?: React.ReactNode }) => children,
+      Content: ({ children }: { children?: React.ReactNode }) => children,
+      Actions: ({ children }: { children?: React.ReactNode }) => children,
+    },
+  );
+  return { ...actual, Dialog, TextInput: RNTextInput };
+});
+
 describe('BikeDockEntryModal', () => {
   it('triggers scan callback and dismiss on scan press', () => {
     const onScan = jest.fn();
