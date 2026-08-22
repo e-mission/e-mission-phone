@@ -33,6 +33,8 @@ export type LibraryStationsResponse = {
   stations: LibraryStation[];
 };
 
+import { Point } from 'geojson';
+
 export type LibraryRentalStatus = 'active' | 'completed';
 
 export type LibraryPaymentHoldInfo = {
@@ -48,13 +50,15 @@ export type LibraryRental = {
   vehicle_name?: string;
   payment_hold_info?: LibraryPaymentHoldInfo;
   start_ts: number;
-  start_local_dt?: Record<string, any>;
+  start_local_dt?: { year: number; month: number; day: number; hour: number; minute: number; second: number; weekday: number; timezone: string };
   start_fmt_time?: string;
   end_ts: number | null;
-  end_local_dt?: Record<string, any>;
+  end_local_dt?: { year: number; month: number; day: number; hour: number; minute: number; second: number; weekday: number; timezone: string } | null;
   end_fmt_time?: string;
   start_dock_id?: string;
+  start_loc?: Point;
   end_dock_id?: string;
+  end_loc?: Point | null;
   rental_status: LibraryRentalStatus;
 };
 

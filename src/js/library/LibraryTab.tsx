@@ -445,9 +445,10 @@ const LibraryTab = () => {
                 </Text>
                 <Text style={styles.stationDetail}>
                   {r.start_fmt_time ?? new Date(r.start_ts * 1000).toLocaleString()}
-                  {r.start_dock_id ? ` (${r.start_dock_id})` : ''} →{' '}
+                  {r.start_dock_id ? ` · ${r.start_dock_id}` : ''}
+                  {' → '}
                   {r.end_fmt_time
-                    ? `${r.end_fmt_time}${r.end_dock_id ? ` (${r.end_dock_id})` : ''}`
+                    ? `${r.end_fmt_time}${r.end_dock_id ? ` · ${r.end_dock_id}` : ''}`
                     : 'ongoing'}
                 </Text>
               </View>

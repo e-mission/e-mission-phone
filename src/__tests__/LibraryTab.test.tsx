@@ -155,14 +155,28 @@ describe('LibraryTab', () => {
           vehicle_id: 'bike-1',
           vehicle_name: 'Blue Bike',
           start_ts: 1700000000,
+          start_local_dt: { year: 2023, month: 11, day: 14, hour: 22, minute: 0, second: 0, weekday: 2, timezone: 'America/Los_Angeles' },
+          start_fmt_time: '2023-11-14T22:00:00-08:00',
+          start_dock_id: 'dock-A',
+          start_loc: { type: 'Point', coordinates: [-122.4, 37.8] },
           end_ts: 1700003600,
+          end_local_dt: { year: 2023, month: 11, day: 14, hour: 23, minute: 0, second: 0, weekday: 2, timezone: 'America/Los_Angeles' },
+          end_fmt_time: '2023-11-14T23:00:00-08:00',
+          end_dock_id: 'dock-B',
+          end_loc: { type: 'Point', coordinates: [-122.5, 37.9] },
           rental_status: 'completed',
         },
         {
           vehicle_id: 'bike-2',
           vehicle_name: null,
           start_ts: 1700010000,
+          start_local_dt: { year: 2023, month: 11, day: 15, hour: 0, minute: 40, second: 0, weekday: 3, timezone: 'America/Los_Angeles' },
+          start_fmt_time: '2023-11-15T00:40:00-08:00',
+          start_dock_id: 'dock-C',
+          start_loc: { type: 'Point', coordinates: [-122.3, 37.7] },
           end_ts: null,
+          end_local_dt: null,
+          end_loc: null,
           rental_status: 'active',
         },
       ],
@@ -173,7 +187,10 @@ describe('LibraryTab', () => {
     await waitFor(() => {
       expect(tree.getByText(/Blue Bike.*completed/)).toBeTruthy();
       expect(tree.getByText(/bike-2.*active/)).toBeTruthy();
-      expect(tree.getByText(/ongoing/)).toBeTruthy();
+      // completed rental shows fmt_time and dock IDs
+      expect(tree.getByText(/2023-11-14T22.*dock-A.*2023-11-14T23.*dock-B/)).toBeTruthy();
+      // active rental shows start time, start dock, and "ongoing"
+      expect(tree.getByText(/2023-11-15T00.*dock-C.*ongoing/)).toBeTruthy();
     });
   });
 
