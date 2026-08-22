@@ -117,7 +117,7 @@ const LibraryTab = () => {
       }
     }
   };
-  
+
   useAppState({
     // TODO: This is only called when we navigate to the tab, not when the app is launched.
     // Think about whether this is a problem and needs to be fixed.
@@ -148,7 +148,9 @@ const LibraryTab = () => {
           let callbackPath: string;
           try {
             const parsedUrl = new URL(tokenOrUrl);
-            callbackPath = `${parsedUrl.hostname ? `/${parsedUrl.hostname}` : ''}${parsedUrl.pathname}`;
+            callbackPath = `${parsedUrl.hostname ? `/${parsedUrl.hostname}` : ''}${
+              parsedUrl.pathname
+            }`;
           } catch {
             return false;
           }
@@ -406,13 +408,17 @@ const LibraryTab = () => {
         </Button>
         <Button
           mode="contained"
-          disabled={!setupComplete || setupInProgress || paymentInProgress || rentalStartTs !== null}
+          disabled={
+            !setupComplete || setupInProgress || paymentInProgress || rentalStartTs !== null
+          }
           onPress={checkout}>
           checkout
         </Button>
         <Button
           mode="contained"
-          disabled={!setupComplete || setupInProgress || paymentInProgress || rentalStartTs === null}
+          disabled={
+            !setupComplete || setupInProgress || paymentInProgress || rentalStartTs === null
+          }
           onPress={returnBike}>
           return
         </Button>
@@ -426,7 +432,9 @@ const LibraryTab = () => {
             ) : (
               stations.map((s, i) => (
                 <View key={s['station_id'] ?? i} style={styles.stationItem}>
-                  <Text style={styles.stationName}>{s['name'] ?? s['station_id'] ?? `Station ${i + 1}`}</Text>
+                  <Text style={styles.stationName}>
+                    {s['name'] ?? s['station_id'] ?? `Station ${i + 1}`}
+                  </Text>
                   <Text style={styles.stationDetail}>{JSON.stringify(s)}</Text>
                 </View>
               ))

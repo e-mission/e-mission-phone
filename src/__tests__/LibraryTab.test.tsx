@@ -4,7 +4,14 @@ import { Button as PaperButton, Appbar } from 'react-native-paper';
 import LibraryTab from '../js/library/LibraryTab';
 import { Alerts } from '../js/components/AlertArea';
 import { displayErrorMsg } from '../js/plugin/logger';
-import { checkoutLibraryVehicle, checkAndGetLibrarySetupStatus, checkinLibraryVehicle, createLibrarySetupSession, getLibraryRentalHistory, getLibraryStations } from '../js/library/serverComm';
+import {
+  checkoutLibraryVehicle,
+  checkAndGetLibrarySetupStatus,
+  checkinLibraryVehicle,
+  createLibrarySetupSession,
+  getLibraryRentalHistory,
+  getLibraryStations,
+} from '../js/library/serverComm';
 
 jest.mock('../js/components/NavBar', () => ({
   __esModule: true,
@@ -155,12 +162,30 @@ describe('LibraryTab', () => {
           vehicle_id: 'bike-1',
           vehicle_name: 'Blue Bike',
           start_ts: 1700000000,
-          start_local_dt: { year: 2023, month: 11, day: 14, hour: 22, minute: 0, second: 0, weekday: 2, timezone: 'America/Los_Angeles' },
+          start_local_dt: {
+            year: 2023,
+            month: 11,
+            day: 14,
+            hour: 22,
+            minute: 0,
+            second: 0,
+            weekday: 2,
+            timezone: 'America/Los_Angeles',
+          },
           start_fmt_time: '2023-11-14T22:00:00-08:00',
           start_dock_id: 'dock-A',
           start_loc: { type: 'Point', coordinates: [-122.4, 37.8] },
           end_ts: 1700003600,
-          end_local_dt: { year: 2023, month: 11, day: 14, hour: 23, minute: 0, second: 0, weekday: 2, timezone: 'America/Los_Angeles' },
+          end_local_dt: {
+            year: 2023,
+            month: 11,
+            day: 14,
+            hour: 23,
+            minute: 0,
+            second: 0,
+            weekday: 2,
+            timezone: 'America/Los_Angeles',
+          },
           end_fmt_time: '2023-11-14T23:00:00-08:00',
           end_dock_id: 'dock-B',
           end_loc: { type: 'Point', coordinates: [-122.5, 37.9] },
@@ -170,7 +195,16 @@ describe('LibraryTab', () => {
           vehicle_id: 'bike-2',
           vehicle_name: null,
           start_ts: 1700010000,
-          start_local_dt: { year: 2023, month: 11, day: 15, hour: 0, minute: 40, second: 0, weekday: 3, timezone: 'America/Los_Angeles' },
+          start_local_dt: {
+            year: 2023,
+            month: 11,
+            day: 15,
+            hour: 0,
+            minute: 40,
+            second: 0,
+            weekday: 3,
+            timezone: 'America/Los_Angeles',
+          },
           start_fmt_time: '2023-11-15T00:40:00-08:00',
           start_dock_id: 'dock-C',
           start_loc: { type: 'Point', coordinates: [-122.3, 37.7] },
@@ -250,9 +284,9 @@ describe('LibraryTab', () => {
     (getLibraryRentalHistory as jest.Mock).mockResolvedValueOnce({ rental_history: [] });
 
     const tree = render(<LibraryTab />);
-    const refreshButton = tree.UNSAFE_getAllByType(Appbar.Action).find(
-      (b) => b.props.icon === 'refresh',
-    );
+    const refreshButton = tree
+      .UNSAFE_getAllByType(Appbar.Action)
+      .find((b) => b.props.icon === 'refresh');
     expect(refreshButton).toBeTruthy();
 
     await act(async () => {
@@ -314,7 +348,9 @@ describe('LibraryTab', () => {
   });
 
   it('re-enables actions after confirmCheckout server error', async () => {
-    (checkoutLibraryVehicle as jest.Mock).mockRejectedValueOnce(new Error('mocked checkout failure'));
+    (checkoutLibraryVehicle as jest.Mock).mockRejectedValueOnce(
+      new Error('mocked checkout failure'),
+    );
     (Alerts.showPopup as jest.Mock).mockImplementation((popup: unknown) => {
       if (typeof popup !== 'function') {
         return;
@@ -411,7 +447,11 @@ describe('LibraryTab', () => {
       end_ts: null,
       rental_status: 'active' as const,
     };
-    const completedRental = { ...activeRental, end_ts: Math.floor(Date.now() / 1000), rental_status: 'completed' as const };
+    const completedRental = {
+      ...activeRental,
+      end_ts: Math.floor(Date.now() / 1000),
+      rental_status: 'completed' as const,
+    };
 
     const useAppStateMock = require('../js/useAppState').default as jest.Mock;
     useAppStateMock.mockImplementationOnce(({ onActive }: { onActive: () => void }) => {

@@ -145,7 +145,8 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
     permissionsPopupVis,
     setPermissionsPopupVis,
     userProfile,
-    updateUserProfile: (p: Partial<UserProfile>) => updateUserProfile(p, userProfile).then(setUserProfile),
+    updateUserProfile: (p: Partial<UserProfile>) =>
+      updateUserProfile(p, userProfile).then(setUserProfile),
     customLabelMap,
     setCustomLabelMap,
   };

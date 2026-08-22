@@ -50,10 +50,28 @@ export type LibraryRental = {
   vehicle_name?: string;
   payment_hold_info?: LibraryPaymentHoldInfo;
   start_ts: number;
-  start_local_dt?: { year: number; month: number; day: number; hour: number; minute: number; second: number; weekday: number; timezone: string };
+  start_local_dt?: {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    second: number;
+    weekday: number;
+    timezone: string;
+  };
   start_fmt_time?: string;
   end_ts: number | null;
-  end_local_dt?: { year: number; month: number; day: number; hour: number; minute: number; second: number; weekday: number; timezone: string } | null;
+  end_local_dt?: {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    second: number;
+    weekday: number;
+    timezone: string;
+  } | null;
   end_fmt_time?: string;
   start_dock_id?: string;
   start_loc?: Point;
@@ -67,7 +85,7 @@ export type LibraryRentalHistory = {
 };
 
 function callLibraryServer(path: string, body: Record<string, any>) {
-  // TODO: better error handling for the reject case, right now, it just 
+  // TODO: better error handling for the reject case, right now, it just
   // hangs with no error
   return new Promise<any>((resolve, reject) => {
     const msgFiller = (message: Record<string, any>) => Object.assign(message, body);
@@ -110,7 +128,9 @@ export async function checkAndGetLibrarySetupStatus(
     throw new Error(`Invalid callback path ${callback_path}: missing callback status`);
   }
   console.log(`checkAndGetLibrarySetupStatus: callback_status = ${callback_status}`);
-  const result = await callLibraryServer('/library/setup/check_and_get_status', { callback_status });
+  const result = await callLibraryServer('/library/setup/check_and_get_status', {
+    callback_status,
+  });
   if (result?.payment_setup_status) {
     return result as LibrarySetupStatus;
   }
