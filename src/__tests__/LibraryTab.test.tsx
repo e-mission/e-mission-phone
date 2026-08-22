@@ -4,7 +4,7 @@ import { Button as PaperButton, Appbar } from 'react-native-paper';
 import LibraryTab from '../js/library/LibraryTab';
 import { Alerts } from '../js/components/AlertArea';
 import { displayErrorMsg } from '../js/plugin/logger';
-import { checkoutLibraryVehicle, checkAndGetLibrarySetupStatus, createLibrarySetupSession, getLibraryRentalHistory, getLibraryStations } from '../js/library/serverComm';
+import { checkoutLibraryVehicle, checkAndGetLibrarySetupStatus, checkinLibraryVehicle, createLibrarySetupSession, getLibraryRentalHistory, getLibraryStations } from '../js/library/serverComm';
 
 jest.mock('../js/components/NavBar', () => ({
   __esModule: true,
@@ -77,6 +77,15 @@ describe('LibraryTab', () => {
       throw new Error('checkout button not found');
     }
     return checkoutButton;
+  };
+
+  const getReturnButton = (tree: ReturnType<typeof render>) => {
+    const allButtons = tree.UNSAFE_getAllByType(PaperButton);
+    const returnButton = allButtons.find((button) => button.props.children === 'return');
+    if (!returnButton) {
+      throw new Error('return button not found');
+    }
+    return returnButton;
   };
 
   it('rejects setup checkout flow if displayErrorMsg throws', async () => {
@@ -239,6 +248,54 @@ describe('LibraryTab', () => {
     });
   });
 
+  it('successful checkout calls refreshRentalHistory and updates button states from returned history', async () => {
+    const activeRental = {
+      vehicle_id: 'bike-123',
+      vehicle_name: 'Test Bike',
+      start_ts: Math.floor(Date.now() / 1000),
+      end_ts: null,
+      rental_status: 'active' as const,
+    };
+    (checkoutLibraryVehicle as jest.Mock).mockResolvedValueOnce({
+      result: 'checked_out',
+      vehicle_id: 'bike-123',
+    });
+    // first call returns empty (initial load), second returns the new active rental
+    (getLibraryRentalHistory as jest.Mock)
+      .mockResolvedValueOnce({ rental_history: [] })
+      .mockResolvedValueOnce({ rental_history: [activeRental] });
+    (Alerts.showPopup as jest.Mock).mockImplementation((popup: unknown) => {
+      if (typeof popup !== 'function') return;
+      const element = popup({ visible: true, onDismiss: jest.fn() });
+      if (element?.props?.onConfirm) element.props.onConfirm(false, 38000);
+      if (element?.props?.onManualSubmit) element.props.onManualSubmit('bike-123');
+    });
+
+    const useAppStateMock = require('../js/useAppState').default as jest.Mock;
+    useAppStateMock.mockImplementationOnce(({ onActive }: { onActive: () => void }) => {
+      onActive();
+    });
+
+    const tree = render(<LibraryTab />);
+
+    await waitFor(() => expect(getCheckoutButton(tree).props.disabled).toBe(false));
+
+    await act(async () => {
+      getCheckoutButton(tree).props.onPress();
+      await Promise.resolve();
+    });
+
+    await waitFor(() => {
+      expect(checkoutLibraryVehicle).toHaveBeenCalledWith('bike-123', 38000);
+      // refreshRentalHistory called once on mount (onActive) and once after checkout
+      expect(getLibraryRentalHistory).toHaveBeenCalledTimes(2);
+      // checkout button disabled because active rental exists
+      expect(getCheckoutButton(tree).props.disabled).toBe(true);
+      // return button enabled because active rental exists
+      expect(getReturnButton(tree).props.disabled).toBe(false);
+    });
+  });
+
   it('re-enables actions after confirmCheckout server error', async () => {
     (checkoutLibraryVehicle as jest.Mock).mockRejectedValueOnce(new Error('mocked checkout failure'));
     (Alerts.showPopup as jest.Mock).mockImplementation((popup: unknown) => {
@@ -271,6 +328,108 @@ describe('LibraryTab', () => {
         'Stripe checkout failed',
       );
       expect(getSetupCheckoutButton(tree).props.disabled).toBe(false);
+    });
+  });
+
+  it('checkout and return buttons reflect active rental loaded on mount', async () => {
+    const useAppStateMock = require('../js/useAppState').default as jest.Mock;
+    useAppStateMock.mockImplementationOnce(({ onActive }: { onActive: () => void }) => {
+      onActive();
+    });
+    (getLibraryRentalHistory as jest.Mock).mockResolvedValueOnce({
+      rental_history: [
+        {
+          vehicle_id: 'bike-99',
+          start_ts: Math.floor(Date.now() / 1000) - 3600,
+          end_ts: null,
+          rental_status: 'active',
+        },
+      ],
+    });
+
+    const tree = render(<LibraryTab />);
+
+    await waitFor(() => {
+      expect(getCheckoutButton(tree).props.disabled).toBe(true);
+      expect(getReturnButton(tree).props.disabled).toBe(false);
+    });
+  });
+
+  it('uses the last active rental when history has multiple entries', async () => {
+    const useAppStateMock = require('../js/useAppState').default as jest.Mock;
+    useAppStateMock.mockImplementationOnce(({ onActive }: { onActive: () => void }) => {
+      onActive();
+    });
+    (getLibraryRentalHistory as jest.Mock).mockResolvedValueOnce({
+      rental_history: [
+        // completed first rental — should not drive UI
+        {
+          vehicle_id: 'bike-old',
+          start_ts: 1000000,
+          end_ts: 1003600,
+          rental_status: 'completed',
+        },
+        // active last rental — should drive UI
+        {
+          vehicle_id: 'bike-new',
+          start_ts: Math.floor(Date.now() / 1000) - 600,
+          end_ts: null,
+          rental_status: 'active',
+        },
+      ],
+    });
+
+    const tree = render(<LibraryTab />);
+
+    await waitFor(() => {
+      expect(getCheckoutButton(tree).props.disabled).toBe(true);
+      expect(getReturnButton(tree).props.disabled).toBe(false);
+    });
+  });
+
+  it('successful checkin calls refreshRentalHistory and re-enables checkout button', async () => {
+    const activeRental = {
+      vehicle_id: 'bike-123',
+      start_ts: Math.floor(Date.now() / 1000) - 1800,
+      end_ts: null,
+      rental_status: 'active' as const,
+    };
+    const completedRental = { ...activeRental, end_ts: Math.floor(Date.now() / 1000), rental_status: 'completed' as const };
+
+    const useAppStateMock = require('../js/useAppState').default as jest.Mock;
+    useAppStateMock.mockImplementationOnce(({ onActive }: { onActive: () => void }) => {
+      onActive();
+    });
+    // first call on mount returns active rental; second after checkin returns completed
+    (getLibraryRentalHistory as jest.Mock)
+      .mockResolvedValueOnce({ rental_history: [activeRental] })
+      .mockResolvedValueOnce({ rental_history: [completedRental] });
+    (checkinLibraryVehicle as jest.Mock).mockResolvedValueOnce({
+      result: 'checked_in',
+      vehicle_id: 'bike-123',
+      dock_id: 'dock-1',
+    });
+    (Alerts.showPopup as jest.Mock).mockImplementation((popup: unknown) => {
+      if (typeof popup !== 'function') return;
+      const element = popup({ visible: true, onDismiss: jest.fn() });
+      if (element?.props?.onManualSubmit) element.props.onManualSubmit('dock-1');
+    });
+
+    const tree = render(<LibraryTab />);
+
+    // wait for active rental to load
+    await waitFor(() => expect(getReturnButton(tree).props.disabled).toBe(false));
+
+    await act(async () => {
+      getReturnButton(tree).props.onPress();
+      await Promise.resolve();
+    });
+
+    await waitFor(() => {
+      expect(checkinLibraryVehicle).toHaveBeenCalledWith('dock-1');
+      expect(getLibraryRentalHistory).toHaveBeenCalledTimes(2);
+      expect(getReturnButton(tree).props.disabled).toBe(true);
+      expect(getCheckoutButton(tree).props.disabled).toBe(false);
     });
   });
 });

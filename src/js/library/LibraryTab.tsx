@@ -56,14 +56,16 @@ const LibraryTab = () => {
   const [setupInProgress, setSetupInProgress] = useState(false);
   const [paymentInProgress, setPaymentInProgress] = useState(false);
   const [isSimulationMode, setIsSimulationMode] = useState(false);
-  const [rentalStartTs, setRentalStartTs] = useState<number | null>(null);
-  const [rentalBikeId, setRentalBikeId] = useState<string | null>(null);
   const [rentalNowTs, setRentalNowTs] = useState(Date.now());
   const [rentalHistory, setRentalHistory] = useState<RentalHistoryEntry[]>([]);
   const [stations, setStations] = useState<LibraryStation[] | null>(null);
   const [stationsLoading, setStationsLoading] = useState(false);
   const isMounted = useRef(true);
   const directStripeMode = true;
+  const activeRental = rentalHistory.findLast((r) => r.rental_status === 'active') ?? null;
+  // start_ts from server is Unix seconds; convert to ms for Date.now() arithmetic
+  const rentalStartTs = activeRental ? activeRental.start_ts * 1000 : null;
+  const rentalBikeId = activeRental?.vehicle_id ?? null;
   const rentalHours = rentalStartTs
     ? Math.max(rentalNowTs - rentalStartTs, 0) / (60 * 60 * 1000)
     : null;
@@ -279,10 +281,8 @@ const LibraryTab = () => {
           await checkoutLibraryVehicle(bike_id, holdAmount);
           addStatReading('checkout_confirmed', { holdAmount, wantAccessories });
           Alerts.addMessage({ text: 'Checkout completed successfully.' });
-          setRentalBikeId(bike_id);
-          const now = Date.now();
-          setRentalStartTs(now);
-          setRentalNowTs(now);
+          setRentalNowTs(Date.now());
+          void refreshRentalHistory();
         } catch (e) {
           addStatReading('checkout_aborted', { holdAmount, wantAccessories, error: String(e) });
           displayErrorMsg(String(e), 'Stripe checkout failed');
@@ -328,8 +328,7 @@ const LibraryTab = () => {
         try {
           await checkinLibraryVehicle(dock_id);
           if (isMounted.current) {
-            setRentalStartTs(null);
-            setRentalBikeId(null);
+            void refreshRentalHistory();
           }
         } catch (e) {
           displayErrorMsg(String(e), 'Stripe return failed');
