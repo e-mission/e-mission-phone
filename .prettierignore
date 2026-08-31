@@ -1,12 +1,13 @@
-# Ignore www/dist, json
-www/dist
-www/json
+# Ignore src/dist, json
+src/dist
+src/json
 
-# Ignore all HTML files:
+# Ignore all HTML and CSS files
 **/*.html
+**/*.css
 
-# This is the pattern to check only www directory
+# This is the pattern to check only src directory
 # Ignore all
 /*
-# but don't ignore all the files in www directory
-!/www
+# but don't ignore all the files in src directory
+!/src

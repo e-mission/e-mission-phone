@@ -1,4 +1,4 @@
-name: code coverage
+name: Tests and Code Coverage
 on:
   pull_request:
     types:
@@ -10,21 +10,16 @@ on:
 jobs:
   run-codecov:
     if: github.event.pull_request.draft == false
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Setup the serve environment
-        shell: bash -l {0}
-        run: |
-          bash setup/setup_serve.sh
+      - name: Setup the Node environment
+        run: bash setup/setup_dependencies.sh
 
       - name: Run Jest tests
-        shell: bash -l {0}
-        run: |
-          source setup/activate_serve.sh
-          npm run test
+        run: npm test
 
       - name: Upload exact version(s) of packages used
         uses: actions/upload-artifact@v4
