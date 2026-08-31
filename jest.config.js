@@ -1,5 +1,5 @@
 module.exports = {
-  preset: 'jest-expo/web',
+  preset: 'jest-expo',
   testEnvironment: "jsdom",
   testPathIgnorePatterns: [
     "/node_modules/",
@@ -12,7 +12,7 @@ module.exports = {
     "/platforms/",
     "/plugins/",
   ],
-  // Extend jest-expo/web's transformIgnorePatterns to handle additional ESM packages:
+  // Extend jest-expo's transformIgnorePatterns to handle additional ESM packages:
   // enketo, e-mission-common, and color-*.
   transformIgnorePatterns: [
     "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg|enketo(-.*)?|(enketo-transformer/dist/enketo-transformer/web)|e-mission-common|color(-.*)?)",
