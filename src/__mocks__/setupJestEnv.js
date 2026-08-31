@@ -2,10 +2,22 @@
   Applies mocks to the global (window) object for use in tests.
   This is run before all of the tests are run, so these mocks are available in all tests.
 */
-import { mockNativeForWeb } from '../js/nativePlugins';
+const { TextDecoder, TextEncoder } = require('util');
+const { URL, URLSearchParams } = require('url');
+
+global.TextDecoder = TextDecoder;
+global.TextEncoder = TextEncoder;
+global.URL = URL;
+global.URLSearchParams = URLSearchParams;
+window.TextDecoder = TextDecoder;
+window.TextEncoder = TextEncoder;
+window.URL = URL;
+window.URLSearchParams = URLSearchParams;
+
+const { mockNativeForWeb } = require('../js/nativePlugins');
 
 // init i18next so phone_lang is set correctly during tests
-import initializedI18next from '../js/i18nextInit';
+const initializedI18next = require('../js/i18nextInit').default;
 window['i18next'] = initializedI18next;
 
 mockNativeForWeb();
