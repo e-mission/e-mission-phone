@@ -80,7 +80,13 @@ export function QRScanner({ mode, onScan, onClose }: QRScannerProps) {
                 autoCapitalize="none"
                 autoCorrect={false}
                 placeholder={mode === 'checkout' ? 'Vehicle ID' : 'Dock ID'}
-                right={<TextInput.Icon onPress={handleManualSubmit} icon="arrow-right" />}
+                right={
+                  <TextInput.Icon
+                    onPress={handleManualSubmit}
+                    icon="arrow-right"
+                    testID="qr-manual-submit"
+                  />
+                }
                 style={styles.input}
               />
             </View>
