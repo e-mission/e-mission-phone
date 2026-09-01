@@ -45,6 +45,19 @@ export type LibraryPaymentHoldInfo = {
   metadata?: Record<string, any>;
 };
 
+export type LibraryVehicle = {
+  vehicle_id: string | null;
+  vehicle_name?: string | null;
+  location?: string | null;
+  bluetooth_major_minor?: string[] | null;
+  baseMode?: string | null;
+  met_equivalent?: number | null;
+  kgCo2PerKm?: number | null;
+  vehicle_info?: Record<string, any> | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
 export type LibraryRental = {
   vehicle_id: string;
   vehicle_name?: string;
