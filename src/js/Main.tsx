@@ -7,7 +7,7 @@ import { BottomNavigation, useTheme } from 'react-native-paper';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { AppContext } from './App';
+import { AppContext } from './AppContext';
 import { withErrorBoundary } from './plugin/ErrorBoundary';
 import LabelTab from './diary/LabelTab';
 import MetricsTab from './metrics/MetricsTab';

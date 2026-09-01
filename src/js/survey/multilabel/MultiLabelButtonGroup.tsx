@@ -31,7 +31,7 @@ import {
 } from './confirmHelper';
 import useAppConfig from '../../useAppConfig';
 // import { updateUserCustomLabel } from '../../services/commHelper';
-import { AppContext } from '../../App';
+import { AppContext } from '../../AppContext';
 import { addStatReading } from '../../plugin/clientStats';
 import { UserInputData } from '../../types/diaryTypes';
 

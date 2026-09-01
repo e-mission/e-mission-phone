@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, ScrollView } from 'react-native';
 import { Button, Surface } from 'react-native-paper';
-import { AppContext } from '../App';
+import { AppContext } from '../AppContext';
 import { onboardingStyles } from './OnboardingStack';
 import StudySummary from './StudySummary';
 import { setSummaryDone } from './onboardingHelper';

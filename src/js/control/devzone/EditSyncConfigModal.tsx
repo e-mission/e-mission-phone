@@ -9,7 +9,7 @@ import { displayError, logDebug, logWarn } from '../../plugin/logger';
 import { DateTime } from 'luxon';
 import EditConfigModal from './EditConfigModal';
 import useAppConfig from '../../useAppConfig';
-import { AppContext } from '../../App';
+import { AppContext } from '../../AppContext';
 import { Alerts } from '../../components/AlertArea';
 
 type SyncConfig = { sync_interval: number; ios_use_remote_push: boolean };

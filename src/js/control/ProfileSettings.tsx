@@ -3,7 +3,7 @@ import { StyleSheet, ScrollView } from 'react-native';
 import { Text, Appbar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
-import { AppContext } from '../App';
+import { AppContext } from '../AppContext';
 import { Alerts } from '../components/AlertArea';
 import { shareQR } from '../components/QrCode';
 import NavBar, { NavBarButton } from '../components/NavBar';

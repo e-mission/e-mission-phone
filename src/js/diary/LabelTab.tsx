@@ -16,7 +16,7 @@ import { configuredFilters as multilabelConfiguredFilters } from '../survey/mult
 import { configuredFilters as enketoConfiguredFilters } from '../survey/enketo/infinite_scroll_filters';
 import { TimelineEntry, isTrip } from '../types/diaryTypes';
 import TimelineContext, { LabelTabFilter } from '../TimelineContext';
-import { AppContext } from '../App';
+import { AppContext } from '../AppContext';
 
 type LabelContextProps = {
   displayedEntries: TimelineEntry[] | null;

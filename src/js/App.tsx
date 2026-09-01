@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppStateStatus, View } from 'react-native';
 import { ActivityIndicator, PaperProvider } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,9 +14,9 @@ import {
 } from './onboarding/onboardingHelper';
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './AppStatusModal';
-import usePermissionStatus from './usePermissionStatus';
 import AlertArea from './components/AlertArea';
 import Main from './Main';
+import { AppContext, CustomLabelMap, OnboardingJoinMethod } from './AppContext';
 
 import initializedI18next from '../js/i18nextInit';
 window['i18next'] = initializedI18next;
@@ -27,30 +27,9 @@ import { addStatReading } from './plugin/clientStats';
 import { displayErrorMsg, logDebug } from './plugin/logger';
 import { registerAndUpdateProfile, updateUserProfile, UserProfile } from './splash/userProfile';
 import { getTheme } from './appTheme';
-import DeploymentConfig from 'op-deployment-configs';
+import usePermissionStatus from './usePermissionStatus';
 
 const URL_SCHEME = packageJson.cordova.plugins['cordova-plugin-customurlscheme'].URL_SCHEME;
-
-type AppContextProps = {
-  appConfig: DeploymentConfig | null;
-  handleTokenOrUrl: (tokenOrUrl: string, joinMethod: OnboardingJoinMethod) => Promise<boolean>;
-  onboardingState: OnboardingState | null;
-  setOnboardingState: React.Dispatch<React.SetStateAction<OnboardingState | null>>;
-  refreshOnboardingState: () => Promise<OnboardingState>;
-  permissionStatus: ReturnType<typeof usePermissionStatus>;
-  permissionsPopupVis: boolean;
-  setPermissionsPopupVis: React.Dispatch<React.SetStateAction<boolean>>;
-  userProfile: UserProfile | null;
-  updateUserProfile: (profileUpdate: Partial<UserProfile>) => Promise<void>;
-  customLabelMap: CustomLabelMap;
-  setCustomLabelMap: React.Dispatch<React.SetStateAction<CustomLabelMap>>;
-};
-
-export const AppContext = createContext<AppContextProps>({} as AppContextProps);
-type CustomLabelMap = {
-  [k: string]: string[];
-};
-type OnboardingJoinMethod = 'scan' | 'paste' | 'textbox' | 'external';
 
 const theme = getTheme();
 

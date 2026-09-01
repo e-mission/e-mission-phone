@@ -5,7 +5,7 @@ import { Button, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import PermissionItem from './PermissionItem';
 import ExplainPermissions from './ExplainPermissions';
-import { AppContext } from '../App';
+import { AppContext } from '../AppContext';
 
 const PermissionsControls = ({ onAccept, refreshAllChecks }) => {
   const { t } = useTranslation();

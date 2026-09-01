@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { Icon, TextInput, Dialog, Button, useTheme, SegmentedButtons } from 'react-native-paper';
-import { AppContext } from '../App';
+import { AppContext } from '../AppContext';
 import { useTranslation } from 'react-i18next';
 import { deleteUserCustomLabel, insertUserCustomLabel } from '../services/commHelper';
 import { displayErrorMsg, logDebug } from '../plugin/logger';

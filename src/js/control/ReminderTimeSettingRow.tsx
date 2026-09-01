@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-native';
 import { TimePickerModal } from 'react-native-paper-dates';
 import SettingRow from './components/SettingRow';
-import { AppContext } from '../App';
+import { AppContext } from '../AppContext';
 import { DateTime } from 'luxon';
 import { initReminderPrefs, updateScheduledNotifs } from '../splash/notifScheduler';
 import { logDebug } from '../plugin/logger';

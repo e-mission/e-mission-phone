@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Banner, Text } from 'react-native-paper';
 import { conditional_surveys } from 'e-mission-common';
-import { AppContext } from '../App';
+import { AppContext } from '../AppContext';
 import { Alerts } from '../components/AlertArea';
 import AvailableVehicles from './components/AvailableVehicles';
 import ActiveRental from './components/ActiveRental';
