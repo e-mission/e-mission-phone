@@ -29,8 +29,11 @@ type Props = ViewProps & {
   opts?: L.MapOptions;
   downscaleTiles?: boolean;
   cacheHtml?: boolean;
+  // if provided, centers on the geojson content at this fixed zoom level
+  // instead of automatically fitting the map bounds to the content
+  zoom?: number;
 };
-const LeafletView = ({ geojson, opts, downscaleTiles, cacheHtml, ...otherProps }: Props) => {
+const LeafletView = ({ geojson, opts, downscaleTiles, cacheHtml, zoom, ...otherProps }: Props) => {
   const mapElRef = useRef<HTMLDivElement | null>(null);
   const leafletMapRef = useRef<LeafletMap | null>(null);
   const geoJsonIdRef = useRef<string | null>(null);
@@ -60,7 +63,11 @@ const LeafletView = ({ geojson, opts, downscaleTiles, cacheHtml, ...otherProps }
       style: (feature) => (feature as GeoJSONStyledFeature)?.style || {},
     }).addTo(map);
     const gjBounds = gj.getBounds().pad(0.2);
-    map.fitBounds(gjBounds);
+    if (zoom != null) {
+      map.setView(gjBounds.getCenter(), zoom);
+    } else {
+      map.fitBounds(gjBounds);
+    }
     geoJsonIdRef.current = geojson.data.id;
     leafletMapRef.current = map;
     mapSet.add(map);
@@ -86,7 +93,7 @@ const LeafletView = ({ geojson, opts, downscaleTiles, cacheHtml, ...otherProps }
         leafletCache.set(mapElId, mapHTMLElements?.innerHTML);
       });
     }
-  }, [geojson, cacheHtml]);
+  }, [geojson, cacheHtml, zoom]);
 
   /* If the geojson is different between renders, we need to recreate the map
     (happens because of FlashList's view recycling on the trip cards:
