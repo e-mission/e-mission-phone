@@ -1,14 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import {
-  ActivityIndicator,
-  Banner,
-  Button,
-  Checkbox,
-  IconButton,
-  SegmentedButtons,
-  Text,
-} from 'react-native-paper';
+import { ActivityIndicator, Banner, Text } from 'react-native-paper';
 import { conditional_surveys } from 'e-mission-common';
 import { AppContext } from '../App';
 import { Alerts } from '../components/AlertArea';
@@ -17,6 +9,7 @@ import ActiveRental from './components/ActiveRental';
 import CheckoutFlow from './components/CheckoutFlow';
 import ReturnFlow from './components/ReturnFlow';
 import QRScanner from './components/QRScanner';
+import LibraryDevPanel from './components/LibraryDevPanel';
 import { EVENTS, subscribe, TokenOrUrlEventData, unsubscribe } from '../customEventHandler';
 import { humanizeDurationHoursFull } from '../datetimeUtil';
 import { displayErrorMsg } from '../plugin/logger';
@@ -64,12 +57,12 @@ type Screen =
 const LibraryTab = () => {
   const { appConfig, onboardingState } = useContext(AppContext);
   const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
+  const [isSandbox, setIsSandbox] = useState(false);
   const [setupInProgress, setSetupInProgress] = useState(false);
   const [paymentInProgress, setPaymentInProgress] = useState(false);
   const [isSimulationMode, setIsSimulationMode] = useState(false);
   const [simulatedSubgroup, setSimulatedSubgroup] = useState<string | undefined>(undefined);
   const [showTestLocations, setShowTestLocations] = useState(false);
-  const [devPanelExpanded, setDevPanelExpanded] = useState(false);
   const [rentalNowTs, setRentalNowTs] = useState(Date.now() / 1000);
   const [rentalHistory, setRentalHistory] = useState<LibraryRental[]>([]);
   const [stations, setStations] = useState<LibraryStation[] | null>(null);
@@ -107,6 +100,7 @@ const LibraryTab = () => {
       const session = await checkAndGetLibrarySetupStatus(callback_path);
       console.log(`refreshSetupStatus: response = ` + JSON.stringify(session));
       if (isMounted.current) {
+        setIsSandbox(session.is_sandbox);
         setSetupComplete(session.payment_setup_status === 'SUCCEEDED');
       }
     } catch (e) {
@@ -226,6 +220,7 @@ const LibraryTab = () => {
                 text: `Stripe setup ${callback.payment_setup_status || 'did not complete'}.`,
               });
             }
+            setIsSandbox(callback.is_sandbox);
 
             return true;
           } catch (e) {
@@ -338,6 +333,13 @@ const LibraryTab = () => {
     setScreen({ name: 'scan-checkout' });
   };
 
+  const onSimulateDurationOffset = (hours: number) => {
+    setIsSimulationMode(true);
+    setRentalNowTs((prevTs) =>
+      Math.max(activeRental?.start_ts ?? 0, prevTs + hours * 60 * 60 * 1000),
+    );
+  };
+
   if (setupComplete === null) {
     // full page loading indicator while setup status is being determined
 
@@ -352,73 +354,15 @@ const LibraryTab = () => {
     <View style={styles.container}>
       {screen.name === 'browse' && (
         <ScrollView style={styles.browseScroll} contentContainerStyle={styles.browseContent}>
-          {onboardingState?.opcode.includes('_test_') && (
-            <View style={styles.devBanner}>
-              <View
-                style={styles.devBannerHeaderRow}
-                onTouchStart={() => setDevPanelExpanded((prev) => !prev)}>
-                <Text style={styles.devBannerText}>DEV MODE: Using Stripe Sandbox</Text>
-                <IconButton
-                  icon={devPanelExpanded ? 'chevron-up' : 'chevron-down'}
-                  size={18}
-                  iconColor="#b00020"
-                  style={styles.devBannerExpandButton}
-                />
-              </View>
-              {devPanelExpanded && (
-                <View style={styles.devBannerContent}>
-                  <View style={styles.devBannerToggle}>
-                    <Text style={styles.devBannerToggleLabel}>Show test locations</Text>
-                    <Checkbox
-                      status={showTestLocations ? 'checked' : 'unchecked'}
-                      onPress={() => setShowTestLocations((prev) => !prev)}
-                    />
-                  </View>
-                  <View style={styles.devBannerToggle}>
-                    <Text style={styles.devBannerToggleLabel}>Simulate checkout duration</Text>
-                    <View style={styles.simulationButtonsRow}>
-                      {[1, 24, -1, -24].map((hours) => {
-                        const isPositive = hours > 0;
-                        const label = isPositive ? `+${isPositive ? hours : -hours}h` : `${hours}h`;
-                        return (
-                          <Button
-                            key={hours}
-                            mode="text"
-                            compact
-                            style={styles.simulationButton}
-                            onPress={() => {
-                              setIsSimulationMode(true);
-                              setRentalNowTs((prevTs) =>
-                                Math.max(
-                                  activeRental?.start_ts ?? 0,
-                                  prevTs + hours * 60 * 60 * 1000,
-                                ),
-                              );
-                            }}>
-                            {label}
-                          </Button>
-                        );
-                      })}
-                    </View>
-                  </View>
-                  {appConfig?.opcode?.subgroups?.length && (
-                    <View style={styles.devBannerToggle}>
-                      <Text style={styles.devBannerToggleLabel}>Simulate subgroup</Text>
-                      <SegmentedButtons
-                        value={simulatedSubgroup ?? ''}
-                        density="high"
-                        onValueChange={setSimulatedSubgroup}
-                        buttons={appConfig.opcode.subgroups.map((subgroup) => ({
-                          value: subgroup,
-                          label: subgroup,
-                          labelStyle: { fontSize: 10, padding: 0 },
-                        }))}
-                      />
-                    </View>
-                  )}
-                </View>
-              )}
-            </View>
+          {isSandbox && (
+            <LibraryDevPanel
+              showTestLocations={showTestLocations}
+              onToggleTestLocations={() => setShowTestLocations((prev) => !prev)}
+              subgroups={appConfig?.opcode?.subgroups}
+              simulatedSubgroup={simulatedSubgroup}
+              onChangeSimulatedSubgroup={setSimulatedSubgroup}
+              onSimulateDurationOffset={onSimulateDurationOffset}
+            />
           )}
           {setupComplete == false && (
             <Banner
@@ -532,44 +476,6 @@ const styles = StyleSheet.create({
   browseContent: {
     paddingBottom: 16,
     // gap: 12,
-  },
-  simulationButtonsRow: {
-    flexDirection: 'row',
-  },
-  simulationButton: {},
-  devBanner: {
-    borderWidth: 1,
-    borderColor: '#b00020',
-    backgroundColor: '#ffe8ec',
-  },
-  devBannerHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: 12,
-  },
-  devBannerExpandButton: {
-    margin: 0,
-    marginLeft: 'auto',
-  },
-  devBannerContent: {
-    paddingHorizontal: 12,
-  },
-  devBannerText: {
-    color: '#b00020',
-    fontWeight: '700',
-    fontSize: 12,
-  },
-  devBannerToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderTopColor: '#f0d0d0',
-  },
-  devBannerToggleLabel: {
-    color: '#b00020',
-    fontSize: 12,
-    margin: 4,
   },
   stationList: {
     borderWidth: 1,

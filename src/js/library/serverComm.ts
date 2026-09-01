@@ -17,6 +17,7 @@ export type LibrarySetupStatusValue =
 
 export type LibrarySetupStatus = {
   payment_setup_status: LibrarySetupStatusValue;
+  is_sandbox: boolean;
 };
 
 export type LibraryCheckoutResultValue = 'checked_out' | 'checked_in';
