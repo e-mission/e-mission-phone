@@ -20,6 +20,9 @@ module.exports = {
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   moduleDirectories: ["node_modules", "src"],
+  moduleNameMapper: {
+    "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js",
+  },
   globals: { "__DEV__": false },
   setupFiles: ["<rootDir>/src/__mocks__/setupJestEnv.js"],
   collectCoverage: true,
