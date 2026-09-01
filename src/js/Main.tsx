@@ -4,8 +4,10 @@
 import React, { useCallback, useEffect } from 'react';
 import { useContext, useMemo, useState } from 'react';
 import { BottomNavigation, useTheme } from 'react-native-paper';
-import { AppContext } from './App';
+import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
+
+import { AppContext } from './App';
 import { withErrorBoundary } from './plugin/ErrorBoundary';
 import LabelTab from './diary/LabelTab';
 import MetricsTab from './metrics/MetricsTab';
@@ -15,7 +17,14 @@ import TimelineContext, { useTimelineContext } from './TimelineContext';
 import { addStatReading } from './plugin/clientStats';
 import { showMetricsTab } from './metrics/metricsHelper';
 
-const defaultRoutes = (t) => [
+const defaultRoutes = (t: TFunction<'translation'>) => [
+  {
+    key: 'library',
+    title: t('Library'),
+    focusedIcon: 'book-open-page-variant',
+    unfocusedIcon: 'book-open-outline',
+    accessibilityLabel: t('library-tab'),
+  },
   {
     key: 'label',
     title: t('diary.label-tab'),
@@ -36,13 +45,6 @@ const defaultRoutes = (t) => [
     focusedIcon: 'account',
     unfocusedIcon: 'account-outline',
     accessibilityLabel: t('control.profile-tab'),
-  },
-  {
-    key: 'library',
-    title: 'library',
-    focusedIcon: 'book-open-page-variant',
-    unfocusedIcon: 'book-open-outline',
-    accessibilityLabel: 'library',
   },
 ];
 

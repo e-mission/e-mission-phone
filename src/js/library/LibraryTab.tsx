@@ -1,43 +1,47 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Appbar, Button, Checkbox, Text } from 'react-native-paper';
-import NavBar from '../components/NavBar';
+import {
+  ActivityIndicator,
+  Banner,
+  Button,
+  Checkbox,
+  IconButton,
+  SegmentedButtons,
+  Text,
+} from 'react-native-paper';
+import { conditional_surveys } from 'e-mission-common';
+import { AppContext } from '../App';
 import { Alerts } from '../components/AlertArea';
-import BikeDockEntryModal from './components/BikeDockEntryModal';
-import CheckoutControlModal from './components/CheckoutControlModal';
+import AvailableVehicles from './components/AvailableVehicles';
+import ActiveRental from './components/ActiveRental';
+import CheckoutFlow from './components/CheckoutFlow';
+import ReturnFlow from './components/ReturnFlow';
+import QRScanner from './components/QRScanner';
 import { EVENTS, subscribe, TokenOrUrlEventData, unsubscribe } from '../customEventHandler';
 import { humanizeDurationHoursFull } from '../datetimeUtil';
-import { displayErrorMsg, logDebug } from '../plugin/logger';
+import { displayErrorMsg } from '../plugin/logger';
 import {
   checkAndGetLibrarySetupStatus,
   checkinLibraryVehicle,
   checkoutLibraryVehicle,
   createLibrarySetupSession,
   getLibraryRentalHistory,
-  getLibrarySetupStatus,
   getLibraryStations,
   LibraryRental,
   LibraryStation,
-} from '../library/serverComm.ts';
+  LibraryVehicle,
+} from './serverComm';
 import { addStatReading } from '../plugin/clientStats';
 import useAppState from '../useAppState';
 
-let barcodeScannerIsOpen = false;
-
-function computeFee(rentalHours: number) {
-  if (0 <= rentalHours && rentalHours <= 5) {
-    return 5;
-  } else if (5 < rentalHours && rentalHours <= 24) {
-    return 35;
-  } else if (24 < rentalHours && rentalHours <= 72) {
-    return 100;
-  } else if (72 < rentalHours && rentalHours <= 144) {
-    return 200;
-  } else if (144 < rentalHours && rentalHours <= 336) {
-    return 380;
-  } else {
-    return 380;
-  }
+function computeFee(
+  feeExpression: string,
+  duration: number,
+  subgroup: string | undefined,
+  vehicle?: LibraryVehicle,
+): number {
+  const scope = { duration, subgroup, ...vehicle };
+  return conditional_surveys.scoped_eval(feeExpression, scope);
 }
 
 function formatRentalDuration(rentalHours: number | null) {
@@ -48,30 +52,44 @@ function formatRentalDuration(rentalHours: number | null) {
   return humanizeDurationHoursFull(rentalHours);
 }
 
-type RentalHistoryEntry = LibraryRental;
+// Which screen of the vehicle-rental flow is currently shown. 'browse' shows
+// either the station list or the active rental, depending on rental state.
+type Screen =
+  | { name: 'browse' }
+  | { name: 'scan-checkout' }
+  | { name: 'checkout'; vehicleId: string }
+  | { name: 'scan-return' }
+  | { name: 'return'; dockId: string };
 
 const LibraryTab = () => {
-  const [setupComplete, setSetupComplete] = useState(false);
+  const { appConfig, onboardingState } = useContext(AppContext);
+  const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
   const [setupInProgress, setSetupInProgress] = useState(false);
   const [paymentInProgress, setPaymentInProgress] = useState(false);
   const [isSimulationMode, setIsSimulationMode] = useState(false);
-  const [rentalNowTs, setRentalNowTs] = useState(Date.now());
-  const [rentalHistory, setRentalHistory] = useState<RentalHistoryEntry[]>([]);
+  const [simulatedSubgroup, setSimulatedSubgroup] = useState<string | undefined>(undefined);
+  const [showTestLocations, setShowTestLocations] = useState(false);
+  const [devPanelExpanded, setDevPanelExpanded] = useState(false);
+  const [rentalNowTs, setRentalNowTs] = useState(Date.now() / 1000);
+  const [rentalHistory, setRentalHistory] = useState<LibraryRental[]>([]);
   const [stations, setStations] = useState<LibraryStation[] | null>(null);
   const [stationsLoading, setStationsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [screen, setScreen] = useState<Screen>({ name: 'browse' });
   const isMounted = useRef(true);
-  const directStripeMode = true;
+
+  const subgroup = simulatedSubgroup ?? onboardingState?.subgroup;
   const activeRental = rentalHistory.findLast((r) => r.rental_status === 'active') ?? null;
-  // start_ts from server is Unix seconds; convert to ms for Date.now() arithmetic
-  const rentalStartTs = activeRental ? activeRental.start_ts * 1000 : null;
-  const rentalBikeId = activeRental?.vehicle_id ?? null;
-  const rentalHours = rentalStartTs
-    ? Math.max(rentalNowTs - rentalStartTs, 0) / (60 * 60 * 1000)
+  const rentalVehicleId = activeRental?.vehicle_id ?? null;
+  const rentalHours = activeRental
+    ? Math.max(rentalNowTs - activeRental.start_ts, 0) / (60 * 60)
     : null;
   const rentalStatusText = formatRentalDuration(rentalHours);
-  const currentFee = rentalHours === null ? 0 : computeFee(rentalHours);
+  const feeExpression = appConfig?.vehicle_library?.fee_expression;
+  const currentFee = rentalHours === null ? 0 : computeFee(feeExpression, rentalHours, subgroup);
+  const feeDisplay = `$${currentFee.toFixed(2)}`;
 
-  const getRentalHistory = async (): Promise<RentalHistoryEntry[]> => {
+  const getRentalHistory = async (): Promise<LibraryRental[]> => {
     const history = await getLibraryRentalHistory();
     return history.rental_history;
   };
@@ -117,6 +135,35 @@ const LibraryTab = () => {
     }
   };
 
+  const loadStations = async () => {
+    setStationsLoading(true);
+    try {
+      const response = await getLibraryStations();
+      if (isMounted.current) {
+        setStations(response.stations);
+      }
+    } catch (e) {
+      if (isMounted.current) {
+        displayErrorMsg(String(e), 'Failed to load stations');
+      }
+    } finally {
+      if (isMounted.current) {
+        setStationsLoading(false);
+      }
+    }
+  };
+
+  const refreshAll = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([refreshSetupStatus(), refreshRentalHistory(), loadStations()]);
+    } finally {
+      if (isMounted.current) {
+        setRefreshing(false);
+      }
+    }
+  };
+
   useAppState({
     // TODO: This is only called when we navigate to the tab, not when the app is launched.
     // Think about whether this is a problem and needs to be fixed.
@@ -127,12 +174,14 @@ const LibraryTab = () => {
   });
 
   useEffect(() => {
+    void loadStations();
     return () => {
       /*
       Jack, do we use this in other components? Should we?
       isMounted is a guard to prevent state updates after the component has unmounted.
       Used with async calls; prevents trying to update React state after navigation away/unmount.
       */
+      // TODO
       isMounted.current = false;
     };
   }, []);
@@ -199,21 +248,21 @@ const LibraryTab = () => {
   }, []);
 
   useEffect(() => {
-    if (rentalStartTs === null) {
+    if (!activeRental) {
       return;
     }
 
     if (!isSimulationMode) {
-      setRentalNowTs(Date.now());
+      setRentalNowTs(Date.now() / 1000);
     }
     const intervalId = setInterval(() => {
       if (isMounted.current && !isSimulationMode) {
-        setRentalNowTs(Date.now());
+        setRentalNowTs(Date.now() / 1000);
       }
     }, 60 * 1000);
 
     return () => clearInterval(intervalId);
-  }, [rentalStartTs, isSimulationMode]);
+  }, [activeRental, isSimulationMode]);
 
   const onSetupCheckoutPress = async () => {
     try {
@@ -230,240 +279,243 @@ const LibraryTab = () => {
     }
   };
 
-  const runQrScan = async (callback: (resultText: string) => void) => {
-    if (barcodeScannerIsOpen) return;
-
-    if (!(window as any)?.cordova?.plugins?.barcodeScanner) {
-      Alerts.addMessage({ text: 'QR scanner is not available on this device.' });
-      return;
-    }
-
-    barcodeScannerIsOpen = true;
-    addStatReading('open_qr_scanner');
-    (window as any).cordova.plugins.barcodeScanner.scan(
-      (result: { cancelled?: boolean; text?: string; format?: string }) => {
-        barcodeScannerIsOpen = false;
-        logDebug('scanCode: scanned ' + JSON.stringify(result));
-        if (result.cancelled) return;
-        if (!result?.text || result.format != 'QR_CODE') {
-          Alerts.addMessage({ text: 'No QR code found in scan. Please try again.' });
-          return;
-        }
-        callback(result.text);
-      },
-      (error: { message?: string }) => {
-        barcodeScannerIsOpen = false;
-        Alerts.addMessage({ text: 'Scanning failed: ' + (error.message || 'Unknown error') });
-        callback(error.message || 'Unknown error');
-      },
-    );
+  // Routes a scanned/typed code to the checkout or return flow, depending on
+  // which QR scanner screen is currently active.
+  const handleScanResult = (code: string) => {
+    // TODO is there a validation step needed here?
+    setScreen((prev) => {
+      if (prev.name === 'scan-checkout') return { name: 'checkout', vehicleId: code };
+      if (prev.name === 'scan-return') return { name: 'return', dockId: code };
+      return prev;
+    });
   };
 
-  const scanCode = async (callback: (resultText: string) => void) => {
-    Alerts.showPopup((props: { visible?: boolean; onDismiss?: () => void }) => (
-      <BikeDockEntryModal
-        {...props}
-        onScan={() => {
-          void runQrScan(callback);
-        }}
-        onManualSubmit={(manualId: string) => {
-          callback(manualId);
-        }}
-      />
-    ));
-  };
-
-  const confirmCheckout = async (holdAmount: number, wantAccessories: boolean) => {
+  const confirmCheckout = async (
+    vehicleId: string,
+    holdAmount: number,
+    wantAccessories: boolean,
+  ) => {
     setPaymentInProgress(true);
     addStatReading('checkout_initiated', { holdAmount, wantAccessories });
-    scanCode((bike_id: string) => {
-      void (async () => {
-        try {
-          await checkoutLibraryVehicle(bike_id, holdAmount);
-          addStatReading('checkout_confirmed', { holdAmount, wantAccessories });
-          Alerts.addMessage({ text: 'Checkout completed successfully.' });
-          setRentalNowTs(Date.now());
-          void refreshRentalHistory();
-        } catch (e) {
-          addStatReading('checkout_aborted', { holdAmount, wantAccessories, error: String(e) });
-          displayErrorMsg(String(e), 'Stripe checkout failed');
-        } finally {
-          setPaymentInProgress(false);
-        }
-      })();
-    });
-  };
-
-  const checkout = () => {
-    Alerts.showPopup((props: { visible?: boolean; onDismiss?: () => void }) => (
-      <CheckoutControlModal
-        {...props}
-        onConfirm={(wantAccessories: boolean, holdAmount: number) => {
-          void confirmCheckout(holdAmount, wantAccessories);
-        }}
-      />
-    ));
-  };
-
-  const loadStations = async () => {
-    setStationsLoading(true);
     try {
-      const response = await getLibraryStations();
-      setStations(response.stations);
+      await checkoutLibraryVehicle(vehicleId, holdAmount);
+      addStatReading('checkout_confirmed', { holdAmount, wantAccessories });
+      Alerts.addMessage({ text: 'Checkout completed successfully.' });
+      setRentalNowTs(Date.now());
+      await refreshRentalHistory();
+      if (isMounted.current) {
+        setScreen({ name: 'browse' });
+      }
     } catch (e) {
-      displayErrorMsg(String(e), 'Failed to load stations');
+      addStatReading('checkout_aborted', { holdAmount, wantAccessories, error: String(e) });
+      displayErrorMsg(String(e), 'Stripe checkout failed');
     } finally {
-      setStationsLoading(false);
+      if (isMounted.current) {
+        setPaymentInProgress(false);
+      }
     }
   };
 
-  const returnBike = async () => {
+  const confirmReturn = async (dockId: string) => {
     if (rentalHours === null) {
-      displayErrorMsg('No active rental to return.');
+      throw new Error('No active rental to return.');
+    }
+
+    try {
+      await checkinLibraryVehicle(dockId);
+      await refreshRentalHistory();
+    } catch (e) {
+      displayErrorMsg(String(e), 'Stripe return failed');
+      throw e;
+    }
+  };
+
+  const openScanQrButton = () => {
+    if (!setupComplete) {
+      Alerts.addMessage({ text: 'Please complete payment setup before checking out a vehicle.' });
       return;
     }
-
-    setPaymentInProgress(true);
-    scanCode((dock_id: string) => {
-      void (async () => {
-        try {
-          await checkinLibraryVehicle(dock_id);
-          if (isMounted.current) {
-            void refreshRentalHistory();
-          }
-        } catch (e) {
-          displayErrorMsg(String(e), 'Stripe return failed');
-        } finally {
-          setPaymentInProgress(false);
-        }
-      })();
-    });
+    setScreen({ name: 'scan-checkout' });
   };
 
-  return (
-    <>
-      <NavBar elevated={true}>
-        <Appbar.Content title="library" />
-        <Appbar.Action
-          icon="refresh"
-          size={32}
-          onPress={() => {
-            void refreshSetupStatus();
-            void refreshRentalHistory();
-          }}
-          style={{ margin: 0, marginLeft: 'auto' }}
-        />
-      </NavBar>
+  if (setupComplete === null) {
+    // full page loading indicator while setup status is being determined
 
-      <ScrollView style={styles.container} contentContainerStyle={styles.containerContent}>
-        {directStripeMode && (
-          <View style={styles.warningBanner}>
-            <Text style={styles.warningTitle}>DEV MODE: Connecting to sandbox</Text>
-            <Text style={styles.warningBody}>
-              This screen is connected to a sandbox for testing direct calls from the app.
-            </Text>
-            <Checkbox.Item
-              label="Simulation mode"
-              status={isSimulationMode ? 'checked' : 'unchecked'}
-              onPress={() => setIsSimulationMode((prev) => !prev)}
-            />
-            <View style={styles.simulationButtonsRow}>
-              <Button
-                mode="outlined"
-                style={styles.simulationButton}
-                disabled={!isSimulationMode || !rentalBikeId}
-                onPress={() => {
-                  setRentalNowTs((prevTs) => prevTs + 60 * 60 * 1000);
-                }}>
-                +1 hour
-              </Button>
-              <Button
-                mode="outlined"
-                style={styles.simulationButton}
-                disabled={!isSimulationMode || !rentalBikeId}
-                onPress={() => {
-                  setRentalNowTs((prevTs) => prevTs + 24 * 60 * 60 * 1000);
-                }}>
-                +1 day
-              </Button>
+    return (
+      <View style={{ height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      {screen.name === 'browse' && (
+        <ScrollView style={styles.browseScroll} contentContainerStyle={styles.browseContent}>
+          {onboardingState?.opcode.includes('_test_') && (
+            <View style={styles.devBanner}>
+              <View
+                style={styles.devBannerHeaderRow}
+                onTouchStart={() => setDevPanelExpanded((prev) => !prev)}>
+                <Text style={styles.devBannerText}>DEV MODE: Using Stripe Sandbox</Text>
+                <IconButton
+                  icon={devPanelExpanded ? 'chevron-up' : 'chevron-down'}
+                  size={18}
+                  iconColor="#b00020"
+                  style={styles.devBannerExpandButton}
+                />
+              </View>
+              {devPanelExpanded && (
+                <View style={styles.devBannerContent}>
+                  <View style={styles.devBannerToggle}>
+                    <Text style={styles.devBannerToggleLabel}>Show test locations</Text>
+                    <Checkbox
+                      status={showTestLocations ? 'checked' : 'unchecked'}
+                      onPress={() => setShowTestLocations((prev) => !prev)}
+                    />
+                  </View>
+                  <View style={styles.devBannerToggle}>
+                    <Text style={styles.devBannerToggleLabel}>Simulate checkout duration</Text>
+                    <View style={styles.simulationButtonsRow}>
+                      {[1, 24, -1, -24].map((hours) => {
+                        const isPositive = hours > 0;
+                        const label = isPositive ? `+${isPositive ? hours : -hours}h` : `${hours}h`;
+                        return (
+                          <Button
+                            key={hours}
+                            mode="text"
+                            compact
+                            style={styles.simulationButton}
+                            onPress={() => {
+                              setIsSimulationMode(true);
+                              setRentalNowTs((prevTs) =>
+                                Math.max(
+                                  activeRental?.start_ts ?? 0,
+                                  prevTs + hours * 60 * 60 * 1000,
+                                ),
+                              );
+                            }}>
+                            {label}
+                          </Button>
+                        );
+                      })}
+                    </View>
+                  </View>
+                  {appConfig?.opcode?.subgroups?.length && (
+                    <View style={styles.devBannerToggle}>
+                      <Text style={styles.devBannerToggleLabel}>Simulate subgroup</Text>
+                      <SegmentedButtons
+                        value={simulatedSubgroup ?? ''}
+                        density="high"
+                        onValueChange={setSimulatedSubgroup}
+                        buttons={appConfig.opcode.subgroups.map((subgroup) => ({
+                          value: subgroup,
+                          label: subgroup,
+                          labelStyle: { fontSize: 10, padding: 0 },
+                        }))}
+                      />
+                    </View>
+                  )}
+                </View>
+              )}
             </View>
-          </View>
-        )}
-        <View style={styles.rentalDurationRow}>
-          <Text style={styles.statusLabel}>Current rental</Text>
-          <Text style={styles.statusValue}>{rentalStatusText}</Text>
-        </View>
-        <View style={styles.statusRow}>
-          <View style={styles.statusBox}>
-            <Text style={styles.statusLabel}>Current fee</Text>
-            <Text style={styles.statusValue}>${currentFee.toFixed(2)}</Text>
-          </View>
-        </View>
-        <Button
-          mode="contained"
-          disabled={setupComplete || setupInProgress || paymentInProgress}
-          onPress={onSetupCheckoutPress}>
-          setup checkout
-        </Button>
-        <Button
-          mode="contained"
-          disabled={
-            !setupComplete || setupInProgress || paymentInProgress || rentalStartTs !== null
-          }
-          onPress={checkout}>
-          checkout
-        </Button>
-        <Button
-          mode="contained"
-          disabled={
-            !setupComplete || setupInProgress || paymentInProgress || rentalStartTs === null
-          }
-          onPress={returnBike}>
-          return
-        </Button>
-        <Button mode="outlined" loading={stationsLoading} onPress={loadStations}>
-          show stations
-        </Button>
-        {stations !== null && (
-          <View style={styles.stationList}>
-            {stations.length === 0 ? (
-              <Text>No stations found.</Text>
+          )}
+          {setupComplete == false && (
+            <Banner
+              visible
+              icon="credit-card-outline"
+              actions={[
+                {
+                  label: 'Set up payment',
+                  onPress: () => void onSetupCheckoutPress(),
+                  disabled: setupInProgress,
+                },
+              ]}>
+              Set up your payment method to check out a vehicle.
+            </Banner>
+          )}
+          <View style={styles.flowScreen}>
+            {activeRental ? (
+              <ActiveRental
+                vehicleId={rentalVehicleId ?? ''}
+                activeRental={activeRental}
+                durationDisplay={rentalStatusText}
+                feeDisplay={feeDisplay}
+                onReturnVehicle={() => setScreen({ name: 'scan-return' })}
+                refreshing={refreshing}
+                onRefresh={() => void refreshAll()}
+              />
             ) : (
-              stations.map((s, i) => (
-                <View key={s['station_id'] ?? i} style={styles.stationItem}>
+              <AvailableVehicles
+                stations={stations}
+                stationsLoading={stationsLoading}
+                refreshing={refreshing}
+                onRefresh={() => void refreshAll()}
+                onScanQrButton={openScanQrButton}
+                includeTestLocations={showTestLocations}
+              />
+            )}
+          </View>
+          <Text style={styles.sectionHeader}>Rental history</Text>
+          <View style={styles.stationList}>
+            {rentalHistory.length === 0 ? (
+              <Text style={styles.stationDetail}>No rentals yet.</Text>
+            ) : (
+              rentalHistory.map((r, i) => (
+                <View key={i} style={styles.stationItem}>
                   <Text style={styles.stationName}>
-                    {s['name'] ?? s['station_id'] ?? `Station ${i + 1}`}
+                    {r.vehicle_name ?? r.vehicle_id} — {r.rental_status}
                   </Text>
-                  <Text style={styles.stationDetail}>{JSON.stringify(s)}</Text>
+                  <Text style={styles.stationDetail}>
+                    {r.start_fmt_time ?? new Date(r.start_ts * 1000).toLocaleString()}
+                    {r.start_dock_id ? ` · ${r.start_dock_id}` : ''}
+                    {' → '}
+                    {r.end_fmt_time
+                      ? `${r.end_fmt_time}${r.end_dock_id ? ` · ${r.end_dock_id}` : ''}`
+                      : 'ongoing'}
+                  </Text>
                 </View>
               ))
             )}
           </View>
-        )}
-        <Text style={styles.sectionHeader}>Rental history</Text>
-        <View style={styles.stationList}>
-          {rentalHistory.length === 0 ? (
-            <Text style={styles.stationDetail}>No rentals yet.</Text>
-          ) : (
-            rentalHistory.map((r, i) => (
-              <View key={i} style={styles.stationItem}>
-                <Text style={styles.stationName}>
-                  {r.vehicle_name ?? r.vehicle_id} — {r.rental_status}
-                </Text>
-                <Text style={styles.stationDetail}>
-                  {r.start_fmt_time ?? new Date(r.start_ts * 1000).toLocaleString()}
-                  {r.start_dock_id ? ` · ${r.start_dock_id}` : ''}
-                  {' → '}
-                  {r.end_fmt_time
-                    ? `${r.end_fmt_time}${r.end_dock_id ? ` · ${r.end_dock_id}` : ''}`
-                    : 'ongoing'}
-                </Text>
-              </View>
-            ))
+        </ScrollView>
+      )}
+
+      {(screen.name === 'checkout' || screen.name === 'return') && (
+        <View style={styles.flowScreen}>
+          {screen.name === 'checkout' && (
+            <CheckoutFlow
+              vehicleId={screen.vehicleId}
+              paymentProcessing={paymentInProgress}
+              estimateFee={(hours) => computeFee(feeExpression, hours, subgroup)}
+              onConfirm={(wantAccessories, holdAmount) =>
+                void confirmCheckout(screen.vehicleId, holdAmount, wantAccessories)
+              }
+              onCancel={() => setScreen({ name: 'browse' })}
+            />
+          )}
+          {screen.name === 'return' && (
+            <ReturnFlow
+              vehicleId={rentalVehicleId ?? ''}
+              dockId={screen.dockId}
+              vehicleName={activeRental?.vehicle_name}
+              durationDisplay={rentalStatusText}
+              feeDisplay={feeDisplay}
+              onConfirmReturn={() => confirmReturn(screen.dockId)}
+              onComplete={() => setScreen({ name: 'browse' })}
+            />
           )}
         </View>
-      </ScrollView>
-    </>
+      )}
+
+      {(screen.name === 'scan-checkout' || screen.name === 'scan-return') && (
+        <QRScanner
+          mode={screen.name === 'scan-checkout' ? 'checkout' : 'return'}
+          onScan={handleScanResult}
+          onClose={() => setScreen({ name: 'browse' })}
+        />
+      )}
+    </View>
   );
 };
 
@@ -471,64 +523,59 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  containerContent: {
-    padding: 16,
-    gap: 12,
-  },
-  statusRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  statusBox: {
+  flowScreen: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#c7c7c7',
-    borderRadius: 8,
-    padding: 12,
-    backgroundColor: '#f7f7f7',
-    gap: 4,
   },
-  statusLabel: {
-    color: '#555555',
+  browseScroll: {
+    flex: 1,
   },
-  statusValue: {
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  rentalDurationRow: {
-    borderWidth: 1,
-    borderColor: '#c7c7c7',
-    borderRadius: 8,
-    padding: 12,
-    backgroundColor: '#f7f7f7',
-    gap: 4,
+  browseContent: {
+    paddingBottom: 16,
+    // gap: 12,
   },
   simulationButtonsRow: {
     flexDirection: 'row',
-    gap: 8,
   },
-  simulationButton: {
-    flex: 1,
-  },
-  warningBanner: {
-    borderWidth: 2,
+  simulationButton: {},
+  devBanner: {
+    borderWidth: 1,
     borderColor: '#b00020',
     backgroundColor: '#ffe8ec',
-    borderRadius: 8,
-    padding: 12,
-    gap: 4,
   },
-  warningTitle: {
+  devBannerHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 12,
+  },
+  devBannerExpandButton: {
+    margin: 0,
+    marginLeft: 'auto',
+  },
+  devBannerContent: {
+    paddingHorizontal: 12,
+  },
+  devBannerText: {
     color: '#b00020',
     fontWeight: '700',
+    fontSize: 12,
   },
-  warningBody: {
-    color: '#6b0012',
+  devBannerToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderTopWidth: 1,
+    borderTopColor: '#f0d0d0',
+  },
+  devBannerToggleLabel: {
+    color: '#b00020',
+    fontSize: 12,
+    margin: 4,
   },
   stationList: {
     borderWidth: 1,
     borderColor: '#c7c7c7',
     borderRadius: 8,
+    marginHorizontal: 16,
   },
   stationItem: {
     padding: 10,
@@ -545,6 +592,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontWeight: '700',
     fontSize: 15,
+    marginHorizontal: 16,
   },
 });
 
