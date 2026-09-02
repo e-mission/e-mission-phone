@@ -63,13 +63,12 @@ const Main = () => {
   const { appConfig } = useContext(AppContext);
   const timelineContext = useTimelineContext();
 
-  const routes = useMemo(
-    () =>
-      appConfig && showMetricsTab(appConfig)
-        ? defaultRoutes(t)
-        : defaultRoutes(t).filter((r) => r.key != 'metrics'),
-    [appConfig, t],
-  );
+  const routes = useMemo(() => {
+    let r = defaultRoutes(t);
+    if (!appConfig || !showMetricsTab(appConfig)) r = r.filter((route) => route.key != 'metrics');
+    if (!appConfig?.vehicle_library) r = r.filter((route) => route.key != 'library');
+    return r;
+  }, [appConfig, t]);
 
   const onIndexChange = useCallback(
     (i: number) => {
