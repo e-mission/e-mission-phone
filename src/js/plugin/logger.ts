@@ -1,4 +1,5 @@
 import { addStatError } from './clientStats';
+import { Alerts } from '../components/alerts';
 
 export const logDebug = (message: string) =>
   window['Logger']?.log(window['Logger'].LEVEL_DEBUG, message);
@@ -20,7 +21,7 @@ export function displayErrorMsg(errorMsg: string, title?: string) {
     title = 'Invalid OPcode: ' + (title || '');
   }
   const displayMsg = `━━━━\n${title}\n━━━━\n` + errorMsg;
-  window.alert(displayMsg);
+  Alerts.showPopup({ title: title || 'Error', content: errorMsg });
   addStatError(title ? `${title}: ${errorMsg}` : errorMsg);
   console.error(displayMsg);
   window['Logger']?.log(window['Logger'].LEVEL_ERROR, displayMsg);

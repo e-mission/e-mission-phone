@@ -3,7 +3,7 @@ import { AppStateStatus } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppTheme } from './appTheme';
 import { logDebug, logWarn } from './plugin/logger';
-import { Alerts } from './components/AlertArea';
+import { Alerts } from './components/alerts';
 import { readConsentState } from './splash/startprefs';
 import { IS_CORDOVA } from './nativePlugins';
 import DeploymentConfig from 'op-deployment-configs';

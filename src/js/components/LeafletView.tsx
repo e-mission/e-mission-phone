@@ -4,6 +4,7 @@ import { useTheme } from 'react-native-paper';
 import L, { Map as LeafletMap } from 'leaflet';
 import { GeoJSONData, GeoJSONStyledFeature } from '../types/diaryTypes';
 import useLeafletCache from './useLeafletCache';
+import { Alerts } from './alerts';
 
 // styles for Leaflet
 import 'leaflet/dist/leaflet.css';
@@ -176,7 +177,7 @@ function pointToLayer(feature, latlng) {
       return L.marker(latlng, { icon: stopIcon });
     // case "stop": return L.circleMarker(latlng);
     default:
-      alert('Found unknown type in feature' + feature);
+      Alerts.addMessage({ text: 'Found unknown type in feature' + feature });
       return L.marker(latlng);
   }
 }

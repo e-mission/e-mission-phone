@@ -1,5 +1,6 @@
 import { logDebug, logInfo, displayError } from '../plugin/logger';
 import i18next from 'i18next';
+import { Alerts } from '../components/alerts';
 
 /**
  * @returns A promise that resolves with an upload URL or rejects with an error
@@ -97,7 +98,7 @@ export async function uploadFile(database, reason) {
     } else if (window['cordova'].platformId.toLowerCase() == 'ios') {
       parentDir = window['cordova'].file.dataDirectory + '../LocalDatabase';
     } else {
-      alert('parentDir unexpectedly = ' + parentDir + '!');
+      Alerts.addMessage({ text: 'parentDir unexpectedly = ' + parentDir + '!' });
     }
 
     logInfo('Going to upload ' + database);
@@ -110,16 +111,17 @@ export async function uploadFile(database, reason) {
       };
       uploadConfig.forEach(async (url) => {
         //have alert for starting upload, but not progress
-        window.alert(i18next.t('upload-service.upload-database', { db: database }));
+        Alerts.addMessage({ text: i18next.t('upload-service.upload-database', { db: database }) });
 
         try {
           let response = await sendToServer(url, binString, params);
-          window.alert(
-            i18next.t('upload-service.upload-details', {
-              filesizemb: binString['byteLength'] / (1000 * 1000),
-              serverURL: url,
-            }) + i18next.t('upload-service.upload-success'),
-          );
+          Alerts.addMessage({
+            text:
+              i18next.t('upload-service.upload-details', {
+                filesizemb: binString['byteLength'] / (1000 * 1000),
+                serverURL: url,
+              }) + i18next.t('upload-service.upload-success'),
+          });
           return response;
         } catch (error) {
           onUploadError(error);

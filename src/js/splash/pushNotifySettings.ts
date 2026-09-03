@@ -15,7 +15,7 @@
 
 import { logDebug, displayError, logWarn, displayErrorMsg } from '../plugin/logger';
 import { readConsentState } from './startprefs';
-import { Alerts } from '../components/AlertArea';
+import { Alerts } from '../components/alerts';
 import { addStatReading } from '../plugin/clientStats';
 import { IS_CORDOVA } from '../nativePlugins';
 import { PushNotifySettings } from './userProfile';
@@ -198,8 +198,7 @@ export function handleVisiblePush(data) {
     if (data.additionalData.payload.alert_type == 'popup') {
       const popupSpec = data.additionalData.payload.spec;
       if (popupSpec?.title && popupSpec?.text) {
-        /* TODO: replace popup with something with better UI */
-        window.alert(popupSpec.title + ' ' + popupSpec.text);
+        Alerts.showPopup({ title: popupSpec.title, content: popupSpec.text });
       } else {
         displayErrorMsg(JSON.stringify(popupSpec), 'popup was not specified correctly. spec is ');
       }

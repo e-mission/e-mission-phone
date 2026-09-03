@@ -10,7 +10,7 @@ import {
 import { Point } from 'geojson';
 import { useEffect, useState } from 'react';
 import { NominatimResponse } from '../types/apiTypes';
-import { Alerts } from '../components/AlertArea';
+import { Alerts } from '../components/alerts';
 
 const GEOCODING_API_URL = 'https://nominatim.openstreetmap.org';
 const nominatimLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
