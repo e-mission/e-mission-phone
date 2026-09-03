@@ -1,6 +1,7 @@
 import React from 'react';
 import { RefreshControl } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import '../js/i18nextInit';
 import LibraryTab from '../js/library/LibraryTab';
 import { AppContext, AppContextProps } from '../js/AppContext';
 import { Alerts } from '../js/components/AlertArea';
@@ -41,6 +42,7 @@ jest.mock('../js/plugin/logger', () => ({
   __esModule: true,
   displayErrorMsg: jest.fn(),
   logDebug: jest.fn(),
+  logWarn: jest.fn(),
 }));
 
 jest.mock('../js/plugin/clientStats', () => ({

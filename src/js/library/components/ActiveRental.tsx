@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
 import { Button, Card, Icon } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { LibraryRental } from '../serverComm';
 import { DateTime } from 'luxon';
 
@@ -23,15 +24,16 @@ export function ActiveRental({
   refreshing,
   onRefresh,
 }: ActiveRentalProps) {
+  const { t } = useTranslation();
+  const vehicleName =
+    activeRental?.vehicle_name ?? t('library.active-rental.vehicle-fallback-name', { vehicleId });
   console.debug({ activeRental });
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.headerTitle}>Active Rental</Text>
-          <Text style={styles.headerSubtitle}>
-            {activeRental?.vehicle_name ?? `Vehicle ${vehicleId}`}
-          </Text>
+          <Text style={styles.headerTitle}>{t('library.active-rental.title')}</Text>
+          <Text style={styles.headerSubtitle}>{vehicleName}</Text>
         </View>
       </View>
 
@@ -49,16 +51,15 @@ export function ActiveRental({
                 <Icon source="bike" size={32} color="#4CAF50" />
               </View>
               <View>
-                <Text style={styles.vehicleTitle}>
-                  {activeRental?.vehicle_name ?? `Vehicle ${vehicleId}`}
-                </Text>
+                <Text style={styles.vehicleTitle}>{vehicleName}</Text>
                 <Text style={styles.vehicleSubtitle}>
-                  Checked out since{' '}
-                  {new Date(activeRental.start_ts * 1000).toLocaleString('en-US', {
-                    month: 'numeric',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
+                  {t('library.active-rental.checked-out-since', {
+                    time: new Date(activeRental.start_ts * 1000).toLocaleString('en-US', {
+                      month: 'numeric',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }),
                   })}
                 </Text>
               </View>
@@ -71,7 +72,9 @@ export function ActiveRental({
               </View>
               <View style={styles.infoRow}>
                 <Icon source="currency-usd" size={20} color="#757575" />
-                <Text style={styles.infoText}>Current fee: {feeDisplay}</Text>
+                <Text style={styles.infoText}>
+                  {t('library.active-rental.current-fee', { fee: feeDisplay })}
+                </Text>
               </View>
             </View>
           </Card.Content>
@@ -79,15 +82,21 @@ export function ActiveRental({
 
         <Card style={styles.card}>
           <Card.Content>
-            <Text style={styles.instructionsTitle}>Return Instructions</Text>
+            <Text style={styles.instructionsTitle}>
+              {t('library.active-rental.return-instructions')}
+            </Text>
 
             <View style={styles.instructionStep}>
               <View style={styles.stepNumber}>
                 <Text style={styles.stepNumberText}>1</Text>
               </View>
               <View style={styles.stepContent}>
-                <Text style={styles.stepTitle}>Find a dock station</Text>
-                <Text style={styles.stepText}>Return the vehicle to any available dock</Text>
+                <Text style={styles.stepTitle}>
+                  {t('library.active-rental.step-find-dock-title')}
+                </Text>
+                <Text style={styles.stepText}>
+                  {t('library.active-rental.step-find-dock-text')}
+                </Text>
               </View>
             </View>
 
@@ -96,8 +105,8 @@ export function ActiveRental({
                 <Text style={styles.stepNumberText}>2</Text>
               </View>
               <View style={styles.stepContent}>
-                <Text style={styles.stepTitle}>Secure the vehicle</Text>
-                <Text style={styles.stepText}>Place the vehicle in the dock</Text>
+                <Text style={styles.stepTitle}>{t('library.active-rental.step-secure-title')}</Text>
+                <Text style={styles.stepText}>{t('library.active-rental.step-secure-text')}</Text>
               </View>
             </View>
 
@@ -106,8 +115,8 @@ export function ActiveRental({
                 <Text style={styles.stepNumberText}>3</Text>
               </View>
               <View style={styles.stepContent}>
-                <Text style={styles.stepTitle}>Scan dock QR code</Text>
-                <Text style={styles.stepText}>Lock the dock and complete your rental</Text>
+                <Text style={styles.stepTitle}>{t('library.active-rental.step-scan-title')}</Text>
+                <Text style={styles.stepText}>{t('library.active-rental.step-scan-text')}</Text>
               </View>
             </View>
 
@@ -116,7 +125,7 @@ export function ActiveRental({
               onPress={onReturnVehicle}
               icon="qrcode-scan"
               style={styles.returnButton}>
-              Scan Dock to Return
+              {t('library.active-rental.scan-dock-to-return')}
             </Button>
           </Card.Content>
         </Card>

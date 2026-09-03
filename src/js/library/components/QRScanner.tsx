@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal } from 'react-native';
 import { Button, TextInput, IconButton } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import { Alerts } from '../../components/AlertArea';
 import { addStatReading } from '../../plugin/clientStats';
 import { logDebug } from '../../plugin/logger';
@@ -11,7 +13,7 @@ function runQrScan(callback: (resultText: string) => void) {
   if (barcodeScannerIsOpen) return;
 
   if (!(window as any)?.cordova?.plugins?.barcodeScanner) {
-    Alerts.addMessage({ text: 'QR scanner is not available on this device.' });
+    Alerts.addMessage({ text: i18next.t('library.qr-scanner.not-available') });
     return;
   }
 
@@ -23,15 +25,16 @@ function runQrScan(callback: (resultText: string) => void) {
       logDebug('scanCode: scanned ' + JSON.stringify(result));
       if (result.cancelled) return;
       if (!result?.text || result.format != 'QR_CODE') {
-        Alerts.addMessage({ text: 'No QR code found in scan. Please try again.' });
+        Alerts.addMessage({ text: i18next.t('library.qr-scanner.no-qr-found') });
         return;
       }
       callback(result.text);
     },
     (error: { message?: string }) => {
       barcodeScannerIsOpen = false;
-      Alerts.addMessage({ text: 'Scanning failed: ' + (error.message || 'Unknown error') });
-      callback(error.message || 'Unknown error');
+      const message = error.message || i18next.t('library.qr-scanner.unknown-error');
+      Alerts.addMessage({ text: i18next.t('library.qr-scanner.scan-failed', { error: message }) });
+      callback(message);
     },
   );
 }
@@ -43,6 +46,7 @@ interface QRScannerProps {
 }
 
 export function QRScanner({ mode, onScan, onClose }: QRScannerProps) {
+  const { t } = useTranslation();
   const [manualCode, setManualCode] = useState('');
 
   const handleManualSubmit = () => {
@@ -56,7 +60,9 @@ export function QRScanner({ mode, onScan, onClose }: QRScannerProps) {
         <View style={styles.modalContent}>
           <View style={styles.header}>
             <Text style={styles.headerTitle}>
-              Scan {mode === 'checkout' ? 'Vehicle' : 'Dock'} QR Code
+              {mode === 'checkout'
+                ? t('library.qr-scanner.scan-vehicle-title')
+                : t('library.qr-scanner.scan-dock-title')}
             </Text>
             <IconButton icon="close" onPress={onClose} />
           </View>
@@ -67,11 +73,11 @@ export function QRScanner({ mode, onScan, onClose }: QRScannerProps) {
             onPress={() => runQrScan(onScan)}
             style={styles.cameraButton}
             contentStyle={styles.cameraButtonContent}>
-            Open Camera Scanner
+            {t('library.qr-scanner.open-camera')}
           </Button>
 
           <View style={styles.manualSection}>
-            <Text style={styles.manualLabel}>Or enter code manually:</Text>
+            <Text style={styles.manualLabel}>{t('library.qr-scanner.manual-label')}</Text>
             <View style={styles.inputRow}>
               <TextInput
                 mode="outlined"
@@ -79,7 +85,11 @@ export function QRScanner({ mode, onScan, onClose }: QRScannerProps) {
                 onChangeText={setManualCode}
                 autoCapitalize="none"
                 autoCorrect={false}
-                placeholder={mode === 'checkout' ? 'Vehicle ID' : 'Dock ID'}
+                placeholder={
+                  mode === 'checkout'
+                    ? t('library.qr-scanner.vehicle-id-placeholder')
+                    : t('library.qr-scanner.dock-id-placeholder')
+                }
                 right={
                   <TextInput.Icon
                     onPress={handleManualSubmit}

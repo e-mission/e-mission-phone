@@ -303,6 +303,113 @@
     "upload-details": "Sent {{filesizemb | number}} MB to {{serverURL}}"
   },
 
+  "library": {
+    "set-up-payment": "Set up payment",
+    "set-up-payment-banner": "Set up your payment method to check out a vehicle.",
+    "setup-required-before-checkout": "Please complete payment setup before checking out a vehicle.",
+    "stripe-setup-status": "Stripe setup {{status}}.",
+    "stripe-setup-did-not-complete": "did not complete",
+    "checkout-success": "Checkout completed successfully.",
+    "rental-history": "Rental history",
+    "no-rentals-yet": "No rentals yet.",
+    "rental-summary": "{{vehicle}} — {{status}}",
+    "rental-ongoing": "ongoing",
+    "errors": {
+      "refresh-setup-status": "Unable to refresh Stripe setup status",
+      "refresh-rental-history": "Unable to refresh rental history",
+      "load-stations": "Failed to load stations",
+      "stripe-setup-finalization": "Stripe setup finalization failed",
+      "stripe-setup": "Stripe setup failed",
+      "stripe-checkout": "Stripe checkout failed",
+      "stripe-return": "Stripe return failed"
+    },
+    "available-vehicles": {
+      "title": "Available Vehicles",
+      "subtitle": "Find a station near you",
+      "scan": "Scan",
+      "no-stations": "No stations found.",
+      "location-fallback-name": "Location {{n}}",
+      "one-vehicle-available": "1 vehicle available",
+      "vehicles-available": "{{n}} vehicles available",
+      "available-of-total": "{{available}} of {{total}} available",
+      "offline-suffix": " (offline)",
+      "type-docks": "Docks",
+      "type-lockers": "Lockers",
+      "type-bike-house": "Bike House",
+      "type-vehicles": "Vehicles",
+      "connection-online": "Online",
+      "connection-offline": "Offline",
+      "connection-partially-offline": "Partially offline"
+    },
+    "active-rental": {
+      "title": "Active Rental",
+      "vehicle-fallback-name": "Vehicle {{vehicleId}}",
+      "checked-out-since": "Checked out since {{time}}",
+      "current-fee": "Current fee: {{fee}}",
+      "return-instructions": "Return Instructions",
+      "step-find-dock-title": "Find a dock station",
+      "step-find-dock-text": "Return the vehicle to any available dock",
+      "step-secure-title": "Secure the vehicle",
+      "step-secure-text": "Place the vehicle in the dock",
+      "step-scan-title": "Scan dock QR code",
+      "step-scan-text": "Lock the dock and complete your rental",
+      "scan-dock-to-return": "Scan Dock to Return"
+    },
+    "checkout": {
+      "back": "Back",
+      "title": "Checkout Vehicle {{vehicleId}}",
+      "subtitle": "Complete payment to unlock your vehicle",
+      "rental-title": "Vehicle Rental",
+      "rental-subtitle": "You're charged based on how long you keep the vehicle",
+      "example-rates": "Example rates",
+      "duration-hours": "{{n}} hours",
+      "duration-one-day": "1 day",
+      "duration-days": "{{n}} days",
+      "request-accessories": "Request Accessories (optional)",
+      "panniers": "Panniers",
+      "front-basket": "Front basket",
+      "deposit-notice": "Your ${{amount}} security deposit will be refunded when the vehicle is checked in. Final charges are based on your usage.",
+      "open-stripe": "Open Stripe for ${{amount}} Deposit",
+      "cancel": "Cancel"
+    },
+    "return": {
+      "title": "Return Vehicle",
+      "subtitle": "Complete your rental",
+      "confirm-details": "Confirm Return Details",
+      "vehicle": "Vehicle",
+      "dock": "Dock",
+      "duration": "Duration",
+      "estimated-charge": "Estimated Charge",
+      "refund-notice": "The dock will be locked and your deposit will be refunded minus usage charges.",
+      "confirm-return": "Confirm Return",
+      "processing-title": "Processing Return",
+      "processing-step": "Locking dock and finalizing payment...",
+      "complete-title": "Return Complete!",
+      "complete-subtitle": "Thank you for riding with us",
+      "returned-to": "Returned to {{dockId}}",
+      "total-charged": "Total Charged",
+      "back-to-available": "Back to Available Vehicles"
+    },
+    "qr-scanner": {
+      "scan-vehicle-title": "Scan Vehicle QR Code",
+      "scan-dock-title": "Scan Dock QR Code",
+      "open-camera": "Open Camera Scanner",
+      "manual-label": "Or enter code manually:",
+      "vehicle-id-placeholder": "Vehicle ID",
+      "dock-id-placeholder": "Dock ID",
+      "not-available": "QR scanner is not available on this device.",
+      "no-qr-found": "No QR code found in scan. Please try again.",
+      "scan-failed": "Scanning failed: {{error}}",
+      "unknown-error": "Unknown error"
+    },
+    "dev-panel": {
+      "title": "DEV MODE: Using Stripe Sandbox",
+      "show-test-locations": "Show test locations",
+      "simulate-duration": "Simulate checkout duration",
+      "simulate-subgroup": "Simulate subgroup"
+    }
+  },
+
   "intro": {
     "proceed": "Proceed",
     "appstatus": {

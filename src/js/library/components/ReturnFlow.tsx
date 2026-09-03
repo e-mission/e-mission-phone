@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { Button, Card, Icon } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 interface ReturnFlowProps {
   vehicleId: string;
@@ -21,6 +22,7 @@ export function ReturnFlow({
   onConfirmReturn,
   onComplete,
 }: ReturnFlowProps) {
+  const { t } = useTranslation();
   const [step, setStep] = useState<'confirm' | 'processing' | 'complete'>('confirm');
 
   const handleConfirmReturn = async () => {
@@ -37,43 +39,41 @@ export function ReturnFlow({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Return Vehicle</Text>
-        <Text style={styles.headerSubtitle}>Complete your rental</Text>
+        <Text style={styles.headerTitle}>{t('library.return.title')}</Text>
+        <Text style={styles.headerSubtitle}>{t('library.return.subtitle')}</Text>
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         {step === 'confirm' && (
           <Card style={styles.card}>
             <Card.Content>
-              <Text style={styles.sectionTitle}>Confirm Return Details</Text>
+              <Text style={styles.sectionTitle}>{t('library.return.confirm-details')}</Text>
 
               <View style={styles.detailsSection}>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Vehicle</Text>
+                  <Text style={styles.detailLabel}>{t('library.return.vehicle')}</Text>
                   <Text style={styles.detailValue}>{vehicleName ?? vehicleId}</Text>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Dock</Text>
+                  <Text style={styles.detailLabel}>{t('library.return.dock')}</Text>
                   <Text style={styles.detailValue}>{dockId}</Text>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Duration</Text>
+                  <Text style={styles.detailLabel}>{t('library.return.duration')}</Text>
                   <Text style={styles.detailValue}>{durationDisplay}</Text>
                 </View>
                 <View style={[styles.detailRow, styles.lastRow]}>
-                  <Text style={styles.detailLabel}>Estimated Charge</Text>
+                  <Text style={styles.detailLabel}>{t('library.return.estimated-charge')}</Text>
                   <Text style={styles.chargeValue}>{feeDisplay}</Text>
                 </View>
               </View>
 
               <View style={styles.infoBox}>
-                <Text style={styles.infoBoxText}>
-                  The dock will be locked and your deposit will be refunded minus usage charges.
-                </Text>
+                <Text style={styles.infoBoxText}>{t('library.return.refund-notice')}</Text>
               </View>
 
               <Button mode="contained" onPress={handleConfirmReturn} style={styles.button}>
-                Confirm Return
+                {t('library.return.confirm-return')}
               </Button>
             </Card.Content>
           </Card>
@@ -83,8 +83,8 @@ export function ReturnFlow({
           <Card style={styles.card}>
             <Card.Content style={styles.processingContent}>
               <ActivityIndicator size="large" color="#2196F3" style={styles.spinner} />
-              <Text style={styles.processingTitle}>Processing Return</Text>
-              <Text style={styles.processingStep}>Locking dock and finalizing payment...</Text>
+              <Text style={styles.processingTitle}>{t('library.return.processing-title')}</Text>
+              <Text style={styles.processingStep}>{t('library.return.processing-step')}</Text>
             </Card.Content>
           </Card>
         )}
@@ -96,23 +96,25 @@ export function ReturnFlow({
                 <View style={styles.successIconContainer}>
                   <Icon source="check-circle" size={48} color="#4CAF50" />
                 </View>
-                <Text style={styles.successTitle}>Return Complete!</Text>
-                <Text style={styles.successSubtitle}>Thank you for riding with us</Text>
+                <Text style={styles.successTitle}>{t('library.return.complete-title')}</Text>
+                <Text style={styles.successSubtitle}>{t('library.return.complete-subtitle')}</Text>
               </View>
 
               <View style={styles.summaryBox}>
                 <View style={styles.summaryRow}>
                   <Text style={styles.summaryLabel}>{vehicleName ?? vehicleId}</Text>
-                  <Text style={styles.summaryValue}>Returned to {dockId}</Text>
+                  <Text style={styles.summaryValue}>
+                    {t('library.return.returned-to', { dockId })}
+                  </Text>
                 </View>
                 <View style={[styles.summaryRow, styles.totalRow]}>
-                  <Text style={styles.totalLabel}>Total Charged</Text>
+                  <Text style={styles.totalLabel}>{t('library.return.total-charged')}</Text>
                   <Text style={styles.totalValue}>{feeDisplay}</Text>
                 </View>
               </View>
 
               <Button mode="contained" onPress={onComplete} style={styles.button}>
-                Back to Available Vehicles
+                {t('library.return.back-to-available')}
               </Button>
             </Card.Content>
           </Card>

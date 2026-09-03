@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { Banner, Button, Card, Checkbox, Icon } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
+import i18next from 'i18next';
 
 const HOLD_AMOUNT_CENTS = 38000;
 
@@ -8,9 +10,11 @@ const HOLD_AMOUNT_CENTS = 38000;
 const EXAMPLE_DURATIONS_HOURS = [3, 24, 72, 168];
 
 function formatExampleDuration(hours: number): string {
-  if (hours < 24) return `${hours} hours`;
+  if (hours < 24) return i18next.t('library.checkout.duration-hours', { n: hours });
   const days = hours / 24;
-  return days === 1 ? '1 day' : `${days} days`;
+  return days === 1
+    ? i18next.t('library.checkout.duration-one-day')
+    : i18next.t('library.checkout.duration-days', { n: days });
 }
 
 interface CheckoutFlowProps {
@@ -28,6 +32,7 @@ export function CheckoutFlow({
   onConfirm,
   onCancel,
 }: CheckoutFlowProps) {
+  const { t } = useTranslation();
   const [wantsPanniers, setWantsPanniers] = useState(false);
   const [wantsFrontBasket, setWantsFrontBasket] = useState(false);
   const wantsAccessories = wantsPanniers || wantsFrontBasket;
@@ -41,10 +46,10 @@ export function CheckoutFlow({
           onPress={onCancel}
           textColor="#FFFFFF"
           style={{ marginRight: 'auto' }}>
-          Back
+          {t('library.checkout.back')}
         </Button>
-        <Text style={styles.headerTitle}>Checkout Vehicle {vehicleId}</Text>
-        <Text style={styles.headerSubtitle}>Complete payment to unlock your vehicle</Text>
+        <Text style={styles.headerTitle}>{t('library.checkout.title', { vehicleId })}</Text>
+        <Text style={styles.headerSubtitle}>{t('library.checkout.subtitle')}</Text>
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
@@ -55,15 +60,13 @@ export function CheckoutFlow({
                 <Icon source="clock-outline" size={24} color="#2196F3" />
               </View>
               <View style={styles.cardHeaderText}>
-                <Text style={styles.cardTitle}>Vehicle Rental</Text>
-                <Text style={styles.cardSubtitle}>
-                  You're charged based on how long you keep the vehicle
-                </Text>
+                <Text style={styles.cardTitle}>{t('library.checkout.rental-title')}</Text>
+                <Text style={styles.cardSubtitle}>{t('library.checkout.rental-subtitle')}</Text>
               </View>
             </View>
 
             <View style={styles.accessoriesBox}>
-              <Text style={styles.accessoriesTitle}>Example rates</Text>
+              <Text style={styles.accessoriesTitle}>{t('library.checkout.example-rates')}</Text>
               {EXAMPLE_DURATIONS_HOURS.map((hours) => (
                 <View key={hours} style={styles.pricingRow}>
                   <Text style={styles.checkboxLabel}>{formatExampleDuration(hours)}</Text>
@@ -73,26 +76,27 @@ export function CheckoutFlow({
             </View>
 
             <View style={styles.accessoriesBox}>
-              <Text style={styles.accessoriesTitle}>Request Accessories (optional)</Text>
+              <Text style={styles.accessoriesTitle}>
+                {t('library.checkout.request-accessories')}
+              </Text>
               <View style={styles.accessoryRow}>
                 <Checkbox
                   status={wantsPanniers ? 'checked' : 'unchecked'}
                   onPress={() => setWantsPanniers(!wantsPanniers)}
                 />
-                <Text style={styles.checkboxLabel}>Panniers</Text>
+                <Text style={styles.checkboxLabel}>{t('library.checkout.panniers')}</Text>
               </View>
               <View style={styles.accessoryRow}>
                 <Checkbox
                   status={wantsFrontBasket ? 'checked' : 'unchecked'}
                   onPress={() => setWantsFrontBasket(!wantsFrontBasket)}
                 />
-                <Text style={styles.checkboxLabel}>Front basket</Text>
+                <Text style={styles.checkboxLabel}>{t('library.checkout.front-basket')}</Text>
               </View>
             </View>
 
             <Banner visible icon="cash-refund" style={styles.warningBanner}>
-              Your ${holdDisplay} security deposit will be refunded when the vehicle is checked in.
-              Final charges are based on your usage.
+              {t('library.checkout.deposit-notice', { amount: holdDisplay })}
             </Banner>
 
             <Button
@@ -101,7 +105,7 @@ export function CheckoutFlow({
               loading={paymentProcessing}
               disabled={paymentProcessing}
               style={styles.button}>
-              Open Stripe for ${holdDisplay} Deposit
+              {t('library.checkout.open-stripe', { amount: holdDisplay })}
             </Button>
 
             <Button
@@ -109,7 +113,7 @@ export function CheckoutFlow({
               onPress={onCancel}
               disabled={paymentProcessing}
               style={styles.button}>
-              Cancel
+              {t('library.checkout.cancel')}
             </Button>
           </Card.Content>
         </Card>

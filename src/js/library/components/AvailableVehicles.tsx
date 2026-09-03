@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl, Modal, Pressable } from 'react-native';
 import { ActivityIndicator, Button, Card, Icon, IconButton } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import { GeoJSONData } from '../../types/diaryTypes';
 import LeafletView from '../../components/LeafletView';
 import { LibraryStation } from '../serverComm';
@@ -38,15 +40,17 @@ type Place = { label: string; address?: string; locations: BikeepLocation[] };
 function locationTypeLabel(type: string | undefined): string {
   switch (type) {
     case 'BIKE_DOCKS':
-      return 'Docks';
+      return i18next.t('library.available-vehicles.type-docks');
     case 'BIKE_LOCKERS':
-      return 'Lockers';
+      return i18next.t('library.available-vehicles.type-lockers');
     case 'BIKE_HOUSE':
     case 'BIKE_HOUSE_DOCKLESS':
     case 'BIKE_HANGAR':
-      return 'Bike House';
+      return i18next.t('library.available-vehicles.type-bike-house');
     default:
-      return type ? type.replaceAll('_', ' ').toLowerCase() : 'Vehicles';
+      return type
+        ? type.replaceAll('_', ' ').toLowerCase()
+        : i18next.t('library.available-vehicles.type-vehicles');
   }
 }
 
@@ -66,10 +70,23 @@ function connectionSummary(locations: BikeepLocation[]): {
   icon: string;
 } {
   const offlineCount = locations.filter(isOffline).length;
-  if (offlineCount === 0) return { label: 'Online', color: '#4CAF50', icon: 'wifi' };
+  if (offlineCount === 0)
+    return {
+      label: i18next.t('library.available-vehicles.connection-online'),
+      color: '#4CAF50',
+      icon: 'wifi',
+    };
   if (offlineCount === locations.length)
-    return { label: 'Offline', color: '#B00020', icon: 'wifi-off' };
-  return { label: 'Partially offline', color: '#F57C00', icon: 'wifi-alert' };
+    return {
+      label: i18next.t('library.available-vehicles.connection-offline'),
+      color: '#B00020',
+      icon: 'wifi-off',
+    };
+  return {
+    label: i18next.t('library.available-vehicles.connection-partially-offline'),
+    color: '#F57C00',
+    icon: 'wifi-alert',
+  };
 }
 
 // Groups locations by shared place label since a place with both docks and lockers
@@ -80,7 +97,10 @@ function groupByPlace(stations: LibraryStation[], includeTestLocations: boolean)
   stations
     .filter((s) => includeTestLocations || s['status'] === 'LAUNCHED')
     .forEach((s, i) => {
-      const label = s['label'] ?? s['name'] ?? `Location ${i + 1}`;
+      const label =
+        s['label'] ??
+        s['name'] ??
+        i18next.t('library.available-vehicles.location-fallback-name', { n: i + 1 });
       if (!byLabel.has(label)) {
         order.push(label);
         byLabel.set(label, []);
@@ -136,6 +156,7 @@ export function AvailableVehicles({
   onScanQrButton,
   includeTestLocations,
 }: AvailableVehiclesProps) {
+  const { t } = useTranslation();
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const selectedPlaceGeojson = selectedPlace ? placeGeojson(selectedPlace) : null;
 
@@ -143,8 +164,8 @@ export function AvailableVehicles({
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.headerTitle}>Available Vehicles</Text>
-          <Text style={styles.headerSubtitle}>Find a station near you</Text>
+          <Text style={styles.headerTitle}>{t('library.available-vehicles.title')}</Text>
+          <Text style={styles.headerSubtitle}>{t('library.available-vehicles.subtitle')}</Text>
         </View>
         <Button
           mode="contained"
@@ -153,7 +174,7 @@ export function AvailableVehicles({
           buttonColor="rgba(238, 238, 238, 0.15)"
           textColor="#FFFFFF"
           style={{ borderColor: 'rgba(255, 255, 255, 0.5)', borderWidth: 1, paddingLeft: 4 }}>
-          Scan
+          {t('library.available-vehicles.scan')}
         </Button>
       </View>
 
@@ -164,7 +185,7 @@ export function AvailableVehicles({
         {stationsLoading && stations === null ? (
           <ActivityIndicator size="large" style={styles.loadingIndicator} />
         ) : !stations || stations.length === 0 ? (
-          <Text style={styles.noVehiclesText}>No stations found.</Text>
+          <Text style={styles.noVehiclesText}>{t('library.available-vehicles.no-stations')}</Text>
         ) : (
           groupByPlace(stations, Boolean(includeTestLocations))
             .map((place) => ({
@@ -206,7 +227,9 @@ export function AvailableVehicles({
                         styles.totalAvailableText,
                         totalAvailable === 0 && styles.totalAvailableTextEmpty,
                       ]}>
-                      {totalAvailable} {totalAvailable === 1 ? 'vehicle' : 'vehicles'} available
+                      {totalAvailable === 1
+                        ? t('library.available-vehicles.one-vehicle-available')
+                        : t('library.available-vehicles.vehicles-available', { n: totalAvailable })}
                     </Text>
                   </Card.Content>
                 </Card>
@@ -249,10 +272,13 @@ export function AvailableVehicles({
                   <View key={l.id ?? i} style={styles.breakdownRow}>
                     <Text style={styles.breakdownLabel}>
                       {locationTypeLabel(l.type)}
-                      {isOffline(l) ? ' (offline)' : ''}
+                      {isOffline(l) ? t('library.available-vehicles.offline-suffix') : ''}
                     </Text>
                     <Text style={styles.breakdownValue}>
-                      {rentableVehicles(l)} of {l.devices?.total ?? 0} available
+                      {t('library.available-vehicles.available-of-total', {
+                        available: rentableVehicles(l),
+                        total: l.devices?.total ?? 0,
+                      })}
                     </Text>
                   </View>
                 ))}
@@ -264,7 +290,7 @@ export function AvailableVehicles({
                     setSelectedPlace(null);
                     onScanQrButton();
                   }}>
-                  Scan
+                  {t('library.available-vehicles.scan')}
                 </Button>
               </Card.Content>
             </Card>

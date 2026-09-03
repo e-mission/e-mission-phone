@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Banner, Text } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { conditional_surveys } from 'e-mission-common';
 import { AppContext } from '../AppContext';
 import { Alerts } from '../components/AlertArea';
@@ -55,6 +56,7 @@ type Screen =
   | { name: 'return'; dockId: string };
 
 const LibraryTab = () => {
+  const { t } = useTranslation();
   const { appConfig, onboardingState } = useContext(AppContext);
   const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
   const [isSandbox, setIsSandbox] = useState(false);
@@ -105,7 +107,7 @@ const LibraryTab = () => {
       }
     } catch (e) {
       if (isMounted.current) {
-        displayErrorMsg(String(e), 'Unable to refresh Stripe setup status');
+        displayErrorMsg(String(e), t('library.errors.refresh-setup-status'));
       }
     }
   };
@@ -124,7 +126,7 @@ const LibraryTab = () => {
       }
     } catch (e) {
       if (isMounted.current) {
-        displayErrorMsg(String(e), 'Unable to refresh rental history');
+        displayErrorMsg(String(e), t('library.errors.refresh-rental-history'));
       }
     }
   };
@@ -138,7 +140,7 @@ const LibraryTab = () => {
       }
     } catch (e) {
       if (isMounted.current) {
-        displayErrorMsg(String(e), 'Failed to load stations');
+        displayErrorMsg(String(e), t('library.errors.load-stations'));
       }
     } finally {
       if (isMounted.current) {
@@ -217,7 +219,10 @@ const LibraryTab = () => {
             } else {
               setSetupComplete(false);
               Alerts.addMessage({
-                text: `Stripe setup ${callback.payment_setup_status || 'did not complete'}.`,
+                text: t('library.stripe-setup-status', {
+                  status:
+                    callback.payment_setup_status || t('library.stripe-setup-did-not-complete'),
+                }),
               });
             }
             setIsSandbox(callback.is_sandbox);
@@ -226,7 +231,7 @@ const LibraryTab = () => {
           } catch (e) {
             if (isMounted.current) {
               setSetupComplete(false);
-              displayErrorMsg(String(e), 'Stripe setup finalization failed');
+              displayErrorMsg(String(e), t('library.errors.stripe-setup-finalization'));
             }
             return true;
           } finally {
@@ -270,7 +275,7 @@ const LibraryTab = () => {
       if (isMounted.current) {
         setSetupInProgress(false);
       }
-      displayErrorMsg(String(e), 'Stripe setup failed');
+      displayErrorMsg(String(e), t('library.errors.stripe-setup'));
     }
   };
 
@@ -295,7 +300,7 @@ const LibraryTab = () => {
     try {
       await checkoutLibraryVehicle(vehicleId, holdAmount);
       addStatReading('checkout_confirmed', { holdAmount, wantAccessories });
-      Alerts.addMessage({ text: 'Checkout completed successfully.' });
+      Alerts.addMessage({ text: t('library.checkout-success') });
       setRentalNowTs(Date.now());
       await refreshRentalHistory();
       if (isMounted.current) {
@@ -303,7 +308,7 @@ const LibraryTab = () => {
       }
     } catch (e) {
       addStatReading('checkout_aborted', { holdAmount, wantAccessories, error: String(e) });
-      displayErrorMsg(String(e), 'Stripe checkout failed');
+      displayErrorMsg(String(e), t('library.errors.stripe-checkout'));
     } finally {
       if (isMounted.current) {
         setPaymentInProgress(false);
@@ -320,14 +325,14 @@ const LibraryTab = () => {
       await checkinLibraryVehicle(dockId);
       await refreshRentalHistory();
     } catch (e) {
-      displayErrorMsg(String(e), 'Stripe return failed');
+      displayErrorMsg(String(e), t('library.errors.stripe-return'));
       throw e;
     }
   };
 
   const openScanQrButton = () => {
     if (!setupComplete) {
-      Alerts.addMessage({ text: 'Please complete payment setup before checking out a vehicle.' });
+      Alerts.addMessage({ text: t('library.setup-required-before-checkout') });
       return;
     }
     setScreen({ name: 'scan-checkout' });
@@ -369,12 +374,12 @@ const LibraryTab = () => {
               icon="credit-card-outline"
               actions={[
                 {
-                  label: 'Set up payment',
+                  label: t('library.set-up-payment'),
                   onPress: () => void onSetupCheckoutPress(),
                   disabled: setupInProgress,
                 },
               ]}>
-              Set up your payment method to check out a vehicle.
+              {t('library.set-up-payment-banner')}
             </Banner>
           )}
           <View style={styles.flowScreen}>
@@ -399,15 +404,18 @@ const LibraryTab = () => {
               />
             )}
           </View>
-          <Text style={styles.sectionHeader}>Rental history</Text>
+          <Text style={styles.sectionHeader}>{t('library.rental-history')}</Text>
           <View style={styles.stationList}>
             {rentalHistory.length === 0 ? (
-              <Text style={styles.stationDetail}>No rentals yet.</Text>
+              <Text style={styles.stationDetail}>{t('library.no-rentals-yet')}</Text>
             ) : (
               rentalHistory.map((r, i) => (
                 <View key={i} style={styles.stationItem}>
                   <Text style={styles.stationName}>
-                    {r.vehicle_name ?? r.vehicle_id} — {r.rental_status}
+                    {t('library.rental-summary', {
+                      vehicle: r.vehicle_name ?? r.vehicle_id,
+                      status: r.rental_status,
+                    })}
                   </Text>
                   <Text style={styles.stationDetail}>
                     {r.start_fmt_time ?? new Date(r.start_ts * 1000).toLocaleString()}
@@ -415,7 +423,7 @@ const LibraryTab = () => {
                     {' → '}
                     {r.end_fmt_time
                       ? `${r.end_fmt_time}${r.end_dock_id ? ` · ${r.end_dock_id}` : ''}`
-                      : 'ongoing'}
+                      : t('library.rental-ongoing')}
                   </Text>
                 </View>
               ))

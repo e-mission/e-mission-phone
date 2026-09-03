@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, Checkbox, IconButton, SegmentedButtons, Text } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 const SIMULATION_DURATION_OFFSETS_HOURS = [1, 24, -1, -24];
 
@@ -23,12 +24,13 @@ export default function LibraryDevPanel({
   onChangeSimulatedSubgroup,
   onSimulateDurationOffset,
 }: LibraryDevPanelProps) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
   return (
     <View style={styles.devBanner}>
       <View style={styles.devBannerHeaderRow} onTouchStart={() => setExpanded((prev) => !prev)}>
-        <Text style={styles.devBannerText}>DEV MODE: Using Stripe Sandbox</Text>
+        <Text style={styles.devBannerText}>{t('library.dev-panel.title')}</Text>
         <IconButton
           icon={expanded ? 'chevron-up' : 'chevron-down'}
           size={18}
@@ -39,14 +41,18 @@ export default function LibraryDevPanel({
       {expanded && (
         <View style={styles.devBannerContent}>
           <View style={styles.devBannerToggle}>
-            <Text style={styles.devBannerToggleLabel}>Show test locations</Text>
+            <Text style={styles.devBannerToggleLabel}>
+              {t('library.dev-panel.show-test-locations')}
+            </Text>
             <Checkbox
               status={showTestLocations ? 'checked' : 'unchecked'}
               onPress={onToggleTestLocations}
             />
           </View>
           <View style={styles.devBannerToggle}>
-            <Text style={styles.devBannerToggleLabel}>Simulate checkout duration</Text>
+            <Text style={styles.devBannerToggleLabel}>
+              {t('library.dev-panel.simulate-duration')}
+            </Text>
             <View style={styles.simulationButtonsRow}>
               {SIMULATION_DURATION_OFFSETS_HOURS.map((hours) => {
                 const label = hours > 0 ? `+${hours}h` : `${hours}h`;
@@ -66,7 +72,9 @@ export default function LibraryDevPanel({
           </View>
           {!!subgroups?.length && (
             <View style={styles.devBannerToggle}>
-              <Text style={styles.devBannerToggleLabel}>Simulate subgroup</Text>
+              <Text style={styles.devBannerToggleLabel}>
+                {t('library.dev-panel.simulate-subgroup')}
+              </Text>
               <SegmentedButtons
                 value={simulatedSubgroup ?? ''}
                 density="high"
