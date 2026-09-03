@@ -335,9 +335,7 @@ const LibraryTab = () => {
 
   const onSimulateDurationOffset = (hours: number) => {
     setIsSimulationMode(true);
-    setRentalNowTs((prevTs) =>
-      Math.max(activeRental?.start_ts ?? 0, prevTs + hours * 60 * 60 * 1000),
-    );
+    setRentalNowTs((prevTs) => Math.max(activeRental?.start_ts ?? 0, prevTs + hours * 60 * 60));
   };
 
   if (setupComplete === null) {
