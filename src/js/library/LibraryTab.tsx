@@ -350,18 +350,19 @@ const LibraryTab = () => {
 
   return (
     <View style={styles.container}>
+      {isSandbox && (
+        <LibraryDevPanel
+          showTestLocations={showTestLocations}
+          onToggleTestLocations={() => setShowTestLocations((prev) => !prev)}
+          subgroups={appConfig?.opcode?.subgroups}
+          simulatedSubgroup={simulatedSubgroup}
+          onChangeSimulatedSubgroup={setSimulatedSubgroup}
+          hasActiveRental={!!activeRental}
+          onSimulateDurationOffset={onSimulateDurationOffset}
+        />
+      )}
       {screen.name === 'browse' && (
         <ScrollView style={styles.browseScroll} contentContainerStyle={styles.browseContent}>
-          {isSandbox && (
-            <LibraryDevPanel
-              showTestLocations={showTestLocations}
-              onToggleTestLocations={() => setShowTestLocations((prev) => !prev)}
-              subgroups={appConfig?.opcode?.subgroups}
-              simulatedSubgroup={simulatedSubgroup}
-              onChangeSimulatedSubgroup={setSimulatedSubgroup}
-              onSimulateDurationOffset={onSimulateDurationOffset}
-            />
-          )}
           {setupComplete == false && (
             <Banner
               visible

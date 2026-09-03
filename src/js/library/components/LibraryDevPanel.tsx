@@ -5,6 +5,7 @@ import { Button, Checkbox, IconButton, SegmentedButtons, Text } from 'react-nati
 const SIMULATION_DURATION_OFFSETS_HOURS = [1, 24, -1, -24];
 
 interface LibraryDevPanelProps {
+  hasActiveRental: boolean;
   showTestLocations: boolean;
   onToggleTestLocations: () => void;
   subgroups?: string[];
@@ -14,6 +15,7 @@ interface LibraryDevPanelProps {
 }
 
 export default function LibraryDevPanel({
+  hasActiveRental,
   showTestLocations,
   onToggleTestLocations,
   subgroups,
@@ -51,6 +53,7 @@ export default function LibraryDevPanel({
                 return (
                   <Button
                     key={hours}
+                    disabled={!hasActiveRental}
                     mode="text"
                     compact
                     style={styles.simulationButton}
