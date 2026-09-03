@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "expo start --web --localhost",
-    "export-dev": "npx expo export -p web -s --output-dir=www && npm run fix-export-paths",
+    "export-dev": "npx expo export --dev -p web -s --output-dir=www && npm run fix-export-paths",
     "export-prod": "npx expo export -p web -s --output-dir=www && npm run fix-export-paths",
     "fix-export-paths": "node bin/fix_expo_export_for_cordova.js www",
     "build-dev": "npm run export-dev && npx cordova build",
