@@ -379,7 +379,8 @@ describe('LibraryTab', () => {
     fireEvent.press(tree.getByText('Scan Dock to Return'));
 
     await waitFor(() => tree.getByText('Scan Dock QR Code'));
-    await submitManualCode(tree, 'Dock ID', 'dock-1');
+    // dock QR codes are URLs; only the bare code at the end should reach the server
+    await submitManualCode(tree, 'Dock ID', 'https://app.bikeep.com/dock-1');
 
     await waitFor(() => tree.getByText('Confirm Return Details'));
 

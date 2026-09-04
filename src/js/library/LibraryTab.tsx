@@ -285,11 +285,16 @@ const LibraryTab = () => {
 
   // Routes a scanned/typed code to the checkout or return flow, depending on
   // which QR scanner screen is currently active.
-  const handleScanResult = (code: string) => {
+  const handleScanResult = (scannedCode: string) => {
     // TODO is there a validation step needed here?
+    const code = scannedCode.trim();
     setScreen((prev) => {
       if (prev.name === 'scan-checkout') return { name: 'checkout', vehicleId: code };
-      if (prev.name === 'scan-return') return { name: 'return', dockId: code };
+      if (prev.name === 'scan-return') {
+        // dock QR codes are URLs like https://app.bikeep.com/222222; the server wants the bare code
+        const dockId = code.split(/[?#]/)[0].split('/').filter(Boolean).pop() ?? code;
+        return { name: 'return', dockId };
+      }
       return prev;
     });
   };
