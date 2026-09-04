@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createContext } from 'react';
-import { AppStateStatus } from 'react-native';
+import { AppStateStatus, View } from 'react-native';
 import { ActivityIndicator, PaperProvider } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { registerRootComponent } from 'expo';
@@ -142,9 +142,9 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
     appContent = <OnboardingStack />;
   }
   return (
-    <PaperProvider theme={theme}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.elevation.level2 }}>
-        <AppContext.Provider value={appContextValue}>
+    <AppContext.Provider value={appContextValue}>
+      <PaperProvider theme={theme}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.elevation.level2 }}>
           {appContent}
           {/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
           This also includes if onboarding is DONE altogether (because "DONE" is > "PROTOCOL") */}
@@ -152,9 +152,9 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
             <AppStatusModal />
           )}
           <AlertArea />
-        </AppContext.Provider>
-      </SafeAreaView>
-    </PaperProvider>
+        </SafeAreaView>
+      </PaperProvider>
+    </AppContext.Provider>
   );
 };
 
