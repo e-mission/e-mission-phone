@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { displayError, logDebug } from '../plugin/logger';
+import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { ServerConnConfig } from 'op-deployment-configs';
 import { TimestampRange } from '../types/diaryTypes';
 import { ServerResponse } from '../types/serverData';
@@ -15,6 +15,10 @@ const log = (str, r) => {
  * @returns Promise of the fetched response (as text) or cached text from local storage
  */
 export async function fetchUrlCached(url: string, fetchOpts?: RequestInit) {
+  if (!url?.startsWith('http')) {
+    logWarn(`fetchUrlCached: ${url} is not a URL - nothing to fetch`);
+    return;
+  }
   const stored = localStorage.getItem(url);
   if (stored && fetchOpts?.cache != 'reload') {
     logDebug(`fetchUrlCached: found cached data for url ${url}, returning`);

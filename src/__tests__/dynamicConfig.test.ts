@@ -2,6 +2,7 @@ import { getConfig, joinWithTokenOrUrl } from '../js/config/dynamicConfig';
 import initializedI18next from '../js/i18nextInit';
 import { storageClear } from '../js/plugin/storage';
 import i18next from '../js/i18nextInit';
+import { Alerts } from '../js/components/alerts';
 
 window['i18next'] = initializedI18next;
 
@@ -57,7 +58,11 @@ global.fetch = (url: string) => {
   }) as any;
 };
 
-const windowAlert = jest.spyOn(window, 'alert').mockImplementation(() => {});
+const showPopup = jest.spyOn(Alerts, 'showPopup').mockImplementation(() => {});
+const lastPopupText = () => {
+  const popup = showPopup.mock.lastCall?.[0];
+  return `${popup?.['title'] || ''} ${popup?.['content'] || ''}`;
+};
 
 describe('dynamicConfig', () => {
   const fakeStudyName = 'gotham-city-transit';
@@ -88,7 +93,7 @@ describe('dynamicConfig', () => {
     it('resolves to false and shows error if the study is nonexistent', async () => {
       const fakeBatmanToken = `nrelop_${fakeStudyName}_batman`;
       await expect(joinWithTokenOrUrl(fakeBatmanToken)).resolves.toBe(false);
-      expect(windowAlert).toHaveBeenLastCalledWith(
+      expect(lastPopupText()).toEqual(
         expect.stringContaining(i18next.t('config.unable-download-config')),
       );
     });
@@ -97,7 +102,7 @@ describe('dynamicConfig', () => {
     it('resolves to false and shows error if the study exists but the token is invalid format', async () => {
       const badToken1 = `nrelop_${validStudyNrelCommute}`; // doesn't have enough _
       await expect(joinWithTokenOrUrl(badToken1)).resolves.toBe(false);
-      expect(windowAlert).toHaveBeenLastCalledWith(
+      expect(lastPopupText()).toEqual(
         expect.stringContaining(
           i18next.t('config.not-enough-parts-old-style', { token: badToken1 }),
         ),
@@ -105,7 +110,7 @@ describe('dynamicConfig', () => {
 
       const badToken2 = `nrelop_${validStudyNrelCommute}_`; // doesn't have user code after last _
       await expect(joinWithTokenOrUrl(badToken2)).resolves.toBe(false);
-      expect(windowAlert).toHaveBeenLastCalledWith(
+      expect(lastPopupText()).toEqual(
         expect.stringContaining(
           i18next.t('config.not-enough-parts-old-style', { token: badToken2 }),
         ),
@@ -113,7 +118,7 @@ describe('dynamicConfig', () => {
 
       const badToken3 = `invalid_${validStudyNrelCommute}_user3`; // doesn't start with nrelop_
       await expect(joinWithTokenOrUrl(badToken3)).resolves.toBe(false);
-      expect(windowAlert).toHaveBeenLastCalledWith(
+      expect(lastPopupText()).toEqual(
         expect.stringContaining(i18next.t('config.no-nrelop-start', { token: badToken3 })),
       );
     });
@@ -136,7 +141,7 @@ describe('dynamicConfig', () => {
     it('resolves to false if the study uses subgroups but the token has no subgroup', async () => {
       const tokenWithoutSubgroup = `nrelop_${validStudyDenverCasr}_user2`;
       await expect(joinWithTokenOrUrl(tokenWithoutSubgroup)).resolves.toBe(false);
-      expect(windowAlert).toHaveBeenLastCalledWith(
+      expect(lastPopupText()).toEqual(
         expect.stringContaining(
           i18next.t('config.not-enough-parts', { token: tokenWithoutSubgroup }),
         ),
@@ -145,7 +150,7 @@ describe('dynamicConfig', () => {
     it('resolves to false and shows and error if the study uses subgroups and the token is invalid format', async () => {
       const badToken1 = `nrelop_${validStudyDenverCasr}_test_`; // doesn't have user code after last _
       await expect(joinWithTokenOrUrl(badToken1)).resolves.toBe(false);
-      expect(windowAlert).toHaveBeenLastCalledWith(
+      expect(lastPopupText()).toEqual(
         expect.stringContaining(
           i18next.t('config.not-enough-parts-old-style', { token: badToken1 }),
         ),

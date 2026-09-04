@@ -3,8 +3,9 @@ import { AppStateStatus } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppTheme } from './appTheme';
 import { logDebug, logWarn } from './plugin/logger';
-import { Alerts } from './components/AlertArea';
+import { Alerts } from './components/alerts';
 import { readConsentState } from './splash/startprefs';
+import { IS_CORDOVA } from './nativePlugins';
 import DeploymentConfig from 'op-deployment-configs';
 
 let DEVICE_PLATFORM: 'android' | 'ios';
@@ -26,6 +27,7 @@ const usePermissionStatus = (appState: AppStateStatus, appConfig: DeploymentConf
   const [explanationList, setExplanationList] = useState<Array<any>>([]);
 
   const overallStatus = useMemo<boolean | undefined>(() => {
+    if (!IS_CORDOVA) return true; // a standalone browser has no native permissions to check
     if (!checkList?.length) return undefined; // if checks not loaded yet, status is undetermined
     return checkList.every((check) => check.status || (check.isOptional && check.wasRequested));
   }, [checkList]);
@@ -290,6 +292,10 @@ const usePermissionStatus = (appState: AppStateStatus, appConfig: DeploymentConf
 
   //load when ready
   useEffect(() => {
+    if (!IS_CORDOVA) {
+      logDebug('Not running under Cordova, skipping permission checks');
+      return;
+    }
     if (appConfig && window['device']?.platform) {
       readConsentState().then((isConsented) => {
         DEVICE_PLATFORM = window['device'].platform.toLowerCase();

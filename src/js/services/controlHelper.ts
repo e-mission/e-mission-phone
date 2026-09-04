@@ -5,6 +5,7 @@ import { logInfo, displayError, logDebug, logWarn } from '../plugin/logger';
 import { FsWindow } from '../types/fileShareTypes';
 import { ServerResponse } from '../types/serverData';
 import i18next from '../i18nextInit';
+import { Alerts } from '../components/alerts';
 
 declare let window: FsWindow;
 
@@ -117,7 +118,7 @@ export async function getMyData(timeStamp: Date) {
 
   // let's rename this to .txt so that we can email it on iPhones
   const dumpFile = startTimeString + '.' + endTimeString + '.timeline.txt';
-  alert(`Going to retrieve data to ${dumpFile}`);
+  Alerts.addMessage({ text: `Going to retrieve data to ${dumpFile}` });
 
   const getDataMethods = getMyDataHelpers(dumpFile, startTimeString, endTimeString);
 

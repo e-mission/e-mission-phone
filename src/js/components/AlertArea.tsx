@@ -1,48 +1,14 @@
 /* Provides a global context for alerts to show as SnackBars ('toasts') at the bottom of the screen.
  Alerts can be added to the queue from anywhere by calling Alerts.addMessage. */
 
-import React, { useState, useEffect, ComponentProps } from 'react';
-import { Modal, ModalProps, ScrollView, useWindowDimensions } from 'react-native';
-import { Button, Dialog, Portal, Snackbar } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { Modal, ScrollView, useWindowDimensions } from 'react-native';
+import { Button, Dialog, Portal, Snackbar, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { ParseKeys } from 'i18next';
+import { Alert, Message, Popup, setAlertListener } from './alerts';
 
-type Message = {
-  msgKey?: ParseKeys<'translation'>;
-  text?: string;
-  duration?: number;
-  style?: object;
-  alertType: 'message';
-};
-
-type AlertModal = React.ComponentType<Omit<ModalProps, 'children'>>;
-
-export type Popup<T extends AlertModal = AlertModal> = {
-  Modal?: T;
-  modalProps?: Omit<ComponentProps<T>, 'visible' | 'onDismiss' | 'children'>;
-  title?: string;
-  content?: React.ReactNode;
-  alertType: 'popup';
-};
-
-type Alert = (Message | Popup) & { alertType?: 'message' | 'popup' };
-
-let alertListener: ((alert: Alert) => void) | undefined;
-
-export const Alerts = {
-  addMessage: (message: Omit<Message, 'alertType'>) => {
-    alertListener?.({ ...message, alertType: 'message' });
-  },
-  showPopup: <T extends AlertModal>(
-    popup: Omit<Popup<T>, 'alertType'> | T,
-    modalProps?: Omit<ComponentProps<T>, 'visible' | 'onDismiss' | 'children'>,
-  ) => {
-    if (typeof popup === 'function') {
-      popup = { Modal: popup, modalProps };
-    }
-    alertListener?.({ ...popup, alertType: 'popup' });
-  },
-};
+export { Alerts } from './alerts';
+export type { Popup } from './alerts';
 
 const AlertArea = () => {
   const { t } = useTranslation();
@@ -56,15 +22,15 @@ const AlertArea = () => {
 
   // on init, attach a listener to Alerts so messages can be added from a global context
   useEffect(() => {
-    alertListener = (alert: Alert) => {
+    setAlertListener((alert: Alert) => {
       if (alert.alertType == 'message') {
         setMessages([...messages, alert]);
       } else if (alert.alertType === 'popup') {
         setPopup(alert);
       }
-    };
+    });
     return () => {
-      alertListener = undefined;
+      setAlertListener(undefined);
     };
   }, []);
 
@@ -99,7 +65,9 @@ const AlertArea = () => {
             {popup.title && <Dialog.Title>{popup.title}</Dialog.Title>}
             {popup.content && (
               <Dialog.Content style={{ maxHeight: windowHeight / 1.5, paddingBottom: 0 }}>
-                <ScrollView>{popup.content}</ScrollView>
+                <ScrollView>
+                  {typeof popup.content == 'string' ? <Text>{popup.content}</Text> : popup.content}
+                </ScrollView>
               </Dialog.Content>
             )}
             <Dialog.Actions>

@@ -9,7 +9,7 @@ import {
   getSubgroupFromToken,
   getTokenFromUrl,
 } from './opcode';
-import { Alerts } from '../components/AlertArea';
+import { Alerts } from '../components/alerts';
 import { setPendingOpcode } from '../onboarding/onboardingHelper';
 import { applyConfigTranslations } from '../i18nextInit';
 

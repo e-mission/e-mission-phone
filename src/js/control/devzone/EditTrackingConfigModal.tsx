@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ModalProps } from 'react-native-paper';
 import { displayError, logDebug } from '../../plugin/logger';
+import { Alerts } from '../../components/alerts';
 import useAppConfig from '../../useAppConfig';
 import EditConfigModal from './EditConfigModal';
 
@@ -23,9 +24,8 @@ type AccuracyOptions = { [option: string]: number };
 export async function forceTransition(transition) {
   try {
     let result = await window['cordova'].plugins.BEMDataCollection.forceTransition(transition);
-    window.alert('success -> ' + result);
+    Alerts.addMessage({ text: 'success -> ' + result });
   } catch (err) {
-    window.alert('error -> ' + err);
     displayError(err, 'error forcing state');
   }
 }

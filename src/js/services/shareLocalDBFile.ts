@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 import { displayError, displayErrorMsg, logDebug } from '../plugin/logger';
+import { Alerts } from '../components/alerts';
 
 function localCopyFile(fileName: string, fileExtension: string = '.txt') {
   return new Promise<void>((resolve, reject) => {
@@ -107,7 +108,7 @@ function localClearTmpFile(fileName: string, fileExtension: string = '.txt') {
 }
 
 export async function sendLocalDBFile(dbFileName: string) {
-  alert(i18next.t('shareFile-service.send-to'));
+  Alerts.addMessage({ text: i18next.t('shareFile-service.send-to') });
 
   try {
     // in case there is a leftover tmp file, clear it before sharing
