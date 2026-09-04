@@ -36,7 +36,9 @@ export type LibraryStationsResponse = {
 
 import { Point } from 'geojson';
 
-export type LibraryRentalStatus = 'active' | 'completed';
+/* 'initializing' is the cold-start pairing state: an admin checks out a vehicle whose location is
+  UNINITIALIZED, then docks it to seed the library. No payment is involved. */
+export type LibraryRentalStatus = 'active' | 'initializing' | 'completed';
 
 export type LibraryPaymentHoldInfo = {
   id?: string;

@@ -96,7 +96,7 @@ export function CheckoutFlow({
             </View>
 
             <Banner visible icon="cash-refund" style={styles.warningBanner}>
-              {t('library.checkout.deposit-notice', { amount: holdDisplay })}
+              {t('library.checkout.hold-notice', { amount: holdDisplay })}
             </Banner>
 
             <Button
@@ -105,7 +105,7 @@ export function CheckoutFlow({
               loading={paymentProcessing}
               disabled={paymentProcessing}
               style={styles.button}>
-              {t('library.checkout.open-stripe', { amount: holdDisplay })}
+              {t('library.checkout.confirm-and-hold', { amount: holdDisplay })}
             </Button>
 
             <Button

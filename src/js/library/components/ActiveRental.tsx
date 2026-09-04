@@ -10,6 +10,7 @@ interface ActiveRentalProps {
   activeRental: LibraryRental;
   durationDisplay: string;
   feeDisplay: string;
+  isInitializing?: boolean;
   onReturnVehicle: () => void;
   refreshing: boolean;
   onRefresh: () => void;
@@ -20,6 +21,7 @@ export function ActiveRental({
   activeRental,
   durationDisplay,
   feeDisplay,
+  isInitializing,
   onReturnVehicle,
   refreshing,
   onRefresh,
@@ -27,12 +29,15 @@ export function ActiveRental({
   const { t } = useTranslation();
   const vehicleName =
     activeRental?.vehicle_name ?? t('library.active-rental.vehicle-fallback-name', { vehicleId });
-  console.debug({ activeRental });
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.headerTitle}>{t('library.active-rental.title')}</Text>
+          <Text style={styles.headerTitle}>
+            {isInitializing
+              ? t('library.active-rental.initializing-title')
+              : t('library.active-rental.title')}
+          </Text>
           <Text style={styles.headerSubtitle}>{vehicleName}</Text>
         </View>
       </View>
@@ -70,12 +75,14 @@ export function ActiveRental({
                 <Icon source="clock-outline" size={20} color="#757575" />
                 <Text style={styles.infoText}>{durationDisplay}</Text>
               </View>
-              <View style={styles.infoRow}>
-                <Icon source="currency-usd" size={20} color="#757575" />
-                <Text style={styles.infoText}>
-                  {t('library.active-rental.current-fee', { fee: feeDisplay })}
-                </Text>
-              </View>
+              {!isInitializing && (
+                <View style={styles.infoRow}>
+                  <Icon source="currency-usd" size={20} color="#757575" />
+                  <Text style={styles.infoText}>
+                    {t('library.active-rental.current-fee', { fee: feeDisplay })}
+                  </Text>
+                </View>
+              )}
             </View>
           </Card.Content>
         </Card>

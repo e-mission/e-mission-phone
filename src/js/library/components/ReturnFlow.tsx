@@ -9,6 +9,7 @@ interface ReturnFlowProps {
   vehicleName?: string;
   durationDisplay: string;
   feeDisplay: string;
+  isInitializing?: boolean;
   onConfirmReturn: () => Promise<void>;
   onComplete: () => void;
 }
@@ -19,6 +20,7 @@ export function ReturnFlow({
   vehicleName,
   durationDisplay,
   feeDisplay,
+  isInitializing,
   onConfirmReturn,
   onComplete,
 }: ReturnFlowProps) {
@@ -39,8 +41,14 @@ export function ReturnFlow({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('library.return.title')}</Text>
-        <Text style={styles.headerSubtitle}>{t('library.return.subtitle')}</Text>
+        <Text style={styles.headerTitle}>
+          {isInitializing ? t('library.return.initializing-title') : t('library.return.title')}
+        </Text>
+        <Text style={styles.headerSubtitle}>
+          {isInitializing
+            ? t('library.return.initializing-subtitle')
+            : t('library.return.subtitle')}
+        </Text>
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
@@ -58,18 +66,24 @@ export function ReturnFlow({
                   <Text style={styles.detailLabel}>{t('library.return.dock')}</Text>
                   <Text style={styles.detailValue}>{dockId}</Text>
                 </View>
-                <View style={styles.detailRow}>
+                <View style={[styles.detailRow, isInitializing && styles.lastRow]}>
                   <Text style={styles.detailLabel}>{t('library.return.duration')}</Text>
                   <Text style={styles.detailValue}>{durationDisplay}</Text>
                 </View>
-                <View style={[styles.detailRow, styles.lastRow]}>
-                  <Text style={styles.detailLabel}>{t('library.return.estimated-charge')}</Text>
-                  <Text style={styles.chargeValue}>{feeDisplay}</Text>
-                </View>
+                {!isInitializing && (
+                  <View style={[styles.detailRow, styles.lastRow]}>
+                    <Text style={styles.detailLabel}>{t('library.return.estimated-charge')}</Text>
+                    <Text style={styles.chargeValue}>{feeDisplay}</Text>
+                  </View>
+                )}
               </View>
 
               <View style={styles.infoBox}>
-                <Text style={styles.infoBoxText}>{t('library.return.refund-notice')}</Text>
+                <Text style={styles.infoBoxText}>
+                  {isInitializing
+                    ? t('library.return.placement-notice')
+                    : t('library.return.refund-notice')}
+                </Text>
               </View>
 
               <Button mode="contained" onPress={handleConfirmReturn} style={styles.button}>
@@ -84,7 +98,11 @@ export function ReturnFlow({
             <Card.Content style={styles.processingContent}>
               <ActivityIndicator size="large" color="#2196F3" style={styles.spinner} />
               <Text style={styles.processingTitle}>{t('library.return.processing-title')}</Text>
-              <Text style={styles.processingStep}>{t('library.return.processing-step')}</Text>
+              <Text style={styles.processingStep}>
+                {isInitializing
+                  ? t('library.return.processing-placement-step')
+                  : t('library.return.processing-step')}
+              </Text>
             </Card.Content>
           </Card>
         )}
@@ -97,20 +115,26 @@ export function ReturnFlow({
                   <Icon source="check-circle" size={48} color="#4CAF50" />
                 </View>
                 <Text style={styles.successTitle}>{t('library.return.complete-title')}</Text>
-                <Text style={styles.successSubtitle}>{t('library.return.complete-subtitle')}</Text>
+                <Text style={styles.successSubtitle}>
+                  {isInitializing
+                    ? t('library.return.placement-complete-subtitle')
+                    : t('library.return.complete-subtitle')}
+                </Text>
               </View>
 
               <View style={styles.summaryBox}>
-                <View style={styles.summaryRow}>
+                <View style={[styles.summaryRow, isInitializing && styles.totalRow]}>
                   <Text style={styles.summaryLabel}>{vehicleName ?? vehicleId}</Text>
                   <Text style={styles.summaryValue}>
                     {t('library.return.returned-to', { dockId })}
                   </Text>
                 </View>
-                <View style={[styles.summaryRow, styles.totalRow]}>
-                  <Text style={styles.totalLabel}>{t('library.return.total-charged')}</Text>
-                  <Text style={styles.totalValue}>{feeDisplay}</Text>
-                </View>
+                {!isInitializing && (
+                  <View style={[styles.summaryRow, styles.totalRow]}>
+                    <Text style={styles.totalLabel}>{t('library.return.total-charged')}</Text>
+                    <Text style={styles.totalValue}>{feeDisplay}</Text>
+                  </View>
+                )}
               </View>
 
               <Button mode="contained" onPress={onComplete} style={styles.button}>

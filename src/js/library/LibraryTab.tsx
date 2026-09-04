@@ -74,7 +74,11 @@ const LibraryTab = () => {
   const isMounted = useRef(true);
 
   const subgroup = simulatedSubgroup ?? onboardingState?.subgroup;
-  const activeRental = rentalHistory.findLast((r) => r.rental_status === 'active') ?? null;
+  const activeRental =
+    rentalHistory.findLast(
+      (r) => r.rental_status === 'active' || r.rental_status === 'initializing',
+    ) ?? null;
+  const isInitializing = activeRental?.rental_status === 'initializing';
   const rentalVehicleId = activeRental?.vehicle_id ?? null;
   const rentalHours = activeRental
     ? Math.max(rentalNowTs - activeRental.start_ts, 0) / (60 * 60)
@@ -308,7 +312,7 @@ const LibraryTab = () => {
       }
     } catch (e) {
       addStatReading('checkout_aborted', { holdAmount, wantAccessories, error: String(e) });
-      displayErrorMsg(String(e), t('library.errors.stripe-checkout'));
+      displayErrorMsg(String(e), t('library.errors.checkout'));
     } finally {
       if (isMounted.current) {
         setPaymentInProgress(false);
@@ -389,6 +393,7 @@ const LibraryTab = () => {
                 activeRental={activeRental}
                 durationDisplay={rentalStatusText}
                 feeDisplay={feeDisplay}
+                isInitializing={isInitializing}
                 onReturnVehicle={() => setScreen({ name: 'scan-return' })}
                 refreshing={refreshing}
                 onRefresh={() => void refreshAll()}
@@ -452,6 +457,7 @@ const LibraryTab = () => {
               vehicleName={activeRental?.vehicle_name}
               durationDisplay={rentalStatusText}
               feeDisplay={feeDisplay}
+              isInitializing={isInitializing}
               onConfirmReturn={() => confirmReturn(screen.dockId)}
               onComplete={() => setScreen({ name: 'browse' })}
             />

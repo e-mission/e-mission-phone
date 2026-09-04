@@ -313,7 +313,7 @@ describe('LibraryTab', () => {
     await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
 
     await act(async () => {
-      fireEvent.press(tree.getByText('Open Stripe for $380.00 Deposit'));
+      fireEvent.press(tree.getByText('Check Out ($380.00 hold)'));
       await Promise.resolve();
     });
 
@@ -338,14 +338,14 @@ describe('LibraryTab', () => {
     await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
 
     await act(async () => {
-      fireEvent.press(tree.getByText('Open Stripe for $380.00 Deposit'));
+      fireEvent.press(tree.getByText('Check Out ($380.00 hold)'));
       await Promise.resolve();
     });
 
     await waitFor(() => {
       expect(displayErrorMsg).toHaveBeenCalledWith(
         'Error: mocked checkout failure',
-        'Stripe checkout failed',
+        'Checkout failed',
       );
       expect(tree.getByText('Checkout Vehicle bike-123')).toBeTruthy();
     });
