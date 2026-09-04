@@ -11,6 +11,7 @@ import {
 } from './opcode';
 import { Alerts } from '../components/AlertArea';
 import { setPendingOpcode } from '../onboarding/onboardingHelper';
+import { applyConfigTranslations } from '../i18nextInit';
 
 export const CONFIG_PHONE_UI = 'config/app_ui_config';
 export const CONFIG_PHONE_UI_KVSTORE = 'CONFIG_PHONE_UI';
@@ -168,6 +169,7 @@ export function loadNewConfig(newToken: string, existingVersion?: number): Promi
         .then(([result, kvStoreResult]) => {
           logDebug(`UI_CONFIG: Stored dynamic config in KVStore successfully, 
             result = ${JSON.stringify(kvStoreResult)}`);
+          applyConfigTranslations(downloadedConfig);
           _promisedConfig = Promise.resolve(downloadedConfig);
           configChanged = true;
           return true;
@@ -231,8 +233,13 @@ export function getConfig(): Promise<DeploymentConfig | null> {
       },
     );
   });
-  _promisedConfig = promise;
-  return promise;
+  // apply translation overrides before anyone awaiting the config can render with the defaults
+  const configPromise = promise.then((config: DeploymentConfig | null) => {
+    applyConfigTranslations(config);
+    return config;
+  });
+  _promisedConfig = configPromise;
+  return configPromise;
 }
 
 export async function refreshConfig(opcode: string, existingVersion?: number) {
