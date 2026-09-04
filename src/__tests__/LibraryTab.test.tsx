@@ -83,7 +83,7 @@ jest.mock('react-native-paper', () => {
 const mockAppConfig = {
   vehicle_library: {
     fee_expression:
-      "(5 + (duration>5)*30 + (duration>24)*65 + (duration>72)*100 + (duration>144)*180) * (1 - 0.5*(subgroup=='discount')) * (1 + 0.5*(baseMode=='E_BIKE'))",
+      "((duration>(5/60))*5 + (duration>5)*30 + (duration>24)*65 + (duration>72)*100 + (duration>144)*180) * (1 - 0.5*(subgroup=='discount'))",
   },
 } as unknown as AppContextProps['appConfig'];
 
