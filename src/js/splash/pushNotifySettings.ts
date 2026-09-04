@@ -17,6 +17,7 @@ import { logDebug, displayError, logWarn, displayErrorMsg } from '../plugin/logg
 import { readConsentState } from './startprefs';
 import { Alerts } from '../components/AlertArea';
 import { addStatReading } from '../plugin/clientStats';
+import { IS_CORDOVA } from '../nativePlugins';
 import { PushNotifySettings } from './userProfile';
 
 export let push;
@@ -243,6 +244,10 @@ export function scheduleDebugLocalNotification(millis = 5000) {
  * @function registers push if consented, subscribes event listeners for local handline
  */
 export async function initPushNotify() {
+  if (!IS_CORDOVA) {
+    logDebug('Not running under Cordova, skipping push notification setup');
+    return;
+  }
   const consentState = await readConsentState();
   if (consentState == true) {
     logDebug('already consented, signing up for remote push');
