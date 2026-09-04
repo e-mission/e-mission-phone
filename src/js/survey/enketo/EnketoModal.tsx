@@ -6,6 +6,7 @@ import useAppConfig from '../../useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { SurveyOptions, fetchSurvey, getInstanceStr, saveResponse } from './enketoHelper';
 import { displayError, displayErrorMsg, logDebug } from '../../plugin/logger';
+import EnketoLogo from '../../../img/enketo_bare_150x56.png';
 
 // styles for Enketo, plus some of our own overrides
 import './enketoStyles.css';
@@ -136,7 +137,7 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest }: Props) => {
           <div className="enketo-power" style={{ marginBottom: 30 }}>
             <span>{t('survey.powered-by')}</span>{' '}
             <a href="http://enketo.org" title="enketo.org website">
-              <img src="img/enketo_bare_150x56.png" alt="enketo logo" />
+              <img src={EnketoLogo} alt="enketo logo" />
             </a>
           </div>
           <div className="form-footer__jump-nav" style={{ display: 'flex', flexDirection: 'row' }}>
