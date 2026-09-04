@@ -18,6 +18,8 @@ describe('userProfile', () => {
   } as UserProfile;
 
   jest.spyOn(commHelper, 'getUser').mockResolvedValue(currProfile);
+  // the real updateUser goes through the native comm mock, which never settles without an opcode
+  updateUserSpy.mockResolvedValue({});
 
   describe('updateUserProfile', () => {
     it('should update user profile if there are changes', async () => {
