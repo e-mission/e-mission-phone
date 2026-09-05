@@ -19,7 +19,8 @@
     "build-prod-android": "npm run export-prod && npx cordova build android",
     "build-prod-ios": "npm run export-prod && npx cordova build ios",
     "build-prod-android-release": "npm run export-prod && npx cordova build android --release",
-    "test": "npx jest"
+    "test": "npx jest",
+    "version": "node bin/sync_config_version.js && git add config.xml"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
