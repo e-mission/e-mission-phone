@@ -22,7 +22,7 @@ import {
   useTheme,
 } from 'react-native-paper';
 import color from 'color';
-import { AppContext } from '../App';
+import { AppContext } from '../AppContext';
 import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { onboardingStyles } from './OnboardingStack';
 import { Alerts } from '../components/AlertArea';

@@ -13,7 +13,7 @@ import { displayError, logDebug } from '../../plugin/logger';
 import { t } from 'i18next';
 import { scheduleDebugLocalNotification } from '../../splash/pushNotifySettings';
 import ActionMenu from '../../components/ActionMenu';
-import { AppContext } from '../../App';
+import { AppContext } from '../../AppContext';
 import { getScheduledNotifs } from '../../splash/notifScheduler';
 import JsonList from '../components/JsonList';
 import DataDatePicker from './DataDatePicker';

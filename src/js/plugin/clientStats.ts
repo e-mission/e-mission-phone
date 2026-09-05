@@ -15,6 +15,9 @@ type StatKey =
   | 'onboarding_state' // { route (current OnoardingRoute enum value), opcode}
   | 'open_qr_scanner' // user opened in-app qr scanner
   | 'paste_token' // user clicked 'paste code'
+  | 'checkout_initiated' // vehicle library module
+  | 'checkout_confirmed' // vehicle library module
+  | 'checkout_aborted' // vehicle library module
   // 'label' interaction stats
   | 'view_trip_details'
   | 'multilabel_open'

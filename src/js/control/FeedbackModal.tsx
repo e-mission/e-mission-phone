@@ -19,7 +19,7 @@ import { getStudyNameFromToken } from '../config/opcode';
 import { logDebug } from '../plugin/logger';
 import { Alerts } from '../components/AlertArea';
 import { addStatReading } from '../plugin/clientStats';
-import { AppContext } from '../App';
+import { AppContext } from '../AppContext';
 
 const launchUrl = (url: string) => window['cordova'].InAppBrowser.open(url, '_system');
 

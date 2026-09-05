@@ -339,17 +339,14 @@ export const mockBEMServerCom = () => {
   const mockBEMServerCom = {
     pushGetJSON,
     postUserPersonalData: (actionString, typeString, updateDoc, rs, rj) => {
-      setTimeout(() => {
-        console.log('set in mock', updateDoc);
-        sessionStorage.setItem(`${BEM_SERVERCOMM}user_data`, JSON.stringify(updateDoc));
-        rs();
-      });
+      const msgFiller = (m) => {
+        m[typeString] = updateDoc;
+      };
+      pushGetJSON(actionString, msgFiller, rs, rj);
     },
     getUserPersonalData: (actionString, rs, rj) => {
-      setTimeout(() => {
-        const raw = sessionStorage.getItem(`${BEM_SERVERCOMM}user_data`);
-        rs(raw === null ? undefined : JSON.parse(raw));
-      });
+      const msgFiller = (m) => {};
+      pushGetJSON(actionString, msgFiller, rs, rj);
     },
   };
   window['cordova'] ||= {};
@@ -398,6 +395,7 @@ export const mockInAppBrowser = () => {
   const mockInAppBrowser = {
     open: (url: string, mode: string, options: {}) => {
       console.log(`Mock InAppBrowser: open ${url} with mode: ${mode} and options:`, options);
+      window.open(url, '_blank', 'noopener,noreferrer');
     },
   };
   window['cordova'].InAppBrowser = mockInAppBrowser;

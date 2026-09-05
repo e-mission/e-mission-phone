@@ -11,7 +11,7 @@ import { DateTime } from 'luxon';
 import { displayErrorMsg } from '../../plugin/logger';
 import { Alerts } from '../../components/AlertArea';
 import FeedbackModal from '../../control/FeedbackModal';
-import { AppContext } from '../../App';
+import { AppContext } from '../../AppContext';
 import { isTrip } from '../../types/diaryTypes';
 import { tripIsUnlabeled as multilabelTripIsUnlabeled } from '../../survey/multilabel/infinite_scroll_filters';
 import { tripIsUnlabeled as enketoTripIsUnlabeled } from '../../survey/enketo/infinite_scroll_filters';

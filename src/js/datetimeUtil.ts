@@ -91,3 +91,13 @@ export function humanizeIsoRange(isoStr1: string, isoStr2: string) {
     round: true,
   });
 }
+
+export function humanizeDurationHoursFull(hours: number) {
+  return humanizeDuration(hours * 60 * 60 * 1000, {
+    language: i18next.resolvedLanguage,
+    units: ['w', 'd', 'h'],
+    largest: 3,
+    round: false,
+    maxDecimalPoints: 2,
+  });
+}

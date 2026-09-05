@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { View, ScrollView } from 'react-native';
 import { Button, Surface } from 'react-native-paper';
 import { resetDataAndRefresh } from '../config/dynamicConfig';
-import { AppContext } from '../App';
+import { AppContext } from '../AppContext';
 import PrivacyPolicy from './PrivacyPolicy';
 import { onboardingStyles } from './OnboardingStack';
 import { setProtocolDone } from './onboardingHelper';

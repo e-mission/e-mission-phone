@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppStateStatus, View } from 'react-native';
 import { ActivityIndicator, PaperProvider } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,42 +14,22 @@ import {
 } from './onboarding/onboardingHelper';
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './AppStatusModal';
-import usePermissionStatus from './usePermissionStatus';
 import AlertArea from './components/AlertArea';
 import Main from './Main';
+import { AppContext, CustomLabelMap, OnboardingJoinMethod } from './AppContext';
 
 import initializedI18next from '../js/i18nextInit';
 window['i18next'] = initializedI18next;
 
 import { joinWithTokenOrUrl } from './config/dynamicConfig';
+import { EVENTS, publish, TokenOrUrlEventData } from './customEventHandler';
 import { addStatReading } from './plugin/clientStats';
 import { displayErrorMsg, logDebug } from './plugin/logger';
 import { registerAndUpdateProfile, updateUserProfile, UserProfile } from './splash/userProfile';
 import { getTheme } from './appTheme';
-import DeploymentConfig from 'op-deployment-configs';
+import usePermissionStatus from './usePermissionStatus';
 
 const URL_SCHEME = packageJson.cordova.plugins['cordova-plugin-customurlscheme'].URL_SCHEME;
-
-type AppContextProps = {
-  appConfig: DeploymentConfig | null;
-  handleTokenOrUrl: (tokenOrUrl: string, joinMethod: OnboardingJoinMethod) => Promise<boolean>;
-  onboardingState: OnboardingState | null;
-  setOnboardingState: React.Dispatch<React.SetStateAction<OnboardingState | null>>;
-  refreshOnboardingState: () => Promise<OnboardingState>;
-  permissionStatus: ReturnType<typeof usePermissionStatus>;
-  permissionsPopupVis: boolean;
-  setPermissionsPopupVis: React.Dispatch<React.SetStateAction<boolean>>;
-  userProfile: UserProfile | null;
-  updateUserProfile: (profileUpdate: Partial<UserProfile>) => Promise<void>;
-  customLabelMap: CustomLabelMap;
-  setCustomLabelMap: React.Dispatch<React.SetStateAction<CustomLabelMap>>;
-};
-
-export const AppContext = createContext<AppContextProps>({} as AppContextProps);
-type CustomLabelMap = {
-  [k: string]: string[];
-};
-type OnboardingJoinMethod = 'scan' | 'paste' | 'textbox' | 'external';
 
 const theme = getTheme();
 
@@ -73,6 +53,25 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
   }, []);
 
   async function handleTokenOrUrl(tokenOrUrl: string, joinMethod: OnboardingJoinMethod) {
+    const tokenOrUrlHandlerResults: Array<Promise<boolean>> = [];
+    const tokenOrUrlEvent: TokenOrUrlEventData = {
+      tokenOrUrl,
+      joinMethod,
+      registerHandler: (handlerResult) => {
+        tokenOrUrlHandlerResults.push(Promise.resolve(handlerResult));
+      },
+    };
+    publish(EVENTS.TOKEN_OR_URL_EVENT, tokenOrUrlEvent);
+
+    if (tokenOrUrlHandlerResults.length > 0) {
+      const handlerResults = await Promise.all(tokenOrUrlHandlerResults);
+      // TODO: should this be "some" or "every"?
+      // Don't want to swallow events that are actually meaningful for onboarding
+      if (handlerResults.some(Boolean)) {
+        return true;
+      }
+    }
+
     const onboardingState = await refreshOnboardingState();
     logDebug(`handleTokenOrUrl: onboardingState = ${JSON.stringify(onboardingState)}`);
     if (onboardingState.route > OnboardingRoute.WELCOME) {
@@ -89,7 +88,7 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
 
   // handleOpenURL function must be provided globally for cordova-plugin-customurlscheme
   // https://www.npmjs.com/package/cordova-plugin-customurlscheme
-  window['handleOpenURL'] = (url: string) => {
+  (window as any).handleOpenURL = (url: string) => {
     if (url?.startsWith(URL_SCHEME + '://')) {
       handleTokenOrUrl(url, 'external');
     } else {
@@ -125,7 +124,8 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
     permissionsPopupVis,
     setPermissionsPopupVis,
     userProfile,
-    updateUserProfile: (p) => updateUserProfile(p, userProfile).then(setUserProfile),
+    updateUserProfile: (p: Partial<UserProfile>) =>
+      updateUserProfile(p, userProfile).then(setUserProfile),
     customLabelMap,
     setCustomLabelMap,
   };

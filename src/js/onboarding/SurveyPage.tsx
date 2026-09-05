@@ -7,7 +7,7 @@ import {
   DEMOGRAPHIC_SURVEY_NAME,
 } from '../control/DemographicsSettingRow';
 import { loadPreviousResponseForSurvey } from '../survey/enketo/enketoHelper';
-import { AppContext } from '../App';
+import { AppContext } from '../AppContext';
 import { markIntroDone, registerUserDone } from './onboardingHelper';
 import { useTranslation } from 'react-i18next';
 import { DateTime } from 'luxon';

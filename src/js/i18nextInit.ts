@@ -99,6 +99,8 @@ i18next.use(initReactI18next).init({
   resources: langs,
   lng: detectedLang,
   fallbackLng: 'en',
+  // values are rendered as plain text by React Native, so HTML escaping would only mangle them
+  interpolation: { escapeValue: false },
 });
 
 export default i18next;

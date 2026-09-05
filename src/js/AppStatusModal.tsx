@@ -3,7 +3,7 @@ import { Modal, useWindowDimensions } from 'react-native';
 import { Dialog, useTheme } from 'react-native-paper';
 import PermissionsControls from './appstatus/PermissionsControls';
 import { settingStyles } from './control/ProfileSettings';
-import { AppContext } from './App';
+import { AppContext } from './AppContext';
 
 const AppStatusModal = () => {
   const { height: windowHeight } = useWindowDimensions();

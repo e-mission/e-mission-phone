@@ -4,17 +4,27 @@
 import React, { useCallback, useEffect } from 'react';
 import { useContext, useMemo, useState } from 'react';
 import { BottomNavigation, useTheme } from 'react-native-paper';
-import { AppContext } from './App';
+import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
+
+import { AppContext } from './AppContext';
 import { withErrorBoundary } from './plugin/ErrorBoundary';
 import LabelTab from './diary/LabelTab';
 import MetricsTab from './metrics/MetricsTab';
 import ProfileSettings from './control/ProfileSettings';
+import LibraryTab from './library/LibraryTab';
 import TimelineContext, { useTimelineContext } from './TimelineContext';
 import { addStatReading } from './plugin/clientStats';
 import { showMetricsTab } from './metrics/metricsHelper';
 
-const defaultRoutes = (t) => [
+const defaultRoutes = (t: TFunction<'translation'>) => [
+  {
+    key: 'library',
+    title: t('Library'),
+    focusedIcon: 'book-open-page-variant',
+    unfocusedIcon: 'book-open-outline',
+    accessibilityLabel: t('library-tab'),
+  },
   {
     key: 'label',
     title: t('diary.label-tab'),
@@ -42,6 +52,7 @@ const scenes = {
   label: withErrorBoundary(LabelTab),
   metrics: withErrorBoundary(MetricsTab),
   control: withErrorBoundary(ProfileSettings),
+  library: withErrorBoundary(LibraryTab),
 };
 const renderScene = BottomNavigation.SceneMap(scenes);
 
@@ -52,13 +63,12 @@ const Main = () => {
   const { appConfig } = useContext(AppContext);
   const timelineContext = useTimelineContext();
 
-  const routes = useMemo(
-    () =>
-      appConfig && showMetricsTab(appConfig)
-        ? defaultRoutes(t)
-        : defaultRoutes(t).filter((r) => r.key != 'metrics'),
-    [appConfig, t],
-  );
+  const routes = useMemo(() => {
+    let r = defaultRoutes(t);
+    if (!appConfig || !showMetricsTab(appConfig)) r = r.filter((route) => route.key != 'metrics');
+    if (!appConfig?.vehicle_library) r = r.filter((route) => route.key != 'library');
+    return r;
+  }, [appConfig, t]);
 
   const onIndexChange = useCallback(
     (i: number) => {
