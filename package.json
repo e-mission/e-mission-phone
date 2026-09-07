@@ -108,7 +108,7 @@
     "expo": "^55.0.15",
     "expo-device": "^6.0.2",
     "expo-status-bar": "~1.11.1",
-    "fast-xml-parser": "^5.5.7",
+    "fast-xml-parser": "^5.7.0",
     "humanize-duration": "^3.31.0",
     "i18next": "^23.7.6",
     "install": "^0.13.0",
