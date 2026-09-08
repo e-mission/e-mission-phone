@@ -25,7 +25,7 @@ const LabelListScreen = () => {
     loadDateRange,
     timelineIsLoading,
     refreshTimeline,
-    shouldUpdateTimeline,
+    shouldRenderTimeline,
   } = useContext(TimelineContext);
   const { colors } = useTheme();
 
@@ -90,7 +90,7 @@ const LabelListScreen = () => {
         />
       </NavBar>
       <View style={{ flex: 1, backgroundColor: colors.background }}>
-        {shouldUpdateTimeline && <TimelineScrollList listEntries={displayedEntries} />}
+        {shouldRenderTimeline && <TimelineScrollList listEntries={displayedEntries} />}
       </View>
     </>
   );

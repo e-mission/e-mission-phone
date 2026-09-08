@@ -79,9 +79,10 @@ const Main = () => {
   );
 
   useEffect(() => {
-    const { setShouldUpdateTimeline } = timelineContext;
+    const { setShouldRenderTimeline } = timelineContext;
     // update TimelineScrollList component only when the active tab is 'label' to fix leaflet map issue
-    setShouldUpdateTimeline(!index);
+    const isLabelTab = routes[index].key == 'label';
+    setShouldRenderTimeline(isLabelTab);
   }, [index]);
 
   return (

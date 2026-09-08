@@ -47,8 +47,8 @@ type ContextProps = {
   loadMoreDays: (when: 'past' | 'future', nDays: number) => boolean | void;
   loadDateRange: (d: [string, string]) => boolean | void;
   refreshTimeline: () => void;
-  shouldUpdateTimeline: Boolean;
-  setShouldUpdateTimeline: React.Dispatch<React.SetStateAction<boolean>>;
+  shouldRenderTimeline: Boolean;
+  setShouldRenderTimeline: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const useTimelineContext = (): ContextProps => {
@@ -69,8 +69,8 @@ export const useTimelineContext = (): ContextProps => {
   const [timelineNotesMap, setTimelineNotesMap] = useState<TimelineNotesMap | null>(null);
   const [refreshTime, setRefreshTime] = useState<Date | null>(null);
   // Leaflet map encounters an error when prerendered, so we need to render the TimelineScrollList component when the active tab is 'label'
-  // 'shouldUpdateTimeline' gets updated based on the current tab index, and we can use it to determine whether to render the timeline or not
-  const [shouldUpdateTimeline, setShouldUpdateTimeline] = useState(true);
+  // 'shouldRenderTimeline' gets updated based on the current tab index, and we can use it to determine whether to render the timeline or not
+  const [shouldRenderTimeline, setShouldRenderTimeline] = useState(true);
 
   // initialization, once the appConfig is loaded
   useEffect(() => {
@@ -345,8 +345,8 @@ export const useTimelineContext = (): ContextProps => {
     notesFor,
     confirmedModeFor,
     addUserInputToEntry,
-    shouldUpdateTimeline,
-    setShouldUpdateTimeline,
+    shouldRenderTimeline,
+    setShouldRenderTimeline,
   };
 };
 
