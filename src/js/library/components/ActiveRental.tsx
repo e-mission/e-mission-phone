@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
 import { Button, Card, Icon } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { LibraryRental } from '../serverComm';
-import { DateTime } from 'luxon';
+import { AppContext } from '../../AppContext';
 
 interface ActiveRentalProps {
   vehicleId: string;
@@ -26,19 +26,23 @@ export function ActiveRental({
   refreshing,
   onRefresh,
 }: ActiveRentalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { appConfig } = useContext(AppContext);
   const vehicleName =
     activeRental?.vehicle_name ?? t('library.active-rental.vehicle-fallback-name', { vehicleId });
+  const lang = i18n.resolvedLanguage || 'en';
+  const deploymentName = appConfig?.intro?.translated_text?.[lang]?.deployment_name;
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={styles.headerTitle}>
             {isInitializing
               ? t('library.active-rental.initializing-title')
               : t('library.active-rental.title')}
           </Text>
-          <Text style={styles.headerSubtitle}>{vehicleName}</Text>
+          <Text style={styles.headerSubtitle}>{deploymentName}</Text>
         </View>
       </View>
 
@@ -55,7 +59,7 @@ export function ActiveRental({
                 or lookup vehicles at some point? */}
                 <Icon source="bike" size={32} color="#4CAF50" />
               </View>
-              <View>
+              <View style={{ flex: 1 }}>
                 <Text style={styles.vehicleTitle}>{vehicleName}</Text>
                 <Text style={styles.vehicleSubtitle}>
                   {t('library.active-rental.checked-out-since', {

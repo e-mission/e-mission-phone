@@ -517,6 +517,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 15,
     marginHorizontal: 16,
+    marginVertical: 12,
   },
 });
 
