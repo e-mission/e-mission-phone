@@ -105,7 +105,7 @@
     "e-mission-common": "github:e-mission/e-mission-common#semver:0.6.6",
     "enketo-core": "^6.1.7",
     "enketo-transformer": "^4.0.0",
-    "expo": "^55.0.15",
+    "expo": "^55.0.31",
     "expo-device": "^6.0.2",
     "expo-status-bar": "~1.11.1",
     "fast-xml-parser": "^5.7.0",
