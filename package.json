@@ -1,6 +1,6 @@
 {
   "name": "edu.berkeley.eecs.emission",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "displayName": "emission",
   "main": "src/js/AppRoot.tsx",
   "license": "BSD-3-Clause",
