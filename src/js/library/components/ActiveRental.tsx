@@ -1,9 +1,20 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
 import { Button, Card, Icon } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { LibraryRental } from '../serverComm';
 import { AppContext } from '../../AppContext';
+import { Alerts } from '../../components/AlertArea';
+import AccessoryRequestModal from './AccessoryRequestModal';
+import { storageGet, storageSet } from '../../plugin/storage';
+
+const RENTAL_ACCESSORIES_STORAGE_KEY = 'library_rental_accessories';
+
+interface RentalAccessoryStatus {
+  vehicleId: string;
+  requestedAccessories: string[];
+  hasEmailed: boolean;
+}
 
 interface ActiveRentalProps {
   vehicleId: string;
@@ -27,11 +38,38 @@ export function ActiveRental({
   onRefresh,
 }: ActiveRentalProps) {
   const { t, i18n } = useTranslation();
-  const { appConfig } = useContext(AppContext);
+  const { appConfig, onboardingState } = useContext(AppContext);
+  const [accessoryStatus, setAccessoryStatus] = useState<RentalAccessoryStatus | null>(null);
+
   const vehicleName =
     activeRental?.vehicle_name ?? t('library.active-rental.vehicle-fallback-name', { vehicleId });
   const lang = i18n.resolvedLanguage || 'en';
   const deploymentName = appConfig?.intro?.translated_text?.[lang]?.deployment_name;
+
+  const loadAccessoryStatus = () => {
+    void storageGet(RENTAL_ACCESSORIES_STORAGE_KEY)
+      .then((storedStatus: RentalAccessoryStatus | null) => {
+        setAccessoryStatus(storedStatus?.vehicleId === vehicleId ? storedStatus : null);
+      })
+      .catch(() => setAccessoryStatus(null));
+  };
+
+  useEffect(() => {
+    loadAccessoryStatus();
+  }, [vehicleId, refreshing]);
+
+  const onOpenAccessoryModal = () => {
+    if (!accessoryStatus) return;
+    Alerts.showPopup(AccessoryRequestModal, {
+      vehicleId,
+      requestedAccessories: accessoryStatus.requestedAccessories,
+      onEmailSent: () => {
+        const emailedStatus = { ...accessoryStatus, hasEmailed: true };
+        setAccessoryStatus(emailedStatus);
+        void storageSet(RENTAL_ACCESSORIES_STORAGE_KEY, emailedStatus);
+      },
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -50,7 +88,7 @@ export function ActiveRental({
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-        <Card style={styles.card}>
+        <Card>
           <Card.Content>
             <View style={styles.vehicleHeader}>
               <View style={styles.iconContainer}>
@@ -91,7 +129,38 @@ export function ActiveRental({
           </Card.Content>
         </Card>
 
-        <Card style={styles.card}>
+        {accessoryStatus &&
+          accessoryStatus.requestedAccessories?.length > 0 &&
+          !accessoryStatus.hasEmailed && (
+            <Card>
+              <Card.Content>
+                <View style={styles.accessorySectionHeader}>
+                  <View style={[styles.accessoryIconContainer]}>
+                    <Icon source={'bag-personal-outline'} size={24} color={'#2196F3'} />
+                  </View>
+                  <View style={{ flex: 1, marginLeft: 12 }}>
+                    <Text style={styles.instructionsTitle}>
+                      {t('library.active-rental.accessories-requested-title')}
+                    </Text>
+                    <Text style={styles.accessoryText}>
+                      {t('library.active-rental.accessories-requested-subtitle', {
+                        accessories: accessoryStatus.requestedAccessories.join(', '),
+                      })}
+                    </Text>
+                  </View>
+                </View>
+                <Button
+                  mode="contained"
+                  icon="email-outline"
+                  onPress={onOpenAccessoryModal}
+                  style={styles.accessoryButton}>
+                  {t('library.active-rental.email-librarian-accessories-button')}
+                </Button>
+              </Card.Content>
+            </Card>
+          )}
+
+        <Card>
           <Card.Content>
             <Text style={styles.instructionsTitle}>
               {t('library.active-rental.return-instructions')}
@@ -172,10 +241,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 40,
-  },
-  card: {
-    marginBottom: 16,
+    gap: 16,
   },
   vehicleHeader: {
     flexDirection: 'row',
@@ -246,6 +312,37 @@ const styles = StyleSheet.create({
   },
   returnButton: {
     marginTop: 8,
+  },
+  accessorySectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  accessoryIconContainer: {
+    backgroundColor: '#E3F2FD',
+    padding: 10,
+    borderRadius: 8,
+  },
+  accessoryText: {
+    fontSize: 14,
+    color: '#616161',
+    marginTop: 2,
+  },
+  accessoryButton: {
+    marginTop: 12,
+  },
+  contactRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  contactTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  contactSubtitle: {
+    fontSize: 13,
+    color: '#757575',
   },
 });
 

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, Banner, Text } from 'react-native-paper';
+import { ActivityIndicator, Banner, Button, Card, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { conditional_surveys } from 'e-mission-common';
 import { AppContext } from '../AppContext';
@@ -11,6 +11,7 @@ import CheckoutFlow from './components/CheckoutFlow';
 import ReturnFlow from './components/ReturnFlow';
 import QRScanner from './components/QRScanner';
 import LibraryDevPanel from './components/LibraryDevPanel';
+import AccessoryRequestModal from './components/AccessoryRequestModal';
 import { EVENTS, subscribe, TokenOrUrlEventData, unsubscribe } from '../customEventHandler';
 import { humanizeDurationHoursFull } from '../datetimeUtil';
 import { displayErrorMsg } from '../plugin/logger';
@@ -27,6 +28,10 @@ import {
 } from './serverComm';
 import { addStatReading } from '../plugin/clientStats';
 import useAppState from '../useAppState';
+import { storageSet } from '../plugin/storage';
+import { launchLibrarianContactEmail } from '../services/emailHelper';
+
+const RENTAL_ACCESSORIES_STORAGE_KEY = 'library_rental_accessories';
 
 function computeFee(
   feeExpression: string,
@@ -84,7 +89,7 @@ const LibraryTab = () => {
     ? Math.max(rentalNowTs - activeRental.start_ts, 0) / (60 * 60)
     : null;
   const rentalStatusText = formatRentalDuration(rentalHours);
-  const feeExpression = appConfig?.vehicle_library?.fee_expression;
+  const feeExpression = appConfig?.vehicle_library?.fee_expression ?? '0';
   const currentFee = rentalHours === null ? 0 : computeFee(feeExpression, rentalHours, subgroup);
   const feeDisplay = `$${currentFee.toFixed(2)}`;
 
@@ -302,21 +307,26 @@ const LibraryTab = () => {
   const confirmCheckout = async (
     vehicleId: string,
     holdAmount: number,
-    wantAccessories: boolean,
+    requestedAccessories: string[] = [],
   ) => {
     setPaymentInProgress(true);
-    addStatReading('checkout_initiated', { holdAmount, wantAccessories });
+    addStatReading('checkout_initiated', { holdAmount, requestedAccessories });
     try {
       await checkoutLibraryVehicle(vehicleId, holdAmount);
-      addStatReading('checkout_confirmed', { holdAmount, wantAccessories });
+      addStatReading('checkout_confirmed', { holdAmount, requestedAccessories });
       Alerts.addMessage({ text: t('library.checkout-success') });
       setRentalNowTs(Date.now());
       await refreshRentalHistory();
       if (isMounted.current) {
         setScreen({ name: 'browse' });
       }
+      void storageSet(RENTAL_ACCESSORIES_STORAGE_KEY, {
+        vehicleId,
+        requestedAccessories,
+        hasEmailed: false,
+      });
     } catch (e) {
-      addStatReading('checkout_aborted', { holdAmount, wantAccessories, error: String(e) });
+      addStatReading('checkout_aborted', { holdAmount, requestedAccessories, error: String(e) });
       displayErrorMsg(String(e), t('library.errors.checkout'));
     } finally {
       if (isMounted.current) {
@@ -439,6 +449,30 @@ const LibraryTab = () => {
               ))
             )}
           </View>
+          <Card style={styles.contactCard}>
+            <Card.Content style={styles.contactContent}>
+              <View style={{ flex: 1, marginRight: 12 }}>
+                <Text style={styles.contactTitle}>{t('library.contact-librarian-title')}</Text>
+                <Text style={styles.contactSubtitle}>
+                  {t('library.contact-librarian-subtitle')}
+                </Text>
+              </View>
+              <Button
+                mode="outlined"
+                icon="email-outline"
+                onPress={() => {
+                  if (appConfig) {
+                    launchLibrarianContactEmail({
+                      appConfig,
+                      opcode: onboardingState?.opcode,
+                      vehicleId: rentalVehicleId ?? undefined,
+                    });
+                  }
+                }}>
+                {t('library.contact-librarian-button')}
+              </Button>
+            </Card.Content>
+          </Card>
         </ScrollView>
       )}
 
@@ -448,9 +482,10 @@ const LibraryTab = () => {
             <CheckoutFlow
               vehicleId={screen.vehicleId}
               paymentProcessing={paymentInProgress}
+              accessories={appConfig?.vehicle_library?.accessories}
               estimateFee={(hours) => computeFee(feeExpression, hours, subgroup)}
-              onConfirm={(wantAccessories, holdAmount) =>
-                void confirmCheckout(screen.vehicleId, holdAmount, wantAccessories)
+              onConfirm={(holdAmount, requestedAccessories) =>
+                void confirmCheckout(screen.vehicleId, holdAmount, requestedAccessories)
               }
               onCancel={() => setScreen({ name: 'browse' })}
             />
@@ -518,6 +553,25 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginHorizontal: 16,
     marginVertical: 12,
+  },
+  contactCard: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  contactContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  contactTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  contactSubtitle: {
+    fontSize: 13,
+    color: '#757575',
   },
 });
 
