@@ -6,6 +6,7 @@ import LibraryTab from '../js/library/LibraryTab';
 import { AppContext, AppContextProps } from '../js/AppContext';
 import { Alerts } from '../js/components/AlertArea';
 import { displayErrorMsg } from '../js/plugin/logger';
+import { mockNativeForWeb } from '../js/nativePlugins';
 import {
   checkoutLibraryVehicle,
   checkAndGetLibrarySetupStatus,
@@ -81,9 +82,16 @@ jest.mock('react-native-paper', () => {
 // the Library tab is only shown when `vehicle_library` is configured, and once it is,
 // `fee_expression` is expected to always be present too - mock that config here
 const mockAppConfig = {
+  intro: {
+    program_admin_email: 'librarian@example.com',
+  },
   vehicle_library: {
     fee_expression:
       "((duration>(5/60))*5 + (duration>5)*30 + (duration>24)*65 + (duration>72)*100 + (duration>144)*180) * (1 - 0.5*(subgroup=='discount'))",
+    accessories: [
+      { value: 'panniers', label: { en: 'Panniers', es: 'Alforjas' } },
+      { value: 'front-basket', label: { en: 'Front basket', es: 'Canasta delantera' } },
+    ],
   },
 } as unknown as AppContextProps['appConfig'];
 
@@ -111,6 +119,7 @@ async function submitManualCode(
 describe('LibraryTab', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockNativeForWeb();
 
     // the real useAppState hook invokes onActive once on mount (see useAppState.ts);
     // replicate that here so LibraryTab's setup/rental-history fetches actually run
@@ -322,6 +331,64 @@ describe('LibraryTab', () => {
       expect(getLibraryRentalHistory).toHaveBeenCalledTimes(2);
       expect(tree.getByText('Active Rental')).toBeTruthy();
     });
+  });
+
+  it('shows accessory request card after checkout if accessories are requested', async () => {
+    (checkoutLibraryVehicle as jest.Mock).mockResolvedValueOnce({
+      result: 'checked_out',
+      vehicle_id: 'bike-123',
+    });
+    (getLibraryRentalHistory as jest.Mock)
+      .mockResolvedValueOnce({ rental_history: [] })
+      .mockResolvedValueOnce({
+        rental_history: [
+          {
+            vehicle_id: 'bike-123',
+            start_ts: Math.floor(Date.now() / 1000),
+            end_ts: null,
+            rental_status: 'active',
+          },
+        ],
+      });
+
+    const tree = renderLibraryTab();
+
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    fireEvent.press(tree.getByText('Scan'));
+
+    await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
+    await submitManualCode(tree, 'Vehicle ID', 'bike-123');
+
+    await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
+
+    // Select long-term rental and accessories
+    fireEvent.press(tree.getByText('Yes'));
+    fireEvent.press(tree.getByText('Panniers'));
+
+    await act(async () => {
+      fireEvent.press(tree.getByText('Check Out ($380.00 hold)'));
+      await Promise.resolve();
+    });
+
+    await waitFor(() => {
+      expect(checkoutLibraryVehicle).toHaveBeenCalledWith('bike-123', 38000);
+      expect(tree.getByText('Active Rental')).toBeTruthy();
+      expect(tree.getByText(/You requested: Panniers/)).toBeTruthy();
+    });
+  });
+
+  it('allows contacting the librarian from the browse screen', async () => {
+    (window as any).cordova = { InAppBrowser: { open: jest.fn() } };
+    const tree = renderLibraryTab();
+
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    expect(tree.getByText('Need help?')).toBeTruthy();
+    fireEvent.press(tree.getByText('Contact librarian'));
+
+    expect((window as any).cordova.InAppBrowser.open).toHaveBeenCalledWith(
+      expect.stringContaining('mailto:'),
+      '_system',
+    );
   });
 
   it('stays on the checkout screen and surfaces an error when checkout fails', async () => {

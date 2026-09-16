@@ -14,14 +14,16 @@ import color from 'color';
 import { settingStyles } from './ProfileSettings';
 import DeploymentConfig from 'op-deployment-configs';
 import { t } from 'i18next';
-import { getDeviceSettings } from '../splash/storeDeviceSettings';
-import { getStudyNameFromToken } from '../config/opcode';
 import { logDebug } from '../plugin/logger';
 import { Alerts } from '../components/AlertArea';
 import { addStatReading } from '../plugin/clientStats';
 import { AppContext } from '../AppContext';
-
-const launchUrl = (url: string) => window['cordova'].InAppBrowser.open(url, '_system');
+import {
+  getDiagnosticInfo,
+  getDeploymentId,
+  getProgramAdminEmail,
+  openEmailClient,
+} from '../services/emailHelper';
 
 // adapted from https://github.com/dpa99c/cordova-launch-review?tab=readme-ov-file#advanced-usage
 function launchReview() {
@@ -43,26 +45,13 @@ async function launchFeedbackEmail(
   opcode: string,
   recipients: string[],
 ) {
-  const deploymentId = appConfig.url_abbreviation || getStudyNameFromToken(opcode);
+  const deploymentId = getDeploymentId(appConfig, opcode);
   const subject = t('control.feedback-modal.feedback-email-subject', { deploymentId });
-
-  const deviceSettings = await getDeviceSettings();
-  let diagnosticInfo = '';
-  if (deviceSettings) {
-    diagnosticInfo =
-      `- App version: ${deviceSettings.client_app_version}\n` +
-      `- Device model: ${deviceSettings.manufacturer} ${deviceSettings.model}\n` +
-      `- Deployment: ${deploymentId}\n`;
-  }
-  let body = t('control.feedback-modal.feedback-email-body', { diagnosticInfo });
-
-  const mailtoLink =
-    `mailto:${recipients.join(',')}` +
-    `?subject=${encodeURIComponent(subject)}` +
-    `&body=${encodeURIComponent(body)}`;
+  const diagnosticInfo = await getDiagnosticInfo(deploymentId);
+  const body = t('control.feedback-modal.feedback-email-body', { diagnosticInfo });
 
   addStatReading('user_feedback', { method: 'email' });
-  launchUrl(mailtoLink);
+  openEmailClient({ to: recipients, subject, body });
 }
 
 const FeedbackModal = ({ ...props }: ModalProps) => {
@@ -84,13 +73,7 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
     emailRecipients.push('openpath@nlr.gov');
   }
   if (feedbackForAdmins) {
-    let adminEmail: string | undefined =
-      appConfig.intro.program_admin_email ||
-      // TODO: can remove this after config auto-update has been on prod for awhile
-      appConfig.intro.program_admin_contact.match(
-        /([a-zA-Z0-9._+-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi,
-      )?.[0];
-
+    const adminEmail = getProgramAdminEmail(appConfig);
     if (adminEmail) {
       emailRecipients.push(adminEmail);
     }

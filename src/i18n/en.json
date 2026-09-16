@@ -310,6 +310,11 @@
     "stripe-setup-status": "Stripe setup {{status}}.",
     "stripe-setup-did-not-complete": "did not complete",
     "checkout-success": "Checkout completed successfully.",
+    "contact-librarian-title": "Need help?",
+    "contact-librarian-subtitle": "Contact the vehicle librarian with any questions or issues.",
+    "contact-librarian-button": "Contact librarian",
+    "contact-librarian-subject": "Vehicle Library Question [{{deploymentId}}]",
+    "contact-librarian-body": "Vehicle Librarian,\n\n[Write your message or question here]\n\nUser details:\n- OPcode: {{opcode}}{{rentalInfo}}\n- Deployment: {{deploymentId}}\n\nThank you!",
     "rental-history": "Rental history",
     "no-rentals-yet": "No rentals yet.",
     "rental-summary": "{{vehicle}} — {{status}}",
@@ -354,7 +359,10 @@
       "step-secure-text": "Place the vehicle in the dock",
       "step-scan-title": "Scan dock QR code",
       "step-scan-text": "Lock the dock and complete your rental",
-      "scan-dock-to-return": "Scan Dock to Return"
+      "scan-dock-to-return": "Scan Dock to Return",
+      "accessories-requested-title": "Requested Accessories",
+      "accessories-requested-subtitle": "You requested: {{accessories}}. Send an email to arrange pickup.",
+      "email-librarian-accessories-button": "Email for accessories"
     },
     "checkout": {
       "back": "Back",
@@ -366,12 +374,18 @@
       "duration-hours": "{{n}} hours",
       "duration-one-day": "1 day",
       "duration-days": "{{n}} days",
+      "do-you-plan-long-rental": "Do you plan to keep the vehicle for 1 week or longer?",
       "request-accessories": "Request Accessories (optional)",
-      "panniers": "Panniers",
-      "front-basket": "Front basket",
       "hold-notice": "We'll place a temporary ${{amount}} authorization hold on your saved payment method. It is released when the vehicle is checked in, and you are only charged for your usage.",
       "confirm-and-hold": "Check Out (${{amount}} hold)",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "accessory-modal-title": "Request Accessories",
+      "accessory-modal-message": "To coordinate pickup for your requested accessories, please send an email to the vehicle librarian.",
+      "accessory-modal-requested-heading": "Requested accessories:",
+      "accessory-modal-compose-email": "Compose email",
+      "accessory-modal-no-thanks": "No thanks",
+      "accessory-email-subject": "Accessory Request: Vehicle {{vehicleId}} [{{deploymentId}}]",
+      "accessory-email-body": "Vehicle Librarian,\n\nI have checked out vehicle {{vehicleId}} and would like to request the following accessories:\n{{accessories}}\n\nRental details:\n- Vehicle: {{vehicleId}}\n- OPcode: {{opcode}}\n- Rental start: {{checkoutTime}}\n- Deployment: {{deploymentId}}\n\nThank you!"
     },
     "return": {
       "title": "Return Vehicle",
