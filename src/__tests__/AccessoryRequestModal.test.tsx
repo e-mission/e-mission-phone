@@ -5,12 +5,12 @@ import { PaperProvider } from 'react-native-paper';
 import '../js/i18nextInit';
 import AccessoryRequestModal from '../js/library/components/AccessoryRequestModal';
 import { AppContext, AppContextProps } from '../js/AppContext';
-import { launchAccessoryRequestEmail } from '../js/services/emailHelper';
+import { launchAccessoryRequestEmail } from '../js/library/emailHelper';
 import DeploymentConfig from 'op-deployment-configs';
 import { OnboardingRoute } from '../js/onboarding/onboardingHelper';
 
-jest.mock('../js/services/emailHelper', () => ({
-  ...jest.requireActual('../js/services/emailHelper'),
+jest.mock('../js/library/emailHelper', () => ({
+  ...jest.requireActual('../js/library/emailHelper'),
   launchAccessoryRequestEmail: jest.fn(),
 }));
 

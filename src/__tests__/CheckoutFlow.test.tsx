@@ -59,7 +59,7 @@ describe('CheckoutFlow', () => {
 
     fireEvent.press(tree.getByText('Check Out ($380.00 hold)'));
 
-    expect(mockOnConfirm).toHaveBeenCalledWith(false, 38000, []);
+    expect(mockOnConfirm).toHaveBeenCalledWith(38000, []);
   });
 
   it('submits selected accessories when long-term is checked and accessories are selected', () => {
@@ -83,7 +83,7 @@ describe('CheckoutFlow', () => {
 
     fireEvent.press(tree.getByText('Check Out ($380.00 hold)'));
 
-    expect(mockOnConfirm).toHaveBeenCalledWith(true, 38000, ['Panniers', 'Front basket']);
+    expect(mockOnConfirm).toHaveBeenCalledWith(38000, ['Panniers', 'Front basket']);
   });
 
   it('clears selected accessories if long-term is toggled off', () => {
@@ -108,7 +108,7 @@ describe('CheckoutFlow', () => {
     // Submit checkout
     fireEvent.press(tree.getByText('Check Out ($380.00 hold)'));
 
-    expect(mockOnConfirm).toHaveBeenCalledWith(false, 38000, []);
+    expect(mockOnConfirm).toHaveBeenCalledWith(38000, []);
   });
 
   it('does not prompt about rental length or accessories when none are configured', () => {
@@ -124,7 +124,7 @@ describe('CheckoutFlow', () => {
 
     expect(tree.queryByText('Do you plan to keep the vehicle for 1 week or longer?')).toBeNull();
     fireEvent.press(tree.getByText('Check Out ($380.00 hold)'));
-    expect(mockOnConfirm).toHaveBeenCalledWith(false, 38000, []);
+    expect(mockOnConfirm).toHaveBeenCalledWith(38000, []);
   });
 
   it('uses the configured label for the current language', async () => {

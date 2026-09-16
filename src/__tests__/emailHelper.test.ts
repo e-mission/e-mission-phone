@@ -5,9 +5,11 @@ import {
   getDeploymentId,
   openEmailClient,
   getDiagnosticInfo,
+} from '../js/services/emailHelper';
+import {
   launchAccessoryRequestEmail,
   launchLibrarianContactEmail,
-} from '../js/services/emailHelper';
+} from '../js/library/emailHelper';
 import { Alerts } from '../js/components/AlertArea';
 import { getDeviceSettings } from '../js/splash/storeDeviceSettings';
 

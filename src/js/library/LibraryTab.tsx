@@ -11,7 +11,6 @@ import CheckoutFlow from './components/CheckoutFlow';
 import ReturnFlow from './components/ReturnFlow';
 import QRScanner from './components/QRScanner';
 import LibraryDevPanel from './components/LibraryDevPanel';
-import AccessoryRequestModal from './components/AccessoryRequestModal';
 import { EVENTS, subscribe, TokenOrUrlEventData, unsubscribe } from '../customEventHandler';
 import { humanizeDurationHoursFull } from '../datetimeUtil';
 import { displayErrorMsg } from '../plugin/logger';
@@ -29,7 +28,7 @@ import {
 import { addStatReading } from '../plugin/clientStats';
 import useAppState from '../useAppState';
 import { storageSet } from '../plugin/storage';
-import { launchLibrarianContactEmail } from '../services/emailHelper';
+import { launchLibrarianContactEmail } from './emailHelper';
 
 const RENTAL_ACCESSORIES_STORAGE_KEY = 'library_rental_accessories';
 
@@ -316,15 +315,15 @@ const LibraryTab = () => {
       addStatReading('checkout_confirmed', { holdAmount, requestedAccessories });
       Alerts.addMessage({ text: t('library.checkout-success') });
       setRentalNowTs(Date.now());
-      await refreshRentalHistory();
-      if (isMounted.current) {
-        setScreen({ name: 'browse' });
-      }
       void storageSet(RENTAL_ACCESSORIES_STORAGE_KEY, {
         vehicleId,
         requestedAccessories,
         hasEmailed: false,
       });
+      await refreshRentalHistory();
+      if (isMounted.current) {
+        setScreen({ name: 'browse' });
+      }
     } catch (e) {
       addStatReading('checkout_aborted', { holdAmount, requestedAccessories, error: String(e) });
       displayErrorMsg(String(e), t('library.errors.checkout'));

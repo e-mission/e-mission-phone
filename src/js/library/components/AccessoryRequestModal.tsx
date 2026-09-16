@@ -4,7 +4,8 @@ import { Button, Dialog, IconButton, Text, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import color from 'color';
 import { AppContext } from '../../AppContext';
-import { getProgramAdminEmail, launchAccessoryRequestEmail } from '../../services/emailHelper';
+import { getProgramAdminEmail } from '../../services/emailHelper';
+import { launchAccessoryRequestEmail } from '../emailHelper';
 
 export interface AccessoryRequestModalProps extends ModalProps {
   vehicleId?: string;
