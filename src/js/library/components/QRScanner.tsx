@@ -34,13 +34,12 @@ function runQrScan(callback: (resultText: string) => void) {
       barcodeScannerIsOpen = false;
       const message = error.message || i18next.t('library.qr-scanner.unknown-error');
       Alerts.addMessage({ text: i18next.t('library.qr-scanner.scan-failed', { error: message }) });
-      callback(message);
     },
   );
 }
 
 interface QRScannerProps {
-  mode: 'checkout' | 'return';
+  mode: 'checkout' | 'checkin';
   onScan: (code: string) => void;
   onClose: () => void;
 }

@@ -127,3 +127,13 @@ export function getTokenFromUrl(url: string) {
     throw new Error(`URL ${url} had path ${path}, expected 'join' or 'login_token'`);
   }
 }
+
+export function isJoinUrl(url: string): boolean {
+  try {
+    const parsedUrl = new URL(url);
+    const path = parsedUrl.pathname.replace(/\//g, '') || parsedUrl.hostname;
+    return path === 'join' || path === 'login_token';
+  } catch {
+    return false;
+  }
+}

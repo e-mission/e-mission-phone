@@ -11,7 +11,7 @@ import CheckoutFlow from './components/CheckoutFlow';
 import ReturnFlow from './components/ReturnFlow';
 import QRScanner from './components/QRScanner';
 import LibraryDevPanel from './components/LibraryDevPanel';
-import { EVENTS, subscribe, TokenOrUrlEventData, unsubscribe } from '../customEventHandler';
+import { registerUrlHandler } from '../urlHandler';
 import { humanizeDurationHoursFull } from '../datetimeUtil';
 import { displayErrorMsg } from '../plugin/logger';
 import {
@@ -29,6 +29,7 @@ import { addStatReading } from '../plugin/clientStats';
 import useAppState from '../useAppState';
 import { storageSet } from '../plugin/storage';
 import { launchLibrarianContactEmail } from './emailHelper';
+import { DateTime } from 'luxon';
 
 const RENTAL_ACCESSORIES_STORAGE_KEY = 'library_rental_accessories';
 
@@ -56,8 +57,8 @@ type Screen =
   | { name: 'browse' }
   | { name: 'scan-checkout' }
   | { name: 'checkout'; vehicleId: string }
-  | { name: 'scan-return' }
-  | { name: 'return'; dockId: string };
+  | { name: 'scan-checkin' }
+  | { name: 'checkin'; dockId: string };
 
 const LibraryTab = () => {
   const { t } = useTranslation();
@@ -190,70 +191,14 @@ const LibraryTab = () => {
     };
   }, []);
 
-  // TODO: think through error cases and error reporting more carefully.
   useEffect(() => {
-    const handleTokenOrUrlEvent = (event: Event) => {
-      const { tokenOrUrl, registerHandler } = (event as CustomEvent<TokenOrUrlEventData>).detail;
-
-      registerHandler(
-        (async () => {
-          let callbackPath: string;
-          try {
-            const parsedUrl = new URL(tokenOrUrl);
-            callbackPath = `${parsedUrl.hostname ? `/${parsedUrl.hostname}` : ''}${
-              parsedUrl.pathname
-            }`;
-          } catch {
-            return false;
-          }
-
-          if (!callbackPath.startsWith('/payment')) {
-            return false;
-          }
-
-          if (isMounted.current) {
-            setSetupInProgress(true);
-          }
-
-          try {
-            const callback = await checkAndGetLibrarySetupStatus(callbackPath);
-            console.log(`handleTokenOrUrl: callback = ` + callback);
-            if (!isMounted.current) {
-              return true;
-            }
-
-            if (callback.payment_setup_status === 'SUCCEEDED') {
-              setSetupComplete(true);
-            } else {
-              setSetupComplete(false);
-              Alerts.addMessage({
-                text: t('library.stripe-setup-status', {
-                  status:
-                    callback.payment_setup_status || t('library.stripe-setup-did-not-complete'),
-                }),
-              });
-            }
-            setIsSandbox(callback.is_sandbox);
-
-            return true;
-          } catch (e) {
-            if (isMounted.current) {
-              setSetupComplete(false);
-              displayErrorMsg(String(e), t('library.errors.stripe-setup-finalization'));
-            }
-            return true;
-          } finally {
-            if (isMounted.current) {
-              setSetupInProgress(false);
-            }
-          }
-        })(),
-      );
+    const unregisterLibraryUrl = registerUrlHandler(handleScanResult);
+    const unregisterPaymentUrl = registerUrlHandler(handlePaymentUrl);
+    return () => {
+      unregisterLibraryUrl();
+      unregisterPaymentUrl();
     };
-
-    subscribe(EVENTS.TOKEN_OR_URL_EVENT, handleTokenOrUrlEvent);
-    return () => unsubscribe(EVENTS.TOKEN_OR_URL_EVENT, handleTokenOrUrlEvent);
-  }, []);
+  }, [activeRental, setupComplete, t]);
 
   useEffect(() => {
     if (!activeRental) {
@@ -292,15 +237,78 @@ const LibraryTab = () => {
   const handleScanResult = (scannedCode: string) => {
     // TODO is there a validation step needed here?
     const code = scannedCode.trim();
+    let screenWasChanged = false;
     setScreen((prev) => {
-      if (prev.name === 'scan-checkout') return { name: 'checkout', vehicleId: code };
-      if (prev.name === 'scan-return') {
-        // dock QR codes are URLs like https://app.bikeep.com/222222; the server wants the bare code
-        const dockId = code.split(/[?#]/)[0].split('/').filter(Boolean).pop() ?? code;
-        return { name: 'return', dockId };
+      let action: string = '';
+      let targetId = '';
+      if (code.includes('://')) {
+        const parsedUrl = new URL(code);
+        const urlAction =
+          parsedUrl.hostname || parsedUrl.pathname.split('/').filter(Boolean)[0] || '';
+        const urlTargetId = parsedUrl.pathname.split('/').filter(Boolean).pop() || '';
+        targetId = urlTargetId;
+        if (urlAction == 'checkout' || urlAction == 'checkin') {
+          action = urlAction;
+        }
+      } else {
+        targetId = code;
       }
-      return prev;
+      if (!action && prev.name === 'scan-checkout') {
+        action = 'checkout';
+      }
+      if (!action && prev.name === 'scan-checkin') {
+        action = 'checkin';
+      }
+      if (!action) {
+        return prev;
+      }
+      screenWasChanged = true;
+      return {
+        name: action,
+        vehicleId: action === 'checkout' ? targetId : undefined,
+        dockId: action === 'checkin' ? targetId : undefined,
+      };
     });
+    return screenWasChanged;
+  };
+
+  const handlePaymentUrl = async (url: string): Promise<boolean> => {
+    let callbackPath: string;
+    try {
+      const parsedUrl = new URL(url);
+      callbackPath = `${parsedUrl.hostname ? `/${parsedUrl.hostname}` : ''}${parsedUrl.pathname}`;
+    } catch {
+      return false;
+    }
+
+    if (!callbackPath.startsWith('/payment')) return false;
+    if (isMounted.current) setSetupInProgress(true);
+
+    try {
+      const callback = await checkAndGetLibrarySetupStatus(callbackPath);
+      if (!isMounted.current) return true;
+
+      if (callback.payment_setup_status === 'SUCCEEDED') {
+        setSetupComplete(true);
+      } else {
+        setSetupComplete(false);
+        Alerts.addMessage({
+          text: t('library.stripe-setup-status', {
+            status: callback.payment_setup_status || t('library.stripe-setup-did-not-complete'),
+          }),
+        });
+      }
+      setIsSandbox(callback.is_sandbox);
+      return true;
+    } catch (e) {
+      if (isMounted.current) {
+        setSetupComplete(false);
+        displayErrorMsg(String(e), t('library.errors.stripe-setup-finalization'));
+      }
+      return true;
+    } finally {
+      if (isMounted.current) setSetupInProgress(false);
+    }
   };
 
   const confirmCheckout = async (
@@ -408,7 +416,7 @@ const LibraryTab = () => {
                 durationDisplay={rentalStatusText}
                 feeDisplay={feeDisplay}
                 isInitializing={isInitializing}
-                onReturnVehicle={() => setScreen({ name: 'scan-return' })}
+                onReturnVehicle={() => setScreen({ name: 'scan-checkin' })}
                 refreshing={refreshing}
                 onRefresh={() => void refreshAll()}
               />
@@ -426,7 +434,9 @@ const LibraryTab = () => {
           <Text style={styles.sectionHeader}>{t('library.rental-history')}</Text>
           <View style={styles.stationList}>
             {rentalHistory.length === 0 ? (
-              <Text style={styles.stationDetail}>{t('library.no-rentals-yet')}</Text>
+              <Text style={[styles.stationItem, styles.stationDetail]}>
+                {t('library.no-rentals-yet')}
+              </Text>
             ) : (
               rentalHistory.map((r, i) => (
                 <View key={i} style={styles.stationItem}>
@@ -437,11 +447,11 @@ const LibraryTab = () => {
                     })}
                   </Text>
                   <Text style={styles.stationDetail}>
-                    {r.start_fmt_time ?? new Date(r.start_ts * 1000).toLocaleString()}
+                    {DateTime.fromSeconds(r.start_ts).toLocaleString(DateTime.DATETIME_SHORT)}
                     {r.start_dock_id ? ` · ${r.start_dock_id}` : ''}
                     {' → '}
-                    {r.end_fmt_time
-                      ? `${r.end_fmt_time}${r.end_dock_id ? ` · ${r.end_dock_id}` : ''}`
+                    {r.end_ts
+                      ? `${DateTime.fromSeconds(r.end_ts).toLocaleString(DateTime.DATETIME_SHORT)}${r.end_dock_id ? ` · ${r.end_dock_id}` : ''}`
                       : t('library.rental-ongoing')}
                   </Text>
                 </View>
@@ -475,7 +485,7 @@ const LibraryTab = () => {
         </ScrollView>
       )}
 
-      {(screen.name === 'checkout' || screen.name === 'return') && (
+      {(screen.name === 'checkout' || screen.name === 'checkin') && (
         <View style={styles.flowScreen}>
           {screen.name === 'checkout' && (
             <CheckoutFlow
@@ -489,7 +499,7 @@ const LibraryTab = () => {
               onCancel={() => setScreen({ name: 'browse' })}
             />
           )}
-          {screen.name === 'return' && (
+          {screen.name === 'checkin' && (
             <ReturnFlow
               vehicleId={rentalVehicleId ?? ''}
               dockId={screen.dockId}
@@ -504,9 +514,9 @@ const LibraryTab = () => {
         </View>
       )}
 
-      {(screen.name === 'scan-checkout' || screen.name === 'scan-return') && (
+      {(screen.name === 'scan-checkout' || screen.name === 'scan-checkin') && (
         <QRScanner
-          mode={screen.name === 'scan-checkout' ? 'checkout' : 'return'}
+          mode={screen.name === 'scan-checkout' ? 'checkout' : 'checkin'}
           onScan={handleScanResult}
           onClose={() => setScreen({ name: 'browse' })}
         />

@@ -12,7 +12,7 @@ export type CustomLabelMap = {
 
 export type AppContextProps = {
   appConfig: DeploymentConfig | null;
-  handleTokenOrUrl: (tokenOrUrl: string, joinMethod: OnboardingJoinMethod) => Promise<boolean>;
+  handleJoinTokenOrUrl: (tokenOrUrl: string, joinMethod: OnboardingJoinMethod) => Promise<boolean>;
   onboardingState: OnboardingState | null;
   setOnboardingState: React.Dispatch<React.SetStateAction<OnboardingState | null>>;
   refreshOnboardingState: () => Promise<OnboardingState>;

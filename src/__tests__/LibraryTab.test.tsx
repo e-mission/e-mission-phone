@@ -30,20 +30,16 @@ jest.mock('../js/useAppState', () => ({
   default: jest.fn(),
 }));
 
-jest.mock('../js/customEventHandler', () => ({
-  __esModule: true,
-  EVENTS: {
-    TOKEN_OR_URL_EVENT: 'TOKEN_OR_URL_EVENT',
-  },
-  subscribe: jest.fn(),
-  unsubscribe: jest.fn(),
-}));
-
 jest.mock('../js/plugin/logger', () => ({
   __esModule: true,
   displayErrorMsg: jest.fn(),
   logDebug: jest.fn(),
   logWarn: jest.fn(),
+}));
+
+jest.mock('../js/urlHandler', () => ({
+  __esModule: true,
+  registerUrlHandler: jest.fn(() => jest.fn()),
 }));
 
 jest.mock('../js/plugin/clientStats', () => ({
@@ -193,7 +189,7 @@ describe('LibraryTab', () => {
 
     await waitFor(() => {
       expect(tree.getByText(/Blue Bike.*completed/)).toBeTruthy();
-      expect(tree.getByText(/2023-11-14T22.*dock-A.*2023-11-14T23.*dock-B/)).toBeTruthy();
+      expect(tree.getByText(/dock-A.*dock-B/)).toBeTruthy();
       // the active rental drives the "Active Rental" screen instead of "Available Vehicles"
       expect(tree.getByText('Active Rental')).toBeTruthy();
     });
