@@ -11,7 +11,7 @@ import CheckoutFlow from './components/CheckoutFlow';
 import ReturnFlow from './components/ReturnFlow';
 import QRScanner from './components/QRScanner';
 import LibraryDevPanel from './components/LibraryDevPanel';
-import { EVENTS, subscribe, TokenOrUrlEventData, unsubscribe } from '../customEventHandler';
+import { registerUrlHandler } from '../urlHandler';
 import { humanizeDurationHoursFull } from '../datetimeUtil';
 import { displayErrorMsg } from '../plugin/logger';
 import {
@@ -190,69 +190,47 @@ const LibraryTab = () => {
     };
   }, []);
 
-  // TODO: think through error cases and error reporting more carefully.
   useEffect(() => {
-    const handleTokenOrUrlEvent = (event: Event) => {
-      const { tokenOrUrl, registerHandler } = (event as CustomEvent<TokenOrUrlEventData>).detail;
+    const handlePaymentUrl = async (url: string): Promise<boolean> => {
+      let callbackPath: string;
+      try {
+        const parsedUrl = new URL(url);
+        callbackPath = `${parsedUrl.hostname ? `/${parsedUrl.hostname}` : ''}${parsedUrl.pathname}`;
+      } catch {
+        return false;
+      }
 
-      registerHandler(
-        (async () => {
-          let callbackPath: string;
-          try {
-            const parsedUrl = new URL(tokenOrUrl);
-            callbackPath = `${parsedUrl.hostname ? `/${parsedUrl.hostname}` : ''}${
-              parsedUrl.pathname
-            }`;
-          } catch {
-            return false;
-          }
+      if (!callbackPath.startsWith('/payment')) return false;
+      if (isMounted.current) setSetupInProgress(true);
 
-          if (!callbackPath.startsWith('/payment')) {
-            return false;
-          }
+      try {
+        const callback = await checkAndGetLibrarySetupStatus(callbackPath);
+        if (!isMounted.current) return true;
 
-          if (isMounted.current) {
-            setSetupInProgress(true);
-          }
-
-          try {
-            const callback = await checkAndGetLibrarySetupStatus(callbackPath);
-            console.log(`handleTokenOrUrl: callback = ` + callback);
-            if (!isMounted.current) {
-              return true;
-            }
-
-            if (callback.payment_setup_status === 'SUCCEEDED') {
-              setSetupComplete(true);
-            } else {
-              setSetupComplete(false);
-              Alerts.addMessage({
-                text: t('library.stripe-setup-status', {
-                  status:
-                    callback.payment_setup_status || t('library.stripe-setup-did-not-complete'),
-                }),
-              });
-            }
-            setIsSandbox(callback.is_sandbox);
-
-            return true;
-          } catch (e) {
-            if (isMounted.current) {
-              setSetupComplete(false);
-              displayErrorMsg(String(e), t('library.errors.stripe-setup-finalization'));
-            }
-            return true;
-          } finally {
-            if (isMounted.current) {
-              setSetupInProgress(false);
-            }
-          }
-        })(),
-      );
+        if (callback.payment_setup_status === 'SUCCEEDED') {
+          setSetupComplete(true);
+        } else {
+          setSetupComplete(false);
+          Alerts.addMessage({
+            text: t('library.stripe-setup-status', {
+              status: callback.payment_setup_status || t('library.stripe-setup-did-not-complete'),
+            }),
+          });
+        }
+        setIsSandbox(callback.is_sandbox);
+        return true;
+      } catch (e) {
+        if (isMounted.current) {
+          setSetupComplete(false);
+          displayErrorMsg(String(e), t('library.errors.stripe-setup-finalization'));
+        }
+        return true;
+      } finally {
+        if (isMounted.current) setSetupInProgress(false);
+      }
     };
 
-    subscribe(EVENTS.TOKEN_OR_URL_EVENT, handleTokenOrUrlEvent);
-    return () => unsubscribe(EVENTS.TOKEN_OR_URL_EVENT, handleTokenOrUrlEvent);
+    return registerUrlHandler(handlePaymentUrl);
   }, []);
 
   useEffect(() => {

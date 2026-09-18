@@ -2,7 +2,12 @@
 //  * @example getTokenFromUrl('emission://login_token?token=nrelop_study_subgroup_random') => nrelop_study_subgroup_random
 //  * @example getTokenFromUrl('nrelopenpath://login_token?token=nrelop_study_subgroup_random') => nrelop_study_subgroup_random
 
-import { getStudyNameFromToken, getSubgroupFromToken, getTokenFromUrl } from '../js/config/opcode';
+import {
+  getStudyNameFromToken,
+  getSubgroupFromToken,
+  getTokenFromUrl,
+  isJoinUrl,
+} from '../js/config/opcode';
 import { DeploymentConfig } from 'op-deployment-configs';
 describe('opcode', () => {
   describe('getStudyNameFromToken', () => {
@@ -76,6 +81,20 @@ describe('opcode', () => {
       expect(() =>
         getTokenFromUrl('emission://togin_loken?token=nrelop_open-access_000'),
       ).toThrow();
+    });
+  });
+
+  describe('isJoinUrl', () => {
+    it('recognizes join and login_token URLs', () => {
+      expect(isJoinUrl('emission://join?study_config=great-study')).toBe(true);
+      expect(isJoinUrl('nrelopenpath://login_token?token=nrelop_study_default_user')).toBe(true);
+      expect(isJoinUrl('https://open-access-openpath.nrel.gov/join/')).toBe(true);
+    });
+
+    it('rejects non-join app URLs and malformed input', () => {
+      expect(isJoinUrl('emission://payment/setup/refresh')).toBe(false);
+      expect(isJoinUrl('emission://library/vehicle')).toBe(false);
+      expect(isJoinUrl('not a URL')).toBe(false);
     });
   });
 });

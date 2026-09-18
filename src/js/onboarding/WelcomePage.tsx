@@ -34,7 +34,7 @@ const WelcomePage = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const { width: windowWidth } = useWindowDimensions();
-  const { handleTokenOrUrl } = useContext(AppContext);
+  const { handleJoinTokenOrUrl } = useContext(AppContext);
   const [pasteModalVis, setPasteModalVis] = useState(false);
   const [infoPopupVis, setInfoPopupVis] = useState(false);
   const [existingToken, setExistingToken] = useState('');
@@ -52,7 +52,7 @@ const WelcomePage = () => {
           Alerts.addMessage({ text: 'No QR code found in scan. Please try again.' });
           return;
         }
-        handleTokenOrUrl(result.text, 'scan');
+        handleJoinTokenOrUrl(result.text, 'scan');
       },
       (error) => {
         barcodeScannerIsOpen = false;
@@ -70,7 +70,7 @@ const WelcomePage = () => {
         if (!clipboardContent?.startsWith('nrelop_') && !clipboardContent?.includes('://')) {
           throw new Error('Clipboard content is not a valid token or URL');
         }
-        handleTokenOrUrl(clipboardContent, 'paste');
+        handleJoinTokenOrUrl(clipboardContent, 'paste');
       } catch (e) {
         logWarn(`Tried using clipboard content ${clipboardContent}: ${e}`);
         setPasteModalVis(true);
@@ -143,7 +143,7 @@ const WelcomePage = () => {
             <Button onPress={() => setPasteModalVis(false)}>{t('login.button-decline')}</Button>
             <Button
               onPress={() =>
-                handleTokenOrUrl(existingToken, 'textbox').catch((e) =>
+                handleJoinTokenOrUrl(existingToken, 'textbox').catch((e) =>
                   displayError(e, `Tried using token ${existingToken}`),
                 )
               }>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { AppStateStatus, View } from 'react-native';
 import { ActivityIndicator, PaperProvider } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,7 +22,8 @@ import initializedI18next from '../js/i18nextInit';
 window['i18next'] = initializedI18next;
 
 import { joinWithTokenOrUrl } from './config/dynamicConfig';
-import { EVENTS, publish, TokenOrUrlEventData } from './customEventHandler';
+import { isJoinUrl } from './config/opcode';
+import { handleUrl, registerUrlHandler, UrlHandlerResult } from './urlHandler';
 import { addStatReading } from './plugin/clientStats';
 import { displayErrorMsg, logDebug } from './plugin/logger';
 import { registerAndUpdateProfile, updateUserProfile, UserProfile } from './splash/userProfile';
@@ -52,48 +53,38 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
     refreshOnboardingState();
   }, []);
 
-  async function handleTokenOrUrl(tokenOrUrl: string, joinMethod: OnboardingJoinMethod) {
-    const tokenOrUrlHandlerResults: Array<Promise<boolean>> = [];
-    const tokenOrUrlEvent: TokenOrUrlEventData = {
-      tokenOrUrl,
-      joinMethod,
-      registerHandler: (handlerResult) => {
-        tokenOrUrlHandlerResults.push(Promise.resolve(handlerResult));
-      },
-    };
-    publish(EVENTS.TOKEN_OR_URL_EVENT, tokenOrUrlEvent);
-
-    if (tokenOrUrlHandlerResults.length > 0) {
-      const handlerResults = await Promise.all(tokenOrUrlHandlerResults);
-      // TODO: should this be "some" or "every"?
-      // Don't want to swallow events that are actually meaningful for onboarding
-      if (handlerResults.some(Boolean)) {
-        return true;
+  const handleJoinTokenOrUrl = useCallback(
+    async (tokenOrUrl: string, joinMethod: OnboardingJoinMethod) => {
+      if (!isJoinUrl(tokenOrUrl)) return false;
+      const onboardingState = await refreshOnboardingState();
+      logDebug(`handleJoinToken: onboardingState = ${JSON.stringify(onboardingState)}`);
+      if (onboardingState.route > OnboardingRoute.WELCOME) {
+        displayErrorMsg(i18next.t('join.already-logged-in', { token: onboardingState.opcode }));
+        return false;
       }
-    }
+      const configUpdated = await joinWithTokenOrUrl(tokenOrUrl);
+      addStatReading('onboard', { configUpdated, joinMethod });
+      if (configUpdated) {
+        refreshOnboardingState();
+      }
+      return configUpdated;
+    },
+    [],
+  );
 
-    const onboardingState = await refreshOnboardingState();
-    logDebug(`handleTokenOrUrl: onboardingState = ${JSON.stringify(onboardingState)}`);
-    if (onboardingState.route > OnboardingRoute.WELCOME) {
-      displayErrorMsg(i18next.t('join.already-logged-in', { token: onboardingState.opcode }));
-      return false;
-    }
-    const configUpdated = await joinWithTokenOrUrl(tokenOrUrl);
-    addStatReading('onboard', { configUpdated, joinMethod });
-    if (configUpdated) {
-      refreshOnboardingState();
-    }
-    return configUpdated;
-  }
+  useEffect(() => {
+    return registerUrlHandler(handleJoinTokenOrUrl);
+  }, [handleJoinTokenOrUrl]);
 
   // handleOpenURL function must be provided globally for cordova-plugin-customurlscheme
   // https://www.npmjs.com/package/cordova-plugin-customurlscheme
-  (window as any).handleOpenURL = (url: string) => {
-    if (url?.startsWith(URL_SCHEME + '://')) {
-      handleTokenOrUrl(url, 'external');
-    } else {
+  (window as any).handleOpenURL = async (url: string) => {
+    if (!url?.startsWith(URL_SCHEME + '://')) {
       logDebug(`handleOpenURL: Ignoring ${url} - does not start with ${URL_SCHEME}://`);
+      return false;
     }
+
+    return handleUrl(url, 'external');
   };
 
   useEffect(() => {
@@ -116,7 +107,7 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
 
   const appContextValue = {
     appConfig,
-    handleTokenOrUrl,
+    handleJoinTokenOrUrl,
     onboardingState,
     setOnboardingState,
     refreshOnboardingState,

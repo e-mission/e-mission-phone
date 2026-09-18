@@ -30,20 +30,16 @@ jest.mock('../js/useAppState', () => ({
   default: jest.fn(),
 }));
 
-jest.mock('../js/customEventHandler', () => ({
-  __esModule: true,
-  EVENTS: {
-    TOKEN_OR_URL_EVENT: 'TOKEN_OR_URL_EVENT',
-  },
-  subscribe: jest.fn(),
-  unsubscribe: jest.fn(),
-}));
-
 jest.mock('../js/plugin/logger', () => ({
   __esModule: true,
   displayErrorMsg: jest.fn(),
   logDebug: jest.fn(),
   logWarn: jest.fn(),
+}));
+
+jest.mock('../js/urlHandler', () => ({
+  __esModule: true,
+  registerUrlHandler: jest.fn(() => jest.fn()),
 }));
 
 jest.mock('../js/plugin/clientStats', () => ({
