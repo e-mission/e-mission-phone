@@ -29,6 +29,7 @@ import { addStatReading } from '../plugin/clientStats';
 import useAppState from '../useAppState';
 import { storageSet } from '../plugin/storage';
 import { launchLibrarianContactEmail } from './emailHelper';
+import { DateTime } from 'luxon';
 
 const RENTAL_ACCESSORIES_STORAGE_KEY = 'library_rental_accessories';
 
@@ -433,7 +434,9 @@ const LibraryTab = () => {
           <Text style={styles.sectionHeader}>{t('library.rental-history')}</Text>
           <View style={styles.stationList}>
             {rentalHistory.length === 0 ? (
-              <Text style={styles.stationDetail}>{t('library.no-rentals-yet')}</Text>
+              <Text style={[styles.stationItem, styles.stationDetail]}>
+                {t('library.no-rentals-yet')}
+              </Text>
             ) : (
               rentalHistory.map((r, i) => (
                 <View key={i} style={styles.stationItem}>
@@ -444,11 +447,11 @@ const LibraryTab = () => {
                     })}
                   </Text>
                   <Text style={styles.stationDetail}>
-                    {r.start_fmt_time ?? new Date(r.start_ts * 1000).toLocaleString()}
+                    {DateTime.fromSeconds(r.start_ts).toLocaleString(DateTime.DATETIME_SHORT)}
                     {r.start_dock_id ? ` · ${r.start_dock_id}` : ''}
                     {' → '}
-                    {r.end_fmt_time
-                      ? `${r.end_fmt_time}${r.end_dock_id ? ` · ${r.end_dock_id}` : ''}`
+                    {r.end_ts
+                      ? `${DateTime.fromSeconds(r.end_ts).toLocaleString(DateTime.DATETIME_SHORT)}${r.end_dock_id ? ` · ${r.end_dock_id}` : ''}`
                       : t('library.rental-ongoing')}
                   </Text>
                 </View>
