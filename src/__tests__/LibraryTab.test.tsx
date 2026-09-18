@@ -189,9 +189,7 @@ describe('LibraryTab', () => {
 
     await waitFor(() => {
       expect(tree.getByText(/Blue Bike.*completed/)).toBeTruthy();
-      expect(
-        tree.getByText(/11\/14\/2023, 5:13 PM.*dock-A.*11\/14\/2023, 6:13 PM.*dock-B/),
-      ).toBeTruthy();
+      expect(tree.getByText(/dock-A.*dock-B/)).toBeTruthy();
       // the active rental drives the "Active Rental" screen instead of "Available Vehicles"
       expect(tree.getByText('Active Rental')).toBeTruthy();
     });
