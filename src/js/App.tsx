@@ -30,8 +30,6 @@ import { registerAndUpdateProfile, updateUserProfile, UserProfile } from './spla
 import { getTheme } from './appTheme';
 import usePermissionStatus from './usePermissionStatus';
 
-const URL_SCHEME = packageJson.cordova.plugins['cordova-plugin-customurlscheme'].URL_SCHEME;
-
 const theme = getTheme();
 
 const App = ({ appState }: { appState: AppStateStatus }) => {
@@ -55,7 +53,6 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
 
   const handleJoinTokenOrUrl = useCallback(
     async (tokenOrUrl: string, joinMethod: OnboardingJoinMethod) => {
-      if (!isJoinUrl(tokenOrUrl)) return false;
       const onboardingState = await refreshOnboardingState();
       logDebug(`handleJoinToken: onboardingState = ${JSON.stringify(onboardingState)}`);
       if (onboardingState.route > OnboardingRoute.WELCOME) {
@@ -73,19 +70,26 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
   );
 
   useEffect(() => {
-    return registerUrlHandler(handleJoinTokenOrUrl);
+    return registerUrlHandler((url) => {
+      if (!isJoinUrl(url)) return false;
+      return handleJoinTokenOrUrl(url, 'external');
+    });
   }, [handleJoinTokenOrUrl]);
 
   // handleOpenURL function must be provided globally for cordova-plugin-customurlscheme
   // https://www.npmjs.com/package/cordova-plugin-customurlscheme
-  (window as any).handleOpenURL = async (url: string) => {
-    if (!url?.startsWith(URL_SCHEME + '://')) {
-      logDebug(`handleOpenURL: Ignoring ${url} - does not start with ${URL_SCHEME}://`);
-      return false;
+  // To handle URLs launched when the app is not yet open (i.e. cold start),
+  // the stub in index.html stores them in window.__pendingAppUrls
+  // so we can handle them once React mounts
+  useEffect(() => {
+    (window as any).handleOpenURL = handleUrl;
+    const pendingUrls: string[] = (window as any).__pendingAppUrls || [];
+    (window as any).__pendingAppUrls = [];
+    if (pendingUrls.length) {
+      logDebug(`Handling pending URLs: ${pendingUrls.join(', ')}`);
+      pendingUrls.forEach((url) => handleUrl(url));
     }
-
-    return handleUrl(url, 'external');
-  };
+  }, [handleUrl]);
 
   useEffect(() => {
     if (!appConfig) return;

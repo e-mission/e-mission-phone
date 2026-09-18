@@ -40,7 +40,7 @@ function runQrScan(callback: (resultText: string) => void) {
 }
 
 interface QRScannerProps {
-  mode: 'checkout' | 'return';
+  mode: 'checkout' | 'checkin';
   onScan: (code: string) => void;
   onClose: () => void;
 }

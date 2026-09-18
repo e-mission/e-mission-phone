@@ -1,4 +1,7 @@
 import { handleUrl, registerUrlHandler } from '../js/urlHandler';
+import packageJson from '../../package.json';
+
+const URL_SCHEME = packageJson.cordova.plugins['cordova-plugin-customurlscheme'].URL_SCHEME;
 
 it('runs every URL handler and returns true if any handler handles it', async () => {
   const calls: string[] = [];
@@ -15,7 +18,7 @@ it('runs every URL handler and returns true if any handler handles it', async ()
     return false;
   });
 
-  await expect(handleUrl('app://test', 'external')).resolves.toBe(true);
+  await expect(handleUrl(`${URL_SCHEME}://test`)).resolves.toBe(true);
   expect(calls).toEqual(['first', 'second', 'third']);
 
   unregisterFirst();
@@ -28,6 +31,6 @@ it('supports unregistering URL handlers', async () => {
   const unregister = registerUrlHandler(handler);
   unregister();
 
-  await expect(handleUrl('app://test', 'external')).resolves.toBe(false);
+  await expect(handleUrl(`${URL_SCHEME}://test`)).resolves.toBe(false);
   expect(handler).not.toHaveBeenCalled();
 });
