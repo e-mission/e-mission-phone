@@ -56,19 +56,33 @@ const scenes = {
 };
 const renderScene = BottomNavigation.SceneMap(scenes);
 
-const Main = () => {
-  const [index, setIndex] = useState(0);
+type MainProps = {
+  defaultTab?: 'library' | 'label' | 'metrics' | 'control';
+};
+
+const Main = ({ defaultTab = 'label' }: MainProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const { appConfig } = useContext(AppContext);
   const timelineContext = useTimelineContext();
-
   const routes = useMemo(() => {
     let r = defaultRoutes(t);
     if (!appConfig || !showMetricsTab(appConfig)) r = r.filter((route) => route.key != 'metrics');
     if (!appConfig?.vehicle_library) r = r.filter((route) => route.key != 'library');
     return r;
   }, [appConfig, t]);
+  const getInitialIndex = useCallback(() => {
+    const nextIndex = routes.findIndex((route) => route.key === defaultTab);
+    return nextIndex >= 0 ? nextIndex : 0;
+  }, [defaultTab, routes]);
+  const [index, setIndex] = useState(getInitialIndex);
+
+  useEffect(() => {
+    const nextIndex = routes.findIndex((route) => route.key === defaultTab);
+    if (nextIndex >= 0) {
+      setIndex(nextIndex);
+    }
+  }, [defaultTab, routes]);
 
   const onIndexChange = useCallback(
     (i: number) => {

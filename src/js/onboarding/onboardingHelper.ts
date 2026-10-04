@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { getConfig, resetDataAndRefresh } from '../config/dynamicConfig';
 import { storageGet, storageSet } from '../plugin/storage';
-import { logDebug } from '../plugin/logger';
+import { displayErrorMsg, logDebug } from '../plugin/logger';
 import { readConsentState } from '../splash/startprefs';
 import { addStatReading } from '../plugin/clientStats';
 import { getSubgroupFromToken } from '../config/opcode';
@@ -43,18 +43,39 @@ export const setRegisterUserDone = (b) => (registerUserDone = b);
 export let pendingOpcode: string | undefined;
 export const setPendingOpcode = (opcode: string) => (pendingOpcode = opcode);
 
+const MAX_ONBOARDING_STATE_RETRIES = 4;
+const ONBOARDING_STATE_RETRY_BASE_DELAY_MS = 250;
+
 async function getOPCode() {
-  const storedOpcode = await window['cordova'].plugins.OPCodeAuth.getOPCode();
-  return storedOpcode || pendingOpcode;
+  logDebug(`getOPCode: pendingOpcode = ${pendingOpcode}`);
+  try {
+    const storedOpcode = await window['cordova'].plugins.OPCodeAuth.getOPCode();
+    const finalOpcode = storedOpcode || pendingOpcode;
+    logDebug(`getOPCode: resolved opcode = ${finalOpcode}; storedOpcode = ${storedOpcode}`);
+    return finalOpcode;
+  } catch (err) {
+    logDebug(`getOPCode: failed to read opcode: ${err}`);
+    throw err;
+  }
 }
 
 export function getPendingOnboardingState(): Promise<OnboardingState> {
-  return Promise.all([getOPCode(), getConfig(), readConsentState(), readIntroDone()]).then(
-    ([opcode, config, isConsented, isIntroDone]) => {
+  logDebug(
+    `getPendingOnboardingState: starting; pendingOpcode=${pendingOpcode}; protocolDone=${protocolDone}; summaryDone=${summaryDone}; saveQrDone=${saveQrDone}; registerUserDone=${registerUserDone}`,
+  );
+  return Promise.all([getOPCode(), getConfig(), readConsentState(), readIntroDone()])
+    .then(([opcode, config, isConsented, isIntroDone]) => {
+      logDebug(
+        `getPendingOnboardingState: async inputs resolved -> opcode=${opcode}; configPresent=${Boolean(config)}; isConsented=${isConsented}; isIntroDone=${isIntroDone}`,
+      );
+
       let route: OnboardingRoute;
 
       // backwards compat - prev. versions might have config cleared but still have intro_done set
       if (!config && (isIntroDone || isConsented)) {
+        logDebug(
+          'getPendingOnboardingState: config missing while intro/consent suggests stale state; resetting data and refreshing',
+        );
         resetDataAndRefresh(); // if there's no config, we need to reset everything
       }
 
@@ -72,18 +93,47 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
         route = OnboardingRoute.SURVEY;
       }
 
-      logDebug(`pending onboarding state is ${route}; 
-        isIntroDone = ${isIntroDone}; 
-        config = ${config}; 
-        isConsented = ${isConsented}; 
-        saveQrDone = ${saveQrDone}; 
-        opcode = ${opcode}`);
+      logDebug(
+        `getPendingOnboardingState: selected route=${route} (${OnboardingRoute[route]}); isIntroDone=${isIntroDone}; configPresent=${Boolean(config)}; isConsented=${isConsented}; saveQrDone=${saveQrDone}; protocolDone=${protocolDone}; summaryDone=${summaryDone}; opcode=${opcode}`,
+      );
 
       const subgroup = config ? getSubgroupFromToken(opcode, config) : undefined;
+      logDebug(`getPendingOnboardingState: subgroup=${subgroup}`);
       addStatReading('onboarding_state', { route, opcode, subgroup });
       return { route, opcode, subgroup };
-    },
-  );
+    })
+    .catch((err) => {
+      displayErrorMsg(`getPendingOnboardingState: failed while determining state: ${err}`);
+      throw err;
+    });
+}
+
+export async function resolveOnboardingStateWithRetry(): Promise<OnboardingState | null> {
+  let retryCount = 0;
+
+  while (retryCount < MAX_ONBOARDING_STATE_RETRIES) {
+    try {
+      return await getPendingOnboardingState();
+    } catch (err) {
+      retryCount += 1;
+      logDebug(
+        `resolveOnboardingStateWithRetry: attempt ${retryCount}/${MAX_ONBOARDING_STATE_RETRIES} failed; err=${err}`,
+      );
+
+      if (retryCount >= MAX_ONBOARDING_STATE_RETRIES) {
+        logDebug(
+          `resolveOnboardingStateWithRetry: exhausted retries after ${MAX_ONBOARDING_STATE_RETRIES} attempts; timing out onboarding wait`,
+        );
+        return null;
+      }
+
+      const backoffMs = ONBOARDING_STATE_RETRY_BASE_DELAY_MS * 2 ** (retryCount - 1);
+      logDebug(`resolveOnboardingStateWithRetry: retrying in ${backoffMs}ms`);
+      await new Promise((resolve) => setTimeout(resolve, backoffMs));
+    }
+  }
+
+  return null;
 }
 
 export async function readIntroDone() {

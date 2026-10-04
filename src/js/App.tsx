@@ -10,7 +10,7 @@ import OnboardingStack from './onboarding/OnboardingStack';
 import {
   OnboardingRoute,
   OnboardingState,
-  getPendingOnboardingState,
+  resolveOnboardingStateWithRetry,
 } from './onboarding/onboardingHelper';
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './AppStatusModal';
@@ -35,17 +35,32 @@ const theme = getTheme();
 const App = ({ appState }: { appState: AppStateStatus }) => {
   // will remain null while the onboarding state is still being determined
   const [onboardingState, setOnboardingState] = useState<OnboardingState | null>(null);
+  const [onboardingLoadTimedOut, setOnboardingLoadTimedOut] = useState(false);
   const [permissionsPopupVis, setPermissionsPopupVis] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [customLabelMap, setCustomLabelMap] = useState<CustomLabelMap>({});
   const appConfig = useAppConfig();
   const permissionStatus = usePermissionStatus(appState, appConfig);
 
-  const refreshOnboardingState = () =>
-    getPendingOnboardingState().then((state) => {
+  const refreshOnboardingState = async () => {
+    try {
+      const state = await resolveOnboardingStateWithRetry();
+      if (state == null) {
+        logDebug('refreshOnboardingState: retry timeout exhausted; falling back to profile tab');
+        setOnboardingState(null);
+        setOnboardingLoadTimedOut(true);
+        return null;
+      }
       setOnboardingState(state);
+      setOnboardingLoadTimedOut(false);
       return state;
-    });
+    } catch (err) {
+      displayErrorMsg(`refreshOnboardingState: onboarding resolve failed; falling back to profile tab: ${err}`);
+      setOnboardingState(null);
+      setOnboardingLoadTimedOut(true);
+      return null;
+    }
+  };
 
   useEffect(() => {
     refreshOnboardingState();
@@ -55,7 +70,7 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
     async (tokenOrUrl: string, joinMethod: OnboardingJoinMethod) => {
       const onboardingState = await refreshOnboardingState();
       logDebug(`handleJoinToken: onboardingState = ${JSON.stringify(onboardingState)}`);
-      if (onboardingState.route > OnboardingRoute.WELCOME) {
+      if (onboardingState && onboardingState.route > OnboardingRoute.WELCOME) {
         displayErrorMsg(i18next.t('join.already-logged-in', { token: onboardingState.opcode }));
         return false;
       }
@@ -127,8 +142,14 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
 
   let appContent;
   if (onboardingState == null) {
-    // if onboarding state is not yet determined, show a loading spinner
-    appContent = <ActivityIndicator size={'large'} style={{ flex: 1 }} />;
+    if (onboardingLoadTimedOut) {
+      logDebug('onboardingState remained unresolved after retry timeout; displaying Profile tab');
+      appContent = <Main defaultTab="control" />;
+    } else {
+      // if onboarding state is not yet determined, show a loading spinner
+      logDebug('onboardingState is not yet determined, showing loading spinner');
+      appContent = <ActivityIndicator size={'large'} style={{ flex: 1 }} />;
+    }
   } else if (onboardingState?.route == OnboardingRoute.DONE) {
     // if onboarding route is DONE, show the main app with navigation between tabs
     appContent = <Main />;
