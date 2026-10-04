@@ -6,11 +6,13 @@ import ProtocolPage from './ProtocolPage';
 import SurveyPage from './SurveyPage';
 import SaveQrPage from './SaveQrPage';
 import SummaryPage from './SummaryPage';
+import ProfileSettingsPage from '../control/ProfileSettings';
 import { OnboardingRoute } from './onboardingHelper';
-import { displayErrorMsg } from '../plugin/logger';
+import { logDebug, displayErrorMsg } from '../plugin/logger';
 
 const OnboardingStack = () => {
   const { onboardingState } = useContext(AppContext);
+  logDebug('displaying onboardingStack with current onboarding state:'+onboardingState);
 
   if (onboardingState?.route == OnboardingRoute.WELCOME) {
     // This page needs 'light content' status bar (white text) due to blue header at the top
@@ -27,6 +29,8 @@ const OnboardingStack = () => {
     return <SaveQrPage />;
   } else if (onboardingState?.route == OnboardingRoute.SURVEY) {
     return <SurveyPage />;
+  } else if (onboardingState?.route == OnboardingRoute.FAILED) {
+    return <ProfileSettingsPage />;
   } else {
     displayErrorMsg('OnboardingStack: unknown route', `${onboardingState?.route}`);
     return <></>;

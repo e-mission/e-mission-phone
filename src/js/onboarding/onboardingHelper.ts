@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { getConfig, resetDataAndRefresh } from '../config/dynamicConfig';
 import { storageGet, storageSet } from '../plugin/storage';
-import { displayErrorMsg, logDebug } from '../plugin/logger';
+import { displayError, logDebug } from '../plugin/logger';
 import { readConsentState } from '../splash/startprefs';
 import { addStatReading } from '../plugin/clientStats';
 import { getSubgroupFromToken } from '../config/opcode';
@@ -13,13 +13,16 @@ export const INTRO_DONE_KEY = 'intro_done';
 // route = PROTOCOL if config present, but protocol not done and summary done
 // route = SAVE_QR if config present, protocol done, but save qr not done
 // route = SURVEY if config present, consented and save qr done
+// route = FAILED if onboarding has failed for some reason
 // route = DONE if onboarding is finished (intro_done marked)
+
 export enum OnboardingRoute {
   WELCOME,
   SUMMARY,
   PROTOCOL,
   SAVE_QR,
   SURVEY,
+  FAILED,
   DONE,
 }
 export type OnboardingState = {
@@ -40,11 +43,11 @@ export const setSaveQrDone = (b) => (saveQrDone = b);
 export let registerUserDone = false;
 export const setRegisterUserDone = (b) => (registerUserDone = b);
 
+export let onboardingFailed = false;
+export const setOnboardingFailed = (b: boolean) => (onboardingFailed = b);
+
 export let pendingOpcode: string | undefined;
 export const setPendingOpcode = (opcode: string) => (pendingOpcode = opcode);
-
-const MAX_ONBOARDING_STATE_RETRIES = 4;
-const ONBOARDING_STATE_RETRY_BASE_DELAY_MS = 250;
 
 async function getOPCode() {
   logDebug(`getOPCode: pendingOpcode = ${pendingOpcode}`);
@@ -79,7 +82,9 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
         resetDataAndRefresh(); // if there's no config, we need to reset everything
       }
 
-      if (isIntroDone) {
+      if (onboardingFailed) {
+        route = OnboardingRoute.FAILED;
+      } else if (isIntroDone) {
         route = OnboardingRoute.DONE;
       } else if (!config || !opcode) {
         route = OnboardingRoute.WELCOME;
@@ -94,46 +99,19 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
       }
 
       logDebug(
-        `getPendingOnboardingState: selected route=${route} (${OnboardingRoute[route]}); isIntroDone=${isIntroDone}; configPresent=${Boolean(config)}; isConsented=${isConsented}; saveQrDone=${saveQrDone}; protocolDone=${protocolDone}; summaryDone=${summaryDone}; opcode=${opcode}`,
+        `getPendingOnboardingState: selected route=${route} (${OnboardingRoute[route]}); onboardingFailed=${onboardingFailed}; isIntroDone=${isIntroDone}; configPresent=${Boolean(config)}; isConsented=${isConsented}; saveQrDone=${saveQrDone}; protocolDone=${protocolDone}; summaryDone=${summaryDone}; opcode=${opcode}`,
       );
 
       const subgroup = config ? getSubgroupFromToken(opcode, config) : undefined;
       logDebug(`getPendingOnboardingState: subgroup=${subgroup}`);
-      addStatReading('onboarding_state', { route, opcode, subgroup });
+      addStatReading('onboarding_state', { route, opcode, subgroup, onboardingFailed });
       return { route, opcode, subgroup };
     })
     .catch((err) => {
-      displayErrorMsg(`getPendingOnboardingState: failed while determining state: ${err}`);
-      throw err;
+      setOnboardingFailed(true);
+      displayError(err, `getPendingOnboardingState: failed while determining state`);
+      return {opcode: '', subgroup: undefined, route: OnboardingRoute.FAILED};
     });
-}
-
-export async function resolveOnboardingStateWithRetry(): Promise<OnboardingState | null> {
-  let retryCount = 0;
-
-  while (retryCount < MAX_ONBOARDING_STATE_RETRIES) {
-    try {
-      return await getPendingOnboardingState();
-    } catch (err) {
-      retryCount += 1;
-      logDebug(
-        `resolveOnboardingStateWithRetry: attempt ${retryCount}/${MAX_ONBOARDING_STATE_RETRIES} failed; err=${err}`,
-      );
-
-      if (retryCount >= MAX_ONBOARDING_STATE_RETRIES) {
-        logDebug(
-          `resolveOnboardingStateWithRetry: exhausted retries after ${MAX_ONBOARDING_STATE_RETRIES} attempts; timing out onboarding wait`,
-        );
-        return null;
-      }
-
-      const backoffMs = ONBOARDING_STATE_RETRY_BASE_DELAY_MS * 2 ** (retryCount - 1);
-      logDebug(`resolveOnboardingStateWithRetry: retrying in ${backoffMs}ms`);
-      await new Promise((resolve) => setTimeout(resolve, backoffMs));
-    }
-  }
-
-  return null;
 }
 
 export async function readIntroDone() {

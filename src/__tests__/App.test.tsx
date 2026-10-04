@@ -2,7 +2,10 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 import App from '../js/App';
 import { joinWithTokenOrUrl } from '../js/config/dynamicConfig';
-import { resolveOnboardingStateWithRetry } from '../js/onboarding/onboardingHelper';
+import {
+  OnboardingRoute,
+  resolveOnboardingStateWithRetry,
+} from '../js/onboarding/onboardingHelper';
 import { registerUrlHandler } from '../js/urlHandler';
 import useAppConfig from '../js/useAppConfig';
 import usePermissionStatus from '../js/usePermissionStatus';
@@ -44,6 +47,8 @@ jest.mock('../js/urlHandler', () => ({
   registerUrlHandler: jest.fn(),
 }));
 
+const mockOnboardingStack = jest.fn(() => null);
+
 jest.mock('../js/onboarding/onboardingHelper', () => {
   const actual = jest.requireActual('../js/onboarding/onboardingHelper');
   return {
@@ -56,9 +61,13 @@ jest.mock('../js/Main', () => ({
   __esModule: true,
   default: () => null,
 }));
+
 jest.mock('../js/onboarding/OnboardingStack', () => ({
   __esModule: true,
-  default: () => null,
+  default: () => {
+    mockOnboardingStack();
+    return null;
+  },
 }));
 jest.mock('../js/AppStatusModal', () => ({
   __esModule: true,
@@ -72,6 +81,7 @@ jest.mock('../js/components/AlertArea', () => ({
 describe('App QR onboarding flow', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockOnboardingStack.mockClear();
     (useAppConfig as jest.Mock).mockReturnValue({ version: 1, intro: { translated_text: { en: { deployment_name: 'Test' } } } });
     (usePermissionStatus as jest.Mock).mockReturnValue({});
     (resolveOnboardingStateWithRetry as jest.Mock).mockResolvedValue(null);
@@ -94,6 +104,20 @@ describe('App QR onboarding flow', () => {
 
     await waitFor(() => {
       expect(joinWithTokenOrUrl).toHaveBeenCalledWith('https://example.com/join');
+    });
+  });
+
+  it('returns the onboarding stack when onboarding has failed', async () => {
+    (resolveOnboardingStateWithRetry as jest.Mock).mockResolvedValue({
+      opcode: 'test-opcode',
+      subgroup: 'test-subgroup',
+      route: OnboardingRoute.FAILED,
+    });
+
+    render(<App appState="active" />);
+
+    await waitFor(() => {
+      expect(mockOnboardingStack).toHaveBeenCalled();
     });
   });
 });

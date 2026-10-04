@@ -1,6 +1,7 @@
 import {
   OnboardingRoute,
-  resolveOnboardingStateWithRetry,
+  getPendingOnboardingState,
+  setOnboardingFailed,
 } from '../js/onboarding/onboardingHelper';
 import { getConfig } from '../js/config/dynamicConfig';
 import { readConsentState } from '../js/splash/startprefs';
@@ -29,12 +30,14 @@ jest.mock('../js/config/opcode', () => ({
 }));
 
 jest.mock('../js/plugin/logger', () => ({
+  displayError: jest.fn(),
   logDebug: jest.fn(),
 }));
 
-describe('resolveOnboardingStateWithRetry', () => {
+describe('getPendingOnboardingState', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    setOnboardingFailed(false);
 
     (getConfig as jest.Mock).mockResolvedValue({});
     (readConsentState as jest.Mock).mockResolvedValue(false);
@@ -52,40 +55,46 @@ describe('resolveOnboardingStateWithRetry', () => {
     });
   });
 
-  it('times out and returns null after repeated onboarding resolution failures', async () => {
+  it('fails immediately when onboarding state resolution throws an error', async () => {
     const getOpcodeMock = window['cordova'].plugins.OPCodeAuth.getOPCode as jest.Mock;
     getOpcodeMock.mockRejectedValue(new Error('native failure'));
 
-    const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
-    setTimeoutSpy.mockImplementation(((fn: (...args: any[]) => void, delay?: number) => {
-      if (typeof fn === 'function') {
-        fn();
-      }
-      return 0 as any;
-    }) as typeof setTimeout);
+    await expect(getPendingOnboardingState()).resolves.toEqual({
+      opcode: '',
+      subgroup: undefined,
+      route: OnboardingRoute.FAILED,
+    });
 
-    await expect(resolveOnboardingStateWithRetry()).resolves.toBeNull();
-
-    expect(getOpcodeMock).toHaveBeenCalledTimes(4);
-    expect(setTimeoutSpy).toHaveBeenCalledTimes(3);
-    expect(setTimeoutSpy).toHaveBeenNthCalledWith(1, expect.any(Function), 250);
-    expect(setTimeoutSpy).toHaveBeenNthCalledWith(2, expect.any(Function), 500);
-    expect(setTimeoutSpy).toHaveBeenNthCalledWith(3, expect.any(Function), 1000);
-    expect(getConfig).toHaveBeenCalledTimes(4);
-
-    setTimeoutSpy.mockRestore();
+    expect(getOpcodeMock).toHaveBeenCalledTimes(1);
+    expect(getConfig).toHaveBeenCalledTimes(1);
   });
 
   it('returns the onboarding route when state resolves successfully', async () => {
     const getOpcodeMock = window['cordova'].plugins.OPCodeAuth.getOPCode as jest.Mock;
     getOpcodeMock.mockResolvedValue('test-opcode');
 
-    const state = await resolveOnboardingStateWithRetry();
+    const state = await getPendingOnboardingState();
 
     expect(state).toEqual({
       opcode: 'test-opcode',
       subgroup: 'test-subgroup',
       route: OnboardingRoute.SUMMARY,
+    });
+  });
+
+  it('routes stale onboarding state to FAILED once the helper reports a failure', async () => {
+    const getOpcodeMock = window['cordova'].plugins.OPCodeAuth.getOPCode as jest.Mock;
+    getOpcodeMock.mockResolvedValue('test-opcode');
+    (getConfig as jest.Mock).mockResolvedValue(null);
+    (readConsentState as jest.Mock).mockResolvedValue(true);
+    setOnboardingFailed(true);
+
+    const state = await getPendingOnboardingState();
+
+    expect(state).toEqual({
+      opcode: 'test-opcode',
+      subgroup: undefined,
+      route: OnboardingRoute.FAILED,
     });
   });
 });

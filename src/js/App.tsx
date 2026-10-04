@@ -8,9 +8,9 @@ import packageJson from '../../package.json';
 import useAppConfig from './useAppConfig';
 import OnboardingStack from './onboarding/OnboardingStack';
 import {
-  OnboardingRoute,
-  OnboardingState,
-  resolveOnboardingStateWithRetry,
+	OnboardingRoute,
+	OnboardingState,
+  getPendingOnboardingState,
 } from './onboarding/onboardingHelper';
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './AppStatusModal';
@@ -33,160 +33,138 @@ import usePermissionStatus from './usePermissionStatus';
 const theme = getTheme();
 
 const defaultRoutesForProfileOnly = [
-  {
-    key: 'control',
-    title: 'Profile',
-    focusedIcon: 'account',
-    unfocusedIcon: 'account-outline',
-    accessibilityLabel: 'control.profile-tab',
-  },
+	{
+		key: 'control',
+		title: 'Profile',
+		focusedIcon: 'account',
+		unfocusedIcon: 'account-outline',
+		accessibilityLabel: 'control.profile-tab',
+	},
 ];
 
 const App = ({ appState }: { appState: AppStateStatus }) => {
-  // will remain null while the onboarding state is still being determined
-  const [onboardingState, setOnboardingState] = useState<OnboardingState | null>(null);
-  const [onboardingLoadTimedOut, setOnboardingLoadTimedOut] = useState(false);
-  const [permissionsPopupVis, setPermissionsPopupVis] = useState(false);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [customLabelMap, setCustomLabelMap] = useState<CustomLabelMap>({});
-  const appConfig = useAppConfig();
-  const permissionStatus = usePermissionStatus(appState, appConfig);
+	// will remain null while the onboarding state is still being determined
+	const [onboardingState, setOnboardingState] = useState<OnboardingState | null>(null);
+	const [permissionsPopupVis, setPermissionsPopupVis] = useState(false);
+	const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+	const [customLabelMap, setCustomLabelMap] = useState<CustomLabelMap>({});
+	const appConfig = useAppConfig();
+	const permissionStatus = usePermissionStatus(appState, appConfig);
 
-  const refreshOnboardingState = async () => {
-    try {
-      const state = await resolveOnboardingStateWithRetry();
-      if (state == null) {
-        logDebug('refreshOnboardingState: retry timeout exhausted; falling back to profile tab');
-        setOnboardingState(null);
-        setOnboardingLoadTimedOut(true);
-        return null;
-      }
-      setOnboardingState(state);
-      setOnboardingLoadTimedOut(false);
-      return state;
-    } catch (err) {
-      displayErrorMsg(`refreshOnboardingState: onboarding resolve failed; falling back to profile tab: ${err}`);
-      setOnboardingState(null);
-      setOnboardingLoadTimedOut(true);
-      return null;
-    }
-  };
+  const refreshOnboardingState = () =>
+    getPendingOnboardingState().then((state) => {
+    setOnboardingState(state);
+    return state;
+  });
 
-  useEffect(() => {
-    refreshOnboardingState();
-  }, []);
+	useEffect(() => {
+		refreshOnboardingState();
+	}, []);
 
-  const handleJoinTokenOrUrl = useCallback(
-    async (tokenOrUrl: string, joinMethod: OnboardingJoinMethod) => {
-      const onboardingState = await refreshOnboardingState();
-      logDebug(`handleJoinToken: onboardingState = ${JSON.stringify(onboardingState)}`);
-      if (onboardingState && onboardingState.route > OnboardingRoute.WELCOME) {
-        displayErrorMsg(i18next.t('join.already-logged-in', { token: onboardingState.opcode }));
-        return false;
-      }
-      const configUpdated = await joinWithTokenOrUrl(tokenOrUrl);
-      addStatReading('onboard', { configUpdated, joinMethod });
-      if (configUpdated) {
-        refreshOnboardingState();
-      }
-      return configUpdated;
-    },
-    [],
-  );
+	const handleJoinTokenOrUrl = useCallback(
+		async (tokenOrUrl: string, joinMethod: OnboardingJoinMethod) => {
+			const onboardingState = await refreshOnboardingState();
+			logDebug(`handleJoinToken: onboardingState = ${JSON.stringify(onboardingState)}`);
+			if (onboardingState && onboardingState.route > OnboardingRoute.WELCOME) {
+				displayErrorMsg(i18next.t('join.already-logged-in', { token: onboardingState.opcode }));
+				return false;
+			}
+			const configUpdated = await joinWithTokenOrUrl(tokenOrUrl);
+			addStatReading('onboard', { configUpdated, joinMethod });
+			if (configUpdated) {
+				refreshOnboardingState();
+			}
+			return configUpdated;
+		},
+		[],
+	);
 
-  useEffect(() => {
-    return registerUrlHandler((url) => {
-      if (!isJoinUrl(url)) return false;
-      return handleJoinTokenOrUrl(url, 'external');
-    });
-  }, [handleJoinTokenOrUrl]);
+	useEffect(() => {
+		return registerUrlHandler((url) => {
+			if (!isJoinUrl(url)) return false;
+			return handleJoinTokenOrUrl(url, 'external');
+		});
+	}, [handleJoinTokenOrUrl]);
 
-  // handleOpenURL function must be provided globally for cordova-plugin-customurlscheme
-  // https://www.npmjs.com/package/cordova-plugin-customurlscheme
-  // To handle URLs launched when the app is not yet open (i.e. cold start),
-  // the stub in index.html stores them in window.__pendingAppUrls
-  // so we can handle them once React mounts
-  useEffect(() => {
-    (window as any).handleOpenURL = handleUrl;
-    const pendingUrls: string[] = (window as any).__pendingAppUrls || [];
-    (window as any).__pendingAppUrls = [];
-    if (pendingUrls.length) {
-      logDebug(`Handling pending URLs: ${pendingUrls.join(', ')}`);
-      pendingUrls.forEach((url) => handleUrl(url));
-    }
-  }, [handleUrl]);
+	// handleOpenURL function must be provided globally for cordova-plugin-customurlscheme
+	// https://www.npmjs.com/package/cordova-plugin-customurlscheme
+	// To handle URLs launched when the app is not yet open (i.e. cold start),
+	// the stub in index.html stores them in window.__pendingAppUrls
+	// so we can handle them once React mounts
+	useEffect(() => {
+		(window as any).handleOpenURL = handleUrl;
+		const pendingUrls: string[] = (window as any).__pendingAppUrls || [];
+		(window as any).__pendingAppUrls = [];
+		if (pendingUrls.length) {
+			logDebug(`Handling pending URLs: ${pendingUrls.join(', ')}`);
+			pendingUrls.forEach((url) => handleUrl(url));
+		}
+	}, [handleUrl]);
 
-  useEffect(() => {
-    if (!appConfig) return;
-    setServerConnSettings(appConfig).then(() => {
-      refreshOnboardingState();
-    });
-  }, [appConfig]);
+	useEffect(() => {
+		if (!appConfig) return;
+		setServerConnSettings(appConfig).then(() => {
+			refreshOnboardingState();
+		});
+	}, [appConfig]);
 
-  // when onboardingState is DONE, call registerAndUpdateProfile
-  // and setUserProfile with the latest profile
-  useEffect(() => {
-    if (!appConfig || onboardingState?.route != OnboardingRoute.DONE) return;
-    registerAndUpdateProfile(appConfig)
-      .then(setUserProfile)
-      .catch((e) => {
-        displayErrorMsg(e, 'Error while registering and updating profile');
-      });
-  }, [appConfig, onboardingState?.route]);
+	// when onboardingState is DONE, call registerAndUpdateProfile
+	// and setUserProfile with the latest profile
+	useEffect(() => {
+		if (!appConfig || onboardingState?.route != OnboardingRoute.DONE) return;
+		registerAndUpdateProfile(appConfig)
+			.then(setUserProfile)
+			.catch((e) => {
+				displayErrorMsg(e, 'Error while registering and updating profile');
+			});
+	}, [appConfig, onboardingState?.route]);
 
-  const appContextValue = {
-    appConfig,
-    handleJoinTokenOrUrl,
-    onboardingState,
-    setOnboardingState,
-    refreshOnboardingState,
-    permissionStatus,
-    permissionsPopupVis,
-    setPermissionsPopupVis,
-    userProfile,
-    updateUserProfile: (p: Partial<UserProfile>) =>
-      updateUserProfile(p, userProfile).then(setUserProfile),
-    customLabelMap,
-    setCustomLabelMap,
-  };
+	const appContextValue = {
+		appConfig,
+		handleJoinTokenOrUrl,
+		onboardingState,
+		setOnboardingState,
+		refreshOnboardingState,
+		permissionStatus,
+		permissionsPopupVis,
+		setPermissionsPopupVis,
+		userProfile,
+		updateUserProfile: (p: Partial<UserProfile>) =>
+			updateUserProfile(p, userProfile).then(setUserProfile),
+		customLabelMap,
+		setCustomLabelMap,
+	};
 
-  let appContent;
-  if (onboardingState == null) {
-    if (onboardingLoadTimedOut) {
-      logDebug('onboardingState remained unresolved after retry timeout; displaying Profile tab only');
-      appContent = (
-        <Main
-          defaultTab="control"
-          routesOverride={defaultRoutesForProfileOnly}
-        />
-      );
-    } else {
-      // if onboarding state is not yet determined, show a loading spinner
-      logDebug('onboardingState is not yet determined, showing loading spinner');
-      appContent = <ActivityIndicator size={'large'} style={{ flex: 1 }} />;
-    }
-  } else if (onboardingState?.route == OnboardingRoute.DONE) {
-    // if onboarding route is DONE, show the main app with navigation between tabs
-    appContent = <Main />;
-  } else {
-    // if there is an onboarding route that is not DONE, show the onboarding stack
-    appContent = <OnboardingStack />;
-  }
-  return (
-    <AppContext.Provider value={appContextValue}>
-      <PaperProvider theme={theme}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.elevation.level2 }}>
-          {appContent}
-          {/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
-          This also includes if onboarding is DONE altogether (because "DONE" is > "PROTOCOL") */}
-          {onboardingState && onboardingState.route > OnboardingRoute.PROTOCOL && (
-            <AppStatusModal />
-          )}
-          <AlertArea />
-        </SafeAreaView>
-      </PaperProvider>
-    </AppContext.Provider>
-  );
+	let appContent;
+	if (onboardingState == null) {
+			// if onboarding state is not yet determined, show a loading spinner
+			logDebug('onboardingState is not yet determined, showing loading spinner');
+			appContent = <ActivityIndicator size={'large'} style={{ flex: 1 }} />;
+	} else if (onboardingState.route == OnboardingRoute.FAILED) {
+			logDebug('onboardingState remained unresolved after retry timeout; displaying Profile tab only');
+      appContent = <OnboardingStack />;
+	} else if (onboardingState?.route == OnboardingRoute.DONE) {
+		// if onboarding route is DONE, show the main app with navigation between tabs
+		appContent = <Main />;
+	} else {
+		// if there is an onboarding route that is not DONE, show the onboarding stack
+		appContent = <OnboardingStack />;
+	}
+	return (
+		<AppContext.Provider value={appContextValue}>
+			<PaperProvider theme={theme}>
+				<SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.elevation.level2 }}>
+					{appContent}
+					{/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
+					This also includes if onboarding is DONE altogether (because "DONE" is > "PROTOCOL") */}
+					{onboardingState && onboardingState.route > OnboardingRoute.PROTOCOL && (
+						<AppStatusModal />
+					)}
+					<AlertArea />
+				</SafeAreaView>
+			</PaperProvider>
+		</AppContext.Provider>
+	);
 };
 
 export default App;
