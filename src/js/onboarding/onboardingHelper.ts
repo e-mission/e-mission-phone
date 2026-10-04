@@ -110,7 +110,7 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
     .catch((err) => {
       setOnboardingFailed(true);
       displayError(err, `getPendingOnboardingState: failed while determining state`);
-      return {opcode: '', subgroup: undefined, route: OnboardingRoute.FAILED};
+      return { opcode: '', subgroup: undefined, route: OnboardingRoute.FAILED };
     });
 }
 

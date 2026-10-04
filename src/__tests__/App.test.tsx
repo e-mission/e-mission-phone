@@ -4,7 +4,7 @@ import App from '../js/App';
 import { joinWithTokenOrUrl } from '../js/config/dynamicConfig';
 import {
   OnboardingRoute,
-  resolveOnboardingStateWithRetry,
+  getPendingOnboardingState,
 } from '../js/onboarding/onboardingHelper';
 import { registerUrlHandler } from '../js/urlHandler';
 import useAppConfig from '../js/useAppConfig';
@@ -53,7 +53,7 @@ jest.mock('../js/onboarding/onboardingHelper', () => {
   const actual = jest.requireActual('../js/onboarding/onboardingHelper');
   return {
     ...actual,
-    resolveOnboardingStateWithRetry: jest.fn(),
+    getPendingOnboardingState: jest.fn(),
   };
 });
 
@@ -82,9 +82,16 @@ describe('App QR onboarding flow', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockOnboardingStack.mockClear();
-    (useAppConfig as jest.Mock).mockReturnValue({ version: 1, intro: { translated_text: { en: { deployment_name: 'Test' } } } });
+    (useAppConfig as jest.Mock).mockReturnValue({
+      version: 1,
+      intro: { translated_text: { en: { deployment_name: 'Test' } } },
+    });
     (usePermissionStatus as jest.Mock).mockReturnValue({});
-    (resolveOnboardingStateWithRetry as jest.Mock).mockResolvedValue(null);
+    (getPendingOnboardingState as jest.Mock).mockResolvedValue({
+      opcode: '',
+      subgroup: undefined,
+      route: OnboardingRoute.WELCOME,
+    });
     (joinWithTokenOrUrl as jest.Mock).mockResolvedValue(true);
     (registerUrlHandler as jest.Mock).mockImplementation((handler) => {
       (global as any).__capturedUrlHandler = handler;
@@ -92,7 +99,7 @@ describe('App QR onboarding flow', () => {
     });
   });
 
-  it('continues with a QR join even when onboarding state is temporarily unresolved', async () => {
+  it('continues with a QR join even when onboarding state is unresolved', async () => {
     render(<App appState="active" />);
 
     await waitFor(() => {
@@ -108,7 +115,7 @@ describe('App QR onboarding flow', () => {
   });
 
   it('returns the onboarding stack when onboarding has failed', async () => {
-    (resolveOnboardingStateWithRetry as jest.Mock).mockResolvedValue({
+    (getPendingOnboardingState as jest.Mock).mockResolvedValue({
       opcode: 'test-opcode',
       subgroup: 'test-subgroup',
       route: OnboardingRoute.FAILED,

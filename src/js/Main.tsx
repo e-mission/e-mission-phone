@@ -58,7 +58,13 @@ const renderScene = BottomNavigation.SceneMap(scenes);
 
 type MainProps = {
   defaultTab?: 'library' | 'label' | 'metrics' | 'control';
-  routesOverride?: Array<{ key: string; title: string; focusedIcon: string; unfocusedIcon: string; accessibilityLabel: string }>;
+  routesOverride?: Array<{
+    key: string;
+    title: string;
+    focusedIcon: string;
+    unfocusedIcon: string;
+    accessibilityLabel: string;
+  }>;
 };
 
 const Main = ({ defaultTab = 'label', routesOverride }: MainProps) => {
@@ -68,8 +74,10 @@ const Main = ({ defaultTab = 'label', routesOverride }: MainProps) => {
   const timelineContext = useTimelineContext();
   const routes = useMemo(() => {
     let r = routesOverride ?? defaultRoutes(t);
-    if (!routesOverride && (!appConfig || !showMetricsTab(appConfig))) r = r.filter((route) => route.key != 'metrics');
-    if (!routesOverride && !appConfig?.vehicle_library) r = r.filter((route) => route.key != 'library');
+    if (!routesOverride && (!appConfig || !showMetricsTab(appConfig)))
+      r = r.filter((route) => route.key != 'metrics');
+    if (!routesOverride && !appConfig?.vehicle_library)
+      r = r.filter((route) => route.key != 'library');
     return r;
   }, [appConfig, routesOverride, t]);
   const getInitialIndex = useCallback(() => {

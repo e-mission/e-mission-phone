@@ -12,7 +12,7 @@ import { logDebug, displayErrorMsg } from '../plugin/logger';
 
 const OnboardingStack = () => {
   const { onboardingState } = useContext(AppContext);
-  logDebug('displaying onboardingStack with current onboarding state:'+onboardingState);
+  logDebug('displaying onboardingStack with current onboarding state:' + onboardingState);
 
   if (onboardingState?.route == OnboardingRoute.WELCOME) {
     // This page needs 'light content' status bar (white text) due to blue header at the top
