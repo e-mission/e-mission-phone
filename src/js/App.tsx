@@ -32,6 +32,16 @@ import usePermissionStatus from './usePermissionStatus';
 
 const theme = getTheme();
 
+const defaultRoutesForProfileOnly = [
+  {
+    key: 'control',
+    title: 'Profile',
+    focusedIcon: 'account',
+    unfocusedIcon: 'account-outline',
+    accessibilityLabel: 'control.profile-tab',
+  },
+];
+
 const App = ({ appState }: { appState: AppStateStatus }) => {
   // will remain null while the onboarding state is still being determined
   const [onboardingState, setOnboardingState] = useState<OnboardingState | null>(null);
@@ -143,8 +153,13 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
   let appContent;
   if (onboardingState == null) {
     if (onboardingLoadTimedOut) {
-      logDebug('onboardingState remained unresolved after retry timeout; displaying Profile tab');
-      appContent = <Main defaultTab="control" />;
+      logDebug('onboardingState remained unresolved after retry timeout; displaying Profile tab only');
+      appContent = (
+        <Main
+          defaultTab="control"
+          routesOverride={defaultRoutesForProfileOnly}
+        />
+      );
     } else {
       // if onboarding state is not yet determined, show a loading spinner
       logDebug('onboardingState is not yet determined, showing loading spinner');

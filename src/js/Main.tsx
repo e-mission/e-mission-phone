@@ -58,19 +58,20 @@ const renderScene = BottomNavigation.SceneMap(scenes);
 
 type MainProps = {
   defaultTab?: 'library' | 'label' | 'metrics' | 'control';
+  routesOverride?: Array<{ key: string; title: string; focusedIcon: string; unfocusedIcon: string; accessibilityLabel: string }>;
 };
 
-const Main = ({ defaultTab = 'label' }: MainProps) => {
+const Main = ({ defaultTab = 'label', routesOverride }: MainProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const { appConfig } = useContext(AppContext);
   const timelineContext = useTimelineContext();
   const routes = useMemo(() => {
-    let r = defaultRoutes(t);
-    if (!appConfig || !showMetricsTab(appConfig)) r = r.filter((route) => route.key != 'metrics');
-    if (!appConfig?.vehicle_library) r = r.filter((route) => route.key != 'library');
+    let r = routesOverride ?? defaultRoutes(t);
+    if (!routesOverride && (!appConfig || !showMetricsTab(appConfig))) r = r.filter((route) => route.key != 'metrics');
+    if (!routesOverride && !appConfig?.vehicle_library) r = r.filter((route) => route.key != 'library');
     return r;
-  }, [appConfig, t]);
+  }, [appConfig, routesOverride, t]);
   const getInitialIndex = useCallback(() => {
     const nextIndex = routes.findIndex((route) => route.key === defaultTab);
     return nextIndex >= 0 ? nextIndex : 0;
