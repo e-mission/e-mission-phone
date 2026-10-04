@@ -2,10 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 import App from '../js/App';
 import { joinWithTokenOrUrl } from '../js/config/dynamicConfig';
-import {
-  OnboardingRoute,
-  getPendingOnboardingState,
-} from '../js/onboarding/onboardingHelper';
+import { OnboardingRoute, getPendingOnboardingState } from '../js/onboarding/onboardingHelper';
 import { registerUrlHandler } from '../js/urlHandler';
 import useAppConfig from '../js/useAppConfig';
 import usePermissionStatus from '../js/usePermissionStatus';

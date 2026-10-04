@@ -15,7 +15,7 @@ we render null (blank screen) instead of <App>.
 import React, { useEffect } from 'react';
 import App from './App';
 import useAppState from './useAppState';
-import { logDebug } from './plugin/logger';
+import { displayError, logDebug } from './plugin/logger';
 import { resetPromisedConfig } from './config/dynamicConfig';
 import { registerRootComponent } from 'expo';
 import { pluginsReadyPromise } from './nativePlugins';
@@ -46,16 +46,26 @@ const AppRoot = () => {
     return () => clearInterval(interval);
   }, []);
 
-  if (appState == 'active' || currMs - lastNotActiveMs < BACKGROUND_TIMEOUT_MS) {
-    return <App key={reloadMs} appState={appState} />;
-  } else {
+  try {
+    if (appState == 'active' || currMs - lastNotActiveMs < BACKGROUND_TIMEOUT_MS) {
+      return <App key={reloadMs} appState={appState} />;
+    }
+    return null;
+  } catch (err) {
+    displayError(`AppRoot: unhandled render error: ${err}`);
+    logDebug(`AppRoot: unhandled render error: ${err}`);
     return null;
   }
 };
 
 pluginsReadyPromise.then(() => {
-  logDebug('Plugins are ready, registering root component');
-  registerRootComponent(AppRoot);
+  try {
+    logDebug('Plugins are ready, registering root component');
+    registerRootComponent(AppRoot);
+  } catch (err) {
+    displayError(`AppRoot: root registration failed: ${err}`);
+    logDebug(`AppRoot: root registration failed: ${err}`);
+  }
 });
 
 export default AppRoot;
