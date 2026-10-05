@@ -41,7 +41,8 @@ describe('AppRoot startup protection', () => {
 
     expect(registerRootComponent).toHaveBeenCalled();
     expect(displayError).toHaveBeenCalledWith(
-      expect.stringContaining('AppRoot: root registration failed: Error: register boom'),
+      expect.any(Error),
+      'AppRoot: root registration failed',
     );
     expect(logDebug).toHaveBeenCalledWith(
       expect.stringContaining('AppRoot: root registration failed: Error: register boom'),

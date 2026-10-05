@@ -51,8 +51,8 @@ const AppRoot = () => {
       return <App key={reloadMs} appState={appState} />;
     }
     return null;
-  } catch (err) {
-    displayError(`AppRoot: unhandled render error: ${err}`);
+  } catch (err: any) {
+    displayError(err, `AppRoot: unhandled render error`);
     logDebug(`AppRoot: unhandled render error: ${err}`);
     return null;
   }
@@ -62,8 +62,8 @@ pluginsReadyPromise.then(() => {
   try {
     logDebug('Plugins are ready, registering root component');
     registerRootComponent(AppRoot);
-  } catch (err) {
-    displayError(`AppRoot: root registration failed: ${err}`);
+  } catch (err: any) {
+    displayError(err, `AppRoot: root registration failed`);
     logDebug(`AppRoot: root registration failed: ${err}`);
   }
 });

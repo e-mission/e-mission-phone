@@ -159,9 +159,9 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
           {appContent}
           {/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
 					This also includes if onboarding is DONE altogether (because "DONE" is > "PROTOCOL") */}
-          {onboardingState && onboardingState.route > OnboardingRoute.PROTOCOL && (
-            <AppStatusModal />
-          )}
+          {onboardingState &&
+            onboardingState.route !== OnboardingRoute.FAILED &&
+            onboardingState.route > OnboardingRoute.PROTOCOL && <AppStatusModal />}
           <AlertArea />
         </SafeAreaView>
       </PaperProvider>
