@@ -67,7 +67,7 @@ type MainProps = {
   }>;
 };
 
-const Main = ({ defaultTab = 'label', routesOverride }: MainProps) => {
+const Main = ({ defaultTab, routesOverride }: MainProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const { appConfig } = useContext(AppContext);
@@ -80,18 +80,21 @@ const Main = ({ defaultTab = 'label', routesOverride }: MainProps) => {
       r = r.filter((route) => route.key != 'library');
     return r;
   }, [appConfig, routesOverride, t]);
+
+  const resolvedDefaultTab = defaultTab ?? routes[0]?.key ?? 'label';
+
   const getInitialIndex = useCallback(() => {
-    const nextIndex = routes.findIndex((route) => route.key === defaultTab);
+    const nextIndex = routes.findIndex((route) => route.key === resolvedDefaultTab);
     return nextIndex >= 0 ? nextIndex : 0;
-  }, [defaultTab, routes]);
+  }, [resolvedDefaultTab, routes]);
   const [index, setIndex] = useState(getInitialIndex);
 
   useEffect(() => {
-    const nextIndex = routes.findIndex((route) => route.key === defaultTab);
+    const nextIndex = routes.findIndex((route) => route.key === resolvedDefaultTab);
     if (nextIndex >= 0) {
       setIndex(nextIndex);
     }
-  }, [defaultTab, routes]);
+  }, [resolvedDefaultTab, routes]);
 
   const onIndexChange = useCallback(
     (i: number) => {
