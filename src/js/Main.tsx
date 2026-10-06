@@ -72,14 +72,15 @@ const Main = ({ defaultTab, routesOverride }: MainProps) => {
   const { t } = useTranslation();
   const { appConfig } = useContext(AppContext);
   const timelineContext = useTimelineContext();
+  const effectiveRoutesOverride = routesOverride?.length ? routesOverride : undefined;
   const routes = useMemo(() => {
-    let r = routesOverride ?? defaultRoutes(t);
-    if (!routesOverride && (!appConfig || !showMetricsTab(appConfig)))
+    let r = effectiveRoutesOverride ?? defaultRoutes(t);
+    if (!effectiveRoutesOverride && (!appConfig || !showMetricsTab(appConfig)))
       r = r.filter((route) => route.key != 'metrics');
-    if (!routesOverride && !appConfig?.vehicle_library)
+    if (!effectiveRoutesOverride && !appConfig?.vehicle_library)
       r = r.filter((route) => route.key != 'library');
     return r;
-  }, [appConfig, routesOverride, t]);
+  }, [appConfig, effectiveRoutesOverride, t]);
 
   const resolvedDefaultTab = defaultTab ?? routes[0]?.key ?? 'label';
 

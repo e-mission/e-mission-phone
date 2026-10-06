@@ -120,6 +120,18 @@ describe('Main routesOverride', () => {
     expect(navProps.navigationState.routes[0].key).toBe('control');
   });
 
+  it('treats an empty override as absent and falls back to the default filtered routes', () => {
+    render(
+      <AppContext.Provider value={appContextValue}>
+        <Main routesOverride={[]} />
+      </AppContext.Provider>,
+    );
+
+    const navProps = mockBottomNavigation.mock.calls.at(-1)?.[0];
+    expect(navProps.navigationState.routes[0].key).toBe('label');
+    expect(navProps.navigationState.index).toBe(0);
+  });
+
   it('defaults to the first visible tab when no defaultTab is specified', () => {
     render(
       <AppContext.Provider value={{ ...appContextValue, appConfig: { vehicle_library: {} } }}>
