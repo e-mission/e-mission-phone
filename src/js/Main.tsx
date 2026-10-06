@@ -56,19 +56,46 @@ const scenes = {
 };
 const renderScene = BottomNavigation.SceneMap(scenes);
 
-const Main = () => {
-  const [index, setIndex] = useState(0);
+type MainProps = {
+  defaultTab?: 'library' | 'label' | 'metrics' | 'control';
+  routesOverride?: Array<{
+    key: string;
+    title: string;
+    focusedIcon: string;
+    unfocusedIcon: string;
+    accessibilityLabel: string;
+  }>;
+};
+
+const Main = ({ defaultTab, routesOverride }: MainProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const { appConfig } = useContext(AppContext);
   const timelineContext = useTimelineContext();
-
+  const effectiveRoutesOverride = routesOverride?.length ? routesOverride : undefined;
   const routes = useMemo(() => {
-    let r = defaultRoutes(t);
-    if (!appConfig || !showMetricsTab(appConfig)) r = r.filter((route) => route.key != 'metrics');
-    if (!appConfig?.vehicle_library) r = r.filter((route) => route.key != 'library');
+    let r = effectiveRoutesOverride ?? defaultRoutes(t);
+    if (!effectiveRoutesOverride && (!appConfig || !showMetricsTab(appConfig)))
+      r = r.filter((route) => route.key != 'metrics');
+    if (!effectiveRoutesOverride && !appConfig?.vehicle_library)
+      r = r.filter((route) => route.key != 'library');
     return r;
-  }, [appConfig, t]);
+  }, [appConfig, effectiveRoutesOverride, t]);
+
+  const resolvedDefaultTab = defaultTab ?? routes[0]?.key ?? 'label';
+
+  const getInitialIndex = useCallback(() => {
+    const nextIndex = routes.findIndex((route) => route.key === resolvedDefaultTab);
+    return nextIndex >= 0 ? nextIndex : 0;
+  }, [resolvedDefaultTab, routes]);
+  const [index, setIndex] = useState(getInitialIndex);
+
+  useEffect(() => {
+    const nextIndex = routes.findIndex((route) => route.key === resolvedDefaultTab);
+    if (nextIndex >= 0) {
+      setIndex(nextIndex);
+    }
+  }, [resolvedDefaultTab, routes]);
 
   const onIndexChange = useCallback(
     (i: number) => {

@@ -55,7 +55,7 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
     async (tokenOrUrl: string, joinMethod: OnboardingJoinMethod) => {
       const onboardingState = await refreshOnboardingState();
       logDebug(`handleJoinToken: onboardingState = ${JSON.stringify(onboardingState)}`);
-      if (onboardingState.route > OnboardingRoute.WELCOME) {
+      if (onboardingState && onboardingState.route > OnboardingRoute.WELCOME) {
         displayErrorMsg(i18next.t('join.already-logged-in', { token: onboardingState.opcode }));
         return false;
       }
@@ -128,7 +128,11 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
   let appContent;
   if (onboardingState == null) {
     // if onboarding state is not yet determined, show a loading spinner
+    logDebug('onboardingState is not yet determined, showing loading spinner');
     appContent = <ActivityIndicator size={'large'} style={{ flex: 1 }} />;
+  } else if (onboardingState.route == OnboardingRoute.FAILED) {
+    logDebug('onboardingState remained resolution failed; displaying Profile tab only');
+    appContent = <OnboardingStack />;
   } else if (onboardingState?.route == OnboardingRoute.DONE) {
     // if onboarding route is DONE, show the main app with navigation between tabs
     appContent = <Main />;
@@ -142,10 +146,10 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.elevation.level2 }}>
           {appContent}
           {/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
-          This also includes if onboarding is DONE altogether (because "DONE" is > "PROTOCOL") */}
-          {onboardingState && onboardingState.route > OnboardingRoute.PROTOCOL && (
-            <AppStatusModal />
-          )}
+					This also includes if onboarding is DONE altogether (because "DONE" is > "PROTOCOL") */}
+          {onboardingState &&
+            onboardingState.route !== OnboardingRoute.FAILED &&
+            onboardingState.route > OnboardingRoute.PROTOCOL && <AppStatusModal />}
           <AlertArea />
         </SafeAreaView>
       </PaperProvider>
