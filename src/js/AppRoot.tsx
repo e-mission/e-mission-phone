@@ -19,6 +19,7 @@ import { displayError, logDebug } from './plugin/logger';
 import { resetPromisedConfig } from './config/dynamicConfig';
 import { registerRootComponent } from 'expo';
 import { pluginsReadyPromise } from './nativePlugins';
+import ErrorBoundary from './plugin/ErrorBoundary';
 
 const BACKGROUND_TIMEOUT_MS = 5 * 60 * 1000;
 
@@ -46,16 +47,13 @@ const AppRoot = () => {
     return () => clearInterval(interval);
   }, []);
 
-  try {
-    if (appState == 'active' || currMs - lastNotActiveMs < BACKGROUND_TIMEOUT_MS) {
-      return <App key={reloadMs} appState={appState} />;
-    }
-    return null;
-  } catch (err: any) {
-    displayError(err, `AppRoot: unhandled render error`);
-    logDebug(`AppRoot: unhandled render error: ${err}`);
-    return null;
-  }
+  const shouldRenderApp = appState == 'active' || currMs - lastNotActiveMs < BACKGROUND_TIMEOUT_MS;
+
+  return (
+    <ErrorBoundary>
+      {shouldRenderApp ? <App key={reloadMs} appState={appState} /> : null}
+    </ErrorBoundary>
+  );
 };
 
 pluginsReadyPromise.then(() => {
