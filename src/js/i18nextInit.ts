@@ -5,6 +5,7 @@
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { DeploymentConfigWithOverrides, TranslationTree } from './types/appConfigTypes';
+import { logDebug } from './plugin/logger';
 
 /* How should we handle missing translations?
 
@@ -39,14 +40,17 @@ function mergeInTranslations(lang, fallbackLang) {
 
 import enJson from '../i18n/en.json';
 import esJson from '../../locales/es/i18n/es.json';
+import glJson from '../../locales/gl/i18n/gl.json';
 /* the built-in translations, before any deployment config overrides are applied */
 const baseTranslations: { [lang: string]: TranslationTree } = {
   en: enJson as TranslationTree,
   es: mergeInTranslations(esJson, enJson) as TranslationTree,
+  gl: mergeInTranslations(glJson, enJson) as TranslationTree,
 };
 const langs = {
   en: { translation: baseTranslations.en },
   es: { translation: baseTranslations.es },
+  gl: { translation: baseTranslations.gl },
 };
 
 /* warns about override keys that don't exist in the built-in translations, which are
@@ -85,6 +89,7 @@ export function applyConfigTranslations(config?: DeploymentConfigWithOverrides |
 }
 
 const locales = navigator?.languages?.length ? navigator.languages : [navigator.language];
+logDebug(`Detected locales: ${JSON.stringify(locales)}`);
 let detectedLang;
 for (const locale of locales) {
   const lang = locale.trim().split(/-|_/)[0];
@@ -93,6 +98,8 @@ for (const locale of locales) {
     break; // once we find a supported language, stop looking
   }
 }
+
+logDebug(`Detected language: ${detectedLang}`);
 
 i18next.use(initReactI18next).init({
   debug: true,
