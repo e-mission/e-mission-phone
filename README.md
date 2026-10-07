@@ -222,6 +222,19 @@ Troubleshooting
     - javascript errors: `rm -rf node_modules && npm install`
     - native code compile errors: `rm -rf plugins && rm -rf platforms && npx cordova prepare`
 
+### What the teardown scripts clean up and leave behind
+
+The teardown scripts are intentionally scoped to the project-local environment and the SDKMAN-based toolchain used by the repo.
+
+- The project-local teardown removes the generated Cordova artifacts: `plugins` and `platforms`.
+- It also removes the project `node_modules` and resets the locale submodule.
+- It removes the SDKMAN installation used by the project (`~/.sdkman`), which also removes the Gradle version installed via SDKMAN.
+- It removes the versioned `nvm` install used for the selected Node version.
+- However, it does not uninstall the Android SDK itself, the Java runtime, the Ruby installation, or the Homebrew packages that may have been installed for the native toolchain.
+- It also does not remove the Android Studio / SDK Manager configuration or other globally installed development tools that were created outside the repo.
+
+In other words, the teardown scripts reset the repo-specific native setup and the SDKMAN-managed Gradle install, but they do not fully de-install the developer machine environment. If you need a completely clean machine state, you must remove the SDKs and toolchain components manually.
+
 Beta-testing debugging
 ---
 If users run into problems, they have the ability to email logs to the
