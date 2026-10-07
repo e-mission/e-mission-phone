@@ -1,14 +1,21 @@
-TOOLS_VERSION=14742923
-TOOLS_ZIP_FILENAME=commandlinetools-mac-${TOOLS_VERSION}_latest.zip
+set -a
+source setup/dependencies.env
+set +a
 
+echo "Ensure we exit on error"
+set -e
+
+TOOLS_ZIP_FILENAME=commandlinetools-mac-${TOOLS_VERSION}_latest.zip
 echo "Installing command line tools from $TOOLS_ZIP_FILENAME"
 
-if [ -z $ANDROID_SDK_ROOT ];
+
+if [ -z "$ANDROID_HOME" ];
 then
-    echo "ANDROID_SDK_ROOT not set, install location unknown not found, exiting"
+    echo "ANDROID_HOME not set, android SDK not found, exiting"
     exit 1
 else
-    echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+    export ANDROID_SDK_ROOT="$ANDROID_HOME"
+    echo "ANDROID_HOME = $ANDROID_HOME; ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
 fi
 
 echo "Downloading the command line tools for mac"
