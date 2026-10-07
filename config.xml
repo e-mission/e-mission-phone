@@ -38,7 +38,7 @@
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     <platform name="ios">
-        <preference name="deployment-target" value="13.0"/>
+        <preference name="deployment-target" value="15.0"/>
         <hook src="hooks/before_compile/ios/ios_change_deployment.js" type="before_compile" />
         <hook src="hooks/after_prepare/ios/ios_fix_deployment_target.js" type="after_prepare" />
         <hook src="hooks/after_prepare/ios/ios_fix_advanced_http.js" type="after_prepare" />
