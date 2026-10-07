@@ -8,9 +8,13 @@ on:
   push:
     branches:
         - master
+    paths-ignore:
+      - 'src/**'
   pull_request:
     branches:
         - master
+    paths-ignore:
+      - 'src/**'
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '5 4 * * 0'
