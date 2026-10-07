@@ -63,11 +63,12 @@ echo "Setting up SDK environment"
 MIN_SDK_VERSION=21
 TARGET_SDK_VERSION=28
 
-if [ -z $ANDROID_HOME ] && [ -z $ANDROID_SDK_ROOT ];
+if [ -z "$ANDROID_HOME" ];
 then
-    echo "ANDROID_HOME and ANDROID_SDK_ROOT not set, android SDK not found, exiting"
+    echo "ANDROID_HOME not set, android SDK not found, exiting"
     exit 1
 else
+    export ANDROID_SDK_ROOT="$ANDROID_HOME"
     echo "ANDROID_HOME = $ANDROID_HOME; ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
 fi
 
