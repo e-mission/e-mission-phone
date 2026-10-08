@@ -24,6 +24,15 @@ else
     fi
 fi
 
+# Error message: SDKMAN requires Bash 4 or higher, but you are running Bash 3.2.57(1)-release.
+# https://apple.stackexchange.com/a/197172/717691
+if [ -n "${BASH_VERSINFO:-}" ] && [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
+    echo "Current Bash version is ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}. SDKMAN requires Bash 4 or higher, updating."
+    $WORKING_DIR/bin/brew install bash
+    echo "After updating, bash version is `bash --version | head -n 1`"
+    source $WORKING_DIR/bin/bash
+fi
+
 CURR_RUBY_VERSION=`ruby --version | cut -d ' ' -f 2 | cut -d '.' -f 1-2`
 echo "Found ruby version "$CURR_RUBY_VERSION
 
@@ -63,11 +72,12 @@ echo "Setting up SDK environment"
 MIN_SDK_VERSION=21
 TARGET_SDK_VERSION=28
 
-if [ -z $ANDROID_HOME ] && [ -z $ANDROID_SDK_ROOT ];
+if [ -z "$ANDROID_HOME" ];
 then
-    echo "ANDROID_HOME and ANDROID_SDK_ROOT not set, android SDK not found, exiting"
+    echo "ANDROID_HOME not set, android SDK not found, exiting"
     exit 1
 else
+    export ANDROID_SDK_ROOT="$ANDROID_HOME"
     echo "ANDROID_HOME = $ANDROID_HOME; ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
 fi
 

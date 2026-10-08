@@ -7,3 +7,6 @@ rm -rf ~/.nvm/$NODE_VERSION
 
 echo "Removing all the node modules"
 rm -rf ./node_modules
+
+echo "Reset the submodule to the checked-in version"
+git submodule update --init --recursive locales

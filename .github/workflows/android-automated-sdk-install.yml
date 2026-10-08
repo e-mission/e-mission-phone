@@ -25,7 +25,7 @@ jobs:
     runs-on: macos-latest
 
     env:
-      NEW_ANDROID_SDK_ROOT: /tmp/new-install/Android/sdk
+      NEW_ANDROID_HOME: /tmp/new-install/Android/sdk
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -40,25 +40,25 @@ jobs:
     # Runs a single command using the runners shell
     - name: Print the current SDK root and version
       run: |
-        echo "SDK root before install $ANDROID_SDK_ROOT"
-        cat $ANDROID_SDK_ROOT/cmdline-tools/latest/source.properties
+        echo "SDK root before install $ANDROID_HOME"
+        cat $ANDROID_HOME/cmdline-tools/latest/source.properties
         echo "Existing installed packages"
-        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list_installed
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list_installed
 
     - name: Install to a new SDK root
       run: |
         export JAVA_HOME=$JAVA_HOME_17_X64
-        export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
-        echo "New SDK root $ANDROID_SDK_ROOT"
+        export ANDROID_HOME=$NEW_ANDROID_HOME
+        echo "New SDK root $ANDROID_HOME"
         printf "Y\nY\nY\nY\nY\n" | bash setup/prereq_android_sdk_install.sh
 
     - name: Verify that all packages are as expected
       shell: bash -l {0}
       run: |
         export JAVA_HOME=$JAVA_HOME_17_X64
-        echo "Comparing $ANDROID_SDK_ROOT and $NEW_ANDROID_SDK_ROOT"
-        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list_installed > /tmp/existing_packages
-        $NEW_ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list_installed > /tmp/new_packages
+        echo "Comparing $ANDROID_HOME and $NEW_ANDROID_HOME"
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list_installed > /tmp/existing_packages
+        $NEW_ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --list_installed > /tmp/new_packages
         diff -uw /tmp/existing_packages /tmp/new_packages
         echo "Expected differences; emulators, SDK versions, tool versions"
 
@@ -66,39 +66,39 @@ jobs:
       shell: bash -l -x {0}
       run: |
         export JAVA_HOME=$JAVA_HOME_17_X64
-        export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
-        echo "New SDK root $ANDROID_SDK_ROOT"
-        ls -al $ANDROID_SDK_ROOT
-        if [ ! -d $ANDROID_SDK_ROOT/emulator ]; then exit 1; fi
-        if [ ! -d $ANDROID_SDK_ROOT/build-tools ]; then exit 1; fi
-        if [ ! -d $ANDROID_SDK_ROOT/extras ]; then exit 1; fi
-        if [ ! -d $ANDROID_SDK_ROOT/platforms ]; then exit 1; fi
-        if [ ! -d $ANDROID_SDK_ROOT/platform-tools ]; then exit 1; fi
-        if [ ! -d $ANDROID_SDK_ROOT/system-images ]; then exit 1; fi
+        export ANDROID_HOME=$NEW_ANDROID_HOME
+        echo "New SDK root $ANDROID_HOME"
+        ls -al $ANDROID_HOME
+        if [ ! -d $ANDROID_HOME/emulator ]; then exit 1; fi
+        if [ ! -d $ANDROID_HOME/build-tools ]; then exit 1; fi
+        if [ ! -d $ANDROID_HOME/extras ]; then exit 1; fi
+        if [ ! -d $ANDROID_HOME/platforms ]; then exit 1; fi
+        if [ ! -d $ANDROID_HOME/platform-tools ]; then exit 1; fi
+        if [ ! -d $ANDROID_HOME/system-images ]; then exit 1; fi
 
     - name: Ensure that the path is correct and installed programs are runnable
       shell: bash -l {0}
       run: |
         export JAVA_HOME=$JAVA_HOME_17_X64
-        export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
-        echo "New SDK root $ANDROID_SDK_ROOT"
-        echo "About to run the emulator at $ANDROID_SDK_ROOT/emulator/emulator"
-        $ANDROID_SDK_ROOT/emulator/emulator -list-avds
-        echo "About to run the avdmanager at $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager"
-        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager list avds
+        export ANDROID_HOME=$NEW_ANDROID_HOME
+        echo "New SDK root $ANDROID_HOME"
+        echo "About to run the emulator at $ANDROID_HOME/emulator/emulator"
+        $ANDROID_HOME/emulator/emulator -list-avds
+        echo "About to run the avdmanager at $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager"
+        $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avds
 
     - name: Setup the cordova environment
       shell: bash -l {0}
       run: |
         export JAVA_HOME=$JAVA_HOME_17_X64
-        export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
+        export ANDROID_HOME=$NEW_ANDROID_HOME
         bash setup/setup_native.sh
 
     - name: Ensure that the path is correct and the project can be activated
       shell: bash -l {0}
       run: |
         export JAVA_HOME=$JAVA_HOME_17_X64
-        export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
-        echo "New SDK root $ANDROID_SDK_ROOT"
-        echo "About to run the avdmanager at $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager"
-        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager list avd
+        export ANDROID_HOME=$NEW_ANDROID_HOME
+        echo "New SDK root $ANDROID_HOME"
+        echo "About to run the avdmanager at $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager"
+        $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
