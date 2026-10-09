@@ -426,7 +426,9 @@
       "title": "DEV MODE: Using Stripe Sandbox",
       "show-test-locations": "Show test locations",
       "simulate-duration": "Simulate checkout duration",
-      "simulate-subgroup": "Simulate subgroup"
+      "simulate-subgroup": "Simulate subgroup",
+      "test-checkout-nonexistent": "Test checkout of nonexistent vehicle",
+      "run": "Run"
     }
   },
 
