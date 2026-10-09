@@ -12,6 +12,7 @@ interface ReturnFlowProps {
   isInitializing?: boolean;
   onConfirmReturn: () => Promise<void>;
   onComplete: () => void;
+  onCancel: () => void;
 }
 
 export function ReturnFlow({
@@ -23,6 +24,7 @@ export function ReturnFlow({
   isInitializing,
   onConfirmReturn,
   onComplete,
+  onCancel,
 }: ReturnFlowProps) {
   const { t } = useTranslation();
   const [step, setStep] = useState<'confirm' | 'processing' | 'complete'>('confirm');
@@ -41,6 +43,15 @@ export function ReturnFlow({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        {step === 'confirm' && (
+          <Button
+            icon="arrow-left"
+            onPress={onCancel}
+            textColor="#FFFFFF"
+            style={{ marginRight: 'auto' }}>
+            {t('library.return.back')}
+          </Button>
+        )}
         <Text style={styles.headerTitle}>
           {isInitializing ? t('library.return.initializing-title') : t('library.return.title')}
         </Text>

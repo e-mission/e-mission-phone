@@ -546,6 +546,7 @@ const LibraryTab = () => {
               isInitializing={isInitializing}
               onConfirmReturn={() => confirmReturn(screen.dockId)}
               onComplete={() => setScreen({ name: 'browse' })}
+              onCancel={() => setScreen({ name: 'browse' })}
             />
           )}
         </View>

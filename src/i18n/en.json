@@ -404,6 +404,7 @@
       "accessory-email-body": "Vehicle Librarian,\n\nI have checked out vehicle {{vehicleId}} and would like to request the following accessories:\n{{accessories}}\n\nRental details:\n- Vehicle: {{vehicleId}}\n- OPcode: {{opcode}}\n- Rental start: {{checkoutTime}}\n- Deployment: {{deploymentId}}\n\nThank you!"
     },
     "return": {
+      "back": "Back",
       "title": "Return Vehicle",
       "subtitle": "Complete your rental",
       "initializing-title": "Place Vehicle",
