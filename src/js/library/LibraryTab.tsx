@@ -21,10 +21,12 @@ import {
   createLibrarySetupSession,
   getLibraryRentalHistory,
   getLibraryStations,
+  getServerErrorCode,
   getServerErrorMessage,
   LibraryRental,
   LibraryStation,
   LibraryVehicle,
+  ServerCommError,
 } from './serverComm';
 import { addStatReading } from '../plugin/clientStats';
 import useAppState from '../useAppState';
@@ -62,7 +64,7 @@ type Screen =
   | { name: 'checkin'; dockId: string };
 
 const LibraryTab = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { appConfig, onboardingState } = useContext(AppContext);
   const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
   const [isSandbox, setIsSandbox] = useState(false);
@@ -320,6 +322,18 @@ const LibraryTab = () => {
     }
   };
 
+  // known server error codes get a translated message, followed by the server's own message
+  const displayLibraryError = (e: ServerCommError, title: string) => {
+    const code = getServerErrorCode(e);
+    const codeKey = `library.error-codes.${code}`;
+    const serverMessage = getServerErrorMessage(e);
+    if (code && i18n.exists(codeKey)) {
+      displayErrorMsg(`${t(codeKey)}\n\n${serverMessage}`, title);
+    } else {
+      displayErrorMsg(serverMessage, title);
+    }
+  };
+
   const confirmCheckout = async (
     vehicleId: string,
     holdAmount: number,
@@ -342,8 +356,13 @@ const LibraryTab = () => {
         setScreen({ name: 'browse' });
       }
     } catch (e) {
-      addStatReading('checkout_aborted', { holdAmount, requestedAccessories, error: String(e) });
-      displayErrorMsg(getServerErrorMessage(e), t('library.errors.checkout'));
+      addStatReading('checkout_aborted', {
+        holdAmount,
+        requestedAccessories,
+        error: String(e),
+        code: getServerErrorCode(e),
+      });
+      displayLibraryError(e, t('library.errors.checkout'));
     } finally {
       if (isMounted.current) {
         setPaymentInProgress(false);
@@ -360,7 +379,7 @@ const LibraryTab = () => {
       await checkinLibraryVehicle(dockId);
       await refreshRentalHistory();
     } catch (e) {
-      displayErrorMsg(getServerErrorMessage(e), t('library.errors.stripe-return'));
+      displayLibraryError(e, t('library.errors.stripe-return'));
       throw e;
     }
   };

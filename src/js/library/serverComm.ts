@@ -104,8 +104,13 @@ export type LibraryRentalHistory = {
 /* Error passed to pushGetJSON's error callback; status/body are only set for HTTP error responses */
 export type ServerCommError = Error & {
   status?: number;
-  body?: { error?: string } | string;
+  body?: { error?: string; code?: string } | string;
 };
+
+export function getServerErrorCode(e: ServerCommError): string | undefined {
+  const body = e?.body;
+  return body && typeof body === 'object' ? body.code : undefined;
+}
 
 /* The server's own error text if it sent one, otherwise the generic plugin message */
 export function getServerErrorMessage(e: ServerCommError): string {

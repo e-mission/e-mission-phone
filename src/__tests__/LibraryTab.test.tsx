@@ -50,6 +50,7 @@ jest.mock('../js/plugin/clientStats', () => ({
 jest.mock('../js/library/serverComm', () => ({
   __esModule: true,
   getServerErrorMessage: jest.requireActual('../js/library/serverComm').getServerErrorMessage,
+  getServerErrorCode: jest.requireActual('../js/library/serverComm').getServerErrorCode,
   checkAndGetLibrarySetupStatus: jest.fn(() =>
     Promise.resolve({ payment_setup_status: 'SUCCEEDED' }),
   ),
@@ -496,6 +497,46 @@ describe('LibraryTab', () => {
     await waitFor(() => {
       expect(displayErrorMsg).toHaveBeenCalledWith('mocked checkout failure', 'Checkout failed');
       expect(tree.getByText('Checkout Vehicle bike-123')).toBeTruthy();
+    });
+  });
+
+  async function checkOutWithServerError(code: string) {
+    (checkoutLibraryVehicle as jest.Mock).mockRejectedValueOnce(
+      Object.assign(new Error('During server call, error 409'), {
+        status: 409,
+        body: { error: 'User abc has an active rental Rental({...})', code },
+      }),
+    );
+    const tree = renderLibraryTab();
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    fireEvent.press(tree.getByText('Scan'));
+    await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
+    await submitManualCode(tree, 'Vehicle ID', 'bike-123');
+    await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
+    await act(async () => {
+      fireEvent.press(tree.getByText('Check Out ($380.00 hold)'));
+      await Promise.resolve();
+    });
+  }
+
+  it('shows a translated message for a known server error code, followed by the server message', async () => {
+    await checkOutWithServerError('ACTIVE_RENTAL_EXISTS');
+    await waitFor(() => {
+      expect(displayErrorMsg).toHaveBeenCalledWith(
+        'You already have a vehicle checked out. Return it before checking out another.\n\n' +
+          '409: User abc has an active rental Rental({...})',
+        'Checkout failed',
+      );
+    });
+  });
+
+  it('falls back to the server message for an unknown server error code', async () => {
+    await checkOutWithServerError('SOME_NEW_CODE');
+    await waitFor(() => {
+      expect(displayErrorMsg).toHaveBeenCalledWith(
+        '409: User abc has an active rental Rental({...})',
+        'Checkout failed',
+      );
     });
   });
 
