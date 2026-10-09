@@ -378,6 +378,7 @@
       "request-accessories": "Request Accessories (optional)",
       "hold-notice": "We'll place a temporary ${{amount}} authorization hold on your saved payment method. It is released when the vehicle is checked in, and you are only charged for your usage.",
       "confirm-and-hold": "Check Out (${{amount}} hold)",
+      "confirm": "Check Out",
       "cancel": "Cancel",
       "accessory-modal-title": "Request Accessories",
       "accessory-modal-message": "To coordinate pickup for your requested accessories, please send an email to the vehicle librarian.",

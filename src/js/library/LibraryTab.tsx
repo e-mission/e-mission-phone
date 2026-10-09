@@ -80,6 +80,12 @@ const LibraryTab = () => {
   const isMounted = useRef(true);
 
   const subgroup = simulatedSubgroup ?? onboardingState?.subgroup;
+  const libraryConfig = appConfig?.vehicle_library;
+  const feeExpression = libraryConfig?.fee_expression ?? '0';
+  const holdAmountCents = Math.round(
+    (libraryConfig?.hold_amount_by_subgroup?.[subgroup ?? ''] as number) * 100,
+  );
+  const paymentRequired = holdAmountCents > 0;
   const activeRental =
     rentalHistory.findLast(
       (r) => r.rental_status === 'active' || r.rental_status === 'initializing',
@@ -90,7 +96,6 @@ const LibraryTab = () => {
     ? Math.max(rentalNowTs - activeRental.start_ts, 0) / (60 * 60)
     : null;
   const rentalStatusText = formatRentalDuration(rentalHours);
-  const feeExpression = appConfig?.vehicle_library?.fee_expression ?? '0';
   const currentFee = rentalHours === null ? 0 : computeFee(feeExpression, rentalHours, subgroup);
   const feeDisplay = `$${currentFee.toFixed(2)}`;
 
@@ -100,6 +105,9 @@ const LibraryTab = () => {
   };
 
   const refreshSetupStatus = async () => {
+    if (!paymentRequired) {
+      return;
+    }
     console.log('refreshSetupStatus: called');
     if (!isMounted.current) {
       console.log('refreshSetupStatus: component is not mounted, aborting');
@@ -199,7 +207,7 @@ const LibraryTab = () => {
       unregisterLibraryUrl();
       unregisterPaymentUrl();
     };
-  }, [activeRental, setupComplete, t]);
+  }, [activeRental, setupComplete, paymentRequired, t]);
 
   useEffect(() => {
     if (!activeRental) {
@@ -358,7 +366,7 @@ const LibraryTab = () => {
   };
 
   const openScanQrButton = () => {
-    if (!setupComplete) {
+    if (paymentRequired && !setupComplete) {
       Alerts.addMessage({ text: t('library.setup-required-before-checkout') });
       return;
     }
@@ -370,7 +378,7 @@ const LibraryTab = () => {
     setRentalNowTs((prevTs) => Math.max(activeRental?.start_ts ?? 0, prevTs + hours * 60 * 60));
   };
 
-  if (setupComplete === null) {
+  if (paymentRequired && setupComplete === null) {
     // full page loading indicator while setup status is being determined
 
     return (
@@ -395,7 +403,7 @@ const LibraryTab = () => {
       )}
       {screen.name === 'browse' && (
         <ScrollView style={styles.browseScroll} contentContainerStyle={styles.browseContent}>
-          {setupComplete == false && (
+          {paymentRequired && setupComplete == false && (
             <Banner
               visible
               icon="credit-card-outline"
@@ -492,6 +500,7 @@ const LibraryTab = () => {
             <CheckoutFlow
               vehicleId={screen.vehicleId}
               paymentProcessing={paymentInProgress}
+              holdAmountCents={holdAmountCents}
               accessories={appConfig?.vehicle_library?.accessories}
               estimateFee={(hours) => computeFee(feeExpression, hours, subgroup)}
               onConfirm={(holdAmount, requestedAccessories) =>

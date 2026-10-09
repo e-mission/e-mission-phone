@@ -79,12 +79,23 @@ jest.mock('react-native-paper', () => {
 // the Library tab is only shown when `vehicle_library` is configured, and once it is,
 // `fee_expression` is expected to always be present too - mock that config here
 const mockAppConfig = {
+  opcode: {
+    subgroups: ['discount', 'free', 'trusted', 'public', 'group', 'test'],
+  },
   intro: {
     program_admin_email: 'librarian@example.com',
   },
   vehicle_library: {
     fee_expression:
-      "((duration>(5/60))*5 + (duration>5)*30 + (duration>24)*65 + (duration>72)*100 + (duration>144)*180) * (1 - 0.5*(subgroup=='discount'))",
+      "((duration>(5/60))*5 + (duration>5)*30 + (duration>24)*65 + (duration>72)*100 + (duration>144)*180) * (1 - 0.5*(subgroup=='discount')) * (subgroup!='free') * (subgroup!='trusted')",
+    hold_amount_by_subgroup: {
+      public: 380,
+      discount: 190,
+      group: 380,
+      test: 380,
+      free: 1,
+      trusted: 0,
+    },
     accessories: [
       { value: 'panniers', label: { en: 'Panniers', es: 'Alforjas' } },
       { value: 'front-basket', label: { en: 'Front basket', es: 'Canasta delantera' } },
@@ -92,9 +103,20 @@ const mockAppConfig = {
   },
 } as unknown as AppContextProps['appConfig'];
 
-function renderLibraryTab() {
+function renderLibraryTab(
+  subgroup: string = 'public',
+  holdAmountBySubgroup?: Record<string, number>,
+) {
+  const appConfig = {
+    ...mockAppConfig,
+    vehicle_library: {
+      ...mockAppConfig?.vehicle_library,
+      hold_amount_by_subgroup:
+        holdAmountBySubgroup ?? mockAppConfig?.vehicle_library?.hold_amount_by_subgroup,
+    },
+  };
   return render(
-    <AppContext.Provider value={{ appConfig: mockAppConfig } as AppContextProps}>
+    <AppContext.Provider value={{ appConfig, onboardingState: { subgroup } } as AppContextProps}>
       <LibraryTab />
     </AppContext.Provider>,
   );
@@ -328,6 +350,71 @@ describe('LibraryTab', () => {
       expect(getLibraryRentalHistory).toHaveBeenCalledTimes(2);
       expect(tree.getByText('Active Rental')).toBeTruthy();
     });
+  });
+
+  it('lets trusted users check out without payment setup or a hold notice', async () => {
+    (checkAndGetLibrarySetupStatus as jest.Mock).mockRejectedValue(new Error('No payment method'));
+    const tree = renderLibraryTab('trusted');
+
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    expect(checkAndGetLibrarySetupStatus).not.toHaveBeenCalled();
+    expect(tree.queryByText('Set up your payment method to check out a vehicle.')).toBeNull();
+    fireEvent.press(tree.getByText('Scan'));
+    await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
+    await submitManualCode(tree, 'Vehicle ID', 'bike-123');
+    await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
+    expect(tree.queryByText(/authorization hold/)).toBeNull();
+    expect(tree.getAllByText('$0.00')).toHaveLength(4);
+    expect(tree.queryByText('Check Out ($380.00 hold)')).toBeNull();
+    fireEvent.press(tree.getByText('Check Out'));
+    await waitFor(() => expect(checkoutLibraryVehicle).toHaveBeenCalledWith('bike-123', 0));
+  });
+
+  it('still requires payment setup for free users', async () => {
+    (checkAndGetLibrarySetupStatus as jest.Mock).mockResolvedValue({
+      payment_setup_status: 'NOT_STARTED',
+      is_sandbox: false,
+    });
+    const tree = renderLibraryTab('free');
+    await waitFor(() => tree.getByText('Set up your payment method to check out a vehicle.'));
+    fireEvent.press(tree.getByText('Scan'));
+    expect(tree.queryByText('Scan Vehicle QR Code')).toBeNull();
+    expect(Alerts.addMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        text: 'Please complete payment setup before checking out a vehicle.',
+      }),
+    );
+  });
+
+  it('shows zero rates but still places a hold for free users with payment setup', async () => {
+    const tree = renderLibraryTab('free');
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    fireEvent.press(tree.getByText('Scan'));
+    await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
+    await submitManualCode(tree, 'Vehicle ID', 'bike-123');
+    await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
+    expect(tree.getAllByText('$0.00')).toHaveLength(4);
+    fireEvent.press(tree.getByText('Check Out ($1.00 hold)'));
+    await waitFor(() => expect(checkoutLibraryVehicle).toHaveBeenCalledWith('bike-123', 100));
+  });
+
+  it('uses the configured discount subgroup hold', async () => {
+    const tree = renderLibraryTab('discount');
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    fireEvent.press(tree.getByText('Scan'));
+    await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
+    await submitManualCode(tree, 'Vehicle ID', 'bike-123');
+    await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
+    fireEvent.press(tree.getByText('Check Out ($190.00 hold)'));
+    await waitFor(() => expect(checkoutLibraryVehicle).toHaveBeenCalledWith('bike-123', 19000));
+  });
+
+  it('treats a zero hold override for any subgroup as payment-exempt', async () => {
+    const tree = renderLibraryTab('public', { public: 0 });
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    expect(checkAndGetLibrarySetupStatus).not.toHaveBeenCalled();
+    fireEvent.press(tree.getByText('Scan'));
+    await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
   });
 
   it('shows accessory request card after checkout if accessories are requested', async () => {
