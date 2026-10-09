@@ -183,6 +183,57 @@ describe('LibraryTab', () => {
     expect(createLibrarySetupSession).toHaveBeenCalledTimes(1);
   });
 
+  it('shows the tab with the setup banner if the first setup status check fails', async () => {
+    (checkAndGetLibrarySetupStatus as jest.Mock).mockRejectedValue(new Error('network down'));
+    const tree = renderLibraryTab();
+    await waitFor(() => {
+      expect(tree.getByText('Set up your payment method to check out a vehicle.')).toBeTruthy();
+      expect(tree.getByText('Available Vehicles')).toBeTruthy();
+    });
+    expect(displayErrorMsg).toHaveBeenCalledWith(
+      'Error: network down',
+      'Unable to refresh Stripe setup status',
+    );
+  });
+
+  it('re-enables payment setup after refreshing, if the Stripe browser was closed early', async () => {
+    (checkAndGetLibrarySetupStatus as jest.Mock).mockResolvedValue({
+      payment_setup_status: 'NOT_STARTED',
+      is_sandbox: false,
+    });
+    (createLibrarySetupSession as jest.Mock).mockResolvedValue({
+      url: 'https://example.com/setup-session',
+    });
+    (window as any).cordova = { InAppBrowser: { open: jest.fn() } };
+    const tree = renderLibraryTab();
+    await waitFor(() => tree.getByText('Set up payment'));
+
+    const pressSetUpPayment = async () =>
+      act(async () => {
+        fireEvent.press(tree.getByText('Set up payment'));
+        await Promise.resolve();
+      });
+    await pressSetUpPayment();
+    await pressSetUpPayment(); // disabled while setup is in progress
+    expect(createLibrarySetupSession).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      tree.UNSAFE_getByType(RefreshControl).props.onRefresh();
+      await Promise.resolve();
+    });
+    await pressSetUpPayment();
+    await waitFor(() => expect(createLibrarySetupSession).toHaveBeenCalledTimes(2));
+  });
+
+  it('ignores a scanned code that is not a valid URL', async () => {
+    const tree = renderLibraryTab();
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    fireEvent.press(tree.getByText('Scan'));
+    await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
+    await submitManualCode(tree, 'Vehicle ID', 'http://');
+    expect(tree.getByText('Scan Vehicle QR Code')).toBeTruthy();
+  });
+
   it('shows rental history entries returned by getLibraryRentalHistory', async () => {
     (getLibraryRentalHistory as jest.Mock).mockResolvedValueOnce({
       rental_history: [

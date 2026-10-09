@@ -127,8 +127,11 @@ const LibraryTab = () => {
       }
     } catch (e) {
       if (isMounted.current) {
+        setSetupComplete((prev) => prev ?? false);
         displayErrorMsg(String(e), t('library.errors.refresh-setup-status'));
       }
+    } finally {
+      if (isMounted.current) setSetupInProgress(false);
     }
   };
   const refreshRentalHistory = async () => {
@@ -253,7 +256,12 @@ const LibraryTab = () => {
       let action: string = '';
       let targetId = '';
       if (code.includes('://')) {
-        const parsedUrl = new URL(code);
+        let parsedUrl: URL;
+        try {
+          parsedUrl = new URL(code);
+        } catch {
+          return prev;
+        }
         const urlAction =
           parsedUrl.hostname || parsedUrl.pathname.split('/').filter(Boolean)[0] || '';
         const urlTargetId = parsedUrl.pathname.split('/').filter(Boolean).pop() || '';
