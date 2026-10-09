@@ -17,7 +17,6 @@ export const mockLogger = () => {
     console.log(msg);
   };
 };
-import { displayErrorMsg } from '../js/plugin/logger';
 
 export const mockCordova = () => {
   window['cordova'] ||= {};
@@ -302,39 +301,67 @@ const mockBEMConnectionSettings = () => {
 export const mockBEMServerCom = () => {
   mockBEMConnectionSettings();
 
-  const pushGetJSON = async (relativeUrl: string, msgFiller, successCallback, errorCallback) => {
-    const filledJsonObject = {};
-    msgFiller(filledJsonObject);
+  // mirrors toServerCommError in cordova-plugin-em-server-communication's servercomm.js
+  const toServerCommError = (message: string, status?: number, rawBody?: string) => {
+    let body: any = rawBody;
+    try {
+      body = rawBody === undefined ? undefined : JSON.parse(rawBody);
+    } catch {}
+    if (typeof body?.error === 'string') {
+      message += ' - ' + body.error;
+    }
+    return Object.assign(new Error(message), { name: 'ServerCommError', status, body });
+  };
 
-    const auth = await window['cordova'].plugins.BEMUserCache.getLocalStorage('prompted-auth');
-    const opcode = auth?.token;
-    if (!opcode) {
-      displayErrorMsg('No user opcode found');
+  const pushGetJSON = async (relativeUrl: string, msgFiller, successCallback, errorCallback) => {
+    let json;
+    try {
+      const filledJsonObject = {};
+      msgFiller(filledJsonObject);
+
+      const auth = await window['cordova'].plugins.BEMUserCache.getLocalStorage('prompted-auth');
+      const opcode = auth?.token;
+      if (!opcode) {
+        throw toServerCommError('During server call, error No user opcode found');
+      }
+      filledJsonObject['user'] = opcode;
+      const { connectUrl } = await window['cordova'].plugins.BEMConnectionSettings.getSettings();
+      const fullUrl = connectUrl + relativeUrl;
+
+      console.debug('mockBEMServerCom', fullUrl, filledJsonObject);
+      console.debug('filledJsonObject', filledJsonObject);
+
+      const options = {
+        method: 'post',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(filledJsonObject),
+      } as RequestInit;
+      const response = await fetch(fullUrl, options);
+      const text = await response.text();
+      if (!response.ok) {
+        throw toServerCommError(
+          `During server call, error ${response.status} ${response.statusText}`,
+          response.status,
+          text,
+        );
+      }
+      try {
+        json = JSON.parse(text);
+      } catch (e) {
+        throw toServerCommError(`During server call, Response was not JSON: ${text} Error: ${e}`);
+      }
+    } catch (error) {
+      errorCallback?.(
+        error?.name === 'ServerCommError'
+          ? error
+          : toServerCommError(`During server call, error ${error?.message ?? error}`),
+      );
       return;
     }
-    filledJsonObject['user'] = opcode;
-    const { connectUrl } = await window['cordova'].plugins.BEMConnectionSettings.getSettings();
-    const fullUrl = connectUrl + relativeUrl;
-
-    console.debug('mockBEMServerCom', fullUrl, filledJsonObject);
-    console.debug('filledJsonObject', filledJsonObject);
-
-    const options = {
-      method: 'post',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(filledJsonObject),
-    } as RequestInit;
-    const response = await fetch(fullUrl, options);
-    if (response.status === 200) {
-      const json = await response.json();
-      successCallback(json);
-    } else {
-      const e = new Error(`Failed to get JSON object, status ${response.status}`);
-      errorCallback(e);
-    }
+    successCallback(json);
   };
   const mockBEMServerCom = {
     pushGetJSON,

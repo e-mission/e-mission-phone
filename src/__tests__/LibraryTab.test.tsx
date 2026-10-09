@@ -49,6 +49,7 @@ jest.mock('../js/plugin/clientStats', () => ({
 
 jest.mock('../js/library/serverComm', () => ({
   __esModule: true,
+  getServerErrorMessage: jest.requireActual('../js/library/serverComm').getServerErrorMessage,
   checkAndGetLibrarySetupStatus: jest.fn(() =>
     Promise.resolve({ payment_setup_status: 'SUCCEEDED' }),
   ),
@@ -406,10 +407,7 @@ describe('LibraryTab', () => {
     });
 
     await waitFor(() => {
-      expect(displayErrorMsg).toHaveBeenCalledWith(
-        'Error: mocked checkout failure',
-        'Checkout failed',
-      );
+      expect(displayErrorMsg).toHaveBeenCalledWith('mocked checkout failure', 'Checkout failed');
       expect(tree.getByText('Checkout Vehicle bike-123')).toBeTruthy();
     });
   });
@@ -492,7 +490,7 @@ describe('LibraryTab', () => {
 
     await waitFor(() => {
       expect(displayErrorMsg).toHaveBeenCalledWith(
-        'Error: mocked checkin failure',
+        'mocked checkin failure',
         'Stripe return failed',
       );
       expect(tree.getByText('Confirm Return Details')).toBeTruthy();

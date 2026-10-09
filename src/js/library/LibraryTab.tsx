@@ -21,6 +21,7 @@ import {
   createLibrarySetupSession,
   getLibraryRentalHistory,
   getLibraryStations,
+  getServerErrorMessage,
   LibraryRental,
   LibraryStation,
   LibraryVehicle,
@@ -334,7 +335,7 @@ const LibraryTab = () => {
       }
     } catch (e) {
       addStatReading('checkout_aborted', { holdAmount, requestedAccessories, error: String(e) });
-      displayErrorMsg(String(e), t('library.errors.checkout'));
+      displayErrorMsg(getServerErrorMessage(e), t('library.errors.checkout'));
     } finally {
       if (isMounted.current) {
         setPaymentInProgress(false);
@@ -351,7 +352,7 @@ const LibraryTab = () => {
       await checkinLibraryVehicle(dockId);
       await refreshRentalHistory();
     } catch (e) {
-      displayErrorMsg(String(e), t('library.errors.stripe-return'));
+      displayErrorMsg(getServerErrorMessage(e), t('library.errors.stripe-return'));
       throw e;
     }
   };
