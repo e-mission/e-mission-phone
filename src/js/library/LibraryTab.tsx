@@ -88,9 +88,13 @@ const LibraryTab = () => {
     (libraryConfig?.hold_amount_by_subgroup?.[subgroup ?? ''] as number) * 100,
   );
   const paymentRequired = holdAmountCents > 0;
+  // 'captured' means the user was charged but the dock didn't lock; the return can be retried
   const activeRental =
     rentalHistory.findLast(
-      (r) => r.rental_status === 'active' || r.rental_status === 'initializing',
+      (r) =>
+        r.rental_status === 'active' ||
+        r.rental_status === 'initializing' ||
+        r.rental_status === 'captured',
     ) ?? null;
   const isInitializing = activeRental?.rental_status === 'initializing';
   const rentalVehicleId = activeRental?.vehicle_id ?? null;

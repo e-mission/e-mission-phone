@@ -640,6 +640,22 @@ describe('LibraryTab', () => {
     await waitFor(() => expect(tree.getByText('Available Vehicles')).toBeTruthy());
   });
 
+  it('lets the user retry returning a rental whose dock failed to lock after capture', async () => {
+    (getLibraryRentalHistory as jest.Mock).mockResolvedValue({
+      rental_history: [
+        {
+          vehicle_id: 'bike-123',
+          start_ts: Math.floor(Date.now() / 1000) - 1800,
+          end_ts: null,
+          rental_status: 'captured' as const,
+        },
+      ],
+    });
+    const tree = renderLibraryTab();
+    await waitFor(() => tree.getByText('Active Rental'));
+    expect(tree.getByText('Scan Dock to Return')).toBeTruthy();
+  });
+
   it('reverts to the confirm step and surfaces an error when checkin fails', async () => {
     const activeRental = {
       vehicle_id: 'bike-123',

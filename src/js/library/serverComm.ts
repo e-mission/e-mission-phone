@@ -39,7 +39,7 @@ import { logDebug, logWarn } from '../plugin/logger';
 
 /* 'initializing' is the cold-start pairing state: an admin checks out a vehicle whose location is
   UNINITIALIZED, then docks it to seed the library. No payment is involved. */
-export type LibraryRentalStatus = 'active' | 'initializing' | 'completed';
+export type LibraryRentalStatus = 'active' | 'initializing' | 'captured' | 'completed';
 
 export type LibraryPaymentHoldInfo = {
   id?: string;
