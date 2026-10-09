@@ -341,7 +341,7 @@
       "checkout": "Checkout failed",
       "stripe-setup-finalization": "Stripe setup finalization failed",
       "stripe-setup": "Stripe setup failed",
-      "stripe-return": "Stripe return failed"
+      "return": "Return failed"
     },
     "available-vehicles": {
       "title": "Available Vehicles",

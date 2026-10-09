@@ -191,7 +191,7 @@ describe('LibraryTab', () => {
       expect(tree.getByText('Available Vehicles')).toBeTruthy();
     });
     expect(displayErrorMsg).toHaveBeenCalledWith(
-      'Error: network down',
+      'network down',
       'Unable to refresh Stripe setup status',
     );
   });
@@ -668,10 +668,7 @@ describe('LibraryTab', () => {
     });
 
     await waitFor(() => {
-      expect(displayErrorMsg).toHaveBeenCalledWith(
-        'mocked checkin failure',
-        'Stripe return failed',
-      );
+      expect(displayErrorMsg).toHaveBeenCalledWith('mocked checkin failure', 'Return failed');
       expect(tree.getByText('Confirm Return Details')).toBeTruthy();
     });
   });

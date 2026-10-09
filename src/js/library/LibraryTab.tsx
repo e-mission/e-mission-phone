@@ -128,7 +128,7 @@ const LibraryTab = () => {
     } catch (e) {
       if (isMounted.current) {
         setSetupComplete((prev) => prev ?? false);
-        displayErrorMsg(String(e), t('library.errors.refresh-setup-status'));
+        displayLibraryError(e, t('library.errors.refresh-setup-status'));
       }
     } finally {
       if (isMounted.current) setSetupInProgress(false);
@@ -149,7 +149,7 @@ const LibraryTab = () => {
       }
     } catch (e) {
       if (isMounted.current) {
-        displayErrorMsg(String(e), t('library.errors.refresh-rental-history'));
+        displayLibraryError(e, t('library.errors.refresh-rental-history'));
       }
     }
   };
@@ -163,7 +163,7 @@ const LibraryTab = () => {
       }
     } catch (e) {
       if (isMounted.current) {
-        displayErrorMsg(String(e), t('library.errors.load-stations'));
+        displayLibraryError(e, t('library.errors.load-stations'));
       }
     } finally {
       if (isMounted.current) {
@@ -242,7 +242,7 @@ const LibraryTab = () => {
       if (isMounted.current) {
         setSetupInProgress(false);
       }
-      displayErrorMsg(String(e), t('library.errors.stripe-setup'));
+      displayLibraryError(e, t('library.errors.stripe-setup'));
     }
   };
 
@@ -322,7 +322,7 @@ const LibraryTab = () => {
     } catch (e) {
       if (isMounted.current) {
         setSetupComplete(false);
-        displayErrorMsg(String(e), t('library.errors.stripe-setup-finalization'));
+        displayLibraryError(e, t('library.errors.stripe-setup-finalization'));
       }
       return true;
     } finally {
@@ -387,7 +387,7 @@ const LibraryTab = () => {
       await checkinLibraryVehicle(dockId);
       await refreshRentalHistory();
     } catch (e) {
-      displayLibraryError(e, t('library.errors.stripe-return'));
+      displayLibraryError(e, t('library.errors.return'));
       throw e;
     }
   };
