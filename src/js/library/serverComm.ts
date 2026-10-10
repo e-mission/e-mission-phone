@@ -35,10 +35,11 @@ export type LibraryStationsResponse = {
 };
 
 import { Point } from 'geojson';
+import { logDebug, logWarn } from '../plugin/logger';
 
 /* 'initializing' is the cold-start pairing state: an admin checks out a vehicle whose location is
   UNINITIALIZED, then docks it to seed the library. No payment is involved. */
-export type LibraryRentalStatus = 'active' | 'initializing' | 'completed';
+export type LibraryRentalStatus = 'active' | 'initializing' | 'captured' | 'completed';
 
 export type LibraryPaymentHoldInfo = {
   id?: string;
@@ -100,12 +101,57 @@ export type LibraryRentalHistory = {
   rental_history: LibraryRental[];
 };
 
+import type { ServerCommError } from '../services/errorHandling';
+export type { ServerCommError } from '../services/errorHandling';
+export { getServerErrorCode, getServerErrorMessage } from '../services/errorHandling';
+
 function callLibraryServer(path: string, body: Record<string, any>) {
-  // TODO: better error handling for the reject case, right now, it just
-  // hangs with no error
   return new Promise<any>((resolve, reject) => {
-    const msgFiller = (message: Record<string, any>) => Object.assign(message, body);
-    (window as any).cordova.plugins.BEMServerComm.pushGetJSON(path, msgFiller, resolve, reject);
+    const startTs = Date.now();
+    const elapsed = () => `${Date.now() - startTs}ms`;
+    logDebug(`callLibraryServer(${path}): calling pushGetJSON with body ${JSON.stringify(body)}`);
+    const hangTimer = setTimeout(
+      () => logWarn(`callLibraryServer(${path}): no resolve/reject after ${elapsed()}`),
+      30000,
+    );
+    const msgFiller = (message: Record<string, any>) => {
+      Object.assign(message, body);
+      logDebug(`callLibraryServer(${path}): msgFiller produced ${JSON.stringify(message)}`);
+      return message;
+    };
+    try {
+      (window as any).cordova.plugins.BEMServerComm.pushGetJSON(
+        path,
+        msgFiller,
+        (response: any) => {
+          clearTimeout(hangTimer);
+          logDebug(
+            `callLibraryServer(${path}): resolved after ${elapsed()} with ${JSON.stringify(response)}`,
+          );
+          resolve(response);
+        },
+        (error: ServerCommError) => {
+          clearTimeout(hangTimer);
+          logWarn(
+            `callLibraryServer(${path}): rejected after ${elapsed()} with status ${error?.status}, message ${error?.message}, body ${JSON.stringify(error?.body)}`,
+          );
+          reject(error);
+        },
+      );
+      logDebug(`callLibraryServer(${path}): pushGetJSON returned synchronously`);
+    } catch (e) {
+      clearTimeout(hangTimer);
+      logWarn(`callLibraryServer(${path}): pushGetJSON threw synchronously: ${e}`);
+      reject(e);
+    }
+  });
+}
+
+/* Dev-only: server responds 404 for an unknown vehicle_id */
+export function testCheckoutNonexistentVehicle() {
+  return callLibraryServer('/library/checkout', {
+    vehicle_id: 'nonexistent-vehicle',
+    hold_amount_cents: 0,
   });
 }
 

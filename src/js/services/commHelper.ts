@@ -3,6 +3,7 @@ import { displayError, logDebug, logWarn } from '../plugin/logger';
 import { ServerConnConfig } from 'op-deployment-configs';
 import { TimestampRange } from '../types/diaryTypes';
 import { ServerResponse } from '../types/serverData';
+import { withErrorContext } from './errorHandling';
 
 const log = (str, r) => {
   logDebug(str);
@@ -67,8 +68,7 @@ export function getRawEntries(
   })
     .then((r) => log(prefix + `got ${r.phone_data.length} entries`, r))
     .catch((error) => {
-      error = `While getting raw entries, ${error}`;
-      throw error;
+      throw withErrorContext('While getting raw entries', error);
     });
 }
 
@@ -117,8 +117,7 @@ export function getPipelineRangeTs(): Promise<TimestampRange> {
   })
     .then((r) => log(prefix + `got ${JSON.stringify(r)}`, r))
     .catch((error) => {
-      error = `While getting pipeline range timestamps, ${error}`;
-      throw error;
+      throw withErrorContext('While getting pipeline range timestamps', error);
     });
 }
 
@@ -180,6 +179,7 @@ export function getAggregateData(path: string, query, serverConnConfig?: ServerC
       const options = {
         method: 'post',
         data: query,
+        serializer: 'json',
         responseType: 'json',
       };
       logDebug(prefix + `calling http.sendRequest on ${fullUrl}`);
@@ -208,8 +208,7 @@ export function getAggregateData(path: string, query, serverConnConfig?: ServerC
       return log(prefix + `got ${JSON.stringify(summary)}`, r);
     })
     .catch((error) => {
-      error = `While getting aggregate data, ${error}`;
-      throw error;
+      throw withErrorContext('While getting aggregate data', error);
     });
 }
 
@@ -221,8 +220,7 @@ export function registerUser() {
   })
     .then((r) => log(prefix + `got ${JSON.stringify(r)}`, r))
     .catch((error) => {
-      error = `While registering user, ${error}`;
-      throw error;
+      throw withErrorContext('While registering user', error);
     });
 }
 
@@ -240,8 +238,7 @@ export function updateUser(updateDoc) {
   })
     .then((r) => log(prefix + `got ${JSON.stringify(r)}`, r))
     .catch((error) => {
-      error = `While updating user, ${error}`;
-      throw error;
+      throw withErrorContext('While updating user', error);
     });
 }
 
@@ -253,8 +250,7 @@ export function getUser() {
   })
     .then((r) => log(prefix + `got ${JSON.stringify(r)}`, r))
     .catch((error) => {
-      error = `While getting user, ${error}`;
-      throw error;
+      throw withErrorContext('While getting user', error);
     });
 }
 
@@ -297,8 +293,7 @@ export function getUserCustomLabels(keys) {
   })
     .then((r) => log(prefix + `got ${JSON.stringify(r)}`, r))
     .catch((error) => {
-      error = 'While getting labels, ' + error;
-      throw error;
+      throw withErrorContext('While getting labels', error);
     });
 }
 
@@ -316,8 +311,7 @@ export function insertUserCustomLabel(key, label) {
   })
     .then((r) => log(prefix + `got ${JSON.stringify(r)}`, r))
     .catch((error) => {
-      error = `While inserting one ${key}, ${error}`;
-      throw error;
+      throw withErrorContext(`While inserting one ${key}`, error);
     });
 }
 
@@ -335,8 +329,7 @@ export function updateUserCustomLabel(key, old_label, new_label, is_new_label_mu
   })
     .then((r) => log(prefix + `got ${JSON.stringify(r)}`, r))
     .catch((error) => {
-      error = `While updating one ${key}, ${error}`;
-      throw error;
+      throw withErrorContext(`While updating one ${key}`, error);
     });
 }
 
@@ -354,7 +347,6 @@ export function deleteUserCustomLabel(key, label) {
   })
     .then((r) => log(prefix + `got ${JSON.stringify(r)}`, r))
     .catch((error) => {
-      error = `While deleting one ${key}, ${error}`;
-      throw error;
+      throw withErrorContext(`While deleting one ${key}`, error);
     });
 }
