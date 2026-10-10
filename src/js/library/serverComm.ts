@@ -101,25 +101,9 @@ export type LibraryRentalHistory = {
   rental_history: LibraryRental[];
 };
 
-/* Error passed to pushGetJSON's error callback; status/body are only set for HTTP error responses */
-export type ServerCommError = Error & {
-  status?: number;
-  body?: { error?: string; code?: string } | string;
-};
-
-export function getServerErrorCode(e: ServerCommError): string | undefined {
-  const body = e?.body;
-  return body && typeof body === 'object' ? body.code : undefined;
-}
-
-/* The server's own error text if it sent one, otherwise the generic plugin message */
-export function getServerErrorMessage(e: ServerCommError): string {
-  const body = (e as ServerCommError)?.body;
-  if (body && typeof body === 'object' && body.error) {
-    return (e.status ? `${e.status}: ` : '') + body.error;
-  }
-  return e instanceof Error ? e.message : String(e);
-}
+import type { ServerCommError } from '../services/errorHandling';
+export type { ServerCommError } from '../services/errorHandling';
+export { getServerErrorCode, getServerErrorMessage } from '../services/errorHandling';
 
 function callLibraryServer(path: string, body: Record<string, any>) {
   return new Promise<any>((resolve, reject) => {

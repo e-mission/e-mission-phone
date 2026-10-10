@@ -13,7 +13,7 @@ import QRScanner from './components/QRScanner';
 import LibraryDevPanel from './components/LibraryDevPanel';
 import { registerUrlHandler } from '../urlHandler';
 import { humanizeDurationHoursFull } from '../datetimeUtil';
-import { displayErrorMsg } from '../plugin/logger';
+import { displayError } from '../plugin/logger';
 import {
   checkAndGetLibrarySetupStatus,
   checkinLibraryVehicle,
@@ -22,11 +22,9 @@ import {
   getLibraryRentalHistory,
   getLibraryStations,
   getServerErrorCode,
-  getServerErrorMessage,
   LibraryRental,
   LibraryStation,
   LibraryVehicle,
-  ServerCommError,
 } from './serverComm';
 import { addStatReading } from '../plugin/clientStats';
 import useAppState from '../useAppState';
@@ -64,7 +62,7 @@ type Screen =
   | { name: 'checkin'; dockId: string };
 
 const LibraryTab = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { appConfig, onboardingState } = useContext(AppContext);
   const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
   const [isSandbox, setIsSandbox] = useState(false);
@@ -132,7 +130,7 @@ const LibraryTab = () => {
     } catch (e) {
       if (isMounted.current) {
         setSetupComplete((prev) => prev ?? false);
-        displayLibraryError(e, t('library.errors.refresh-setup-status'));
+        displayError(e, t('library.errors.refresh-setup-status'), 'library.error-codes');
       }
     } finally {
       if (isMounted.current) setSetupInProgress(false);
@@ -153,7 +151,7 @@ const LibraryTab = () => {
       }
     } catch (e) {
       if (isMounted.current) {
-        displayLibraryError(e, t('library.errors.refresh-rental-history'));
+        displayError(e, t('library.errors.refresh-rental-history'), 'library.error-codes');
       }
     }
   };
@@ -167,7 +165,7 @@ const LibraryTab = () => {
       }
     } catch (e) {
       if (isMounted.current) {
-        displayLibraryError(e, t('library.errors.load-stations'));
+        displayError(e, t('library.errors.load-stations'), 'library.error-codes');
       }
     } finally {
       if (isMounted.current) {
@@ -246,7 +244,7 @@ const LibraryTab = () => {
       if (isMounted.current) {
         setSetupInProgress(false);
       }
-      displayLibraryError(e, t('library.errors.stripe-setup'));
+      displayError(e, t('library.errors.stripe-setup'), 'library.error-codes');
     }
   };
 
@@ -326,23 +324,11 @@ const LibraryTab = () => {
     } catch (e) {
       if (isMounted.current) {
         setSetupComplete(false);
-        displayLibraryError(e, t('library.errors.stripe-setup-finalization'));
+        displayError(e, t('library.errors.stripe-setup-finalization'), 'library.error-codes');
       }
       return true;
     } finally {
       if (isMounted.current) setSetupInProgress(false);
-    }
-  };
-
-  // known server error codes get a translated message, followed by the server's own message
-  const displayLibraryError = (e: ServerCommError, title: string) => {
-    const code = getServerErrorCode(e);
-    const codeKey = `library.error-codes.${code}`;
-    const serverMessage = getServerErrorMessage(e);
-    if (code && i18n.exists(codeKey)) {
-      displayErrorMsg(`${t(codeKey)}\n\n${serverMessage}`, title);
-    } else {
-      displayErrorMsg(serverMessage, title);
     }
   };
 
@@ -374,7 +360,7 @@ const LibraryTab = () => {
         error: String(e),
         code: getServerErrorCode(e),
       });
-      displayLibraryError(e, t('library.errors.checkout'));
+      displayError(e, t('library.errors.checkout'), 'library.error-codes');
     } finally {
       if (isMounted.current) {
         setPaymentInProgress(false);
@@ -391,7 +377,7 @@ const LibraryTab = () => {
       await checkinLibraryVehicle(dockId);
       await refreshRentalHistory();
     } catch (e) {
-      displayLibraryError(e, t('library.errors.return'));
+      displayError(e, t('library.errors.return'), 'library.error-codes');
       throw e;
     }
   };

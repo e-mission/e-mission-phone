@@ -5,7 +5,7 @@ import '../js/i18nextInit';
 import LibraryTab from '../js/library/LibraryTab';
 import { AppContext, AppContextProps } from '../js/AppContext';
 import { Alerts } from '../js/components/AlertArea';
-import { displayErrorMsg } from '../js/plugin/logger';
+import { displayError } from '../js/plugin/logger';
 import { mockNativeForWeb } from '../js/nativePlugins';
 import {
   checkoutLibraryVehicle,
@@ -32,7 +32,7 @@ jest.mock('../js/useAppState', () => ({
 
 jest.mock('../js/plugin/logger', () => ({
   __esModule: true,
-  displayErrorMsg: jest.fn(),
+  displayError: jest.fn(),
   logDebug: jest.fn(),
   logWarn: jest.fn(),
 }));
@@ -194,9 +194,10 @@ describe('LibraryTab', () => {
       expect(tree.getByText('Set up your payment method to check out a vehicle.')).toBeTruthy();
       expect(tree.getByText('Available Vehicles')).toBeTruthy();
     });
-    expect(displayErrorMsg).toHaveBeenCalledWith(
-      'network down',
+    expect(displayError).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'network down' }),
       'Unable to refresh Stripe setup status',
+      'library.error-codes',
     );
   });
 
@@ -550,7 +551,11 @@ describe('LibraryTab', () => {
     });
 
     await waitFor(() => {
-      expect(displayErrorMsg).toHaveBeenCalledWith('mocked checkout failure', 'Checkout failed');
+      expect(displayError).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'mocked checkout failure' }),
+        'Checkout failed',
+        'library.error-codes',
+      );
       expect(tree.getByText('Checkout Vehicle bike-123')).toBeTruthy();
     });
   });
@@ -574,23 +579,33 @@ describe('LibraryTab', () => {
     });
   }
 
-  it('shows a translated message for a known server error code, followed by the server message', async () => {
+  it('passes a known server error code to the shared display handler', async () => {
     await checkOutWithServerError('ACTIVE_RENTAL_EXISTS');
     await waitFor(() => {
-      expect(displayErrorMsg).toHaveBeenCalledWith(
-        'You already have a vehicle checked out. Return it before checking out another.\n\n' +
-          '409: User abc has an active rental Rental({...})',
+      expect(displayError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 409,
+          body: {
+            error: 'User abc has an active rental Rental({...})',
+            code: 'ACTIVE_RENTAL_EXISTS',
+          },
+        }),
         'Checkout failed',
+        'library.error-codes',
       );
     });
   });
 
-  it('falls back to the server message for an unknown server error code', async () => {
+  it('passes an unknown server error code to the shared display handler', async () => {
     await checkOutWithServerError('SOME_NEW_CODE');
     await waitFor(() => {
-      expect(displayErrorMsg).toHaveBeenCalledWith(
-        '409: User abc has an active rental Rental({...})',
+      expect(displayError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 409,
+          body: { error: 'User abc has an active rental Rental({...})', code: 'SOME_NEW_CODE' },
+        }),
         'Checkout failed',
+        'library.error-codes',
       );
     });
   });
@@ -713,7 +728,11 @@ describe('LibraryTab', () => {
     });
 
     await waitFor(() => {
-      expect(displayErrorMsg).toHaveBeenCalledWith('mocked checkin failure', 'Return failed');
+      expect(displayError).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'mocked checkin failure' }),
+        'Return failed',
+        'library.error-codes',
+      );
       expect(tree.getByText('Confirm Return Details')).toBeTruthy();
     });
   });
