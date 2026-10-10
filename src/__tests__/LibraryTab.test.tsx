@@ -137,6 +137,10 @@ async function submitManualCode(
 }
 
 describe('LibraryTab', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockNativeForWeb();
@@ -607,11 +611,12 @@ describe('LibraryTab', () => {
     (getLibraryRentalHistory as jest.Mock)
       .mockResolvedValueOnce({ rental_history: [activeRental] })
       .mockResolvedValueOnce({ rental_history: [completedRental] });
-    (checkinLibraryVehicle as jest.Mock).mockResolvedValueOnce({
-      result: 'checked_in',
-      vehicle_id: 'bike-123',
-      dock_id: 'dock-1',
-    });
+    let resolveCheckin!: (result: unknown) => void;
+    (checkinLibraryVehicle as jest.Mock).mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveCheckin = resolve;
+      }),
+    );
 
     const tree = renderLibraryTab();
 
@@ -624,8 +629,32 @@ describe('LibraryTab', () => {
 
     await waitFor(() => tree.getByText('Confirm Return Details'));
 
+    jest.useFakeTimers();
+    fireEvent.press(tree.getByText('Confirm Return'));
+    const lockInstruction =
+      'Lower the arm over the bike to lock it. Wait here until the lock is confirmed.';
+    expect(tree.getByText('Locking dock and finalizing payment...')).toBeTruthy();
+    expect(tree.queryByText(lockInstruction)).toBeNull();
+
+    act(() => {
+      jest.advanceTimersByTime(1999);
+    });
+    expect(tree.queryByText(lockInstruction)).toBeNull();
+
+    act(() => {
+      jest.advanceTimersByTime(1);
+    });
+    expect(tree.getByText('Locking dock and finalizing payment...')).toBeTruthy();
+    expect(tree.getByText(lockInstruction)).toBeTruthy();
+    expect(tree.queryByText('Return Complete!')).toBeNull();
+    jest.useRealTimers();
+
     await act(async () => {
-      fireEvent.press(tree.getByText('Confirm Return'));
+      resolveCheckin({
+        result: 'checked_in',
+        vehicle_id: 'bike-123',
+        dock_id: 'dock-1',
+      });
       await Promise.resolve();
       await Promise.resolve();
     });

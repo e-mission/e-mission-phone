@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { Button, Card, Icon } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -28,8 +28,16 @@ export function ReturnFlow({
 }: ReturnFlowProps) {
   const { t } = useTranslation();
   const [step, setStep] = useState<'confirm' | 'processing' | 'complete'>('confirm');
+  const [showLockInstruction, setShowLockInstruction] = useState(false);
+
+  useEffect(() => {
+    if (step !== 'processing') return;
+    const timer = setTimeout(() => setShowLockInstruction(true), 2000);
+    return () => clearTimeout(timer);
+  }, [step]);
 
   const handleConfirmReturn = async () => {
+    setShowLockInstruction(false);
     setStep('processing');
     try {
       await onConfirmReturn();
@@ -114,6 +122,11 @@ export function ReturnFlow({
                   ? t('library.return.processing-placement-step')
                   : t('library.return.processing-step')}
               </Text>
+              {showLockInstruction && (
+                <Text style={[styles.processingStep, { marginTop: 16 }]}>
+                  {t('library.return.lock-instruction')}
+                </Text>
+              )}
             </Card.Content>
           </Card>
         )}

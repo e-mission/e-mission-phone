@@ -420,6 +420,7 @@
       "processing-title": "Processing Return",
       "processing-step": "Locking dock and finalizing payment...",
       "processing-placement-step": "Locking dock...",
+      "lock-instruction": "Lower the arm over the bike to lock it. Wait here until the lock is confirmed.",
       "complete-title": "Return Complete!",
       "complete-subtitle": "Thank you for riding with us",
       "placement-complete-subtitle": "It is now available to rent from this dock",
