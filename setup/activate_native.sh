@@ -2,9 +2,9 @@ set -a
 source setup/dependencies.env
 set +a
 
-echo "Ensure we exit on error"
-set -e
-
+# Do not set errexit in the caller's shell. Activation is meant to prepare the
+# environment for interactive use without turning the user's terminal into a
+# fail-fast shell for unrelated commands.
 echo "Activating nvm"
 
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
