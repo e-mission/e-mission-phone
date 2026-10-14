@@ -4,7 +4,7 @@ set -e
 source setup/teardown_dependencies.sh
 
 echo "Uninstalling cocoapods version $COCOAPODS_VERSION"
-gem uninstall cocoapods -v "$COCOAPODS_VERSION" -x || true
+"$(brew --prefix "ruby@$RUBY_VERSION")/bin/gem" uninstall cocoapods -v "$COCOAPODS_VERSION" -x || true
 
 echo "Removing sdkman"
 rm -rf ~/.sdkman || true

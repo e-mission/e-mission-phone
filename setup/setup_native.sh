@@ -30,7 +30,7 @@ if [ -n "${BASH_VERSINFO:-}" ] && [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
     echo "Current Bash version is ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}. SDKMAN requires Bash 4 or higher, updating."
     $WORKING_DIR/bin/brew install bash
     echo "After updating, bash version is `bash --version | head -n 1`"
-    source $WORKING_DIR/bin/bash
+    exec "$WORKING_DIR/bin/bash" "$0" "$@"
 fi
 
 CURR_RUBY_VERSION=`ruby --version | cut -d ' ' -f 2 | cut -d '.' -f 1-2`
