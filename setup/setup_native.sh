@@ -28,9 +28,9 @@ fi
 # https://apple.stackexchange.com/a/197172/717691
 if [ -n "${BASH_VERSINFO:-}" ] && [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
     echo "Current Bash version is ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]}. SDKMAN requires Bash 4 or higher, updating."
-    $WORKING_DIR/bin/brew install bash
+    "$WORKING_DIR/bin/brew" install bash
+    echo "After updating, bash version is `$WORKING_DIR/bin/bash --version | head -n 1`"
     exec "$WORKING_DIR/bin/bash" "$0" "$@"
-    echo "After updating, bash version is `bash --version | head -n 1`"
 fi
 
 CURR_RUBY_VERSION=`ruby --version | cut -d ' ' -f 2 | cut -d '.' -f 1-2`
@@ -72,9 +72,9 @@ echo "Setting up SDK environment"
 MIN_SDK_VERSION=21
 TARGET_SDK_VERSION=28
 
-if [ -z "$ANDROID_HOME" ];
+if [ ! -d "$ANDROID_HOME" ];
 then
-    echo "ANDROID_HOME not set, android SDK not found, exiting"
+    echo "Android SDK not found at $ANDROID_HOME"
     exit 1
 else
     export ANDROID_SDK_ROOT="$ANDROID_HOME"

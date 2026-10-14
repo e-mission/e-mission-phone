@@ -3,7 +3,8 @@ source setup/dependencies.env
 set +a
 
 if [ -s "$NVM_DIR/nvm.sh" ]; then
-    . "$NVM_DIR/nvm.sh"
+    . "$NVM_DIR/nvm.sh" --no-use
+    nvm deactivate >/dev/null 2>&1 || true
     nvm uninstall "$NODE_VERSION" || true
 fi
 

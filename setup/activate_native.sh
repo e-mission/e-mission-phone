@@ -16,10 +16,10 @@ nvm use $NODE_VERSION
 echo "Adding cocoapods to the path"
 export PATH=$RUBY_PATH:$PATH
 
-if [ -z "$ANDROID_HOME" ];
+if [ ! -d "$ANDROID_HOME" ];
 then
-    echo "ANDROID_HOME not set, android SDK not found, exiting"
-    exit 1
+    echo "Android SDK not found at $ANDROID_HOME"
+    return 1
 else
     export ANDROID_SDK_ROOT="$ANDROID_HOME"
     echo "ANDROID_HOME = $ANDROID_HOME; ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
