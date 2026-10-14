@@ -8,11 +8,13 @@ on:
   push:
     branches:
         - master
+        - maint_upgrade_**
     paths-ignore:
       - 'src/**'
   pull_request:
     branches:
         - master
+        - maint_upgrade_**
     paths-ignore:
       - 'src/**'
   schedule:
@@ -68,13 +70,17 @@ jobs:
         shell: bash -l {0}
         run: |
           export JAVA_HOME=$JAVA_HOME_17_arm64
-          echo "cordova version"
-          npx cordova -version
-          echo "ionic version"
-          npx ionic --version
-          which gradle
-          echo "gradle version"
-          gradle -version
+          echo "BEFORE activating...."
+          echo "node: $(node --version)"
+          echo "npm: $(npm --version)"
+          echo "cordova: $(npx cordova -version)"
+          echo "gradle: $(gradle --version 2>/dev/null | awk '/^Gradle / {print $2; exit}') at $(which gradle)"
+          source setup/activate_native.sh
+          echo "AFTER activating...."
+          echo "node: $(node --version)"
+          echo "npm: $(npm --version)"
+          echo "cordova: $(npx cordova -version)"
+          echo "gradle: $(gradle --version 2>/dev/null | awk '/^Gradle / {print $2; exit}') at $(which gradle)"
 
       - name: Build android
         shell: bash -l {0}
@@ -84,6 +90,7 @@ jobs:
           gradle -version
           echo "Let's rerun the activation"
           export JAVA_HOME=$JAVA_HOME_17_arm64
+          source setup/activate_native.sh
           echo $PATH
           which gradle
           gradle --version

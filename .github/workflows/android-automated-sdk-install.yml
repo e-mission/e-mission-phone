@@ -102,5 +102,8 @@ jobs:
         export JAVA_HOME=$JAVA_HOME_17_X64
         export ANDROID_HOME=$NEW_ANDROID_HOME
         echo "New SDK root $ANDROID_HOME"
+        source setup/activate_native.sh
         echo "About to run the avdmanager at $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager"
         $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd
+        echo "Checking cordova version"
+        npx cordova -version
