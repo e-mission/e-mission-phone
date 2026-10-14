@@ -8,11 +8,13 @@ on:
   push:
     branches:
         - master
+        - maint_upgrade_**
     paths-ignore:
       - 'src/**'
   pull_request:
     branches:
         - master
+        - maint_upgrade_**
     paths-ignore:
       - 'src/**'
   schedule:
@@ -63,14 +65,24 @@ jobs:
       - name: Check tool versions
         shell: bash -l {0}
         run: |
-          echo "cordova version"
-          npx cordova -version
-          echo "ionic version"
-          npx ionic --version
+          echo "BEFORE activating...."
+          echo "node: $(node --version)"
+          echo "npm: $(npm --version)"
+          echo "cordova: $(npx cordova -version)"
+          echo "ruby: $(ruby --version) at $(which ruby)"
+          echo "pods: $(pod --version) at $(which pod)"
+          source setup/activate_native.sh
+          echo "AFTER activating...."
+          echo "node: $(node --version)"
+          echo "npm: $(npm --version)"
+          echo "cordova: $(npx cordova -version)"
+          echo "ruby: $(ruby --version) at $(which ruby)"
+          echo "pods: $(pod --version) at $(which pod)"
 
       - name: Build ios
         shell: bash -l {0}
         run: |
+          source setup/activate_native.sh
           npm run build-dev-ios
 
       - name: Cleanup the cordova environment
