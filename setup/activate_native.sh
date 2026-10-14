@@ -1,7 +1,9 @@
+set -a
+source setup/dependencies.env
+set +a
+
 echo "Ensure we exit on error"
 set -e
-
-source setup/setup_dependencies.sh
 
 echo "Activating nvm"
 
