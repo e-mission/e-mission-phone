@@ -224,12 +224,12 @@ Troubleshooting
 
 ### What the teardown scripts clean up and leave behind
 
-The teardown scripts are intentionally scoped to the project-local environment and the SDKMAN-based toolchain used by the repo.
+The teardown scripts are intentionally scoped to the project-local environment and the repo-managed toolchain components.
 
 - The project-local teardown removes the generated Cordova artifacts: `plugins` and `platforms`.
 - It also removes the project `node_modules` and resets the locale submodule.
-- It removes the SDKMAN installation used by the project (`~/.sdkman`), which also removes the Gradle version installed via SDKMAN.
-- It removes the versioned `nvm` install used for the selected Node version.
+- It removes the repo-managed Gradle install from SDKMAN for the selected version.
+- It uninstalls the selected Node version through `nvm` rather than deleting the entire user-level `~/.nvm` directory.
 - However, it does not uninstall the Android SDK itself, the Java runtime, the Ruby installation, or the Homebrew packages that may have been installed for the native toolchain.
 - It also does not remove the Android Studio / SDK Manager configuration or other globally installed development tools that were created outside the repo.
 

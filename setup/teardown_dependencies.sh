@@ -2,8 +2,10 @@ set -a
 source setup/dependencies.env
 set +a
 
-echo "Removing .nvm since we installed it"
-rm -rf ~/.nvm/$NODE_VERSION
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    . "$NVM_DIR/nvm.sh"
+    nvm uninstall "$NODE_VERSION" || true
+fi
 
 echo "Removing all the node modules"
 rm -rf ./node_modules

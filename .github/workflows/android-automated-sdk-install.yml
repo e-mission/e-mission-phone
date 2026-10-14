@@ -8,11 +8,13 @@ on:
       - 'setup/prereq_android_sdk_install.sh'
       - 'setup/android_sdk_packages'
       - '.github/workflows/android-automated-sdk-install.yml'
+      - 'setup/dependencies.env'
   pull_request:
     paths:
       - 'setup/prereq_android_sdk_install.sh'
       - 'setup/android_sdk_packages'
       - '.github/workflows/android-automated-sdk-install.yml'
+      - 'setup/dependencies.env'
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '5 4 * * 0'
