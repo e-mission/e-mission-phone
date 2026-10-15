@@ -3,6 +3,8 @@ import { Animated } from 'react-native';
 import { Button, Dialog, Text } from 'react-native-paper';
 import renderer from 'react-test-renderer';
 import AlertArea from '../js/components/AlertArea';
+import AppModalHost from '../js/components/AppModalHost';
+import { AppContext, AppContextProps } from '../js/AppContext';
 import { Alerts } from '../js/components/alerts';
 import { emailErrorReport } from '../js/services/shareLocalDBFile';
 
@@ -206,8 +208,94 @@ describe('AppRoot startup protection', () => {
     }
   });
 
+  it('renders custom modals with live app context and keeps text popups at the root', () => {
+    const AppRoot = require('../js/AppRoot').default;
+    let deployment = 'first-deployment';
+    const ContextModal = ({ visible, onDismiss, label }) => {
+      const { appConfig } = React.useContext(AppContext);
+      return (
+        <Text onPress={onDismiss}>{`${label}:${appConfig?.url_abbreviation}:${visible}`}</Text>
+      );
+    };
+    mockApp.mockImplementation(() => (
+      <AppContext.Provider
+        value={{ appConfig: { url_abbreviation: deployment } } as AppContextProps}>
+        <AppModalHost />
+      </AppContext.Provider>
+    ));
+    let root!: renderer.ReactTestRenderer;
+
+    try {
+      renderer.act(() => {
+        root = renderer.create(<AppRoot />);
+      });
+      renderer.act(() => Alerts.showPopup(ContextModal, { label: 'Feedback' }));
+      expect(
+        root.root
+          .findAllByType(Text)
+          .some((text) => text.props.children === 'Feedback:first-deployment:true'),
+      ).toBe(true);
+
+      deployment = 'updated-deployment';
+      renderer.act(() => root.update(<AppRoot />));
+      expect(
+        root.root
+          .findAllByType(Text)
+          .some((text) => text.props.children === 'Feedback:updated-deployment:true'),
+      ).toBe(true);
+
+      renderer.act(() => Alerts.showPopup({ title: 'Root alert', content: 'Root details' }));
+      expect(root.root.findByType(Dialog.Title).props.children).toBe('Root alert');
+      expect(root.root.findAllByType(ContextModal)).toHaveLength(1);
+
+      renderer.act(() => root.root.findByType(ContextModal).props.onDismiss());
+      expect(root.root.findAllByType(ContextModal)).toHaveLength(0);
+      expect(root.root.findByType(Dialog.Title).props.children).toBe('Root alert');
+    } finally {
+      renderer.act(() => root?.unmount());
+      mockApp.mockImplementation(() => null);
+    }
+  });
+
+  it('reports custom modal render failures through the surviving root alert host', () => {
+    const AppRoot = require('../js/AppRoot').default;
+    const err = new Error('custom modal render boom');
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    const BrokenModal = () => {
+      throw err;
+    };
+    mockApp.mockImplementation(() => <AppModalHost />);
+    let root!: renderer.ReactTestRenderer;
+
+    try {
+      renderer.act(() => {
+        root = renderer.create(<AppRoot />);
+      });
+      renderer.act(() => Alerts.showPopup(BrokenModal));
+      expect(root.root.findAllByType(AppModalHost)).toHaveLength(0);
+      expect(root.root.findAllByType(AlertArea)).toHaveLength(1);
+      expect(root.root.findByType(Dialog.Title).props.children).toBe('Rendering Error');
+      expect(mockDisplayError).toHaveBeenCalledWith(err, 'Rendering Error');
+      expect(
+        root.root
+          .findAllByType(Text)
+          .some(
+            (text) =>
+              typeof text.props.children === 'string' && text.props.children.includes(err.message),
+          ),
+      ).toBe(true);
+      expect(() => Alerts.showPopup(BrokenModal)).not.toThrow();
+    } finally {
+      renderer.act(() => root?.unmount());
+      mockApp.mockImplementation(() => null);
+      consoleError.mockRestore();
+    }
+  });
+
   it('clears the alert host and its popup after the background timeout', () => {
     const AppRoot = require('../js/AppRoot').default;
+    const CustomModal = () => <Text>Old custom modal</Text>;
+    mockApp.mockImplementation(() => <AppModalHost />);
     let root!: renderer.ReactTestRenderer;
 
     try {
@@ -215,8 +303,10 @@ describe('AppRoot startup protection', () => {
         root = renderer.create(<AppRoot />);
       });
       renderer.act(() => {
+        Alerts.showPopup(CustomModal);
         Alerts.showPopup({ title: 'Old popup', content: 'Old details' });
       });
+      expect(root.root.findAllByType(CustomModal)).toHaveLength(1);
       expect(
         root.root.findAllByType(Text).some((text) => text.props.children === 'Old details'),
       ).toBe(true);
@@ -234,11 +324,14 @@ describe('AppRoot startup protection', () => {
       mockUseAppState.mockReturnValue({ appState: 'active', lastNotActiveMs: 0 });
       renderer.act(() => root.update(<AppRoot />));
       expect(root.root.findAllByType(AlertArea)).toHaveLength(1);
+      expect(root.root.findAllByType(AppModalHost)).toHaveLength(1);
+      expect(root.root.findAllByType(CustomModal)).toHaveLength(0);
       expect(
         root.root.findAllByType(Text).some((text) => text.props.children === 'Old details'),
       ).toBe(false);
     } finally {
       renderer.act(() => root?.unmount());
+      mockApp.mockImplementation(() => null);
     }
   });
 

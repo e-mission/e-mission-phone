@@ -14,6 +14,7 @@ import {
 } from './onboarding/onboardingHelper';
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './AppStatusModal';
+import AppModalHost from './components/AppModalHost';
 import Main from './Main';
 import { AppContext, CustomLabelMap, OnboardingJoinMethod } from './AppContext';
 
@@ -141,6 +142,7 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
   }
   return (
     <AppContext.Provider value={appContextValue}>
+      <AppModalHost />
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.elevation.level2 }}>
         {appContent}
         {/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.

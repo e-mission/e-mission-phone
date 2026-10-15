@@ -63,7 +63,12 @@ const FeedbackModal = ({ ...props }: ModalProps) => {
   const [feedbackForDev, setFeedbackForDev] = useState(false);
   const [feedbackForAdmins, setFeedbackForAdmins] = useState(false);
 
-  if (!appConfig || !onboardingState) return null;
+  if (!appConfig || !onboardingState) {
+    logDebug(
+      `appConfig: ${JSON.stringify(appConfig)}, onboardingState: ${JSON.stringify(onboardingState)}, FeedbackModal will not be rendered because appConfig or onboardingState is missing`,
+    );
+    return null;
+  }
 
   const lang = i18n.resolvedLanguage || 'en';
   const deploymentName = appConfig.intro.translated_text[lang].deployment_name;

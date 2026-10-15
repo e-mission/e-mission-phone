@@ -75,48 +75,44 @@ const AlertArea = () => {
   let modal;
   console.debug({ popup });
   if (popup) {
-    if (popup.Modal) {
-      modal = <popup.Modal visible={true} onDismiss={onDismissModal} {...popup.modalProps} />;
-    } else {
-      modal = (
-        <Modal
+    modal = (
+      <Modal
+        visible={true}
+        onDismiss={onDismissModal}
+        onRequestClose={onDismissModal}
+        style={{ margin: 0 }}
+        transparent={true}>
+        <Dialog
           visible={true}
           onDismiss={onDismissModal}
-          onRequestClose={onDismissModal}
-          style={{ margin: 0 }}
-          transparent={true}>
-          <Dialog
-            visible={true}
-            onDismiss={onDismissModal}
-            dismissable={!isEmailing}
-            style={{ margin: 0 }}>
-            {popup.title && <Dialog.Title>{popup.title}</Dialog.Title>}
-            {popup.content && (
-              <Dialog.Content style={{ maxHeight: windowHeight / 1.5, paddingBottom: 0 }}>
-                <ScrollView>
-                  {typeof popup.content == 'string' ? <Text>{popup.content}</Text> : popup.content}
-                  {reportFailure ? <Text accessibilityRole="alert">{reportFailure}</Text> : null}
-                </ScrollView>
-              </Dialog.Content>
-            )}
-            <Dialog.Actions>
-              <Button disabled={isEmailing} onPress={onDismissModal}>
-                Close
+          dismissable={!isEmailing}
+          style={{ margin: 0 }}>
+          {popup.title && <Dialog.Title>{popup.title}</Dialog.Title>}
+          {popup.content && (
+            <Dialog.Content style={{ maxHeight: windowHeight / 1.5, paddingBottom: 0 }}>
+              <ScrollView>
+                {typeof popup.content == 'string' ? <Text>{popup.content}</Text> : popup.content}
+                {reportFailure ? <Text accessibilityRole="alert">{reportFailure}</Text> : null}
+              </ScrollView>
+            </Dialog.Content>
+          )}
+          <Dialog.Actions>
+            <Button disabled={isEmailing} onPress={onDismissModal}>
+              Close
+            </Button>
+            {popup.reportError && typeof popup.content === 'string' && (
+              <Button
+                icon="email-outline"
+                loading={isEmailing}
+                disabled={isEmailing}
+                onPress={onEmailError}>
+                {t('error-report.email-logs')}
               </Button>
-              {popup.reportError && typeof popup.content === 'string' && (
-                <Button
-                  icon="email-outline"
-                  loading={isEmailing}
-                  disabled={isEmailing}
-                  onPress={onEmailError}>
-                  {t('error-report.email-logs')}
-                </Button>
-              )}
-            </Dialog.Actions>
-          </Dialog>
-        </Modal>
-      );
-    }
+            )}
+          </Dialog.Actions>
+        </Dialog>
+      </Modal>
+    );
   }
 
   if (snackbar || modal) {
