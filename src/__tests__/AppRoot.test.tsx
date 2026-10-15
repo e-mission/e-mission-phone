@@ -109,7 +109,11 @@ describe('AppRoot startup protection', () => {
 
     boundary.componentDidCatch(err, { componentStack: 'render boom stack' } as any);
 
-    expect(mockDisplayError).toHaveBeenCalledWith(err, 'Rendering Error');
+    const reportedError = mockDisplayError.mock.calls[0][0] as Error;
+    expect(reportedError).not.toBe(err);
+    expect(reportedError.message).toBe(err.message);
+    expect(reportedError.stack).toBe(`${err.stack}\nrender boom stack`);
+    expect(mockDisplayError).toHaveBeenCalledWith(reportedError, 'Rendering Error');
   });
 
   it.each([true, false])(
@@ -135,13 +139,19 @@ describe('AppRoot startup protection', () => {
         });
 
         expect(root.root.findAllByType(AlertArea)).toHaveLength(1);
+        expect(mockDisplayError).toHaveBeenCalledTimes(1);
+        const reportedError = mockDisplayError.mock.calls[0][0] as Error;
+        expect(reportedError.message).toBe(err.message);
+        expect(reportedError.stack).toContain(err.stack);
+        expect(reportedError.stack).toContain('ErrorBoundary');
+        const reportedDetails = reportedError.message + '\n' + reportedError.stack;
         const details = root.root
           .findAllByType(Text)
-          .find((text) => text.props.children === err.message + '\n' + err.stack);
+          .find((text) => text.props.children === reportedDetails);
         expect(details).toBeDefined();
         expect(details?.props.children).toContain(err.stack);
         expect(root.root.findByType(Dialog.Title).props.children).toBe('Rendering Error');
-        expect(mockDisplayError).toHaveBeenCalledWith(err, 'Rendering Error');
+        expect(mockDisplayError).toHaveBeenCalledWith(reportedError, 'Rendering Error');
         expect(root.root.findAllByType(mockApp)).toHaveLength(0);
         const emailButton = root.root
           .findAllByType(Button)
@@ -150,10 +160,7 @@ describe('AppRoot startup protection', () => {
         await renderer.act(async () => {
           await emailButton?.props.onPress();
         });
-        expect(emailErrorReport).toHaveBeenCalledWith(
-          'Rendering Error',
-          err.message + '\n' + err.stack,
-        );
+        expect(emailErrorReport).toHaveBeenCalledWith('Rendering Error', reportedDetails);
       } finally {
         renderer.act(() => root?.unmount());
         mockApp.mockImplementation(() => null);

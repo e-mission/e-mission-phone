@@ -14,6 +14,7 @@ import { Alerts } from '../js/components/AlertArea';
 import { getDeviceSettings } from '../js/splash/storeDeviceSettings';
 import { emailErrorReport } from '../js/services/shareLocalDBFile';
 import { getConfig } from '../js/config/dynamicConfig';
+import { Alerts as GlobalAlerts } from '../js/components/alerts';
 
 jest.mock('../js/config/dynamicConfig', () => ({
   getConfig: jest.fn(),
@@ -140,6 +141,17 @@ describe('emailHelper', () => {
       const info = await getDiagnosticInfo('test-dep');
       expect(info).toBe('');
     });
+
+    it('omits diagnostics without opening a popup when device settings reject', async () => {
+      (getDeviceSettings as jest.Mock).mockRejectedValueOnce(new Error('Device unavailable'));
+      const showPopup = jest.spyOn(GlobalAlerts, 'showPopup');
+      try {
+        await expect(getDiagnosticInfo('test-dep')).resolves.toBe('');
+        expect(showPopup).not.toHaveBeenCalled();
+      } finally {
+        showPopup.mockRestore();
+      }
+    });
   });
 
   describe('emailErrorReport', () => {
@@ -240,6 +252,27 @@ describe('emailHelper', () => {
         expect(removeFile).toHaveBeenCalledTimes(4);
       },
     );
+
+    it('still opens the report with both attachments when device diagnostics fail', async () => {
+      (getDeviceSettings as jest.Mock).mockRejectedValueOnce(new Error('Device unavailable'));
+      const showPopup = jest.spyOn(GlobalAlerts, 'showPopup');
+      try {
+        await emailErrorReport('Rendering Error', 'original error stack');
+        expect(shareViaEmail).toHaveBeenCalledWith(
+          expect.stringContaining('Describe your feedback or issue here'),
+          'OpenPATH Error Report: Rendering Error',
+          ['openpath@nlr.gov'],
+          null,
+          null,
+          [fileUrl, stackFileUrl],
+          expect.any(Function),
+          expect.any(Function),
+        );
+        expect(showPopup).not.toHaveBeenCalled();
+      } finally {
+        showPopup.mockRestore();
+      }
+    });
 
     it('includes the saved deployment abbreviation in the diagnostics', async () => {
       (getConfig as jest.Mock).mockResolvedValueOnce({ url_abbreviation: 'bike-lib' });

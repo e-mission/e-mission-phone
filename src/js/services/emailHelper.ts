@@ -1,6 +1,7 @@
 import DeploymentConfig from 'op-deployment-configs';
 import { getStudyNameFromToken } from '../config/opcode';
 import { getDeviceSettings } from '../splash/storeDeviceSettings';
+import { logWarn } from '../plugin/logger';
 
 export function getProgramAdminEmail(appConfig?: DeploymentConfig | null): string | undefined {
   if (!appConfig?.intro) return undefined;
@@ -41,7 +42,10 @@ export function openEmailClient({
 }
 
 export async function getDiagnosticInfo(deploymentId: string): Promise<string> {
-  const deviceSettings = await getDeviceSettings();
+  const deviceSettings = await getDeviceSettings().catch(() => {
+    logWarn('Device diagnostics unavailable for email');
+    return undefined;
+  });
   if (!deviceSettings) return '';
   return (
     `- App version: ${deviceSettings.client_app_version}\n` +
