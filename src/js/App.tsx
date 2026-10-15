@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AppStateStatus, View } from 'react-native';
-import { ActivityIndicator, PaperProvider } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { registerRootComponent } from 'expo';
 import i18next from 'i18next';
@@ -14,7 +14,6 @@ import {
 } from './onboarding/onboardingHelper';
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './AppStatusModal';
-import AlertArea from './components/AlertArea';
 import Main from './Main';
 import { AppContext, CustomLabelMap, OnboardingJoinMethod } from './AppContext';
 
@@ -142,17 +141,14 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
   }
   return (
     <AppContext.Provider value={appContextValue}>
-      <PaperProvider theme={theme}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.elevation.level2 }}>
-          {appContent}
-          {/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.elevation.level2 }}>
+        {appContent}
+        {/* If we are fully consented, (route > PROTOCOL), the permissions popup can show if needed.
 					This also includes if onboarding is DONE altogether (because "DONE" is > "PROTOCOL") */}
-          {onboardingState &&
-            onboardingState.route !== OnboardingRoute.FAILED &&
-            onboardingState.route > OnboardingRoute.PROTOCOL && <AppStatusModal />}
-          <AlertArea />
-        </SafeAreaView>
-      </PaperProvider>
+        {onboardingState &&
+          onboardingState.route !== OnboardingRoute.FAILED &&
+          onboardingState.route > OnboardingRoute.PROTOCOL && <AppStatusModal />}
+      </SafeAreaView>
     </AppContext.Provider>
   );
 };

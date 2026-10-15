@@ -1,7 +1,7 @@
 /* Provides a global context for alerts to show as SnackBars ('toasts') at the bottom of the screen.
  Alerts can be added to the queue from anywhere by calling Alerts.addMessage. */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { Modal, ScrollView, useWindowDimensions } from 'react-native';
 import { Button, Dialog, Portal, Snackbar, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +21,7 @@ const AlertArea = () => {
   const onDismissModal = () => setPopup(null);
 
   // on init, attach a listener to Alerts so messages can be added from a global context
-  useEffect(() => {
+  useLayoutEffect(() => {
     setAlertListener((alert: Alert) => {
       if (alert.alertType == 'message') {
         setMessages([...messages, alert]);

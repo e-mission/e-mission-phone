@@ -13,6 +13,7 @@ we render null (blank screen) instead of <App>.
 */
 
 import React, { useEffect } from 'react';
+import { PaperProvider } from 'react-native-paper';
 import App from './App';
 import useAppState from './useAppState';
 import { displayError, logDebug } from './plugin/logger';
@@ -20,8 +21,11 @@ import { resetPromisedConfig } from './config/dynamicConfig';
 import { registerRootComponent } from 'expo';
 import { pluginsReadyPromise } from './nativePlugins';
 import ErrorBoundary from './plugin/ErrorBoundary';
+import AlertArea from './components/AlertArea';
+import { getTheme } from './appTheme';
 
 const BACKGROUND_TIMEOUT_MS = 5 * 60 * 1000;
+const theme = getTheme();
 
 const AppRoot = () => {
   const [currMs, setCurrMs] = React.useState(Date.now());
@@ -49,11 +53,14 @@ const AppRoot = () => {
 
   const shouldRenderApp = appState == 'active' || currMs - lastNotActiveMs < BACKGROUND_TIMEOUT_MS;
 
-  return (
-    <ErrorBoundary>
-      {shouldRenderApp ? <App key={reloadMs} appState={appState} /> : null}
-    </ErrorBoundary>
-  );
+  return shouldRenderApp ? (
+    <PaperProvider key={reloadMs} theme={theme}>
+      <AlertArea />
+      <ErrorBoundary>
+        <App appState={appState} />
+      </ErrorBoundary>
+    </PaperProvider>
+  ) : null;
 };
 
 pluginsReadyPromise.then(() => {

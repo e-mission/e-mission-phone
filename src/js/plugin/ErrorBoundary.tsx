@@ -16,7 +16,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
   }
 
   componentDidCatch(error, info) {
-    displayError(error, info.componentStack);
+    displayError(error, 'Rendering Error');
   }
 
   render() {

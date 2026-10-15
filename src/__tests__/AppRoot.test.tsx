@@ -1,5 +1,8 @@
 import React from 'react';
+import { Dialog, Text } from 'react-native-paper';
 import renderer from 'react-test-renderer';
+import AlertArea from '../js/components/AlertArea';
+import { Alerts } from '../js/components/alerts';
 
 const mockDisplayError = jest.fn();
 const mockLogDebug = jest.fn();
@@ -40,6 +43,9 @@ jest.mock('expo', () => ({
 describe('AppRoot startup protection', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockDisplayError.mockImplementation((error: Error, title?: string) => {
+      Alerts.showPopup({ title, content: error.message + '\n' + error.stack });
+    });
     mockUseAppState.mockImplementation(() => ({ appState: 'active', lastNotActiveMs: 0 }));
     mockRegisterRootComponent.mockImplementation(() => undefined);
   });
@@ -90,7 +96,79 @@ describe('AppRoot startup protection', () => {
 
     boundary.componentDidCatch(err, { componentStack: 'render boom stack' } as any);
 
-    expect(mockDisplayError).toHaveBeenCalledWith(err, 'render boom stack');
+    expect(mockDisplayError).toHaveBeenCalledWith(err, 'Rendering Error');
+  });
+
+  it.each([true, false])(
+    'shows the error Alert popup after a render failure (startup: %s)',
+    (startup: boolean) => {
+      const AppRoot = require('../js/AppRoot').default;
+      const err = new Error('root render boom');
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      let root!: renderer.ReactTestRenderer;
+
+      try {
+        if (!startup) {
+          renderer.act(() => {
+            root = renderer.create(<AppRoot />);
+          });
+        }
+        mockApp.mockImplementation(() => {
+          throw err;
+        });
+        renderer.act(() => {
+          if (startup) root = renderer.create(<AppRoot />);
+          else root.update(<AppRoot />);
+        });
+
+        expect(root.root.findAllByType(AlertArea)).toHaveLength(1);
+        const details = root.root
+          .findAllByType(Text)
+          .find((text) => text.props.children === err.message + '\n' + err.stack);
+        expect(details).toBeDefined();
+        expect(details?.props.children).toContain(err.stack);
+        expect(root.root.findByType(Dialog.Title).props.children).toBe('Rendering Error');
+        expect(mockDisplayError).toHaveBeenCalledWith(err, 'Rendering Error');
+        expect(root.root.findAllByType(mockApp)).toHaveLength(0);
+      } finally {
+        renderer.act(() => root?.unmount());
+        mockApp.mockImplementation(() => null);
+        consoleError.mockRestore();
+      }
+    },
+  );
+
+  it('clears the alert host and its popup after the background timeout', () => {
+    const AppRoot = require('../js/AppRoot').default;
+    let root!: renderer.ReactTestRenderer;
+
+    try {
+      renderer.act(() => {
+        root = renderer.create(<AppRoot />);
+      });
+      renderer.act(() => {
+        Alerts.showPopup({ title: 'Old popup', content: 'Old details' });
+      });
+      expect(
+        root.root.findAllByType(Text).some((text) => text.props.children === 'Old details'),
+      ).toBe(true);
+
+      mockUseAppState.mockReturnValue({
+        appState: 'background',
+        lastNotActiveMs: Date.now() - 6 * 60 * 1000,
+      });
+      renderer.act(() => root.update(<AppRoot />));
+      expect(root.toJSON()).toBeNull();
+
+      mockUseAppState.mockReturnValue({ appState: 'active', lastNotActiveMs: 0 });
+      renderer.act(() => root.update(<AppRoot />));
+      expect(root.root.findAllByType(AlertArea)).toHaveLength(1);
+      expect(
+        root.root.findAllByType(Text).some((text) => text.props.children === 'Old details'),
+      ).toBe(false);
+    } finally {
+      renderer.act(() => root?.unmount());
+    }
   });
 
   it('logs and ignores registration failures during plugin-ready startup', async () => {
