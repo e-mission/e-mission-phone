@@ -3,9 +3,7 @@ import { View, Text, ScrollView, StyleSheet, Pressable } from 'react-native';
 import { Banner, Button, Card, Checkbox, Icon, SegmentedButtons } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
-import { VehicleLibraryAccessory } from '../../types/appConfigTypes';
-
-const HOLD_AMOUNT_CENTS = 38000;
+import { VehicleLibraryAccessory } from 'op-deployment-configs';
 
 // example durations shown as a rate preview: 3 hours, 1 day, 3 days, 1 week
 const EXAMPLE_DURATIONS_HOURS = [3, 24, 72, 168];
@@ -21,6 +19,7 @@ function formatExampleDuration(hours: number): string {
 interface CheckoutFlowProps {
   vehicleId: string;
   paymentProcessing: boolean;
+  holdAmountCents: number;
   accessories?: VehicleLibraryAccessory[];
   estimateFee: (durationHours: number) => number;
   onConfirm: (holdAmountCents: number, requestedAccessories: string[]) => void;
@@ -30,6 +29,7 @@ interface CheckoutFlowProps {
 export function CheckoutFlow({
   vehicleId,
   paymentProcessing,
+  holdAmountCents,
   accessories = [],
   estimateFee,
   onConfirm,
@@ -49,7 +49,8 @@ export function CheckoutFlow({
         .filter((accessory) => selectedAccessories.includes(accessory.value))
         .map(accessoryLabel)
     : [];
-  const holdDisplay = (HOLD_AMOUNT_CENTS / 100).toFixed(2);
+  const paymentRequired = holdAmountCents > 0;
+  const holdDisplay = (holdAmountCents / 100).toFixed(2);
 
   return (
     <View style={styles.container}>
@@ -136,17 +137,21 @@ export function CheckoutFlow({
               </View>
             )}
 
-            <Banner visible icon="cash-refund" style={styles.warningBanner}>
-              {t('library.checkout.hold-notice', { amount: holdDisplay })}
-            </Banner>
+            {paymentRequired && (
+              <Banner visible icon="cash-refund" style={styles.warningBanner}>
+                {t('library.checkout.hold-notice', { amount: holdDisplay })}
+              </Banner>
+            )}
 
             <Button
               mode="contained"
-              onPress={() => onConfirm(HOLD_AMOUNT_CENTS, requestedAccessories)}
+              onPress={() => onConfirm(holdAmountCents, requestedAccessories)}
               loading={paymentProcessing}
               disabled={paymentProcessing}
               style={styles.button}>
-              {t('library.checkout.confirm-and-hold', { amount: holdDisplay })}
+              {paymentRequired
+                ? t('library.checkout.confirm-and-hold', { amount: holdDisplay })
+                : t('library.checkout.confirm')}
             </Button>
 
             <Button

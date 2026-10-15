@@ -23,6 +23,7 @@ describe('CheckoutFlow', () => {
       <CheckoutFlow
         vehicleId="bike-101"
         paymentProcessing={false}
+        holdAmountCents={38000}
         accessories={mockAccessories}
         estimateFee={mockEstimateFee}
         onConfirm={mockOnConfirm}
@@ -50,6 +51,7 @@ describe('CheckoutFlow', () => {
       <CheckoutFlow
         vehicleId="bike-101"
         paymentProcessing={false}
+        holdAmountCents={38000}
         accessories={mockAccessories}
         estimateFee={mockEstimateFee}
         onConfirm={mockOnConfirm}
@@ -67,6 +69,7 @@ describe('CheckoutFlow', () => {
       <CheckoutFlow
         vehicleId="bike-101"
         paymentProcessing={false}
+        holdAmountCents={38000}
         accessories={mockAccessories}
         estimateFee={mockEstimateFee}
         onConfirm={mockOnConfirm}
@@ -91,6 +94,7 @@ describe('CheckoutFlow', () => {
       <CheckoutFlow
         vehicleId="bike-101"
         paymentProcessing={false}
+        holdAmountCents={38000}
         accessories={mockAccessories}
         estimateFee={mockEstimateFee}
         onConfirm={mockOnConfirm}
@@ -116,6 +120,7 @@ describe('CheckoutFlow', () => {
       <CheckoutFlow
         vehicleId="bike-101"
         paymentProcessing={false}
+        holdAmountCents={38000}
         estimateFee={mockEstimateFee}
         onConfirm={mockOnConfirm}
         onCancel={mockOnCancel}
@@ -133,6 +138,7 @@ describe('CheckoutFlow', () => {
       <CheckoutFlow
         vehicleId="bike-101"
         paymentProcessing={false}
+        holdAmountCents={38000}
         accessories={mockAccessories}
         estimateFee={mockEstimateFee}
         onConfirm={mockOnConfirm}

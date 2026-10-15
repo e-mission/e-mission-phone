@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Checkbox, IconButton, SegmentedButtons, Text } from 'react-native-paper';
+import { Button, Checkbox, IconButton, RadioButton, Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import {
+  getServerErrorMessage,
+  ServerCommError,
+  testCheckoutNonexistentVehicle,
+} from '../serverComm';
 
 const SIMULATION_DURATION_OFFSETS_HOURS = [1, 24, -1, -24];
 
@@ -26,6 +31,18 @@ export default function LibraryDevPanel({
 }: LibraryDevPanelProps) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
+  const [testErrorResult, setTestErrorResult] = useState<string | null>(null);
+
+  function onTestError() {
+    setTestErrorResult('pending...');
+    testCheckoutNonexistentVehicle().then(
+      (response) => setTestErrorResult(`resolved: ${JSON.stringify(response)}`),
+      (error: ServerCommError) =>
+        setTestErrorResult(
+          `rejected: status=${error?.status}, message=${getServerErrorMessage(error)}`,
+        ),
+    );
+  }
 
   return (
     <View style={styles.devBanner}>
@@ -71,22 +88,37 @@ export default function LibraryDevPanel({
             </View>
           </View>
           {!!subgroups?.length && (
-            <View style={styles.devBannerToggle}>
+            <View style={[styles.devBannerToggle, styles.subgroupToggle]}>
               <Text style={styles.devBannerToggleLabel}>
                 {t('library.dev-panel.simulate-subgroup')}
               </Text>
-              <SegmentedButtons
+              <RadioButton.Group
                 value={simulatedSubgroup ?? ''}
-                density="high"
-                onValueChange={onChangeSimulatedSubgroup}
-                buttons={subgroups.map((subgroup) => ({
-                  value: subgroup,
-                  label: subgroup,
-                  labelStyle: { fontSize: 10, padding: 0 },
-                }))}
-              />
+                onValueChange={onChangeSimulatedSubgroup}>
+                <View style={styles.subgroupOptions}>
+                  {subgroups.map((subgroup) => (
+                    <RadioButton.Item
+                      key={subgroup}
+                      value={subgroup}
+                      label={subgroup}
+                      position="leading"
+                      style={styles.subgroupOption}
+                      labelStyle={styles.subgroupLabel}
+                    />
+                  ))}
+                </View>
+              </RadioButton.Group>
             </View>
           )}
+          <View style={styles.devBannerToggle}>
+            <Text style={styles.devBannerToggleLabel}>
+              {t('library.dev-panel.test-checkout-nonexistent')}
+            </Text>
+            <Button mode="text" compact onPress={onTestError}>
+              {t('library.dev-panel.run')}
+            </Button>
+          </View>
+          {testErrorResult && <Text style={styles.devBannerToggleLabel}>{testErrorResult}</Text>}
         </View>
       )}
     </View>
@@ -130,6 +162,24 @@ const styles = StyleSheet.create({
   },
   simulationButtonsRow: {
     flexDirection: 'row',
+  },
+  subgroupToggle: {
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    paddingVertical: 4,
+  },
+  subgroupOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  subgroupOption: {
+    width: '50%',
+    minHeight: 44,
+    paddingHorizontal: 0,
+  },
+  subgroupLabel: {
+    fontSize: 12,
+    textAlign: 'left',
   },
   simulationButton: {},
 });

@@ -5,7 +5,7 @@ import '../js/i18nextInit';
 import LibraryTab from '../js/library/LibraryTab';
 import { AppContext, AppContextProps } from '../js/AppContext';
 import { Alerts } from '../js/components/AlertArea';
-import { displayErrorMsg } from '../js/plugin/logger';
+import { displayError } from '../js/plugin/logger';
 import { mockNativeForWeb } from '../js/nativePlugins';
 import {
   checkoutLibraryVehicle,
@@ -32,7 +32,7 @@ jest.mock('../js/useAppState', () => ({
 
 jest.mock('../js/plugin/logger', () => ({
   __esModule: true,
-  displayErrorMsg: jest.fn(),
+  displayError: jest.fn(),
   logDebug: jest.fn(),
   logWarn: jest.fn(),
 }));
@@ -49,6 +49,8 @@ jest.mock('../js/plugin/clientStats', () => ({
 
 jest.mock('../js/library/serverComm', () => ({
   __esModule: true,
+  getServerErrorMessage: jest.requireActual('../js/library/serverComm').getServerErrorMessage,
+  getServerErrorCode: jest.requireActual('../js/library/serverComm').getServerErrorCode,
   checkAndGetLibrarySetupStatus: jest.fn(() =>
     Promise.resolve({ payment_setup_status: 'SUCCEEDED' }),
   ),
@@ -78,12 +80,23 @@ jest.mock('react-native-paper', () => {
 // the Library tab is only shown when `vehicle_library` is configured, and once it is,
 // `fee_expression` is expected to always be present too - mock that config here
 const mockAppConfig = {
+  opcode: {
+    subgroups: ['discount', 'free', 'trusted', 'public', 'group', 'test'],
+  },
   intro: {
     program_admin_email: 'librarian@example.com',
   },
   vehicle_library: {
     fee_expression:
-      "((duration>(5/60))*5 + (duration>5)*30 + (duration>24)*65 + (duration>72)*100 + (duration>144)*180) * (1 - 0.5*(subgroup=='discount'))",
+      "((duration>(5/60))*5 + (duration>5)*30 + (duration>24)*65 + (duration>72)*100 + (duration>144)*180) * (1 - 0.5*(subgroup=='discount')) * (subgroup!='free') * (subgroup!='trusted')",
+    hold_amount_by_subgroup: {
+      public: 380,
+      discount: 190,
+      group: 380,
+      test: 380,
+      free: 1,
+      trusted: 0,
+    },
     accessories: [
       { value: 'panniers', label: { en: 'Panniers', es: 'Alforjas' } },
       { value: 'front-basket', label: { en: 'Front basket', es: 'Canasta delantera' } },
@@ -91,9 +104,20 @@ const mockAppConfig = {
   },
 } as unknown as AppContextProps['appConfig'];
 
-function renderLibraryTab() {
+function renderLibraryTab(
+  subgroup: string = 'public',
+  holdAmountBySubgroup?: Record<string, number>,
+) {
+  const appConfig = {
+    ...mockAppConfig,
+    vehicle_library: {
+      ...mockAppConfig?.vehicle_library,
+      hold_amount_by_subgroup:
+        holdAmountBySubgroup ?? mockAppConfig?.vehicle_library?.hold_amount_by_subgroup,
+    },
+  };
   return render(
-    <AppContext.Provider value={{ appConfig: mockAppConfig } as AppContextProps}>
+    <AppContext.Provider value={{ appConfig, onboardingState: { subgroup } } as AppContextProps}>
       <LibraryTab />
     </AppContext.Provider>,
   );
@@ -113,6 +137,10 @@ async function submitManualCode(
 }
 
 describe('LibraryTab', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockNativeForWeb();
@@ -157,6 +185,58 @@ describe('LibraryTab', () => {
     });
 
     expect(createLibrarySetupSession).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows the tab with the setup banner if the first setup status check fails', async () => {
+    (checkAndGetLibrarySetupStatus as jest.Mock).mockRejectedValue(new Error('network down'));
+    const tree = renderLibraryTab();
+    await waitFor(() => {
+      expect(tree.getByText('Set up your payment method to check out a vehicle.')).toBeTruthy();
+      expect(tree.getByText('Available Vehicles')).toBeTruthy();
+    });
+    expect(displayError).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'network down' }),
+      'Unable to refresh Stripe setup status',
+      'library.error-codes',
+    );
+  });
+
+  it('re-enables payment setup after refreshing, if the Stripe browser was closed early', async () => {
+    (checkAndGetLibrarySetupStatus as jest.Mock).mockResolvedValue({
+      payment_setup_status: 'NOT_STARTED',
+      is_sandbox: false,
+    });
+    (createLibrarySetupSession as jest.Mock).mockResolvedValue({
+      url: 'https://example.com/setup-session',
+    });
+    (window as any).cordova = { InAppBrowser: { open: jest.fn() } };
+    const tree = renderLibraryTab();
+    await waitFor(() => tree.getByText('Set up payment'));
+
+    const pressSetUpPayment = async () =>
+      act(async () => {
+        fireEvent.press(tree.getByText('Set up payment'));
+        await Promise.resolve();
+      });
+    await pressSetUpPayment();
+    await pressSetUpPayment(); // disabled while setup is in progress
+    expect(createLibrarySetupSession).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      tree.UNSAFE_getByType(RefreshControl).props.onRefresh();
+      await Promise.resolve();
+    });
+    await pressSetUpPayment();
+    await waitFor(() => expect(createLibrarySetupSession).toHaveBeenCalledTimes(2));
+  });
+
+  it('ignores a scanned code that is not a valid URL', async () => {
+    const tree = renderLibraryTab();
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    fireEvent.press(tree.getByText('Scan'));
+    await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
+    await submitManualCode(tree, 'Vehicle ID', 'http://');
+    expect(tree.getByText('Scan Vehicle QR Code')).toBeTruthy();
   });
 
   it('shows rental history entries returned by getLibraryRentalHistory', async () => {
@@ -329,6 +409,71 @@ describe('LibraryTab', () => {
     });
   });
 
+  it('lets trusted users check out without payment setup or a hold notice', async () => {
+    (checkAndGetLibrarySetupStatus as jest.Mock).mockRejectedValue(new Error('No payment method'));
+    const tree = renderLibraryTab('trusted');
+
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    expect(checkAndGetLibrarySetupStatus).not.toHaveBeenCalled();
+    expect(tree.queryByText('Set up your payment method to check out a vehicle.')).toBeNull();
+    fireEvent.press(tree.getByText('Scan'));
+    await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
+    await submitManualCode(tree, 'Vehicle ID', 'bike-123');
+    await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
+    expect(tree.queryByText(/authorization hold/)).toBeNull();
+    expect(tree.getAllByText('$0.00')).toHaveLength(4);
+    expect(tree.queryByText('Check Out ($380.00 hold)')).toBeNull();
+    fireEvent.press(tree.getByText('Check Out'));
+    await waitFor(() => expect(checkoutLibraryVehicle).toHaveBeenCalledWith('bike-123', 0));
+  });
+
+  it('still requires payment setup for free users', async () => {
+    (checkAndGetLibrarySetupStatus as jest.Mock).mockResolvedValue({
+      payment_setup_status: 'NOT_STARTED',
+      is_sandbox: false,
+    });
+    const tree = renderLibraryTab('free');
+    await waitFor(() => tree.getByText('Set up your payment method to check out a vehicle.'));
+    fireEvent.press(tree.getByText('Scan'));
+    expect(tree.queryByText('Scan Vehicle QR Code')).toBeNull();
+    expect(Alerts.addMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        text: 'Please complete payment setup before checking out a vehicle.',
+      }),
+    );
+  });
+
+  it('shows zero rates but still places a hold for free users with payment setup', async () => {
+    const tree = renderLibraryTab('free');
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    fireEvent.press(tree.getByText('Scan'));
+    await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
+    await submitManualCode(tree, 'Vehicle ID', 'bike-123');
+    await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
+    expect(tree.getAllByText('$0.00')).toHaveLength(4);
+    fireEvent.press(tree.getByText('Check Out ($1.00 hold)'));
+    await waitFor(() => expect(checkoutLibraryVehicle).toHaveBeenCalledWith('bike-123', 100));
+  });
+
+  it('uses the configured discount subgroup hold', async () => {
+    const tree = renderLibraryTab('discount');
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    fireEvent.press(tree.getByText('Scan'));
+    await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
+    await submitManualCode(tree, 'Vehicle ID', 'bike-123');
+    await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
+    fireEvent.press(tree.getByText('Check Out ($190.00 hold)'));
+    await waitFor(() => expect(checkoutLibraryVehicle).toHaveBeenCalledWith('bike-123', 19000));
+  });
+
+  it('treats a zero hold override for any subgroup as payment-exempt', async () => {
+    const tree = renderLibraryTab('public', { public: 0 });
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    expect(checkAndGetLibrarySetupStatus).not.toHaveBeenCalled();
+    fireEvent.press(tree.getByText('Scan'));
+    await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
+  });
+
   it('shows accessory request card after checkout if accessories are requested', async () => {
     (checkoutLibraryVehicle as jest.Mock).mockResolvedValueOnce({
       result: 'checked_out',
@@ -406,11 +551,62 @@ describe('LibraryTab', () => {
     });
 
     await waitFor(() => {
-      expect(displayErrorMsg).toHaveBeenCalledWith(
-        'Error: mocked checkout failure',
+      expect(displayError).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'mocked checkout failure' }),
         'Checkout failed',
+        'library.error-codes',
       );
       expect(tree.getByText('Checkout Vehicle bike-123')).toBeTruthy();
+    });
+  });
+
+  async function checkOutWithServerError(code: string) {
+    (checkoutLibraryVehicle as jest.Mock).mockRejectedValueOnce(
+      Object.assign(new Error('During server call, error 409'), {
+        status: 409,
+        body: { error: 'User abc has an active rental Rental({...})', code },
+      }),
+    );
+    const tree = renderLibraryTab();
+    await waitFor(() => tree.getByText('Available Vehicles'));
+    fireEvent.press(tree.getByText('Scan'));
+    await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
+    await submitManualCode(tree, 'Vehicle ID', 'bike-123');
+    await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
+    await act(async () => {
+      fireEvent.press(tree.getByText('Check Out ($380.00 hold)'));
+      await Promise.resolve();
+    });
+  }
+
+  it('passes a known server error code to the shared display handler', async () => {
+    await checkOutWithServerError('ACTIVE_RENTAL_EXISTS');
+    await waitFor(() => {
+      expect(displayError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 409,
+          body: {
+            error: 'User abc has an active rental Rental({...})',
+            code: 'ACTIVE_RENTAL_EXISTS',
+          },
+        }),
+        'Checkout failed',
+        'library.error-codes',
+      );
+    });
+  });
+
+  it('passes an unknown server error code to the shared display handler', async () => {
+    await checkOutWithServerError('SOME_NEW_CODE');
+    await waitFor(() => {
+      expect(displayError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 409,
+          body: { error: 'User abc has an active rental Rental({...})', code: 'SOME_NEW_CODE' },
+        }),
+        'Checkout failed',
+        'library.error-codes',
+      );
     });
   });
 
@@ -430,11 +626,12 @@ describe('LibraryTab', () => {
     (getLibraryRentalHistory as jest.Mock)
       .mockResolvedValueOnce({ rental_history: [activeRental] })
       .mockResolvedValueOnce({ rental_history: [completedRental] });
-    (checkinLibraryVehicle as jest.Mock).mockResolvedValueOnce({
-      result: 'checked_in',
-      vehicle_id: 'bike-123',
-      dock_id: 'dock-1',
-    });
+    let resolveCheckin!: (result: unknown) => void;
+    (checkinLibraryVehicle as jest.Mock).mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveCheckin = resolve;
+      }),
+    );
 
     const tree = renderLibraryTab();
 
@@ -447,8 +644,32 @@ describe('LibraryTab', () => {
 
     await waitFor(() => tree.getByText('Confirm Return Details'));
 
+    jest.useFakeTimers();
+    fireEvent.press(tree.getByText('Confirm Return'));
+    const lockInstruction =
+      'Lower the arm over the bike to lock it. Wait here until the lock is confirmed.';
+    expect(tree.getByText('Locking dock and finalizing payment...')).toBeTruthy();
+    expect(tree.queryByText(lockInstruction)).toBeNull();
+
+    act(() => {
+      jest.advanceTimersByTime(1999);
+    });
+    expect(tree.queryByText(lockInstruction)).toBeNull();
+
+    act(() => {
+      jest.advanceTimersByTime(1);
+    });
+    expect(tree.getByText('Locking dock and finalizing payment...')).toBeTruthy();
+    expect(tree.getByText(lockInstruction)).toBeTruthy();
+    expect(tree.queryByText('Return Complete!')).toBeNull();
+    jest.useRealTimers();
+
     await act(async () => {
-      fireEvent.press(tree.getByText('Confirm Return'));
+      resolveCheckin({
+        result: 'checked_in',
+        vehicle_id: 'bike-123',
+        dock_id: 'dock-1',
+      });
       await Promise.resolve();
       await Promise.resolve();
     });
@@ -461,6 +682,22 @@ describe('LibraryTab', () => {
 
     fireEvent.press(tree.getByText('Back to Available Vehicles'));
     await waitFor(() => expect(tree.getByText('Available Vehicles')).toBeTruthy());
+  });
+
+  it('lets the user retry returning a rental whose dock failed to lock after capture', async () => {
+    (getLibraryRentalHistory as jest.Mock).mockResolvedValue({
+      rental_history: [
+        {
+          vehicle_id: 'bike-123',
+          start_ts: Math.floor(Date.now() / 1000) - 1800,
+          end_ts: null,
+          rental_status: 'captured' as const,
+        },
+      ],
+    });
+    const tree = renderLibraryTab();
+    await waitFor(() => tree.getByText('Active Rental'));
+    expect(tree.getByText('Scan Dock to Return')).toBeTruthy();
   });
 
   it('reverts to the confirm step and surfaces an error when checkin fails', async () => {
@@ -491,9 +728,10 @@ describe('LibraryTab', () => {
     });
 
     await waitFor(() => {
-      expect(displayErrorMsg).toHaveBeenCalledWith(
-        'Error: mocked checkin failure',
-        'Stripe return failed',
+      expect(displayError).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'mocked checkin failure' }),
+        'Return failed',
+        'library.error-codes',
       );
       expect(tree.getByText('Confirm Return Details')).toBeTruthy();
     });

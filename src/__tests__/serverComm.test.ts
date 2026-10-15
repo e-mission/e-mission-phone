@@ -6,6 +6,7 @@ import {
   getLibraryRentalHistory,
   getLibrarySetupStatus,
   getLibraryStations,
+  getServerErrorMessage,
 } from '../js/library/serverComm';
 
 // Captures the resolve/reject callbacks passed to pushGetJSON so tests can control them
@@ -124,6 +125,17 @@ describe('checkoutLibraryVehicle', () => {
     const promise = checkoutLibraryVehicle('bike-1', 38000);
     resolveWith({ result: 'checked_out' }); // missing vehicle_id
     await expect(promise).rejects.toThrow('Invalid /library/checkout response');
+  });
+
+  it('rejects with the server status and error message', async () => {
+    const promise = checkoutLibraryVehicle('missing-bike', 38000);
+    const serverError = Object.assign(new Error('During server call, error 404'), {
+      status: 404,
+      body: { error: 'Vehicle missing-bike not found' },
+    });
+    rejectWith(serverError);
+    await expect(promise).rejects.toMatchObject({ status: 404 });
+    expect(getServerErrorMessage(serverError)).toBe('404: Vehicle missing-bike not found');
   });
 });
 

@@ -13,7 +13,7 @@ import QRScanner from './components/QRScanner';
 import LibraryDevPanel from './components/LibraryDevPanel';
 import { registerUrlHandler } from '../urlHandler';
 import { humanizeDurationHoursFull } from '../datetimeUtil';
-import { displayErrorMsg } from '../plugin/logger';
+import { displayError } from '../plugin/logger';
 import {
   checkAndGetLibrarySetupStatus,
   checkinLibraryVehicle,
@@ -21,6 +21,7 @@ import {
   createLibrarySetupSession,
   getLibraryRentalHistory,
   getLibraryStations,
+  getServerErrorCode,
   LibraryRental,
   LibraryStation,
   LibraryVehicle,
@@ -79,9 +80,19 @@ const LibraryTab = () => {
   const isMounted = useRef(true);
 
   const subgroup = simulatedSubgroup ?? onboardingState?.subgroup;
+  const libraryConfig = appConfig?.vehicle_library;
+  const feeExpression = libraryConfig?.fee_expression ?? '0';
+  const holdAmountCents = Math.round(
+    (libraryConfig?.hold_amount_by_subgroup?.[subgroup ?? ''] as number) * 100,
+  );
+  const paymentRequired = holdAmountCents > 0;
+  // 'captured' means the user was charged but the dock didn't lock; the return can be retried
   const activeRental =
     rentalHistory.findLast(
-      (r) => r.rental_status === 'active' || r.rental_status === 'initializing',
+      (r) =>
+        r.rental_status === 'active' ||
+        r.rental_status === 'initializing' ||
+        r.rental_status === 'captured',
     ) ?? null;
   const isInitializing = activeRental?.rental_status === 'initializing';
   const rentalVehicleId = activeRental?.vehicle_id ?? null;
@@ -89,7 +100,6 @@ const LibraryTab = () => {
     ? Math.max(rentalNowTs - activeRental.start_ts, 0) / (60 * 60)
     : null;
   const rentalStatusText = formatRentalDuration(rentalHours);
-  const feeExpression = appConfig?.vehicle_library?.fee_expression ?? '0';
   const currentFee = rentalHours === null ? 0 : computeFee(feeExpression, rentalHours, subgroup);
   const feeDisplay = `$${currentFee.toFixed(2)}`;
 
@@ -99,6 +109,9 @@ const LibraryTab = () => {
   };
 
   const refreshSetupStatus = async () => {
+    if (!paymentRequired) {
+      return;
+    }
     console.log('refreshSetupStatus: called');
     if (!isMounted.current) {
       console.log('refreshSetupStatus: component is not mounted, aborting');
@@ -116,8 +129,11 @@ const LibraryTab = () => {
       }
     } catch (e) {
       if (isMounted.current) {
-        displayErrorMsg(String(e), t('library.errors.refresh-setup-status'));
+        setSetupComplete((prev) => prev ?? false);
+        displayError(e, t('library.errors.refresh-setup-status'), 'library.error-codes');
       }
+    } finally {
+      if (isMounted.current) setSetupInProgress(false);
     }
   };
   const refreshRentalHistory = async () => {
@@ -135,7 +151,7 @@ const LibraryTab = () => {
       }
     } catch (e) {
       if (isMounted.current) {
-        displayErrorMsg(String(e), t('library.errors.refresh-rental-history'));
+        displayError(e, t('library.errors.refresh-rental-history'), 'library.error-codes');
       }
     }
   };
@@ -149,7 +165,7 @@ const LibraryTab = () => {
       }
     } catch (e) {
       if (isMounted.current) {
-        displayErrorMsg(String(e), t('library.errors.load-stations'));
+        displayError(e, t('library.errors.load-stations'), 'library.error-codes');
       }
     } finally {
       if (isMounted.current) {
@@ -198,7 +214,7 @@ const LibraryTab = () => {
       unregisterLibraryUrl();
       unregisterPaymentUrl();
     };
-  }, [activeRental, setupComplete, t]);
+  }, [activeRental, setupComplete, paymentRequired, t]);
 
   useEffect(() => {
     if (!activeRental) {
@@ -228,7 +244,7 @@ const LibraryTab = () => {
       if (isMounted.current) {
         setSetupInProgress(false);
       }
-      displayErrorMsg(String(e), t('library.errors.stripe-setup'));
+      displayError(e, t('library.errors.stripe-setup'), 'library.error-codes');
     }
   };
 
@@ -242,7 +258,12 @@ const LibraryTab = () => {
       let action: string = '';
       let targetId = '';
       if (code.includes('://')) {
-        const parsedUrl = new URL(code);
+        let parsedUrl: URL;
+        try {
+          parsedUrl = new URL(code);
+        } catch {
+          return prev;
+        }
         const urlAction =
           parsedUrl.hostname || parsedUrl.pathname.split('/').filter(Boolean)[0] || '';
         const urlTargetId = parsedUrl.pathname.split('/').filter(Boolean).pop() || '';
@@ -303,7 +324,7 @@ const LibraryTab = () => {
     } catch (e) {
       if (isMounted.current) {
         setSetupComplete(false);
-        displayErrorMsg(String(e), t('library.errors.stripe-setup-finalization'));
+        displayError(e, t('library.errors.stripe-setup-finalization'), 'library.error-codes');
       }
       return true;
     } finally {
@@ -333,8 +354,13 @@ const LibraryTab = () => {
         setScreen({ name: 'browse' });
       }
     } catch (e) {
-      addStatReading('checkout_aborted', { holdAmount, requestedAccessories, error: String(e) });
-      displayErrorMsg(String(e), t('library.errors.checkout'));
+      addStatReading('checkout_aborted', {
+        holdAmount,
+        requestedAccessories,
+        error: String(e),
+        code: getServerErrorCode(e),
+      });
+      displayError(e, t('library.errors.checkout'), 'library.error-codes');
     } finally {
       if (isMounted.current) {
         setPaymentInProgress(false);
@@ -351,13 +377,13 @@ const LibraryTab = () => {
       await checkinLibraryVehicle(dockId);
       await refreshRentalHistory();
     } catch (e) {
-      displayErrorMsg(String(e), t('library.errors.stripe-return'));
+      displayError(e, t('library.errors.return'), 'library.error-codes');
       throw e;
     }
   };
 
   const openScanQrButton = () => {
-    if (!setupComplete) {
+    if (paymentRequired && !setupComplete) {
       Alerts.addMessage({ text: t('library.setup-required-before-checkout') });
       return;
     }
@@ -369,7 +395,7 @@ const LibraryTab = () => {
     setRentalNowTs((prevTs) => Math.max(activeRental?.start_ts ?? 0, prevTs + hours * 60 * 60));
   };
 
-  if (setupComplete === null) {
+  if (paymentRequired && setupComplete === null) {
     // full page loading indicator while setup status is being determined
 
     return (
@@ -394,7 +420,7 @@ const LibraryTab = () => {
       )}
       {screen.name === 'browse' && (
         <ScrollView style={styles.browseScroll} contentContainerStyle={styles.browseContent}>
-          {setupComplete == false && (
+          {paymentRequired && setupComplete == false && (
             <Banner
               visible
               icon="credit-card-outline"
@@ -491,6 +517,7 @@ const LibraryTab = () => {
             <CheckoutFlow
               vehicleId={screen.vehicleId}
               paymentProcessing={paymentInProgress}
+              holdAmountCents={holdAmountCents}
               accessories={appConfig?.vehicle_library?.accessories}
               estimateFee={(hours) => computeFee(feeExpression, hours, subgroup)}
               onConfirm={(holdAmount, requestedAccessories) =>
@@ -509,6 +536,7 @@ const LibraryTab = () => {
               isInitializing={isInitializing}
               onConfirmReturn={() => confirmReturn(screen.dockId)}
               onComplete={() => setScreen({ name: 'browse' })}
+              onCancel={() => setScreen({ name: 'browse' })}
             />
           )}
         </View>
