@@ -21,6 +21,7 @@ export type Popup<T extends AlertModal = AlertModal> = {
   modalProps?: Omit<ComponentProps<T>, 'visible' | 'onDismiss' | 'children'>;
   title?: string;
   content?: React.ReactNode;
+  reportError?: boolean;
   alertType: 'popup';
 };
 

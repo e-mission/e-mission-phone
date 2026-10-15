@@ -32,6 +32,7 @@ it('displays translated error guidance from a configurable prefix', () => {
   expect(Alerts.showPopup).toHaveBeenLastCalledWith({
     title: 'Metrics failed',
     content: 'Choose another date range.\n\n400: Invalid range',
+    reportError: true,
   });
   expect(addStatError).toHaveBeenLastCalledWith(
     'Metrics failed: Choose another date range.\n\n400: Invalid range',
@@ -48,6 +49,7 @@ it('falls back to server details when a translation is missing', () => {
   expect(Alerts.showPopup).toHaveBeenLastCalledWith({
     title: 'Request failed',
     content: '400: Invalid request',
+    reportError: true,
   });
 });
 
@@ -56,6 +58,7 @@ it('displays errors without requiring a translation prefix', () => {
   expect(Alerts.showPopup).toHaveBeenLastCalledWith({
     title: 'Request failed',
     content: '500: Internal Server Error',
+    reportError: true,
   });
 });
 
@@ -65,6 +68,7 @@ it('retains stack traces for ordinary Errors', () => {
   expect(Alerts.showPopup).toHaveBeenLastCalledWith({
     title: 'Request failed',
     content: `${error.message}\n${error.stack}`,
+    reportError: true,
   });
 });
 
@@ -73,6 +77,7 @@ it('preserves existing string error messages and authentication titles', () => {
   expect(Alerts.showPopup).toHaveBeenLastCalledWith({
     title: 'Invalid OPcode: Request failed',
     content: '403: Invalid OPcode',
+    reportError: true,
   });
 });
 

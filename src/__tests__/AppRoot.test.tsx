@@ -1,8 +1,10 @@
 import React from 'react';
-import { Dialog, Text } from 'react-native-paper';
+import { Animated } from 'react-native';
+import { Button, Dialog, Text } from 'react-native-paper';
 import renderer from 'react-test-renderer';
 import AlertArea from '../js/components/AlertArea';
 import { Alerts } from '../js/components/alerts';
+import { emailErrorReport } from '../js/services/shareLocalDBFile';
 
 const mockDisplayError = jest.fn();
 const mockLogDebug = jest.fn();
@@ -40,12 +42,21 @@ jest.mock('expo', () => ({
   registerRootComponent: mockRegisterRootComponent,
 }));
 
+jest.mock('../js/services/shareLocalDBFile', () => ({
+  emailErrorReport: jest.fn(),
+}));
+
+jest.mock('../js/plugin/clientStats', () => ({
+  addStatError: jest.fn(),
+}));
+
 describe('AppRoot startup protection', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockDisplayError.mockImplementation((error: Error, title?: string) => {
-      Alerts.showPopup({ title, content: error.message + '\n' + error.stack });
+      jest.requireActual('../js/plugin/logger').displayError(error, title);
     });
+    (emailErrorReport as jest.Mock).mockReset().mockResolvedValue(undefined);
     mockUseAppState.mockImplementation(() => ({ appState: 'active', lastNotActiveMs: 0 }));
     mockRegisterRootComponent.mockImplementation(() => undefined);
   });
@@ -101,7 +112,7 @@ describe('AppRoot startup protection', () => {
 
   it.each([true, false])(
     'shows the error Alert popup after a render failure (startup: %s)',
-    (startup: boolean) => {
+    async (startup: boolean) => {
       const AppRoot = require('../js/AppRoot').default;
       const err = new Error('root render boom');
       const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
@@ -130,6 +141,17 @@ describe('AppRoot startup protection', () => {
         expect(root.root.findByType(Dialog.Title).props.children).toBe('Rendering Error');
         expect(mockDisplayError).toHaveBeenCalledWith(err, 'Rendering Error');
         expect(root.root.findAllByType(mockApp)).toHaveLength(0);
+        const emailButton = root.root
+          .findAllByType(Button)
+          .find((button) => button.props.icon === 'email-outline');
+        expect(emailButton).toBeDefined();
+        await renderer.act(async () => {
+          await emailButton?.props.onPress();
+        });
+        expect(emailErrorReport).toHaveBeenCalledWith(
+          'Rendering Error',
+          err.message + '\n' + err.stack,
+        );
       } finally {
         renderer.act(() => root?.unmount());
         mockApp.mockImplementation(() => null);
@@ -137,6 +159,52 @@ describe('AppRoot startup protection', () => {
       }
     },
   );
+
+  it.each([
+    [null, 'null'],
+    [undefined, 'undefined'],
+    ['render string failure', 'render string failure'],
+    [{ message: 'render object failure', stack: 'original object stack' }, 'render object failure'],
+  ])('preserves root reporting for a thrown non-Error value: %p', async (thrown, message) => {
+    const AppRoot = require('../js/AppRoot').default;
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    mockApp.mockImplementation(() => {
+      throw thrown;
+    });
+    let root!: renderer.ReactTestRenderer;
+
+    try {
+      renderer.act(() => {
+        root = renderer.create(<AppRoot />);
+      });
+      expect(root.root.findAllByType(AlertArea)).toHaveLength(1);
+      expect(mockDisplayError).toHaveBeenCalledTimes(1);
+      const reportedError = mockDisplayError.mock.calls[0][0] as Error;
+      expect(reportedError).toBeInstanceOf(Error);
+      expect(reportedError.message).toBe(message);
+      expect(reportedError.stack).toContain('ErrorBoundary');
+      if (thrown && typeof thrown === 'object') {
+        expect(reportedError.stack).toContain(thrown.stack);
+      }
+      const details = `${reportedError.message}\n${reportedError.stack}`;
+      expect(root.root.findAllByType(Text).some((text) => text.props.children === details)).toBe(
+        true,
+      );
+      expect(root.root.findByType(Dialog.Title).props.children).toBe('Rendering Error');
+      const emailButton = root.root
+        .findAllByType(Button)
+        .find((button) => button.props.icon === 'email-outline');
+      expect(emailButton).toBeDefined();
+      await renderer.act(async () => {
+        await emailButton?.props.onPress();
+      });
+      expect(emailErrorReport).toHaveBeenCalledWith('Rendering Error', details);
+    } finally {
+      renderer.act(() => root?.unmount());
+      mockApp.mockImplementation(() => null);
+      consoleError.mockRestore();
+    }
+  });
 
   it('clears the alert host and its popup after the background timeout', () => {
     const AppRoot = require('../js/AppRoot').default;
@@ -152,6 +220,9 @@ describe('AppRoot startup protection', () => {
       expect(
         root.root.findAllByType(Text).some((text) => text.props.children === 'Old details'),
       ).toBe(true);
+      expect(
+        root.root.findAllByType(Button).some((button) => button.props.icon === 'email-outline'),
+      ).toBe(false);
 
       mockUseAppState.mockReturnValue({
         appState: 'background',
@@ -168,6 +239,87 @@ describe('AppRoot startup protection', () => {
       ).toBe(false);
     } finally {
       renderer.act(() => root?.unmount());
+    }
+  });
+
+  it('keeps the original error visible and allows retry when email preparation fails', async () => {
+    const AppRoot = require('../js/AppRoot').default;
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    (emailErrorReport as jest.Mock).mockRejectedValueOnce(new Error('No email app'));
+    let root!: renderer.ReactTestRenderer;
+
+    try {
+      renderer.act(() => {
+        root = renderer.create(<AppRoot />);
+      });
+      renderer.act(() => mockDisplayError(new Error('Original error'), 'Rendering Error'));
+      const emailButton = root.root
+        .findAllByType(Button)
+        .find((button) => button.props.icon === 'email-outline');
+      await renderer.act(async () => {
+        await emailButton?.props.onPress();
+      });
+
+      expect(root.root.findByType(Dialog.Title).props.children).toBe('Rendering Error');
+      expect(
+        root.root
+          .findAllByType(Text)
+          .some(
+            (text) =>
+              typeof text.props.children === 'string' &&
+              text.props.children.includes('Original error'),
+          ),
+      ).toBe(true);
+      expect(
+        root.root.findAllByType(Text).some((text) => text.props.children === 'No email app'),
+      ).toBe(true);
+      expect(emailButton?.props.disabled).toBe(false);
+    } finally {
+      renderer.act(() => root?.unmount());
+      consoleError.mockRestore();
+    }
+  });
+
+  it('disables the email action while preparing the report', async () => {
+    const AppRoot = require('../js/AppRoot').default;
+    const animation = jest.spyOn(Animated, 'timing').mockReturnValue({
+      start: jest.fn(),
+      stop: jest.fn(),
+      reset: jest.fn(),
+    });
+    const loopAnimation = jest.spyOn(Animated, 'loop').mockReturnValue({
+      start: jest.fn(),
+      stop: jest.fn(),
+      reset: jest.fn(),
+    });
+    let finish!: () => void;
+    (emailErrorReport as jest.Mock).mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve;
+        }),
+    );
+    let root!: renderer.ReactTestRenderer;
+
+    try {
+      renderer.act(() => {
+        root = renderer.create(<AppRoot />);
+      });
+      renderer.act(() => Alerts.showPopup({ title: 'Error', content: 'boom', reportError: true }));
+      const emailButton = root.root
+        .findAllByType(Button)
+        .find((button) => button.props.icon === 'email-outline');
+      renderer.act(() => {
+        void emailButton?.props.onPress();
+      });
+      expect(emailButton?.props.disabled).toBe(true);
+      expect(emailButton?.props.loading).toBe(true);
+      await renderer.act(async () => finish());
+      expect(emailButton?.props.disabled).toBe(false);
+    } finally {
+      renderer.act(() => root?.unmount());
+      animation.mockRestore();
+      loopAnimation.mockRestore();
     }
   });
 

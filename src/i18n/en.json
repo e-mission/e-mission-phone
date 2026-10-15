@@ -293,6 +293,13 @@
     }
   },
 
+  "error-report": {
+    "email-logs": "Email logs",
+    "email-subject": "OpenPATH Error Report: {{title}}",
+    "email-unavailable": "Email is not available on this device.",
+    "email-failed": "Could not prepare the email. Please try again."
+  },
+
   "upload-service": {
     "upload-database": "Uploading database {{db}}",
     "upload-from-dir": "from directory {{parentDir}}",
