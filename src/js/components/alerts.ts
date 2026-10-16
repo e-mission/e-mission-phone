@@ -2,7 +2,7 @@
  Kept free of UI imports so it can be used from non-React modules (loggers, services, etc.)
  Text alerts render in AlertArea; custom modals render in AppModalHost inside app context. */
 
-import { ComponentProps } from 'react';
+import { Children, ComponentProps } from 'react';
 import type { ModalProps } from 'react-native';
 import { ParseKeys } from 'i18next';
 
@@ -48,6 +48,12 @@ export const Alerts = {
   ) => {
     if (typeof popup === 'function') {
       popup = { Modal: popup, modalProps };
+    }
+    try {
+      Children.toArray(popup.content);
+    } catch {
+      console.error('Alerts.showPopup expected content to be a valid React child', popup.content);
+      return;
     }
     const listener = popup.Modal ? appModalListener : alertListener;
     listener?.({ ...popup, alertType: 'popup' });
