@@ -5,7 +5,7 @@ import renderer from 'react-test-renderer';
 import AlertArea from '../js/components/AlertArea';
 import AppModalHost from '../js/components/AppModalHost';
 import { AppContext, AppContextProps } from '../js/AppContext';
-import { Alerts } from '../js/components/alerts';
+import { Alerts, setAlertListener } from '../js/components/alerts';
 import { emailErrorReport } from '../js/services/shareLocalDBFile';
 
 const mockDisplayError = jest.fn();
@@ -215,6 +215,110 @@ describe('AppRoot startup protection', () => {
     }
   });
 
+  it.each([
+    new Error(
+      'While getting user, While pushing/getting from server, Unable to resolve host "sc-ebike-library-openpath.nlr.gov": No address associated with hostname',
+    ),
+    { message: 'Unable to resolve host' },
+    'Unable to resolve host',
+    null,
+    undefined,
+  ])('keeps the app mounted when displaying a startup error: %p', (error) => {
+    const AppRoot = require('../js/AppRoot').default;
+    const { displayError } = jest.requireActual('../js/plugin/logger');
+    const { getServerErrorMessage } = jest.requireActual('../js/services/errorHandling');
+    const expectedDetails =
+      getServerErrorMessage(error) +
+      (error instanceof Error && error.stack ? `\n${error.stack}` : '');
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    let root!: renderer.ReactTestRenderer;
+
+    try {
+      renderer.act(() => {
+        root = renderer.create(<AppRoot />);
+      });
+      renderer.act(() => {
+        displayError(error, 'Error while registering and updating profile');
+      });
+
+      expect(root.root.findAllByType(mockApp)).toHaveLength(1);
+      expect(mockDisplayError).not.toHaveBeenCalled();
+      expect(root.root.findByType(Dialog.Title).props.children).toBe(
+        'Error while registering and updating profile',
+      );
+      expect(
+        root.root.findAllByType(Text).some((text) => text.props.children === expectedDetails),
+      ).toBe(true);
+
+      renderer.act(() => {
+        root.root
+          .findAllByType(Button)
+          .find((button) => button.props.children === 'Close')
+          ?.props.onPress();
+      });
+      expect(root.root.findAllByType(Dialog.Title)).toHaveLength(0);
+      expect(root.root.findAllByType(mockApp)).toHaveLength(1);
+    } finally {
+      renderer.act(() => root?.unmount());
+      consoleError.mockRestore();
+    }
+  });
+
+  it.each([
+    new Error('Unexpected content'),
+    {},
+    { message: 'Unexpected content' },
+    [[new Error('Nested invalid content')]],
+  ])('ignores invalid content without disrupting alerts: %p', (content) => {
+    const AppRoot = require('../js/AppRoot').default;
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    let root!: renderer.ReactTestRenderer;
+
+    try {
+      renderer.act(() => {
+        root = renderer.create(<AppRoot />);
+      });
+      renderer.act(() => Alerts.showPopup({ title: 'Existing popup', content: 'Details' }));
+      renderer.act(() => Alerts.showPopup({ content } as any));
+
+      expect(consoleError).toHaveBeenCalledWith(
+        'Alerts.showPopup expected content to be a valid React child',
+        content,
+      );
+      expect(root.root.findByType(Dialog.Title).props.children).toBe('Existing popup');
+      expect(root.root.findAllByType(mockApp)).toHaveLength(1);
+      expect(mockDisplayError).not.toHaveBeenCalled();
+
+      renderer.act(() => Alerts.showPopup({ title: 'Next popup', content: 'More details' }));
+      expect(root.root.findByType(Dialog.Title).props.children).toBe('Next popup');
+    } finally {
+      renderer.act(() => root?.unmount());
+      consoleError.mockRestore();
+    }
+  });
+
+  it.each([
+    'Details',
+    42,
+    false,
+    null,
+    undefined,
+    <Text>Details</Text>,
+    [],
+    ['Details', [<Text key="details">More details</Text>, null]],
+  ])('dispatches valid popup content unchanged: %p', (content) => {
+    const listener = jest.fn();
+    setAlertListener(listener);
+
+    try {
+      Alerts.showPopup({ content });
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(listener.mock.calls[0][0].content).toBe(content);
+    } finally {
+      setAlertListener(undefined);
+    }
+  });
+
   it('renders custom modals with live app context and keeps text popups at the root', () => {
     const AppRoot = require('../js/AppRoot').default;
     let deployment = 'first-deployment';
@@ -346,13 +450,15 @@ describe('AppRoot startup protection', () => {
     const AppRoot = require('../js/AppRoot').default;
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
     (emailErrorReport as jest.Mock).mockRejectedValueOnce(new Error('No email app'));
+    const originalError = new Error('Original error');
+    originalError.stack = 'Error: Original error\n    at startup';
     let root!: renderer.ReactTestRenderer;
 
     try {
       renderer.act(() => {
         root = renderer.create(<AppRoot />);
       });
-      renderer.act(() => mockDisplayError(new Error('Original error'), 'Rendering Error'));
+      renderer.act(() => mockDisplayError(originalError, 'Rendering Error'));
       const emailButton = root.root
         .findAllByType(Button)
         .find((button) => button.props.icon === 'email-outline');
