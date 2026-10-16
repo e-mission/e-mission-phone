@@ -82,6 +82,7 @@ const LibraryTab = () => {
   const subgroup = simulatedSubgroup ?? onboardingState?.subgroup;
   const libraryConfig = appConfig?.vehicle_library;
   const feeExpression = libraryConfig?.fee_expression ?? '0';
+  const feeDescription = libraryConfig?.fee_description;
   const holdAmountCents = Math.round(
     (libraryConfig?.hold_amount_by_subgroup?.[subgroup ?? ''] as number) * 100,
   );
@@ -519,7 +520,9 @@ const LibraryTab = () => {
               paymentProcessing={paymentInProgress}
               holdAmountCents={holdAmountCents}
               accessories={appConfig?.vehicle_library?.accessories}
-              estimateFee={(hours) => computeFee(feeExpression, hours, subgroup)}
+              feeDescription={feeDescription}
+              subgroup={subgroup}
+              feeForDuration={(durationHours) => computeFee(feeExpression, durationHours, subgroup)}
               onConfirm={(holdAmount, requestedAccessories) =>
                 void confirmCheckout(screen.vehicleId, holdAmount, requestedAccessories)
               }
