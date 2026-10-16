@@ -77,8 +77,7 @@ jest.mock('react-native-paper', () => {
   return { ...actual, ActivityIndicator: () => null, Button: MockButton };
 });
 
-// the Library tab is only shown when `vehicle_library` is configured, and once it is,
-// `fee_expression` is expected to always be present too - mock that config here
+// The library checkout displays rates calculated from this configured fee expression.
 const mockAppConfig = {
   opcode: {
     subgroups: ['discount', 'free', 'trusted', 'public', 'group', 'test'],
@@ -88,7 +87,27 @@ const mockAppConfig = {
   },
   vehicle_library: {
     fee_expression:
-      "((duration>(5/60))*5 + (duration>5)*30 + (duration>24)*65 + (duration>72)*100 + (duration>144)*180) * (1 - 0.5*(subgroup=='discount')) * (subgroup!='free') * (subgroup!='trusted')",
+      "(5*duration*(duration<=5) + 35*(duration>5)*(duration<=24) + (35 + (duration-24)*(30/24))*(duration>24)*(duration<=168) + (215 + (duration-168)*(24/24))*(duration>168)) * (1 - 0.5*(subgroup=='discount')) * (subgroup!='free') * (subgroup!='trusted')",
+    fee_description: {
+      rates: [
+        {
+          label: { en: 'Up to 5 hours', es: 'Hasta 5 horas' },
+          duration_hours: [0, 1],
+        },
+        {
+          label: { en: 'Daily rate', es: 'Tarifa diaria' },
+          duration_hours: [0, 24],
+        },
+        {
+          label: { en: 'After 1 day', es: 'Después de 1 día' },
+          duration_hours: [24, 48],
+        },
+        {
+          label: { en: 'After 1 week', es: 'Después de 1 semana' },
+          duration_hours: [168, 192],
+        },
+      ],
+    },
     hold_amount_by_subgroup: {
       public: 380,
       discount: 190,
@@ -397,6 +416,22 @@ describe('LibraryTab', () => {
 
     await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
 
+    expect(tree.getByText('Rental rates')).toBeTruthy();
+    expect(tree.queryByText('Example rates')).toBeNull();
+    expect(tree.getByText('Up to 5 hours')).toBeTruthy();
+    expect(tree.getByText('$5/hour')).toBeTruthy();
+    expect(tree.getByText('Daily rate')).toBeTruthy();
+    expect(tree.getByText('$35/day')).toBeTruthy();
+    expect(tree.getByText('After 1 day')).toBeTruthy();
+    expect(tree.getByText('$30/day')).toBeTruthy();
+    expect(tree.getByText('After 1 week')).toBeTruthy();
+    expect(tree.getByText('$24/day')).toBeTruthy();
+    expect(
+      tree.getByText(
+        'After the first 24 hours, additional time is prorated hourly at the applicable daily rate.',
+      ),
+    ).toBeTruthy();
+
     await act(async () => {
       fireEvent.press(tree.getByText('Check Out ($380.00 hold)'));
       await Promise.resolve();
@@ -421,7 +456,8 @@ describe('LibraryTab', () => {
     await submitManualCode(tree, 'Vehicle ID', 'bike-123');
     await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
     expect(tree.queryByText(/authorization hold/)).toBeNull();
-    expect(tree.getAllByText('$0.00')).toHaveLength(4);
+    expect(tree.getByText('$0/hour')).toBeTruthy();
+    expect(tree.getAllByText('$0/day')).toHaveLength(3);
     expect(tree.queryByText('Check Out ($380.00 hold)')).toBeNull();
     fireEvent.press(tree.getByText('Check Out'));
     await waitFor(() => expect(checkoutLibraryVehicle).toHaveBeenCalledWith('bike-123', 0));
@@ -450,7 +486,8 @@ describe('LibraryTab', () => {
     await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
     await submitManualCode(tree, 'Vehicle ID', 'bike-123');
     await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
-    expect(tree.getAllByText('$0.00')).toHaveLength(4);
+    expect(tree.getByText('$0/hour')).toBeTruthy();
+    expect(tree.getAllByText('$0/day')).toHaveLength(3);
     fireEvent.press(tree.getByText('Check Out ($1.00 hold)'));
     await waitFor(() => expect(checkoutLibraryVehicle).toHaveBeenCalledWith('bike-123', 100));
   });
@@ -462,6 +499,10 @@ describe('LibraryTab', () => {
     await waitFor(() => tree.getByText('Scan Vehicle QR Code'));
     await submitManualCode(tree, 'Vehicle ID', 'bike-123');
     await waitFor(() => tree.getByText('Checkout Vehicle bike-123'));
+    expect(tree.getByText('$2.5/hour')).toBeTruthy();
+    expect(tree.getByText('$17.5/day')).toBeTruthy();
+    expect(tree.getByText('$15/day')).toBeTruthy();
+    expect(tree.getByText('$12/day')).toBeTruthy();
     fireEvent.press(tree.getByText('Check Out ($190.00 hold)'));
     await waitFor(() => expect(checkoutLibraryVehicle).toHaveBeenCalledWith('bike-123', 19000));
   });

@@ -2,18 +2,16 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Pressable } from 'react-native';
 import { Banner, Button, Card, Checkbox, Icon, SegmentedButtons } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import i18next from 'i18next';
 import { VehicleLibraryAccessory } from 'op-deployment-configs';
 
-// example durations shown as a rate preview: 3 hours, 1 day, 3 days, 1 week
-const EXAMPLE_DURATIONS_HOURS = [3, 24, 72, 168];
+export type LocalizedFeeText = Record<string, string>;
 
-function formatExampleDuration(hours: number): string {
-  if (hours < 24) return i18next.t('library.checkout.duration-hours', { n: hours });
-  const days = hours / 24;
-  return days === 1
-    ? i18next.t('library.checkout.duration-one-day')
-    : i18next.t('library.checkout.duration-days', { n: days });
+export interface FeeDescriptionConfig {
+  rates?: {
+    label: LocalizedFeeText;
+    duration_hours: [number, number];
+  }[];
+  subgroup_notes?: Record<string, LocalizedFeeText>;
 }
 
 interface CheckoutFlowProps {
@@ -21,7 +19,9 @@ interface CheckoutFlowProps {
   paymentProcessing: boolean;
   holdAmountCents: number;
   accessories?: VehicleLibraryAccessory[];
-  estimateFee: (durationHours: number) => number;
+  feeDescription?: FeeDescriptionConfig;
+  subgroup?: string;
+  feeForDuration: (durationHours: number) => number;
   onConfirm: (holdAmountCents: number, requestedAccessories: string[]) => void;
   onCancel: () => void;
 }
@@ -31,7 +31,9 @@ export function CheckoutFlow({
   paymentProcessing,
   holdAmountCents,
   accessories = [],
-  estimateFee,
+  feeDescription,
+  subgroup,
+  feeForDuration,
   onConfirm,
   onCancel,
 }: CheckoutFlowProps) {
@@ -39,6 +41,10 @@ export function CheckoutFlow({
   const [plansLongTerm, setPlansLongTerm] = useState(false);
   const [selectedAccessories, setSelectedAccessories] = useState<string[]>([]);
   const language = i18n.resolvedLanguage || 'en';
+  const languageCode = language.split('-')[0];
+  const localize = (text: LocalizedFeeText | undefined) =>
+    text?.[language] ?? text?.[languageCode] ?? text?.en ?? Object.values(text ?? {})[0] ?? '';
+  const subgroupNote = subgroup ? localize(feeDescription?.subgroup_notes?.[subgroup]) : undefined;
   const accessoryLabel = (accessory: VehicleLibraryAccessory) =>
     accessory.label[language] ||
     accessory.label.en ||
@@ -51,6 +57,8 @@ export function CheckoutFlow({
     : [];
   const paymentRequired = holdAmountCents > 0;
   const holdDisplay = (holdAmountCents / 100).toFixed(2);
+  const calculateFeeForRange = ([baselineDuration, evaluationDuration]: [number, number]) =>
+    Number((feeForDuration(evaluationDuration) - feeForDuration(baselineDuration)).toFixed(2));
 
   return (
     <View style={styles.container}>
@@ -79,15 +87,33 @@ export function CheckoutFlow({
               </View>
             </View>
 
-            <View style={styles.accessoriesBox}>
-              <Text style={styles.accessoriesTitle}>{t('library.checkout.example-rates')}</Text>
-              {EXAMPLE_DURATIONS_HOURS.map((hours) => (
-                <View key={hours} style={styles.pricingRow}>
-                  <Text style={styles.checkboxLabel}>{formatExampleDuration(hours)}</Text>
-                  <Text style={styles.pricingAmount}>${estimateFee(hours).toFixed(2)}</Text>
-                </View>
-              ))}
-            </View>
+            {feeDescription && (
+              <View style={styles.accessoriesBox}>
+                <Text style={styles.accessoriesTitle}>{t('library.checkout.rental-rates')}</Text>
+                {feeDescription.rates?.map((rate) => {
+                  const intervalHours = rate.duration_hours[1] - rate.duration_hours[0];
+                  const isDailyRate = intervalHours >= 24;
+                  const unitHours = isDailyRate ? 24 : 1;
+                  const amount = Number(
+                    (
+                      calculateFeeForRange(rate.duration_hours) /
+                      (intervalHours / unitHours)
+                    ).toFixed(2),
+                  );
+                  return (
+                    <View key={rate.duration_hours.join(':')} style={styles.pricingRow}>
+                      <Text style={styles.pricingLabel}>{localize(rate.label)}</Text>
+                      <Text style={styles.pricingAmount}>
+                        ${amount}
+                        {t(`library.checkout.per-${isDailyRate ? 'day' : 'hour'}`)}
+                      </Text>
+                    </View>
+                  );
+                })}
+                <Text style={styles.pricingNote}>{t('library.checkout.proration-note')}</Text>
+                {subgroupNote && <Text style={styles.pricingNote}>{subgroupNote}</Text>}
+              </View>
+            )}
 
             {accessories.length > 0 && (
               <View style={styles.accessoriesBox}>
@@ -235,6 +261,8 @@ const styles = StyleSheet.create({
   pricingLabel: {
     fontSize: 16,
     color: '#424242',
+    flex: 1,
+    marginRight: 12,
   },
   pricingAmount: {
     fontSize: 16,

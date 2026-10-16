@@ -7,6 +7,20 @@ const mockAccessories = [
   { value: 'panniers', label: { en: 'Panniers', es: 'Alforjas' } },
   { value: 'front-basket', label: { en: 'Front basket', es: 'Canasta delantera' } },
 ];
+const mockFeeDescription = {
+  rates: [
+    {
+      label: { en: 'Up to 5 hours', es: 'Hasta 5 horas' },
+      duration_hours: [0, 1] as [number, number],
+    },
+  ],
+  subgroup_notes: {
+    discount: {
+      en: 'Discount members pay 30% of these rates.',
+      es: 'Los miembros con descuento pagan el 30% de estas tarifas.',
+    },
+  },
+};
 
 describe('CheckoutFlow', () => {
   const mockEstimateFee = jest.fn((hours: number) => hours * 2);
@@ -25,7 +39,7 @@ describe('CheckoutFlow', () => {
         paymentProcessing={false}
         holdAmountCents={38000}
         accessories={mockAccessories}
-        estimateFee={mockEstimateFee}
+        feeForDuration={mockEstimateFee}
         onConfirm={mockOnConfirm}
         onCancel={mockOnCancel}
       />,
@@ -53,7 +67,7 @@ describe('CheckoutFlow', () => {
         paymentProcessing={false}
         holdAmountCents={38000}
         accessories={mockAccessories}
-        estimateFee={mockEstimateFee}
+        feeForDuration={mockEstimateFee}
         onConfirm={mockOnConfirm}
         onCancel={mockOnCancel}
       />,
@@ -71,7 +85,7 @@ describe('CheckoutFlow', () => {
         paymentProcessing={false}
         holdAmountCents={38000}
         accessories={mockAccessories}
-        estimateFee={mockEstimateFee}
+        feeForDuration={mockEstimateFee}
         onConfirm={mockOnConfirm}
         onCancel={mockOnCancel}
       />,
@@ -96,7 +110,7 @@ describe('CheckoutFlow', () => {
         paymentProcessing={false}
         holdAmountCents={38000}
         accessories={mockAccessories}
-        estimateFee={mockEstimateFee}
+        feeForDuration={mockEstimateFee}
         onConfirm={mockOnConfirm}
         onCancel={mockOnCancel}
       />,
@@ -121,7 +135,7 @@ describe('CheckoutFlow', () => {
         vehicleId="bike-101"
         paymentProcessing={false}
         holdAmountCents={38000}
-        estimateFee={mockEstimateFee}
+        feeForDuration={mockEstimateFee}
         onConfirm={mockOnConfirm}
         onCancel={mockOnCancel}
       />,
@@ -140,7 +154,7 @@ describe('CheckoutFlow', () => {
         paymentProcessing={false}
         holdAmountCents={38000}
         accessories={mockAccessories}
-        estimateFee={mockEstimateFee}
+        feeForDuration={mockEstimateFee}
         onConfirm={mockOnConfirm}
         onCancel={mockOnCancel}
       />,
@@ -149,5 +163,72 @@ describe('CheckoutFlow', () => {
     fireEvent.press(tree.getByText('Sí'));
     expect(tree.getByText('Alforjas')).toBeTruthy();
     expect(tree.getByText('Canasta delantera')).toBeTruthy();
+  });
+
+  it('shows configured rates in the current language', () => {
+    const tree = render(
+      <CheckoutFlow
+        vehicleId="bike-101"
+        paymentProcessing={false}
+        holdAmountCents={0}
+        feeDescription={mockFeeDescription}
+        subgroup="public"
+        feeForDuration={mockEstimateFee}
+        onConfirm={mockOnConfirm}
+        onCancel={mockOnCancel}
+      />,
+    );
+
+    expect(tree.getByText('Up to 5 hours')).toBeTruthy();
+    expect(tree.getByText('$2/hour')).toBeTruthy();
+    expect(
+      tree.getByText(
+        'After the first 24 hours, additional time is prorated hourly at the applicable daily rate.',
+      ),
+    ).toBeTruthy();
+    expect(tree.queryByText('Discount members pay 30% of these rates.')).toBeNull();
+  });
+
+  it('localizes rate labels, units, and notes for the active language', async () => {
+    i18next.addResourceBundle(
+      'es',
+      'translation',
+      {
+        library: {
+          checkout: {
+            'per-hour': '/hora',
+            'proration-note':
+              'Después de las primeras 24 horas, el tiempo adicional se prorratea por hora según la tarifa diaria correspondiente.',
+          },
+        },
+      },
+      true,
+      true,
+    );
+    await i18next.changeLanguage('es');
+    const tree = render(
+      <CheckoutFlow
+        vehicleId="bike-101"
+        paymentProcessing={false}
+        holdAmountCents={0}
+        feeDescription={mockFeeDescription}
+        subgroup="discount"
+        feeForDuration={mockEstimateFee}
+        onConfirm={mockOnConfirm}
+        onCancel={mockOnCancel}
+      />,
+    );
+
+    expect(tree.getByText('Hasta 5 horas')).toBeTruthy();
+    expect(tree.getByText('$2/hora')).toBeTruthy();
+    expect(
+      tree.getByText(
+        'Después de las primeras 24 horas, el tiempo adicional se prorratea por hora según la tarifa diaria correspondiente.',
+      ),
+    ).toBeTruthy();
+    expect(
+      tree.getByText('Los miembros con descuento pagan el 30% de estas tarifas.'),
+    ).toBeTruthy();
+    expect(tree.queryByText('Discount members pay 30% of these rates.')).toBeNull();
   });
 });
