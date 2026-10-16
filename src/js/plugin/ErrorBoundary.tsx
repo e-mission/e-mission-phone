@@ -4,6 +4,7 @@ import React from 'react';
 import { displayError } from './logger';
 import { View } from 'react-native';
 import { Icon } from 'react-native-paper';
+import { getServerErrorMessage } from '../services/errorHandling';
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
   constructor(props) {
@@ -16,7 +17,9 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
   }
 
   componentDidCatch(error, info) {
-    displayError(error, info.componentStack);
+    const reportError = new Error(getServerErrorMessage(error));
+    reportError.stack = [error?.stack, info.componentStack].filter(Boolean).join('\n');
+    displayError(reportError, 'Rendering Error');
   }
 
   render() {

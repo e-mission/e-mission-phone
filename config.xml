@@ -56,6 +56,14 @@
         <resource-file src="google-services.json" target="app/google-services.json" />
         <hook src="hooks/before_build/android/android_set_provider.js" type="before_build" />
         <hook src="hooks/before_build/android/android_change_compile_implementation.js" type="before_build" />
+        <config-file parent="/manifest" target="AndroidManifest.xml">
+            <queries>
+                <intent>
+                    <action android:name="android.intent.action.SENDTO" />
+                    <data android:scheme="mailto" />
+                </intent>
+            </queries>
+        </config-file>
         <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <uses-library android:name="org.apache.http.legacy" android:required="false" />
         </config-file>

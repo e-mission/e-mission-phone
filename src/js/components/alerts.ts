@@ -1,6 +1,6 @@
 /* Global entry point for showing alerts (snackbar 'toasts' and popups).
  Kept free of UI imports so it can be used from non-React modules (loggers, services, etc.)
- The actual rendering happens in AlertArea, which registers itself via setAlertListener. */
+ Text alerts render in AlertArea; custom modals render in AppModalHost inside app context. */
 
 import { ComponentProps } from 'react';
 import type { ModalProps } from 'react-native';
@@ -21,15 +21,21 @@ export type Popup<T extends AlertModal = AlertModal> = {
   modalProps?: Omit<ComponentProps<T>, 'visible' | 'onDismiss' | 'children'>;
   title?: string;
   content?: React.ReactNode;
+  reportError?: boolean;
   alertType: 'popup';
 };
 
 export type Alert = (Message | Popup) & { alertType?: 'message' | 'popup' };
 
 let alertListener: ((alert: Alert) => void) | undefined;
+let appModalListener: ((popup: Popup) => void) | undefined;
 
 export const setAlertListener = (listener?: (alert: Alert) => void) => {
   alertListener = listener;
+};
+
+export const setAppModalListener = (listener?: (popup: Popup) => void) => {
+  appModalListener = listener;
 };
 
 export const Alerts = {
@@ -43,6 +49,7 @@ export const Alerts = {
     if (typeof popup === 'function') {
       popup = { Modal: popup, modalProps };
     }
-    alertListener?.({ ...popup, alertType: 'popup' });
+    const listener = popup.Modal ? appModalListener : alertListener;
+    listener?.({ ...popup, alertType: 'popup' });
   },
 };

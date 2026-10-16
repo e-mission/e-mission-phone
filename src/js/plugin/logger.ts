@@ -32,7 +32,7 @@ export function displayErrorMsg(errorMsg: string, title?: string) {
     title = 'Invalid OPcode: ' + (title || '');
   }
   const displayMsg = `━━━━\n${title}\n━━━━\n` + errorMsg;
-  Alerts.showPopup({ title: title || 'Error', content: errorMsg });
+  Alerts.showPopup({ title: title || 'Error', content: errorMsg, reportError: true });
   addStatError(title ? `${title}: ${errorMsg}` : errorMsg);
   console.error(displayMsg);
   window['Logger']?.log(window['Logger'].LEVEL_ERROR, displayMsg);

@@ -1,20 +1,41 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react-native';
+import { act, render, waitFor } from '@testing-library/react-native';
+import i18next from 'i18next';
 import App from '../js/App';
 import { joinWithTokenOrUrl } from '../js/config/dynamicConfig';
 import { OnboardingRoute, getPendingOnboardingState } from '../js/onboarding/onboardingHelper';
 import { registerUrlHandler } from '../js/urlHandler';
 import useAppConfig from '../js/useAppConfig';
 import usePermissionStatus from '../js/usePermissionStatus';
+import FeedbackModal from '../js/control/FeedbackModal';
+import { Alerts } from '../js/components/alerts';
 
 jest.mock('react-native-paper', () => {
   const React = require('react');
+  const { View, Text } = require('react-native');
+  const Container = ({ children, ...props }: any) => React.createElement(View, props, children);
+  const Dialog = Object.assign(Container, {
+    Content: Container,
+    Actions: Container,
+  });
   return {
     ActivityIndicator: ({ children, ...props }: any) =>
       React.createElement('ActivityIndicator', props, children),
     PaperProvider: ({ children }: any) => React.createElement(React.Fragment, null, children),
+    Dialog,
+    Text,
+    Button: Container,
+    IconButton: Container,
+    Checkbox: Container,
+    useTheme: () => ({
+      colors: { primary: '#0080b9', onSurface: '#111111', elevation: { level3: '#ffffff' } },
+    }),
   };
 });
+
+jest.mock('../js/control/ProfileSettings', () => ({
+  settingStyles: { dialog: () => ({}) },
+}));
 
 jest.mock('react-native-safe-area-context', () => {
   const React = require('react');
@@ -123,5 +144,20 @@ describe('App QR onboarding flow', () => {
     await waitFor(() => {
       expect(mockOnboardingStack).toHaveBeenCalled();
     });
+  });
+
+  it('opens FeedbackModal with config and onboarding context from the app', async () => {
+    const { getByText } = render(<App appState="active" />);
+    await waitFor(() => expect(mockOnboardingStack).toHaveBeenCalled());
+
+    act(() => Alerts.showPopup(FeedbackModal));
+
+    expect(
+      getByText(
+        i18next.t('control.feedback-modal.experience-question', {
+          appName: i18next.t('join.app-name'),
+        }),
+      ),
+    ).toBeTruthy();
   });
 });

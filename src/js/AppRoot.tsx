@@ -13,14 +13,19 @@ we render null (blank screen) instead of <App>.
 */
 
 import React, { useEffect } from 'react';
+import { PaperProvider } from 'react-native-paper';
 import App from './App';
 import useAppState from './useAppState';
 import { displayError, logDebug } from './plugin/logger';
 import { resetPromisedConfig } from './config/dynamicConfig';
 import { registerRootComponent } from 'expo';
 import { pluginsReadyPromise } from './nativePlugins';
+import ErrorBoundary from './plugin/ErrorBoundary';
+import AlertArea from './components/AlertArea';
+import { getTheme } from './appTheme';
 
 const BACKGROUND_TIMEOUT_MS = 5 * 60 * 1000;
+const theme = getTheme();
 
 const AppRoot = () => {
   const [currMs, setCurrMs] = React.useState(Date.now());
@@ -46,16 +51,16 @@ const AppRoot = () => {
     return () => clearInterval(interval);
   }, []);
 
-  try {
-    if (appState == 'active' || currMs - lastNotActiveMs < BACKGROUND_TIMEOUT_MS) {
-      return <App key={reloadMs} appState={appState} />;
-    }
-    return null;
-  } catch (err: any) {
-    displayError(err, `AppRoot: unhandled render error`);
-    logDebug(`AppRoot: unhandled render error: ${err}`);
-    return null;
-  }
+  const shouldRenderApp = appState == 'active' || currMs - lastNotActiveMs < BACKGROUND_TIMEOUT_MS;
+
+  return shouldRenderApp ? (
+    <PaperProvider key={reloadMs} theme={theme}>
+      <AlertArea />
+      <ErrorBoundary>
+        <App appState={appState} />
+      </ErrorBoundary>
+    </PaperProvider>
+  ) : null;
 };
 
 pluginsReadyPromise.then(() => {
