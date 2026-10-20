@@ -5,8 +5,11 @@ set +a
 echo "Ensure we exit on error"
 set -e
 
-TOOLS_ZIP_FILENAME=commandlinetools-mac_arm64-${TOOLS_VERSION}_latest.zip
-echo "Installing command line tools from $TOOLS_ZIP_FILENAME"
+ if [ "$(uname -m)" = "arm64" ]; then
+     TOOLS_ZIP_FILENAME=commandlinetools-mac_arm64-${TOOLS_VERSION}_latest.zip
+ else
+     TOOLS_ZIP_FILENAME=commandlinetools-mac_x86_64-${TOOLS_VERSION}_latest.zip
+ fi
 
 if [ -z "$ANDROID_HOME" ];
 then
