@@ -18,16 +18,16 @@ echo "Setting up the variables to run nvm"
 echo "Installing the correct node version"
 nvm install $NODE_VERSION
 
+# This has to be installed with `-g` so that the install doesn't try to install all local
+# packages as well. Without `-g`, npm install tries to install
+# `phantomjs-prebuilt` locally as well, which fails.
+# `-g` installs globally, and the new 12+ version supports allowScripts in package.json
+# which allows us to exclude scripts for this deprecated package alone
+echo "Update npm to a version that supports overrides"
+npm install -g npm@$NPM_VERSION
+
+# Since allow-git is default false on npm 12+ and many of our plugins are installed from git,
+# let's return to the old "allow from git" behavior
+# https://github.com/e-mission/e-mission-phone/pull/1307#issuecomment-6298469009
 echo "Installing npm dependencies"
-# Force-installing phantomjs-prebuilt without running the install scripts. 
-# phantomjs-prebuilt is pulled in as a transitive dependency, but is deprecated and fails installation
-# with the error
-# npm error npm error command sh -c node install.js
-# npm error npm error PhantomJS not found on PATH
-# npm error npm error Download already available at /var/folders/my/kw8q9y4j7232rvhmk1mpwhqr0000gr/T/phantomjs/phantomjs-2.1.1-macosx.zip
-# npm error npm error Verified checksum of previously downloaded file
-# npm error npm error Extracting zip contents
-# But we also don't want to turn off the install scripts for all packages and end up with weird
-# package behavior later
-npm install phantomjs-prebuilt --ignore-scripts
 npm install
