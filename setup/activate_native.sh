@@ -13,7 +13,7 @@ echo "Activating nvm"
 echo "Using version $NODE_VERSION"
 nvm use $NODE_VERSION
 
-echo "Adding cocoapods to the path"
+echo "Adding cocoapods from $RUBY_PATH to the path"
 export PATH=$RUBY_PATH:$PATH
 
 if [ ! -d "$ANDROID_HOME" ];
