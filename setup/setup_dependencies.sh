@@ -18,5 +18,16 @@ echo "Setting up the variables to run nvm"
 echo "Installing the correct node version"
 nvm install $NODE_VERSION
 
+# This has to be installed with `-g` so that the install doesn't try to install all local
+# packages as well. Without `-g`, npm install tries to install
+# `phantomjs-prebuilt` locally as well, which fails.
+# `-g` installs globally, and the new 12+ version supports allowScripts in package.json
+# which allows us to exclude scripts for this deprecated package alone
+echo "Update npm to a version that supports overrides"
+npm install -g npm@$NPM_VERSION
+
+# Since allow-git is default false on npm 12+ and many of our plugins are installed from git,
+# let's return to the old "allow from git" behavior
+# https://github.com/e-mission/e-mission-phone/pull/1307#issuecomment-6298469009
 echo "Installing npm dependencies"
 npm install
