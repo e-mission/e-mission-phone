@@ -25,7 +25,7 @@ import { joinWithTokenOrUrl } from './config/dynamicConfig';
 import { isJoinUrl } from './config/opcode';
 import { handleUrl, registerUrlHandler, UrlHandlerResult } from './urlHandler';
 import { addStatReading } from './plugin/clientStats';
-import { displayErrorMsg, logDebug } from './plugin/logger';
+import { displayError, displayErrorMsg, logDebug } from './plugin/logger';
 import { registerAndUpdateProfile, updateUserProfile, UserProfile } from './splash/userProfile';
 import { getTheme } from './appTheme';
 import usePermissionStatus from './usePermissionStatus';
@@ -105,7 +105,7 @@ const App = ({ appState }: { appState: AppStateStatus }) => {
     registerAndUpdateProfile(appConfig)
       .then(setUserProfile)
       .catch((e) => {
-        displayErrorMsg(e, 'Error while registering and updating profile');
+        displayError(e, 'Error while registering and updating profile');
       });
   }, [appConfig, onboardingState?.route]);
 
